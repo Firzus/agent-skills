@@ -70,16 +70,6 @@ skills/<skill-name>/
 └── topic-b.md
 ```
 
-## Contributing
-
-PRs welcome. To add a skill:
-
-1. Create `skills/<skill-name>/SKILL.md` with proper frontmatter (`name`, `description`).
-2. Add reference files in the same folder, linked from `SKILL.md`.
-3. Add a row to the **Available skills** table above.
-
-See the [Cursor `create-skill` guide](https://docs.cursor.com/en/agent/skills) or the [skills.sh docs](https://skills.sh/docs) for authoring conventions.
-
 ## License
 
 [MIT](./LICENSE)
