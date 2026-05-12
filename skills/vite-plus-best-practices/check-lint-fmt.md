@@ -81,8 +81,8 @@ Use `lint.overrides` and `fmt.overrides` to apply rules to specific globs from t
 
 The recommended fix-it cycle for coding agents:
 
-```bash
-vp check --fix && vp test && vp build
-```
+1. `vp check --fix` — apply formatting and safe lint autofixes
+2. `vp test` — run the test suite
+3. `vp build` — build for production
 
-`vp check` is preferred over standalone `vp lint`/`vp fmt`/`tsc --noEmit` because it deduplicates work across the three tools.
+`vp check` is preferred over standalone `vp lint` / `vp fmt` / `tsc --noEmit` because it deduplicates work across the three tools.

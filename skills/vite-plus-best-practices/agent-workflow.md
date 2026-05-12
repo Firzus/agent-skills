@@ -46,7 +46,6 @@ For an agent translating from npm/pnpm/yarn workflows:
 | `tsc --noEmit` | `vp check --no-fmt --no-lint` (with `typeCheck: true`) |
 | `tsup` / `tsdown` | `vp pack` |
 | `lint-staged` | `vp staged` |
-| `npx <pkg>` / `pnpx <pkg>` | `vpx <pkg>` |
 
 ## When to Cache
 

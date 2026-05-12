@@ -57,29 +57,6 @@ vp rebuild                         # rebuild native modules
 vp link / vp unlink                # local dev links
 ```
 
-## Global Packages
-
-```bash
-vp install -g typescript
-vp uninstall -g typescript
-vp update -g
-vp list -g
-```
-
-## Escape Hatches
-
-- `vp pm <cmd>` — forward directly to the resolved package manager
-  ```bash
-  vp pm config get registry
-  vp pm cache clean --force
-  vp pm exec tsc --version
-  ```
-- `vp dlx <pkg>` — run a package binary without saving it as a dependency
-  ```bash
-  vp dlx create-vite
-  vp dlx typescript tsc --version
-  ```
-
 ## After Switching Node.js Versions
 
 If native modules fail to load (e.g. `sharp`, `bcrypt`, `better-sqlite3`):
