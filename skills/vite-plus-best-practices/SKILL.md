@@ -1,19 +1,26 @@
 ---
 name: vite-plus-best-practices
-description: Best practices for Vite+ (vp), the unified web toolchain combining Vite, Vitest, Oxlint, Oxfmt, Rolldown, tsdown, and Vite Task. Covers the vp command surface (dev, build, check, test, run, pack, install), unified vite.config.ts blocks, monorepo overrides, task caching, commit hooks, library packaging, and migrating existing Vite/Vitest/ESLint/Prettier projects. Use when the user mentions Vite+, vite-plus, the `vp` CLI, Oxlint/Oxfmt in a Vite context, tsdown, Vite Task, or asks to configure, migrate, or upgrade a Vite+ project.
+description: Best practices for Vite+ (vp), the unified web toolchain combining Vite, Vitest, Oxlint, Oxfmt, Rolldown, tsdown, and Vite Task. Covers the vp command surface (dev, build, check, test, run, pack, install, env), unified vite.config.ts blocks, monorepo overrides, task caching, commit hooks, library packaging, and migrating existing Vite/Vitest/ESLint/Prettier projects. Use when the user mentions Vite+, vite-plus, the `vp` or `vpx` CLI, Oxlint/Oxfmt in a Vite context, tsdown, Vite Task, or asks to configure, migrate, scaffold, or upgrade a Vite+ project.
 ---
 
 # Vite+ Best Practices
 
 Apply these rules when writing or reviewing Vite+ code, configuring `vite.config.ts`, running `vp` commands, or migrating to Vite+.
 
-> Installation, runtime setup, and CLI download flows are intentionally out of scope here. See the upstream guide at https://viteplus.dev/guide for installation and environment management.
-
 Vite+ ships in two parts:
-- `vp` — the global command-line tool
+- `vp` — the global command-line tool (managed runtime + package manager)
 - `vite-plus` — the local package installed in each project
 
 All Vite+ configuration belongs in a single `vite.config.ts` using blocks (`server`, `build`, `test`, `lint`, `fmt`, `run`, `pack`, `staged`, `create`). Do **not** keep separate `vitest.config.ts`, `oxlint.config.json`, `tsdown.config.ts`, `.prettierrc`, or `lint-staged.config.*` files.
+
+## Installation & Environment
+
+See [getting-started.md](./getting-started.md) for:
+- Installing `vp` on macOS/Linux (`curl -fsSL https://vite.plus | bash`) and Windows (`irm https://vite.plus/ps1 | iex`)
+- CI install via `setup-vp` GitHub Action
+- `vp env on` (managed) vs `vp env off` (system-first)
+- Pinning Node.js per project with `.node-version` and `vp env pin lts`
+- `VP_HOME` and `VP_NODE_DIST_MIRROR` for corporate mirrors
 
 ## Command Surface
 
@@ -27,14 +34,16 @@ See [commands.md](./commands.md) for:
 
 See [scaffolding.md](./scaffolding.md) for:
 - `vp create` with built-in templates (`vite:monorepo`, `vite:application`, `vite:library`, `vite:generator`)
+- Shorthand and remote templates (`vp create vite`, `vp create @tanstack/start`, `vp create github:user/repo`)
 - Organization templates via `@org/create` + `createConfig.templates` manifest
 - `create.defaultTemplate` for repo-level defaults
 
 See [migration.md](./migration.md) for:
 - Pre-requisites: upgrade to Vite 8+ and Vitest 4.1+ **before** running `vp migrate`
+- Running `vp migrate --no-interactive`
 - Rewriting `vitest` imports → `vite-plus/test` and `@vitest/browser/context` → `vite-plus/test/browser/context`
 - Removing `vite`, `vitest`, `tsdown`, `lint-staged` from dependencies after rewrite
-- Verifying with `vp install`, `vp check`, `vp test`, `vp build`
+- Verifying with `vp install && vp check && vp test && vp build`
 
 ## Unified Configuration
 
@@ -78,8 +87,18 @@ See [build-and-pack.md](./build-and-pack.md) for:
 See [package-management.md](./package-management.md) for:
 - Detection order (`packageManager`, `pnpm-workspace.yaml`, lockfiles…)
 - `vp install`, `vp add`, `vp add -D`, `vp remove`, `vp update`, `vp outdated`, `vp dedupe`, `vp why`, `vp info`
+- Global packages with `-g`
 - Lockfile flags: `--frozen-lockfile`, `--lockfile-only`, `--prefer-offline`
 - `vp rebuild` after Node.js version switches
+- `vp pm <cmd>` escape hatch for package-manager-specific behavior
+
+## Running Binaries
+
+See [binaries.md](./binaries.md) for:
+- `vpx <pkg>` — resolves locally first, downloads if missing
+- `vp exec` — strictly local `node_modules/.bin`
+- `vp dlx` — one-off remote execution, no install
+- `vpx -p <pkg> -c '<shell>'` for shell-mode and extra packages
 
 ## Vite Task & Caching
 
@@ -114,14 +133,16 @@ See [commit-hooks.md](./commit-hooks.md) for:
 ## Upgrading Vite+
 
 See [upgrading.md](./upgrading.md) for:
-- Updating the local `vite-plus` package
-- Updating the aliased core packages (`@voidzero-dev/vite-plus-core`, `@voidzero-dev/vite-plus-test`)
+- `vp upgrade` for the global `vp` binary
+- `vp update vite-plus` for the local package
+- Updating the aliased core packages: `vp update @voidzero-dev/vite-plus-core @voidzero-dev/vite-plus-test`
 - Verifying with `vp outdated`
+- `vp implode` to fully uninstall Vite+
 
 ## Agent / AI Workflow Integration
 
 See [agent-workflow.md](./agent-workflow.md) for:
 - `--agent <name>` on `vp create` / `vp migrate` to drop agent instruction files
-- The recommended validation loop for coding agents: `vp install`, `vp check`, `vp test`, `vp build`
+- The recommended validation loop for coding agents: `vp install && vp check && vp test && vp build`
 - Why `vp check` is the right loop for AI fix-it cycles (one command for fmt + lint + type-check)
 - Standardizing best practices for human and AI-assisted workflows

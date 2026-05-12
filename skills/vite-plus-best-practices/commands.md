@@ -16,37 +16,49 @@ The `vp` CLI has a fixed set of **built-in commands** that always run the bundle
 
 ## Categories
 
+### Start
+
+- `vp create` — scaffold a new project, monorepo, or app (see [scaffolding.md](./scaffolding.md))
+- `vp migrate` — move an existing project onto Vite+ (see [migration.md](./migration.md))
+- `vp config` — configure commit hooks and agent integration
+- `vp install` — install dependencies (see [package-management.md](./package-management.md))
+- `vp env` — manage Node.js versions (see [getting-started.md](./getting-started.md))
+
 ### Develop
 
-- `vp dev` — start the Vite dev server (see [task-runner.md](./task-runner.md) for non-cached behavior)
+- `vp dev` — start the Vite dev server
 - `vp check` — format + lint + type-check in one pass (see [check-lint-fmt.md](./check-lint-fmt.md))
 - `vp lint` — Oxlint only
 - `vp fmt` — Oxfmt only
-- `vp test` — Vitest runner (see [testing.md](./testing.md))
+- `vp test` — Vitest runner
 
 ### Execute
 
 - `vp run <task>` — run a task or `package.json` script with caching (see [task-runner.md](./task-runner.md))
 - `vpr <task>` — shorthand for `vp run`
+- `vpx <pkg>` — resolve a binary locally or download it (see [binaries.md](./binaries.md))
+- `vp exec <cmd>` — run from local `node_modules/.bin`
+- `vp dlx <pkg>` — one-off remote execution
 - `vp cache clean` — clear the task cache
 
 ### Build
 
-- `vp build` — application bundle (Vite 8 + Rolldown), see [build-and-pack.md](./build-and-pack.md)
-- `vp pack` — library / CLI bundle (tsdown)
+- `vp build` — application bundle (Vite + Rolldown)
+- `vp pack` — library / CLI bundle (tsdown), supports DTS + standalone exes
 - `vp preview` — preview the production build locally
 
 ### Manage Dependencies
 
-See [package-management.md](./package-management.md):
-`vp install`, `vp add`, `vp remove`, `vp update`, `vp dedupe`, `vp outdated`, `vp why`, `vp info`, `vp list`, `vp rebuild`, `vp link`, `vp unlink`.
+`vp add`, `vp remove`, `vp update`, `vp dedupe`, `vp outdated`, `vp why`, `vp info`, `vp list`, `vp rebuild`, `vp link`, `vp unlink`, `vp pm <cmd>` (raw passthrough).
 
-### Project
+### Maintain
 
-- `vp create` — scaffold a new project (see [scaffolding.md](./scaffolding.md))
-- `vp migrate` — move an existing project onto Vite+ (see [migration.md](./migration.md))
-- `vp config` — configure commit hooks (see [commit-hooks.md](./commit-hooks.md))
-- `vp staged` — run checks on staged files
+- `vp upgrade` — update the global `vp` binary
+- `vp implode` — remove `vp` and related data from the machine
+
+### Staged
+
+- `vp staged` — run checks on staged files (uses the `staged` block in `vite.config.ts`)
 
 ## Interactive Mode
 
@@ -58,7 +70,7 @@ Running `vp run` with no arguments opens an interactive task picker.
 
 ```bash
 vp help              # global overview
-vp help <command>    # per-command help
+vp help <command>    # per-command help, e.g. vp help migrate
 ```
 
-Always consult `vp help <command>` for the current flag surface — Vite+ is moving fast and flags evolve between releases.
+Always run `vp help` and `vp help <command>` before automating a command you have not used recently — flag surface evolves.
