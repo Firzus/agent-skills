@@ -1,11 +1,11 @@
 ---
-name: find-skills-local
+name: find-skills
 description: Helps users discover and recommend agent skills that are ALREADY installed locally on the host (Claude Code, Cursor, Codex, generic agents), without any network call or external CLI. Use when the user asks "how do I do X", "is there a skill for X", "find a skill", "what skills do I have", "list my skills", "which skills are installed", "do I have a skill that can…", or expresses interest in extending capabilities with what's already on disk. Strictly local: never runs `npx skills find`, `npx skills add`, `npx skills update`, or fetches from skills.sh.
 ---
 
 # Find Skills (Local-Only)
 
-This skill helps you discover which agent skills are **already installed** on the user's machine and recommend the right one for the task at hand. It is the local-only counterpart of `find-skills`: it never talks to the skills registry, never installs anything automatically, and never reaches the network.
+This skill helps you discover which agent skills are **already installed** on the user's machine and recommend the right one for the task at hand. It never talks to the skills registry, never installs anything automatically, and never reaches the network.
 
 ## When to Use This Skill
 
