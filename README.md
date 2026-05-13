@@ -13,6 +13,7 @@ Community-maintained [Agent Skills](https://skills.sh) for AI coding assistants 
 | [`vite-plus-best-practices`](./skills/vite-plus-best-practices) | Best practices for **Vite+** (`vp`), the unified web toolchain (Vite, Vitest, Oxlint, Oxfmt, Rolldown, tsdown, Vite Task). Covers the `vp` command surface, unified `vite.config.ts`, monorepo overrides, task caching, commit hooks, library packaging, and migration. |
 | [`imagegen`](./skills/imagegen) | Generates or edits images for the current project (website/game assets, UI/product mockups, wireframes, logos, photorealistic scenes, infographics) using **gpt-image-2** via the local **Codex CLI**, authenticated with the user's ChatGPT subscription. Includes a chroma-key workflow for transparent backgrounds. |
 | [`find-skills`](./skills/find-skills) | Discovers and recommends agent skills **already installed locally** (Claude Code, Cursor, Codex, generic agents) without any network call or external CLI. Use when the user asks "is there a skill for X", "what skills do I have", or "find a skill" and you want offline, registry-free matching. |
+| [`extract-theme`](./skills/extract-theme) | Extracts the visual theme of a public website (colors, typography, radius, fonts) and patches the project's `globals.css` with a **shadcn/ui + Tailwind CSS v4** compatible `@theme` block (and `.dark` overrides). Drives Chromium via the `chrome-devtools` MCP server (no Playwright). Use when the user wants to "extract the theme of \<url\>" or "scaffold a shadcn theme from \<site\>". |
 
 ## Install
 
