@@ -1,0 +1,131 @@
+# Sharp CLI Reference
+
+Use Sharp for deterministic local raster optimization. Review output paths before running them. Generate files directly in their final kept asset locations, update app references to use them, then delete old unoptimized raster files and unused generated variants so the project stays clean.
+
+## Installation policy
+
+In a target app, use the existing package manager if Sharp CLI is already available. If it is not installed, ask before adding dependencies.
+
+Common one-off options:
+
+```bash
+npx sharp-cli --help
+```
+
+or, when the project already uses npm scripts and adding a dev dependency is acceptable:
+
+```bash
+npm install --save-dev sharp-cli
+```
+
+Do not add a package manager, lockfile, or root dependency to documentation-only repositories just to use this skill.
+
+## Naming convention
+
+Use predictable names that encode width and format:
+
+```text
+source: public/images/hero.jpg
+outputs kept by the app:
+  public/images/hero-640.avif
+  public/images/hero-640.webp
+  public/images/hero-1280.avif
+  public/images/hero-1280.webp
+cleanup:
+  delete public/images/hero.jpg after references are patched, unless it is intentionally kept as a source asset
+```
+
+For art-directed crops, include the crop role:
+
+```text
+hero-mobile-640.avif
+hero-wide-1920.avif
+```
+
+## Quality defaults
+
+Start with these values, then visually verify:
+
+| Content type | AVIF | WebP | JPEG | PNG |
+| --- | ---: | ---: | ---: | --- |
+| Photos / hero images | 50 | 75 | 78 | Avoid unless needed |
+| Product images | 55 | 80 | 82 | Use for required transparency/detail |
+| UI screenshots | 60 | 82 | Avoid if text gets artifacts | Use for lossless fallback |
+| Thumbnails | 45 | 72 | 75 | Avoid unless needed |
+
+Rules:
+
+- Prefer AVIF/WebP for browser delivery.
+- Keep JPEG fallback for broad compatibility when needed.
+- Keep PNG for transparency, pixel art, screenshots with crisp text, or required losslessness.
+- Strip metadata for web delivery unless the user requires embedded metadata.
+
+## Resize policy
+
+Generate only widths that can be selected by the page layout. Avoid widths larger than the source. For tiny UI images such as 24px logos, favicons, badges, and avatars, prefer WebP or PNG and skip AVIF/JPEG unless there is a specific browser-support or SEO reason; codec overhead can exceed the savings for very small assets. For app icons referenced from `manifest.json` or favicon links, generate manifest-compatible PNG sizes such as 192 and 512 instead of generic responsive widths.
+
+Common width sets:
+
+```text
+Full-width hero: 640, 1024, 1280, 1536, 1920
+Content image: 320, 640, 960, 1280
+Card thumbnail: 320, 480, 640, 768
+Avatar/logo raster: exact rendered sizes plus 2x density if needed
+```
+
+## Example Sharp CLI commands
+
+Sharp CLI syntax can vary by installed version. Check `npx sharp-cli --help` in the target project before executing a generated plan.
+
+Typical pattern:
+
+```bash
+npx sharp-cli --input public/images/hero.jpg --output public/images/hero-1280.webp --format webp --quality 75 resize 1280
+```
+
+AVIF:
+
+```bash
+npx sharp-cli --input public/images/hero.jpg --output public/images/hero-1280.avif --format avif --quality 50 resize 1280
+```
+
+JPEG fallback:
+
+```bash
+npx sharp-cli --input public/images/hero.jpg --output public/images/hero-1280.jpg --format jpeg --quality 78 --mozjpeg resize 1280
+```
+
+PNG for transparency or lossless detail:
+
+```bash
+npx sharp-cli --input public/images/logo.png --output public/images/logo-512.png --format png --compressionLevel 9 resize 512
+```
+
+If the local `sharp-cli` version expects a different command order, adapt to its help output and keep the same intent: input, output, resize width, format, quality, no enlargement.
+
+## Batch command plan
+
+Use the bundled planner to create a reviewable list of commands from a scanner JSON report:
+
+```bash
+python skills/image-optimization/scripts/scan-images.py --root . --format json > image-scan.json
+python skills/image-optimization/scripts/generate-sharp-plan.py image-scan.json --widths 320,640,1024,1536
+```
+
+The planner prints commands only. Review them before running, then patch every safe runtime reference from the original image to the generated output paths. If you use `--out-dir` for experimentation, move only the chosen final assets into the app's asset structure and delete the temporary directory before finishing.
+
+## Visual QA
+
+After generating variants:
+
+- Compare original and optimized images at the displayed size and at high-DPI zoom.
+- Check gradients, skin tones, small text, transparency edges, and brand colors.
+- If AVIF artifacts are visible, increase quality or serve WebP/JPEG for that asset.
+- If screenshots become blurry, prefer WebP at higher quality or PNG fallback.
+
+## What not to optimize with Sharp
+
+- SVG source files that are already vector and small.
+- Animated GIF/WebP unless the task explicitly includes animation preservation.
+- Favicons and app icons without checking manifest requirements.
+- Images generated by a CDN at request time, unless the task is to create local fallbacks.

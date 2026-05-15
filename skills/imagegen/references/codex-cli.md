@@ -23,7 +23,7 @@ maintainer can understand the moving parts without re-deriving them.
 codex exec --enable image_generation --sandbox read-only [-i <ref> ...] "<prompt>"
 ```
 
-Two non-obvious details on `codex-cli` 0.111.0+:
+Two non-obvious details for the supported Codex CLI flow:
 
 ### `--enable image_generation` is required
 
@@ -118,14 +118,13 @@ specification, roughly:
 ```
 
 There is no `background`, `quality`, or `size` field surfaced to the
-caller. Even if there were, `gpt-image-2` itself does not honor
+caller. Even if there were, `gpt-image-2` model variants do not honor
 `background: "transparent"` — per the OpenAI API docs:
 
-> `gpt-image-2` and `gpt-image-2-2026-04-21` do not support transparent
-> backgrounds. Requests with `background` set to `"transparent"` will
-> return an error for these models; you must use `"opaque"` or
-> `"auto"` instead. Earlier models like `gpt-image-1.5` and
-> `gpt-image-1` do support it.
+> `gpt-image-2` models do not support transparent backgrounds. Requests
+> with `background` set to `"transparent"` return an error for these
+> models; use `"opaque"` or `"auto"` instead. Earlier models like
+> `gpt-image-1.5` and `gpt-image-1` do support it.
 
 Sources:
 
@@ -137,7 +136,7 @@ Sources:
 ### Mitigation: built-in chroma-key workflow
 
 `gen.sh --transparent` mirrors the workflow OpenAI shipped in their own
-imagegen system skill (PR #18852, merged April 2026):
+imagegen system skill:
 
 1. Append a strict chroma-key spec to the user's prompt: a single flat
    solid background color, no shadows, no gradients, the same color

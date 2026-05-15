@@ -151,11 +151,12 @@ Constraints: keep all subjects, objects, and composition unchanged;
 
 ## Background extraction / transparent cutout (`background-extraction`)
 
+Use this recipe with `gen.sh --transparent`. Keep the prompt focused on the subject; the script appends the chroma-key background instructions.
+
 ```text
 Use case: background-extraction
 Asset type: transparent-background cutout
-Primary request: produce a clean cutout of the subject with no background
-Constraints: keep the subject's edges crisp; no halo; no leftover
-  background pixels; output should be transparent where the background
-  used to be
+Primary request: produce a clean cutout of <subject>
+Subject: <subject details, silhouette, materials, and edge details>
+Constraints: crisp subject edges; no halo; no text; no watermark
 ```
