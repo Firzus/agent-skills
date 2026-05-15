@@ -16,7 +16,7 @@ curl -fsSL https://vite.plus | bash
 irm https://vite.plus/ps1 | iex
 ```
 
-Alternatively download [`vp-setup.exe`](https://setup.viteplus.dev/). It is not yet code-signed; click **More info → Run anyway** in SmartScreen.
+Alternatively download [`vp-setup.exe`](https://setup.viteplus.dev/). If SmartScreen warns about the installer, review the prompt and use **More info → Run anyway** only when you trust the source.
 
 ### CI
 

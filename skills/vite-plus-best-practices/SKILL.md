@@ -1,6 +1,6 @@
 ---
 name: vite-plus-best-practices
-description: Best practices for Vite+ (vp), the unified web toolchain combining Vite, Vitest, Oxlint, Oxfmt, Rolldown, tsdown, and Vite Task. Covers the vp command surface (dev, build, check, test, run, pack, install, env), unified vite.config.ts blocks, monorepo overrides, task caching, commit hooks, library packaging, and migrating existing Vite/Vitest/ESLint/Prettier projects. Use when the user mentions Vite+, vite-plus, the `vp` or `vpx` CLI, Oxlint/Oxfmt in a Vite context, tsdown, Vite Task, or asks to configure, migrate, scaffold, or upgrade a Vite+ project.
+description: Provides best practices for Vite+ (vp), the unified web toolchain combining Vite, Vitest, Oxlint, Oxfmt, Rolldown, tsdown, and Vite Task. Covers the vp command surface (dev, build, check, test, run, pack, install, env), unified vite.config.ts blocks, monorepo overrides, task caching, commit hooks, library packaging, and migrating existing Vite/Vitest/ESLint/Prettier projects. Use when the user mentions Vite+, vite-plus, the `vp` or `vpx` CLI, Oxlint/Oxfmt in a Vite context, tsdown, Vite Task, or asks to configure, migrate, scaffold, or upgrade a Vite+ project.
 ---
 
 # Vite+ Best Practices

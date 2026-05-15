@@ -265,16 +265,16 @@ The `codex` CLI reuses the logged-in ChatGPT session and exposes an `imagegen` t
 4. Decodes the largest matching blob and writes it to `--out` (or to a temp file when `--transparent` is used).
 5. When `--transparent` is set, runs `scripts/remove_chroma_key.py` over the temp file and writes the resulting RGBA PNG to `--out`.
 
-Two non-obvious details other wrappers get wrong on `codex-cli` 0.111.0+:
+Two non-obvious details other wrappers get wrong:
 
-- `--enable image_generation` is required; the feature is still under development and off by default.
+- `--enable image_generation` is required; the feature is gated and disabled unless explicitly enabled.
 - `--ephemeral` must not be used — ephemeral sessions aren't persisted, so the image payload has nowhere to live.
 
 Why the chroma-key dance instead of `background=transparent`:
 
 - The Codex CLI's `image_generation` tool ships with a minimal spec
   (`{"type":"image_generation","output_format":"png"}`) — no
-  `background`, `quality`, or `size` field is exposed today.
+  `background`, `quality`, or `size` field is exposed by the CLI wrapper.
 - Even if it were, `gpt-image-2` itself does not support
   `background=transparent`. Per the OpenAI API docs, only `gpt-image-1`
   and `gpt-image-1.5` honor that parameter, and reaching them requires
