@@ -32,7 +32,6 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 | [`image-optimization`](./skills/image-optimization) | Audits and optimizes web app images for performance, SEO, accessibility, responsive delivery, LCP handling, and framework-aware markup. |
 | [`find-skills`](./skills/find-skills) | Discovers and recommends skills already installed locally, without registry calls, network access, or automatic installs. |
 | [`extract-theme`](./skills/extract-theme) | Extracts colors, typography, radius, spacing, and shadows from a public website into shadcn/ui + Tailwind CSS v4 tokens. |
-| [`compact-shim`](./skills/compact-shim) | Cursor-only hand-off summary skill for `/compact`, `/condense`, and BYOK-friendly conversation compaction workflows. |
 
 ## Install
 
