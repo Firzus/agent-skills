@@ -31,6 +31,7 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 | [`imagegen`](./skills/imagegen) | Generates or edits project images with `gpt-image-2` through the local Codex CLI, including mockups, logos, photorealistic scenes, infographics, and transparent-background workflows. |
 | [`image-optimization`](./skills/image-optimization) | Audits and optimizes web app images for performance, SEO, accessibility, responsive delivery, LCP handling, and framework-aware markup. |
 | [`find-skills`](./skills/find-skills) | Discovers and recommends skills already installed locally, without registry calls, network access, or automatic installs. |
+| [`goal`](./skills/goal) | Keeps an AI coding agent working toward one explicit, verifiable completion condition across turns until it is met, cleared, or blocked. |
 | [`extract-theme`](./skills/extract-theme) | Extracts colors, typography, radius, spacing, and shadows from a public website into shadcn/ui + Tailwind CSS v4 tokens. |
 
 ## Install
