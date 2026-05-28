@@ -179,13 +179,13 @@ CODEX_ARGS=(exec --enable image_generation --sandbox read-only --skip-git-repo-c
 for ref in "${REFS[@]+"${REFS[@]}"}"; do
   CODEX_ARGS+=(-i "$ref")
 done
-CODEX_ARGS+=("$CODEX_PROMPT")
+CODEX_ARGS+=(-)
 
 set +e
 if command -v timeout >/dev/null 2>&1; then
-  timeout "${TIMEOUT_SEC}s" codex "${CODEX_ARGS[@]}" </dev/null >"$LOG_FILE" 2>&1
+  printf '%s' "$CODEX_PROMPT" | timeout "${TIMEOUT_SEC}s" codex "${CODEX_ARGS[@]}" >"$LOG_FILE" 2>&1
 else
-  codex "${CODEX_ARGS[@]}" </dev/null >"$LOG_FILE" 2>&1
+  printf '%s' "$CODEX_PROMPT" | codex "${CODEX_ARGS[@]}" >"$LOG_FILE" 2>&1
 fi
 CODEX_RC=$?
 set -e

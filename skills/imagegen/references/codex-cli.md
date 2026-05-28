@@ -17,11 +17,15 @@ maintainer can understand the moving parts without re-deriving them.
 
 ## Required flags on `codex exec`
 
-`gen.sh` builds this argv (one `-i` per `--ref`):
+`gen.sh` builds this argv (one `-i` per `--ref`) and pipes the prompt
+through stdin:
 
 ```bash
-codex exec --enable image_generation --sandbox read-only [-i <ref> ...] "<prompt>"
+printf '%s' "$prompt" | codex exec --enable image_generation --sandbox read-only [-i <ref> ...] -
 ```
+
+Piping the prompt avoids Windows shell shims corrupting multi-line prompt
+arguments before they reach `codex`.
 
 Two non-obvious details for the supported Codex CLI flow:
 
