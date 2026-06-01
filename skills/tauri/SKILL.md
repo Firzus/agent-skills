@@ -68,12 +68,18 @@ fn main() {
   the invoke handler and includes the command.
 - Use owned parameters in async commands. Do not use borrowed inputs such as
   `&str` in async command signatures.
+- Keep the IPC boundary owned and serializable, then borrow inside helper
+  functions (`&str`, `&[T]`, `&T`) to avoid needless clones in command logic.
 - Command arguments must implement `serde::Deserialize`; return values and
   errors must implement `serde::Serialize`.
 - Prefer `Result<T, AppError>` for fallible commands. Derive or implement
   `Serialize` for the error, commonly by serializing `self.to_string()`.
+- Avoid `unwrap()` and `expect()` in command and runtime paths that can fail.
+  Use `?`, `map_err`, `ok_or_else`, or a frontend-safe `AppError` instead.
 - Do not block the main thread. Use async I/O, `tokio::spawn`, or
   `tauri::async_runtime::spawn` for long work.
+- Values moved into spawned tasks or held across `.await` usually need
+  `Send + Sync + 'static`; model state and errors accordingly.
 - Remember the JS/Rust naming boundary: frontend args are camelCase while Rust
   fields are usually snake_case.
 
@@ -99,6 +105,9 @@ See [permissions.md](permissions.md) for capability examples.
 - Manage shared state with `.manage(...)` and retrieve it with the exact same
   type in `State<T>`. For mutable shared data, use `Mutex`, `RwLock`, or an
   async-aware primitive that matches the access pattern.
+- Prefer thread-safe state primitives such as `Arc`, `Mutex`, `RwLock`,
+  `OnceLock`, or `LazyLock` for shared backend data. Avoid `Rc`, `RefCell`, and
+  holding locks across slow I/O in Tauri command paths.
 - Use events for fire-and-forget notifications from Rust to frontend. Clean up
   JS listeners when components unmount.
 - Use `tauri::ipc::Channel<T>` for high-frequency or typed streaming.
@@ -176,9 +185,15 @@ Default to the layered workflow in [debugging.md](debugging.md):
 - `src-tauri/src/main.rs` is a passthrough and `lib.rs` owns runtime setup.
 - Commands are registered directly or through the project's invoke-handler
   abstraction.
-- Async commands use owned parameters and serializable return/error types.
+- Async commands use owned IPC parameters, serializable return/error types, and
+  borrowed helper APIs where possible.
+- Fallible command and runtime paths return `Result` instead of panicking with
+  `unwrap()` or `expect()`.
+- Shared state, spawned tasks, and async command internals use thread-safe
+  primitives and satisfy required `Send + Sync + 'static` bounds.
 - Capabilities include every used plugin permission.
 - `tauri.conf.json` dev/build paths match actual frontend scripts.
-- Frontend, Rust, and Tauri-shell checks have been run or explicitly scoped out.
+- Frontend, Rust (`cargo check`/`cargo clippy` where compatible), and
+  Tauri-shell checks have been run or explicitly scoped out.
 - Debug runs preserve logs from both frontend and Rust, and any CDP claim is
   backed by a verified endpoint.

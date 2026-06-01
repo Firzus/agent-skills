@@ -14,6 +14,7 @@ Common check categories:
 
 ```bash
 cargo check --manifest-path src-tauri/Cargo.toml
+cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features --locked -- -D warnings
 <existing-frontend-test-command>
 <existing-frontend-build-command>
 <existing-tauri-dev-command>
@@ -21,7 +22,9 @@ cargo check --manifest-path src-tauri/Cargo.toml
 ```
 
 Replace every placeholder with the actual project command, or skip that category
-with a note when the project has no matching command.
+with a note when the project has no matching command. If the project cannot use
+`--locked` or `--all-features`, adapt to the existing Cargo workflow and report
+the exact command that was run.
 
 ## Frontend Layer
 
@@ -38,9 +41,41 @@ Use Rust checks for backend and command logic:
 
 - Run `cargo check --manifest-path src-tauri/Cargo.toml` after command, state, or
   plugin changes.
+- Run `cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets
+  --all-features --locked -- -D warnings` when compatible with the project.
+  Pay attention to Tauri-relevant lints such as `redundant_clone`,
+  `clone_on_copy`, `needless_collect`, and `large_enum_variant`.
 - Add Rust unit tests for pure logic that does not require a webview.
 - Keep command arguments and return types serializable so compile checks catch
   IPC boundary mistakes early.
+- Exercise command error paths. A command returning `Result<T, AppError>` should
+  have tests for expected failures in the pure helper layer, and the error text
+  or tagged shape should be stable enough for the frontend to handle.
+- Avoid `unwrap()` and `expect()` in production command paths. In tests, prefer
+  assertions that show the unexpected error, such as
+  `assert!(result.is_ok(), "unexpected error: {result:?}")`.
+
+Keep tests close to the code they explain. Use descriptive names for backend
+logic under `src-tauri`, and split independent behaviors into separate tests:
+
+```rust
+#[cfg(test)]
+mod parse_settings {
+    use super::*;
+
+    #[test]
+    fn returns_error_when_json_is_invalid() {
+        let error = parse_settings("{").unwrap_err();
+
+        assert_eq!(error.to_string(), "invalid settings JSON");
+    }
+}
+```
+
+For command functions, prefer extracting pure helpers that accept borrowed
+inputs (`&str`, `&[T]`, `&Path`) and can be tested without a webview. Leave the
+`#[tauri::command]` wrapper focused on deserializing owned IPC inputs, retrieving
+state, and converting errors into the serialized IPC shape.
 
 ## Tauri Shell Layer
 
