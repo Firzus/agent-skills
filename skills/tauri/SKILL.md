@@ -142,7 +142,10 @@ Default to the layered workflow in [debugging.md](debugging.md):
 5. Fall back to deterministic instrumentation: console forwarding,
    `tauri-plugin-log`, test-only commands, screenshots, event traces, and saved
    debug artifacts.
-6. Stop every dev server or background Tauri process you start, including
+6. For automated form entry inside the Tauri WebView, use the input-injection
+   workflow in [debugging.md](debugging.md); a normal browser opened at
+   `build.devUrl` cannot validate IPC-backed commands.
+7. Stop every dev server or background Tauri process you start, including
    orphaned app executables after partial launch failures.
 
 ## Common Failure Playbooks

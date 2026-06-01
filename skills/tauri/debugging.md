@@ -84,6 +84,49 @@ need to exclude `DEV_TOOLS` from blocked flags during `debug_assertions`.
 7. Save ad hoc debug logs under `.cursor/` and remove temporary artifacts when
    they are no longer useful.
 
+## WebView Input Injection
+
+When automating text entry in a Tauri WebView, target the real WebView process,
+not a separate Chrome tab opened at `build.devUrl`. The browser tab is useful for
+frontend-only checks, but it does not provide the Tauri IPC bridge exposed by the
+desktop shell.
+
+Use this order:
+
+1. Verify CDP access to the Tauri WebView with `scripts/probe-cdp.py`.
+2. Select the page target whose URL matches `build.devUrl` and whose title or
+   window state matches the desktop app.
+3. Focus the element before typing. Prefer user-level CDP events or Playwright
+   `locator.fill()` when available.
+4. If direct value assignment is needed, update the native value setter and
+   dispatch `input` and `change` events so controlled components observe it:
+
+```js
+const element = document.querySelector(selector);
+element.focus();
+const setter = Object.getOwnPropertyDescriptor(
+  element instanceof HTMLTextAreaElement
+    ? HTMLTextAreaElement.prototype
+    : HTMLInputElement.prototype,
+  "value",
+).set;
+setter.call(element, text);
+element.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: text }));
+element.dispatchEvent(new Event("change", { bubbles: true }));
+```
+
+5. Verify the app state changed through visible DOM output, frontend logs, or a
+   Tauri-backed command result. Do not treat a changed DOM property alone as
+   proof that the framework state or IPC path updated.
+
+For chat boxes, also check whether the control is an `<input>`, `<textarea>`, or
+`contenteditable` element. For `contenteditable`, focus it and use real keyboard
+or CDP `Input.dispatchKeyEvent` events; plain `.value = ...` will not work.
+
+If no Tauri WebView CDP endpoint is available, report that IPC-backed chat
+commands were not automated and use fallback instrumentation instead of testing
+them through Chrome at `localhost`.
+
 ## Optional CDP Probe
 
 Use a CDP probe only when the app or platform has been configured for it. Do not
