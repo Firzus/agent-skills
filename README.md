@@ -32,7 +32,6 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 | [`vite-plus-best-practices`](./skills/vite-plus-best-practices) | Best practices for Vite+ (`vp`), including commands, unified `vite.config.ts`, migrations, testing, monorepos, commit hooks, and library packaging. |
 | [`imagegen`](./skills/imagegen) | Generates or edits project images with `gpt-image-2` through the local Codex CLI, including mockups, logos, photorealistic scenes, infographics, and transparent-background workflows. |
 | [`image-optimization`](./skills/image-optimization) | Audits and optimizes web app images for performance, SEO, accessibility, responsive delivery, LCP handling, and framework-aware markup. |
-| [`find-skills`](./skills/find-skills) | Discovers and recommends skills already installed locally, without registry calls, network access, or automatic installs. |
 | [`extract-theme`](./skills/extract-theme) | Extracts colors, typography, radius, spacing, and shadows from a public website into shadcn/ui + Tailwind CSS v4 tokens. |
 | [`shaders`](./skills/shaders) | Builds GPU-accelerated visual effects in React/Next.js with the `shaders` npm package (shaders.com): composition, masking, dynamic prop drivers, shape/SDF effects, SSR safety, and performance budget. |
 | [`tauri`](./skills/tauri) | Guides Tauri v2+ app development, IPC, capabilities, plugin permissions, mobile-safe structure, and automated desktop debugging workflows. |

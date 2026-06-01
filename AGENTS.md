@@ -24,8 +24,7 @@ Technical writer + skill author for AI coding agents. Treat each `skills/<name>/
 └── skills/
     ├── vite-plus-best-practices/   # SKILL.md + topical reference .md files
     ├── imagegen/                   # SKILL.md + references/ + scripts/ (gen.sh, *.py)
-    ├── extract-theme/              # SKILL.md + extraction-recipes.md + output-format.md
-    └── find-skills/                # SKILL.md (local-only skill discovery)
+    └── extract-theme/              # SKILL.md + extraction-recipes.md + output-format.md
 ```
 
 Each skill folder follows the [progressive disclosure](https://skills.sh/docs) layout:
@@ -57,7 +56,7 @@ head -n 5 skills/*/SKILL.md
 wc -l skills/*/SKILL.md
 
 # Render-check a Markdown file locally (if pandoc installed)  (unverified)
-pandoc skills/find-skills/SKILL.md -t plain | head
+pandoc skills/vite-plus-best-practices/SKILL.md -t plain | head
 ```
 
 Skill install / distribution commands are documented in `README.md` and run by end users — do not execute them from this repo:
@@ -70,7 +69,7 @@ npx skills add Firzus/agent-skills --skill <skill-name>
 
 ## Conventions & Patterns
 
-- **Filenames:** kebab-case (`vite-plus-best-practices`, `find-skills`). Skill folder name must match the `name:` field in the SKILL.md frontmatter.
+- **Filenames:** kebab-case (`vite-plus-best-practices`, `image-optimization`). Skill folder name must match the `name:` field in the SKILL.md frontmatter.
 - **SKILL.md frontmatter:** required keys are `name` and `description`. Use a YAML block scalar (`description: >-`) when the description spans multiple lines or contains quotes.
 - **SKILL.md body:** Markdown, second-person voice aimed at the agent ("Use this skill when…"). Keep under ~500 lines; offload detail into sibling `.md` files referenced by relative path.
 - **Reference files:** topical, single-purpose, linked from `SKILL.md` with relative paths (e.g. `[commands.md](./commands.md)`).
