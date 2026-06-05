@@ -34,6 +34,7 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 | [`extract-theme`](./skills/extract-theme) | Extracts colors, typography, radius, spacing, and shadows from a public website into shadcn/ui + Tailwind CSS v4 tokens. |
 | [`shaders`](./skills/shaders) | Builds GPU-accelerated visual effects in React/Next.js with the `shaders` npm package (shaders.com): composition, masking, dynamic prop drivers, shape/SDF effects, SSR safety, and performance budget. |
 | [`tauri`](./skills/tauri) | Guides Tauri v2+ app development, IPC, capabilities, plugin permissions, mobile-safe structure, and automated desktop debugging workflows. |
+| [`workflow`](./skills/workflow) | UltraCode-style highest-effort mode for large or interconnected tasks: deep upfront reasoning plus dynamic orchestration of parallel sub-agents, with result synthesis and git checkpoints. |
 
 ## Install
 
