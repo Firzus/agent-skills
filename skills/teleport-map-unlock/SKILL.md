@@ -175,4 +175,6 @@ with symptom → root cause → prevention.
 - `save-persistence` — unlock flags, CanSave gate, atomic writes.
 - `traversal-system` — the teleport-vs-traversal tension; earned-only
   as the shared principle.
+- `quest-system` — priority-quest teleport locks; quest-gated waypoint
+  visibility; navigation handoff.
 - `camera-system` — warp notification, post-teleport framing.

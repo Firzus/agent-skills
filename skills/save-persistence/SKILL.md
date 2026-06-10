@@ -141,10 +141,11 @@ tables in [architecture.md](./architecture.md).
 ## Failure modes
 
 The 14 classic save bugs (direct runtime serialization, unstable IDs,
-non-atomic writes, the single-slot death loop, unversioned saves, saves
-during transitions, Skyrim-style bloat, settings traveling in cloud
-saves, silent cloud conflicts, cross-platform divergence, main-thread
-save hitches, loading without validation, second-load divergence) are
+non-atomic writes, the single-slot death loop, unhandled save scumming,
+unversioned saves, saves during transitions, Skyrim-style bloat,
+settings traveling in cloud saves, silent cloud conflicts,
+cross-platform divergence, main-thread save hitches, loading without
+validation, second-load divergence) are
 cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
 prevention.
 
@@ -152,6 +153,10 @@ prevention.
 
 - `scene-flow-manager` — owns `CanSave` and the transition save
   triggers; load runs through `ResetSession`.
+- `quest-system` — quest state and the shared world-state store (flags,
+  facts) this store serializes.
+- `progression-economy` — atomic save writes as the solo transaction
+  boundary; minimal persisted derivable state.
 - `open-world-streaming` / `enemy-ai-framework` / `minimap-worldmap` —
   consumers of the world-state store (cell deltas, revival flags, fog).
 - `menu-ui-manager` — the settings split and slot/load UI.

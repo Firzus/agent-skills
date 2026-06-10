@@ -154,5 +154,11 @@ prevention.
 - `character-controller` / `combat-system` — the body: AI intents drive
   these; staggers and hit events flow back to the brain.
 - `open-world-streaming` — AI residency at cell borders, the bubble model.
+- `world-time-weather` — time divisions and weather flags as blackboard
+  inputs; night spawn windows.
+- `adaptive-audio` — the aggro/threat ladder triggers combat music.
+- `loot-drop-system` — death hands off to the drop pipeline; tier
+  substitution via the spawn director.
+- `coop-session` — server-owned AI, per-player threat tables.
 - `game-architecture-patterns` — State (HSM), Type Object (archetypes),
   Event Queue (stimuli), Update Method (LoD scheduling) theory.

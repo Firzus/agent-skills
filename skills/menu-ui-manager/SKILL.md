@@ -150,7 +150,9 @@ root cause → prevention.
 
 - `hud-system` — the Game layer below these stacks; shares the glyph
   service and safe-area root.
-- `scene-flow-manager` (future) — boot → title → game context switches;
+- `adaptive-audio` — the pause mix snapshot and audio-duck contract
+  behind the refcounted pause service.
+- `scene-flow-manager` — boot → title → game context switches;
   this skill owns in-context screens.
 - `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine UI
   doctrines (UITK+MVP, CommonUI+MVVM) assumed here.

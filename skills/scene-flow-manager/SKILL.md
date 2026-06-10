@@ -139,7 +139,9 @@ cutscenes not restoring state, editor-vs-build divergence) are cataloged in
   fast-travel gates reuse this skill's transition machinery.
 - `menu-ui-manager` — screens within a context; the router clears its
   stacks during context teardown.
-- `save-persistence` (future) — the save store this flow reads/writes at
-  transitions.
+- `save-persistence` — the save store this flow reads/writes at
+  transitions; owns the `CanSave` gate contract.
+- `cinematic-system` — the cutscene side of the Cinematic context
+  (preload gates, world staging, state restore).
 - `game-architecture-patterns` — State (the FSM), Service Locator
   (persistent managers), Event Queue theory.

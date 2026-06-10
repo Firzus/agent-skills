@@ -20,9 +20,9 @@ description: >-
 
 Build the dialogue layer of an open-world game — graph, runtime,
 presentation, and the authoring/VO pipeline. In-world dialogue focus:
-cutscenes are out of scope; procedural dialogue cameras live in
-`camera-system`. References: BotW/TotK (datamined EventFlow + MSBT)
-and Genshin Impact (datamined Dialog/Talk configs).
+cutscenes are out of scope (`cinematic-system`); procedural dialogue
+cameras live in `camera-system`. References: BotW/TotK (datamined
+EventFlow + MSBT) and Genshin Impact (datamined Dialog/Talk configs).
 
 ## The architecture rule
 
@@ -176,6 +176,8 @@ in [pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
 
 - `quest-system` — end-of-talk as a quest event; the shared-NPC lock;
   priority quests.
+- `cinematic-system` — cutscenes host the facial/lip-sync production
+  built here; the session-scope (finally-restore) discipline is shared.
 - `camera-system` — the dialogue camera consumes session events
   (180° rule, procedural framing live there).
 - `hud-system` — HUD hiding during sessions; subtitle rendering.

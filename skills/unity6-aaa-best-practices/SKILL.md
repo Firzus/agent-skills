@@ -23,8 +23,9 @@ defaults changed in Unity 6: the **unlearn list** below corrects habits from
 older Unity versions that are now wrong.
 
 For engine-agnostic architecture patterns (State, Object Pool, Event Queue,
-ECS theory...), use the `game-architecture-patterns` skill; this skill covers
-what is Unity-specific.
+ECS theory...), use the `game-architecture-patterns` skill; for implementing
+Figma designs as UI Toolkit interfaces, use the `figma-to-unity` skill. This
+skill covers what is Unity-specific.
 
 ## Unlearn list (old habits that are now wrong)
 

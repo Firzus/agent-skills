@@ -188,7 +188,10 @@ cause → prevention.
 - `enemy-ai-framework` — the aggro/threat link triggering combat
   music.
 - `dialogue-system` — VO ducking, the dialogue bus.
-- `menu-ui-manager` — the pause mix snapshot contract.
+- `menu-ui-manager` — the pause mix snapshot contract (refcounted
+  pause + audio duck).
+- `scene-flow-manager` — context transitions own the audio fades and
+  bootstrap residency of the audio services.
 - `camera-system` — the arbitrated-stack pattern (vcams) this music
   system mirrors; listener orientation.
 - `open-world-streaming` — audio bank/stream residency.

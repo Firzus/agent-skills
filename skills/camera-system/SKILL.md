@@ -23,7 +23,7 @@ alongside `character-controller` and `combat-system`. References: John
 Nesky's *50 Game Camera Mistakes* (GDC, Journey), God of War 2018's
 one-shot camera, Genshin Impact, and Cinemachine as the reference
 implementation. Excluded: authored cutscene cameras (timeline —
-`scene-flow-manager`) and FPS cameras.
+`cinematic-system`) and FPS cameras.
 
 ## The architecture rule
 
@@ -87,7 +87,7 @@ Tier 4 — Polish & cinematics
 - [ ] Procedural dialogue cameras: shot-reverse-shot, 180-degree rule,
       shot-quality validation with graceful fallbacks
 - [ ] Cinematic takeover = push/pop with snapshot/restore (the
-      scene-flow contract); FOV-as-feel (sprint widen, blended)
+      cinematic-system contract); FOV-as-feel (sprint widen, blended)
 - [ ] Photo mode: free cam vcam + constraints (radius, tilt limits,
       roll), pause + HUD hide integration
 - [ ] Accessibility baseline: FOV slider, shake/bob/blur toggles,
@@ -142,7 +142,11 @@ root cause → prevention.
   the camera-relative input reframe problem.
 - `combat-system` — hit-stop interaction (shake runs on unscaled time),
   hit feedback impulses.
-- `scene-flow-manager` — the cutscene snapshot/restore contract.
+- `cinematic-system` — the timeline takeover and Brain handoff; the
+  cutscene snapshot/restore contract.
+- `dialogue-system` — dialogue sessions consume the procedural
+  shot-reverse-shot cameras built here.
+- `scene-flow-manager` — camera state across context transitions.
 - `hud-system` — photo-mode HUD hiding, reticle clearance.
 - `game-architecture-patterns` — State (vcam contexts), Event Queue
   (impulse bus) theory.

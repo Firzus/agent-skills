@@ -182,6 +182,10 @@ hazards, the 4 AM/DST reset class) are cataloged in
 - `open-world-streaming` — region map residency; managers always loaded.
 - `enemy-ai-framework` — time divisions and weather flags as AI
   blackboard inputs; night spawn windows.
+- `quest-system` — time-gated quests and quest-owned weather override
+  handles; daily reset alignment.
+- `adaptive-audio` — weather/time drive ambient beds and music
+  variants; the override-stack pattern shared.
 - `save-persistence` — serializing clock, schedule, and scheduler
   timestamps; anti-save-scum determinism.
 - `scene-flow-manager` — bootstrap residency for the services.

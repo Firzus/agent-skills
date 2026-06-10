@@ -166,6 +166,10 @@ prevention.
 
 - `progression-economy` — server-authoritative transactions and
   idempotency keys reused for every network op.
+- `character-controller` — the deterministic tick + intent + snapshot
+  structure that prediction/reconciliation build on.
+- `save-persistence` — the world-state store feeding the late-join
+  snapshot; server-authoritative as one of its four save models.
 - `quest-system` — host-only progression, the world-state store the
   late-join snapshot reads from.
 - `world-time-weather` — host-clock authority, seed replication.

@@ -18,8 +18,8 @@ description: >-
 
 Build the in-game HUD layer of an action game. References: Genshin Impact /
 Granblue Fantasy: Relink (party action-RPG HUDs), God of War 2018 / Horizon
-(dynamic minimalist HUDs). Excluded (separate skills): minimap/world map,
-full-screen menus.
+(dynamic minimalist HUDs). Excluded (separate skills): minimap/world map
+(`minimap-worldmap`), full-screen menus (`menu-ui-manager`).
 
 ## The architecture rule
 
@@ -131,6 +131,12 @@ prevention.
 
 - `combat-system` — emits the HitEvents/gauge events this HUD consumes
   (damage numbers, stun gauges, boss states).
+- `menu-ui-manager` — the screen-stack layers above this Game(HUD) layer;
+  shares the glyph service and safe-area root.
+- `minimap-worldmap` — the minimap lives in this layer system; the quest
+  tracker consumes the same marker registry.
+- `quest-system` — quest tracker and objective updates derive from its
+  events.
 - `game-architecture-patterns` — Event Queue and Observer theory behind the
   read-only consumer model.
 - `unity6-aaa-best-practices` (UITK + tokens + MVP) /

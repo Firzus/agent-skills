@@ -116,8 +116,9 @@ rewrite:
 3. **Snapshotable state:** controller state (position, velocity, state id,
    timers) serializable in one struct.
 
-Prediction/rollback/reconciliation belong to a future netcode skill; UE's
-CMC gives them free if you respect its saved-move cycle.
+Prediction/rollback/reconciliation are covered at architecture level in
+`coop-session`; UE's CMC gives them free if you respect its saved-move
+cycle.
 
 ## Engine mapping
 
@@ -143,6 +144,14 @@ prevention.
 
 ## Related skills
 
+- `traversal-system` — the layer above: world traversability data, the
+  verb catalog, and the stamina economy driving these movement states.
+- `combat-system` — the attack graph plugs into this movement HSM as the
+  combat state's content.
+- `camera-system` — the one-clock interpolation contract (the #1 jitter
+  source) and camera-relative input.
+- `coop-session` — prediction/reconciliation built on the deterministic
+  tick + intent + snapshot structure above.
 - `open-world-streaming` — the controller side of streaming (never simulate
   over missing collision) is covered there and in pitfalls.md.
 - `game-architecture-patterns` — State (HSM), Component, Update Method

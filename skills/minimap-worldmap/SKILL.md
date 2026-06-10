@@ -21,7 +21,8 @@ Build the two map surfaces of an open-world game — the HUD minimap and the
 full-screen world map — over one shared data core. References: Genshin
 Impact (the richest shipped implementation) and Zelda BotW/TotK (the most
 elegant pipeline). Excluded (separate skills): the quest tracker HUD
-(`hud-system`), teleport streaming mechanics (`open-world-streaming`).
+(`hud-system`), the unlock data model and teleport sequence
+(`teleport-map-unlock`), streaming mechanics (`open-world-streaming`).
 
 ## The two architecture rules
 
@@ -63,7 +64,7 @@ Tier 2 — Markers & reveal
 - [ ] Region-based fog of war: stable region IDs (GUIDs, never indexes),
       reveal events -> save immediately, animated reveal
 - [ ] Fast-travel: waypoint markers carry a teleport payload; map raises
-      the request, streaming handles it (see open-world-streaming)
+      the request, teleport-map-unlock's sequence executes it
 Tier 3 — Scale & depth
 - [ ] Tiled zoom pyramid (3-5 levels), stream tiles by visible rect
 - [ ] Player pins: world coords + layer ID (never map pixels), cap with
@@ -127,6 +128,12 @@ markers, aspect-ratio offsets, save-size creep) are cataloged in
 
 - `hud-system` — the minimap lives in the HUD layer system; quest tracker
   consumes the same marker registry.
+- `teleport-map-unlock` — owns the unlock *data model* (region flags,
+  waypoint registry, teleport sequence); this skill owns the display.
+- `quest-system` — quest markers derive from objective state into the
+  shared marker registry.
+- `save-persistence` — fog-of-war state and pins persist through the
+  world-state store (the fog-reverts-on-load bug class).
 - `open-world-streaming` — fast-travel requests raised by the map are
   fulfilled by the streaming gate; map tiles stream like world cells.
 - `game-architecture-patterns` — Observer (registry events), Type Object

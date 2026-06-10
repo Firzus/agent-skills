@@ -19,7 +19,7 @@ description: >-
 # Quest System
 
 Build the quest layer of an open-world game — data model + runtime +
-authoring; dialogue is a consumer interface (a separate concern).
+authoring; dialogue is a consumer interface (`dialogue-system`).
 References: BotW/TotK (the datamined flag-driven school) and Genshin
 Impact (the datamined condition/exec school), with Witcher 3's REDkit
 and Skyrim's Creation Kit as authoring references.
@@ -172,6 +172,8 @@ in [pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
 
 ## Related skills
 
+- `dialogue-system` — end-of-talk events advance objectives; the
+  shared-NPC lock is arbitrated here.
 - `save-persistence` — the world-state store, versioned quest state,
   CanSave gates around step actions.
 - `world-time-weather` — time-gated quests, the reset scheduler,
