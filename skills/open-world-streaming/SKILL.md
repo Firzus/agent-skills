@@ -132,6 +132,15 @@ re-read it when debugging.
 
 ## Related skills
 
+- `teleport-map-unlock` — fast travel is a streaming jump: it awaits the
+  residency gates defined here.
+- `scene-flow-manager` — context transitions (boot/title/world) around
+  this in-world spatial streaming; fast-travel loading screens.
+- `save-persistence` — the persistent world-state store for object state
+  across unload/reload (Tier 4).
+- `character-controller` / `enemy-ai-framework` — the simulation side of
+  streaming guards (never simulate over missing collision, AI residency
+  at cell borders).
 - `game-architecture-patterns` — Spatial Partition, Object Pool, Dirty Flag
   theory behind these systems.
 - `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine-wide

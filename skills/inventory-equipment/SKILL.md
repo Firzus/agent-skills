@@ -169,6 +169,8 @@ and real incidents (the Diablo IV 2023 trade dupe).
   aggregation pipeline, idempotent transactions, overflow-to-mail.
 - `loot-drop-system` — where instances come from (roll-at-spawn),
   claim gating.
+- `coop-session` — replicated inventories follow its server-hard
+  authority rule (persistence is never client-trusted).
 - `save-persistence` — instance GUIDs, versioned schemas, migration
   on load.
 - `menu-ui-manager` — inventory screens, focus, batch-select UX.

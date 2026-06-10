@@ -175,5 +175,9 @@ symptom → root cause → prevention and real incidents.
   claim writes.
 - `world-time-weather` — daily resets, the per-node real-time clocks.
 - `enemy-ai-framework` — tier substitution via the spawn director.
+- `coop-session` — the host-only/instanced/shared matrix is the loot
+  side of its content rules.
+- `inventory-equipment` — rolled instances (roll-at-spawn) land in its
+  item model.
 - `open-world-streaming` — drop lifetime vs cell lifecycle.
 - `hud-system` — aggregated pickup toasts, claim UI, rarity beams.

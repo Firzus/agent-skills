@@ -165,6 +165,10 @@ streaming integration, save/load mid-traversal) are cataloged in
 
 - `character-controller` — the movement HSM, stamina rates, mantle
   cascade, and intent pipeline this layer drives.
+- `world-time-weather` — weather as the traversal valve (rain slip,
+  updrafts); the wet-surface state consumed by climbing.
+- `teleport-map-unlock` — the teleport-vs-traversal tension; earned-only
+  unlocks as the shared anti-cannibalization principle.
 - `open-world-streaming` — verbs check world-data residency; traversal
   speed defines streaming radii.
 - `camera-system` — per-verb camera presets.

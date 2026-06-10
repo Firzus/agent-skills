@@ -112,6 +112,14 @@ the structured cards.
 - [ ] Re-check related patterns for follow-on structure
 ```
 
+## Related skills
+
+- `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — the
+  engine-specific layer above these engine-agnostic patterns.
+- The system blueprints (`character-controller`, `combat-system`,
+  `open-world-streaming`, `save-persistence`, `quest-system`, and the
+  rest of the family) reference these patterns as their theory backbone.
+
 ## Source
 
 Backbone: Robert Nystrom, _Game Programming Patterns_

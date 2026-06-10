@@ -176,5 +176,7 @@ world-change desync, the replay-context problem) are cataloged in
   single source of truth for world changes.
 - `open-world-streaming` — preload gates, streaming modes per scene.
 - `hud-system` — HUD hide channel, subtitle safe areas.
+- `coop-session` — host cutscenes as per-player presentation (guests
+  keep playing).
 - `save-persistence` — seen/completion flag separation, auto-save
   after cutscenes.

@@ -20,8 +20,8 @@ Build the melee combat core of an action game. Primary reference: **Granblue
 Fantasy: Relink** (combo chains in the Monster Hunter lineage). This skill is
 the engine-agnostic blueprint: the attack graph, hit detection, damage
 pipeline, stagger economy, defensive kit, feel numbers, and failure modes.
-Excluded (separate skills): enemy AI, combat camera, stats/equipment
-progression.
+Excluded (separate skills): enemy AI (`enemy-ai-framework`), combat camera
+(`camera-system`), stats/equipment progression (`progression-economy`).
 
 ## Pick your philosophy first
 
@@ -133,6 +133,12 @@ walls, tracking overshoot, graph/state desync) are cataloged in
 
 - `character-controller` — the movement HSM this graph plugs into; shared
   input-buffer principles (intent + timestamp + context).
+- `enemy-ai-framework` — the AI brain drives this same combat system via
+  intents; attack tokens pace the enemies using these attacks.
+- `camera-system` — hit-stop interaction (shake on unscaled time),
+  lock-on and combat framing.
+- `hud-system` — consumes the HitEvent pipeline (damage numbers, stun
+  gauges, boss state UI).
 - `game-architecture-patterns` — State, Type Object (attack data), Event
   Queue (hit events), Update Method theory.
 - `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine-wide

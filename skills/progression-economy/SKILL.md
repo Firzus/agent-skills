@@ -180,6 +180,12 @@ prevention and real incidents.
   regen and season boundaries.
 - `quest-system` — typed objective events reused by BP missions;
   idempotent reward grants.
+- `loot-drop-system` — claims spend the energy currency defined here;
+  shares the idempotent-grant discipline.
+- `inventory-equipment` — item stats ride these curve tables; the stat
+  aggregation pipeline recomputes on equip.
+- `coop-session` — reuses the server-authoritative transaction model
+  and idempotency keys for every network op.
 - `hud-system` — wallet/energy display contracts (client predicts,
   server owns).
 - `game-architecture-patterns` — Type Object (currency/item defs),
