@@ -123,7 +123,7 @@ CMC gives them free if you respect its saved-move cycle.
 
 | Generic block | Unity 6 | UE5 (5.4+) |
 | --- | --- | --- |
-| Solver | Built-in `CharacterController.Move` (limits: no capsule rotation, no platforms, no auto slope-slide) · **KCC** (de-facto standard pattern, support frozen) · `com.unity.charactercontroller` (DOTS) | **CMC** `PhysWalking/Falling/...` + `SafeMoveUpdatedComponent` · **Mover 2.0** (beta in 5.7, not yet production default) |
+| Solver | Built-in `CharacterController.Move` (collide-and-slide included, but: no capsule rotation, no platforms, no collision callbacks beyond `OnControllerColliderHit`, outside physics) · **kinematic `Rigidbody` + manual capsule sweeps** (roll your own collide-and-slide: `MovePosition` alone teleports through walls — sweep first; gains real collision callbacks, rotatable capsule, interpolation; **KCC is this pattern productized**, support frozen) · `com.unity.charactercontroller` (DOTS) | **CMC** `PhysWalking/Falling/...` + `SafeMoveUpdatedComponent` · **Mover 2.0** (beta in 5.7, not yet production default) |
 | State machine | Yours to build (KCC callbacks consume it) | CMC modes + `MOVE_Custom`; Mover: modes + transitions = the FSM is the framework |
 | Ground handling | KCC ground probing/snapping; `Step Offset`/`Slope Limit` | `FindFloor`, perch radius, step-up, walkable angle — free |
 | Moving platforms | `PhysicsMover` pattern (simulate platforms before character, same fixed loop) | Based movement — free |
