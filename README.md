@@ -1,11 +1,11 @@
-# agent-skills
+﻿# agent-skills
 
 > Community-maintained Agent Skills for AI coding assistants.
 
 [![skills.sh](https://skills.sh/b/Firzus/agent-skills)](https://skills.sh/Firzus/agent-skills)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 
-[Overview](#overview) • [Available skills](#available-skills) • [Install](#install) • [Manual install](#manual-install) • [Skill structure](#skill-structure)
+[Overview](#overview) â€¢ [Available skills](#available-skills) â€¢ [Install](#install) â€¢ [Manual install](#manual-install) â€¢ [Skill structure](#skill-structure)
 
 ## Overview
 
@@ -18,10 +18,10 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 
 ## Features
 
-- **Progressive disclosure** — each `SKILL.md` stays focused and links to deeper references only when needed.
-- **Multi-agent layout** — skills work with Claude Code, Cursor, Codex, and generic agents that support local skill folders.
-- **Install together or separately** — add the whole collection or a single skill with the skills CLI.
-- **Practical references** — skills include checklists, examples, and helper scripts where a task benefits from automation.
+- **Progressive disclosure** â€” each `SKILL.md` stays focused and links to deeper references only when needed.
+- **Multi-agent layout** â€” skills work with Claude Code, Cursor, Codex, and generic agents that support local skill folders.
+- **Install together or separately** â€” add the whole collection or a single skill with the skills CLI.
+- **Practical references** â€” skills include checklists, examples, and helper scripts where a task benefits from automation.
 
 ## Available skills
 
@@ -37,7 +37,8 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 | [`workflow`](./skills/workflow) | UltraCode-style highest-effort mode for large or interconnected tasks: deep upfront reasoning plus dynamic orchestration of parallel sub-agents, with result synthesis and git checkpoints. |
 | [`unity6-aaa-best-practices`](./skills/unity6-aaa-best-practices) | Senior Unity 6 developer DO/DON'T best practices for production-quality games: UI Toolkit design systems with USS tokens and MVP data binding, Awaitable async, Addressables, GPU Resident Drawer, zero-allocation discipline, Input System, Build Profiles, CI, and testing. |
 | [`ue5-aaa-best-practices`](./skills/ue5-aaa-best-practices) | Senior Unreal Engine 5 developer DO/DON'T best practices for production-quality games: C++ foundation / Blueprint leaf doctrine, GAS, Subsystems, CommonUI + MVVM, Enhanced Input, MetaSounds, soft references, World Partition, Nanite/Lumen decisions, tick discipline, Perforce/DDC/CI, and the automation test stack. |
-| [`game-architecture-patterns`](./skills/game-architecture-patterns) | Applies battle-tested game architecture patterns (Game Loop, Update Method, Component/ECS, State, Observer, Event Queue, Command, Object Pool, Spatial Partition, and more) with a symptom→pattern table, solution shapes, costs, and anti-usages. Backbone: Robert Nystrom's _Game Programming Patterns_. |
+| [`game-architecture-patterns`](./skills/game-architecture-patterns) | Applies battle-tested game architecture patterns (Game Loop, Update Method, Component/ECS, State, Observer, Event Queue, Command, Object Pool, Spatial Partition, and more) with a symptomâ†’pattern table, solution shapes, costs, and anti-usages. Backbone: Robert Nystrom's _Game Programming Patterns_. |
+| [`enemy-ai-framework`](./skills/enemy-ai-framework) | Engine-agnostic architecture blueprint for enemy AI in action games: designer-authorable decision architectures (HSM + decision trees + utility), the brain-to-intent separation (AI drives the same controller/combat systems as the player), perception and alert ladders, threat with ratio hysteresis, attack tokens as the pacing/difficulty regulator, leash and respawn lifecycle, 3-tier AI LoD, group coordination, sourced numbers (Genshin GDC 2021), Unity 6 / UE5 mappings, and a 14-entry pitfalls catalog. |
 | [`menu-ui-manager`](./skills/menu-ui-manager) | Engine-agnostic architecture blueprint for menu frameworks: central router with layered screen stacks and declarative contracts, hub-and-spoke navigation with shortcut wheels, multi-input focus management, refcounted pause with audio ducking, data-driven settings (apply/revert, 15s display confirm, rebinding), promise-style modal API, localization/cert basics, Unity 6 (UITK) / UE5 (CommonUI/Lyra) mappings, and a 14-entry pitfalls catalog. |
 | [`minimap-worldmap`](./skills/minimap-worldmap) | Engine-agnostic architecture blueprint for minimap and world map systems: automated map bake pipeline with a single world-to-map transform asset, shared marker registry (zoom-LOD tiers, clustering, pooling), region-based fog of war with stable IDs, multi-layer maps, pan/zoom/pin interactions, fast-travel integration, breadcrumb trails, sourced numbers, Unity 6 / UE5 mappings, and a 13-entry pitfalls catalog. References: Genshin Impact and Zelda BotW/TotK. |
 | [`hud-system`](./skills/hud-system) | Engine-agnostic architecture blueprint for in-game HUDs: event-driven read-only UI (MVP/MVVM, zero polling), layout grammar, dynamic visibility rules, pooled damage numbers, notification channels, bars/gauges (ghost drain, radial cooldowns), interaction prompts with glyph switching, accessibility and safe areas, sourced numbers (text sizes, timings, perf budgets), Unity 6 (UITK) / UE5 (UMG/CommonUI) mappings, and a 12-entry pitfalls catalog. |
@@ -100,10 +101,10 @@ Each skill is a folder with a `SKILL.md` file and optional supporting files:
 
 ```text
 skills/<skill-name>/
-├── SKILL.md          # YAML frontmatter + concise agent instructions
-├── topic-a.md        # optional reference loaded on demand
-├── references/       # optional longer-form references
-└── scripts/          # optional helper scripts
+â”œâ”€â”€ SKILL.md          # YAML frontmatter + concise agent instructions
+â”œâ”€â”€ topic-a.md        # optional reference loaded on demand
+â”œâ”€â”€ references/       # optional longer-form references
+â””â”€â”€ scripts/          # optional helper scripts
 ```
 
 A skill folder name should match the `name:` field in `SKILL.md` frontmatter. Keep the description concrete because agents use it to decide when the skill applies.
