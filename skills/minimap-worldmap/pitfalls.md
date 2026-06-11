@@ -1,7 +1,11 @@
-# Pitfalls — the 13 classic map failure modes
+# Pitfalls — the 15 classic map failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when markers drift or fog reverts.
+when markers drift or fog reverts. Pipeline/rendering detail is in
+[pipeline-render.md](./pipeline-render.md), the registry and fog in
+[markers-fog.md](./markers-fog.md), GIS/cartography tech in
+[cartography.md](./cartography.md), and cross-genre design in
+[genres.md](./genres.md).
 
 ## 1. Map/world misalignment
 
@@ -143,13 +147,48 @@ when markers drift or fog reverts.
   buffer with distance-threshold decimation; budget fog save size per
   layer up front.
 
+## 14. Precision breakdown far from origin
+
+- **Symptom** — markers and the player arrow jitter or land slightly off
+  in distant corners of a huge world; pins placed far out drift; the map
+  shimmers at the edges but is fine near spawn.
+- **Root cause** — the world→map UV is computed from raw float32 world
+  coordinates. Float32 keeps ~7 significant digits, so past ~1000 units
+  precision is a coarse grid (catastrophic cancellation when subtracting
+  two large numbers); the further from origin, the worse.
+- **Prevention** — do `world − origin` (or `world − camera`) in
+  **double**, *then* cast to float for the UV; keep authoritative
+  positions in 64-bit double and derive the map from the same
+  origin-relative space the renderer uses; for very large worlds use
+  per-tile local origins. The precision math is in
+  [cartography.md](./cartography.md).
+
+## 15. Minimap that makes the world ornamental
+
+- **Symptom** — playtesters stare at the corner, not the world; the
+  beautiful environment goes unnoticed; players "follow an icon, not a
+  path"; immersion complaints; nobody learns the landmarks.
+- **Root cause** — a high-contrast persistent minimap + a centered GPS
+  waypoint line does all the navigating, so the world's environmental
+  cues (roads, horizon landmarks, signage) become decorative. The
+  designer leaned on the minimap instead of legible space.
+- **Prevention** — decide the navigation philosophy deliberately
+  ([genres.md](./genres.md)): consider a diegetic compass / guiding-wind
+  (GoW, Ghost of Tsushima) or minimal markers (Elden Ring); at minimum
+  ship a **HUD toggle** so players can hide the minimap; design legible
+  environmental wayfinding (a "weenie" every ≤30 s) so the world, not
+  the corner, leads. Don't use the minimap to excuse an unreadable
+  world.
+
 ## Debugging order
 
 When the map misbehaves: (1) project a known landmark and measure pixel
 error (#1), (2) face due north and check the arrow/map agreement (#2),
 (3) profile a map open (#4) and an idle minimap frame (#3/#5), (4)
 save/load and diff the fog state (#6), (5) place a pin at max zoom and
-teleport to it (#8/#9), (6) run the aspect matrix (#12).
+teleport to it (#8/#9), (6) run the aspect matrix (#12), (7) project a
+landmark in the far corner of the world and measure error vs near spawn
+(#14).
 
 ## Ship checklist
 
@@ -164,4 +203,7 @@ teleport to it (#8/#9), (6) run the aspect matrix (#12).
 - [ ] 21:9 / 4:3 / Deck matrix passes; minimap stays circular
 - [ ] Marker burst (200+) holds frame rate (pool + cluster + cull)
 - [ ] Save size: fog + breadcrumbs within budget after a long session
+- [ ] Far-corner precision: landmark error in the farthest world corner
+      matches near-spawn (double-precision world->map transform)
+- [ ] Navigation philosophy is deliberate; HUD/minimap toggle ships
 ```

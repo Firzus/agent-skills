@@ -2,27 +2,39 @@
 name: minimap-worldmap
 description: >-
   Architecture blueprint for minimap and full-screen world map systems in
-  open-world games: map content pipeline (automated orthographic bake with
-  stylization pass, tiled zoom pyramid), the single world-to-map transform
-  asset, a shared marker registry serving both surfaces (categories,
-  zoom-LOD tiers, clustering, pooling), region-based fog of war with reveal
-  policies, multi-layer/underground maps, pan/zoom/pin interactions,
-  fast-travel integration, and breadcrumb trails (Hero's Path). References:
-  Genshin Impact (richest shipped map: 300 pins, multi-layer v4.0) and
-  Zelda BotW/TotK (nightly re-bake pipeline, tower reveal). Use when
-  designing or building a minimap, world map, fog of war, map markers/pins,
-  fast-travel map, or when map markers drift, fog reverts on load, or the
-  map tanks performance.
+  open-world games AND across genres: map content pipeline (automated
+  orthographic bake with stylization pass, tiled zoom pyramid), the single
+  world-to-map transform asset, a shared marker registry serving both
+  surfaces (categories, zoom-LOD tiers, clustering, label collision,
+  pooling), region-based fog of war with reveal policies, multi-layer/
+  underground maps, pan/zoom/pin interactions, fast-travel integration,
+  breadcrumb trails (Hero's Path), the cartography/GIS rendering tech
+  (slippy-map quadtree tiling, raster vs vector tiles, SDF labels and
+  icons, label-placement collision, hillshade/hypsometric relief, the
+  painted-map shader, large-world double-precision transform, BC7/ASTC
+  tile compression), and the cross-genre UX (RTS minimap-as-command-
+  surface, MOBA minimap-as-macro-game with ping wheels, FPS UAV/radar
+  info-warfare, the anti-minimap/diegetic movement — Far Cry 2 GPS, Ghost
+  of Tsushima guiding wind, Elden Ring minimal markers, Subnautica no-map).
+  References: Genshin Impact (richest shipped map: 300 pins, multi-layer
+  v4.0), Zelda BotW/TotK (nightly re-bake pipeline, tower reveal), Mapbox
+  (tiling/SDF). Use when designing or building a minimap, world map, fog of
+  war, map markers/pins, fast-travel map, map tile rendering, a diegetic
+  compass, or when map markers drift, fog reverts on load, precision breaks
+  far from origin, or the map tanks performance.
 ---
 
 # Minimap & World Map
 
-Build the two map surfaces of an open-world game — the HUD minimap and the
-full-screen world map — over one shared data core. References: Genshin
-Impact (the richest shipped implementation) and Zelda BotW/TotK (the most
-elegant pipeline). Excluded (separate skills): the quest tracker HUD
-(`hud-system`), the unlock data model and teleport sequence
-(`teleport-map-unlock`), streaming mechanics (`open-world-streaming`).
+Build the two map surfaces of a game — the HUD minimap and the full-screen
+world map — over one shared data core, with the cartography rendering tech
+underneath and the cross-genre UX choices around it. References: Genshin
+Impact (the richest shipped open-world map), Zelda BotW/TotK (the most
+elegant pipeline), Mapbox (tiling/SDF tech), and the genre canon (StarCraft,
+LoL, CoD, Far Cry 2, Ghost of Tsushima, Elden Ring, Subnautica). Excluded
+(separate skills): the quest tracker HUD (`hud-system`), the unlock data
+model and teleport sequence (`teleport-map-unlock`), streaming mechanics
+(`open-world-streaming`).
 
 ## The two architecture rules
 
@@ -46,6 +58,16 @@ underground layer, interiors, and detached regions (Genshin's Enkanomiya)
 are separate spaces sharing the registry. The active space resolves from
 player position via volumes — never just height. TotK runs three parallel
 spaces (Surface/Sky/Depths) over one XZ footprint.
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [pipeline-render.md](./pipeline-render.md) | Map content pipeline (ortho bake, BotW nightly model, hybrid), the world↔map transform + map spaces, minimap rendering (baked UV-scroll vs live RTT, compass strip, rotation, masking), full-screen pan/zoom/fast-travel, performance |
+| [markers-fog.md](./markers-fog.md) | The shared marker registry (categories, zoom-LOD tiers, clustering, label collision, edge clamping, pooling), region-based + continuous fog of war, player pins, multi-layer UI, Hero's Path breadcrumbs |
+| [cartography.md](./cartography.md) | The rendering-tech foundation: slippy-map quadtree tiling, raster vs vector tiles (MVT), SDF labels/icons, label-placement collision (PFLP), hillshade/hypsometric relief, the painted-map shader, large-world double-precision, BC7/ASTC compression |
+| [genres.md](./genres.md) | Minimap UX across genres (RTS command surface, MOBA macro game + ping wheels, FPS UAV/radar info-warfare, tac-shooter drones), the anti-minimap/diegetic movement, survival/no-map designs, the cross-genre UX toolbox |
+| [pitfalls.md](./pitfalls.md) | 15 failure modes (symptom → cause → prevention) with debugging order and ship checklist |
 
 ## Build order (4 shippable tiers)
 
@@ -101,7 +123,7 @@ Tier 4 — Polish & extras
 
 Full sourced tables (with confidence levels and the explicit
 "not publicly documented — measure, don't invent" list) in
-[architecture.md](./architecture.md).
+[pipeline-render.md](./pipeline-render.md).
 
 ## Engine mapping
 
@@ -117,12 +139,14 @@ Full sourced tables (with confidence levels and the explicit
 
 ## Failure modes
 
-The 13 classic map bugs (marker drift from transform desync, rotation
+The 15 classic map bugs (marker drift from transform desync, rotation
 pivot errors, RTT cost on mobile, memory spikes on open, marker overload,
 **fog reverting after save/load**, multi-layer marker bleed, zoom-state
 math errors, pin loss on map updates, out-of-bounds players, stale dynamic
-markers, aspect-ratio offsets, save-size creep) are cataloged in
-[pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
+markers, aspect-ratio offsets, save-size creep, **precision breakdown far
+from origin**, and **a minimap that makes the world ornamental**) are
+cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
+prevention.
 
 ## Related skills
 
