@@ -1,177 +1,129 @@
 ---
 name: inventory-equipment
 description: >-
-  Architecture blueprint for inventory and equipment systems in
-  open-world games: the instance-vs-count data model (equipment with
-  level/exp/lock/rolled-affix state vs stackable materials), category
-  tabs with per-tab caps, the datamined gear RNG pipeline (weighted main
-  stat pools per slot, weighted substat selection, equiprobable roll
-  tiers, upgrade rolls every +4), constrained-guarantee protections
-  (strongbox recycling, defined crafting), unified enhancement (one
-  service, per-type tables, 80% fodder recycling, lock protection as a
-  model invariant), inventory UI (stable sorting, filters, batch
-  operations), and equipment (type-locked slots, set counting, hot-swap,
-  declarative loadouts). References: Genshin Impact (Grasscutter GameItem
-  schema, leaked server RE of artifact generation) and BotW (the
-  slot-scarcity counterpoint). Use when designing or building
-  inventories, gear generation, item enhancement, equipment screens, or
-  when players feed their god roll, sets double-apply, or sorts jump.
+  Architecture blueprint for inventory and equipment systems across gacha,
+  ARPG/looter, and online/MMO games: the instance-vs-count data model (stable
+  GUIDs, polymorphic tabs, caps as policy), gear generation (the datamined
+  Genshin 4-draw RNG pipeline AND ARPG affix systems — prefix/suffix slots,
+  ilvl-gated tiers, weighted pools — plus the deterministic↔random crafting
+  spectrum: PoE currency orbs, D4 tempering/masterworking, Last Epoch forging
+  potential, runewords), unified enhancement (per-type tables, fodder
+  recycling, lock-as-invariant), inventory UI (grid/list/Tetris layouts,
+  loot-filter DSLs, search syntax, stable sorts, compare tooltips, loadouts
+  and transmog), and networked persistence (server-authoritative ownership,
+  duplication prevention via 2-phase-commit trades + escrow + idempotency +
+  append-only ledgers, real dupe postmortems). References: Genshin
+  (Grasscutter schema), Diablo II/III/IV, Path of Exile, Last Epoch, Destiny 2,
+  WoW, EVE, with Unity 6 and UE5 (Lyra) mappings. Use when designing or
+  building inventories, gear generation, item enhancement, crafting, equipment
+  screens, trade/dupe-safe item moves, or when players feed their god roll,
+  sets double-apply, sorts jump, or items duplicate.
 ---
 
 # Inventory & Equipment
 
-Build the inventory/equipment layer of a live-service game — data
-model, gear RNG, unified enhancement, UI, and equipment. References:
-Genshin Impact (the Grasscutter `GameItem` schema + the leaked-server
-reverse engineering of artifact generation — the best public source on
-a AAA loot generator) and BotW (the slot-scarcity counterpoint; weapon
-durability out of scope).
+Build the inventory/equipment layer of a game — data model, gear generation,
+crafting, enhancement, UI, equipment, and (for online games) dupe-safe
+networked persistence. The skill spans three traditions and tells you which
+patterns are shared and which are mode-specific:
+
+- **Gacha / live-service** (Genshin via the Grasscutter `GameItem` schema +
+  leaked-server RNG RE — the best public source on a AAA loot generator).
+- **ARPG / looter** (Diablo II/III/IV, Path of Exile 1/2, Last Epoch, Grim
+  Dawn, Borderlands — affix systems, the deterministic↔random crafting dial).
+- **Online / MMO** (WoW, EVE, Albion, Lost Ark — server-authoritative
+  ownership and the duplication-prevention playbook).
 
 ## The architecture rule
 
-**One item model, two families: instances carry state, materials carry
-counts — and every protection is a model invariant, not a UI rule.**
+**One item model, two families: instances carry state, materials carry counts
+— and every protection is a model invariant, not a UI rule.** In online games,
+add a third: **the server owns item state; the client sends intent, never
+state.**
 
 ```
-DATA MODEL (the Grasscutter-proven schema)
-  definition (static table)   type, rarity, stack limit, equip type,
-                              curve references (progression-economy)
-  instance (equipment)        stable GUID + level/exp/promoteLevel/
-                              refinement/locked/mainPropId/
-                              appendPropIdList/equipCharacter
-  count (materials)           itemId + count, clamped to stackLimit
-  tabs                        ItemType -> polymorphic tab: equip tabs
-                              hold instance lists, material tabs hold
-                              id->stack maps; per-tab caps as config
-  the invariant example       isDestroyable() = !locked && !equipped
-                              — fodder protection lives in the MODEL
-
-GEAR RNG (the datamined 4-draw pipeline; server rolls)
-  slot -> weighted MAIN STAT pool per slot (leaked weight tables)
-       -> initial substat count by source (20%/34% four-liners)
-       -> each substat: weighted pick from the remaining pool
-          (weights 6 flat / 4 percent-EM-ER / 3 crit)
-       -> value: 4 equiprobable ROLL TIERS (70/80/90/100% of max)
-  upgrade every +4: new line if <4, else equiprobable line upgrade
-  the encoding insight: an artifact IS its (set, slot, mainPropId,
-  appendPropIdList) — each affix ID encodes stat AND tier; fully
-  reconstructible, compact to save and replicate
-  the contrast: weapons are DETERMINISTIC (refinement by duplicate
-  counting) — two generation policies, one equipment interface
-
-ENHANCEMENT (one service, per-type tables)
-  feed(target, fodder[]) -> exp, mora cost, leftover refund,
-  level-ups, roll events at thresholds
-  per-type policies: artifact rolls at +4s; weapon ore refunds;
-  both: 80% recycling of invested exp on enhanced fodder
-
-EQUIPMENT
-  type-locked slots from the DEFINITION; one wearer per instance
-  (equip = atomic reassignment with swap confirmation)
-  set bonuses = data-driven affixes from equipped-only, per-character
-  counting; loadouts as DECLARATIVE QUERIES resolved at apply time
-  (the Genshin 5.7 model) vs pinned instance lists — choose
+definition (static table)  type, rarity, stack limit, equip type, curves
+instance (equipment)       stable GUID + level/exp/lock/rolled-affix state
+count (materials)          itemId + count, clamped to stackLimit
+tabs                       ItemType -> polymorphic tab (lists vs id->stack maps)
+the invariant example      isDestroyable() = !locked && !equipped
 ```
 
-## The constrained-guarantee funnel
+## Reference map
 
-Anti-frustration never breaks the core RNG — it **shrinks the search
-space**, version by version (the shipped chronology): guaranteed 5★
-per domain run (AR45) → strongbox recycling (3→1, chosen set, +34%
-four-liners) → defined crafting (set + piece + main stat + 2 chosen
-substats, 5.0) → guaranteed upgrades on chosen substats (5.5). Design
-the funnel's *stages* into the data model from day one even if they
-ship later.
+| File | Covers |
+| --- | --- |
+| [data-model.md](./data-model.md) | Instance/count split, stable GUIDs, polymorphic tabs, caps as policy (warehouse vs scarcity), the BotW counterpoint, definition-vs-instance, persistence integration |
+| [gear-generation.md](./gear-generation.md) | The Genshin 4-draw RNG pipeline (weighted pools, roll tiers, affix-ID encoding), ARPG affix systems (prefix/suffix, ilvl-gated tiers, weights, mutual exclusion), the deterministic↔random crafting spectrum (PoE orbs, D4 tempering/masterworking, LE forging potential, runewords, smart-loot), the constrained-guarantee funnel |
+| [enhancement.md](./enhancement.md) | The unified enhancement service, per-type tables, 80% recycling, exp-overflow refunds, batch QoL, dissolve/salvage loops, recycle-into-value |
+| [inventory-ui.md](./inventory-ui.md) | Layouts (grid/list/Tetris-weight), loot-filter DSLs (PoE/Last Epoch), search syntax (DIM), stable sorts + filters + lock plans, compare tooltips, loadouts/transmog/wardrobe, controller vs mouse, mass-salvage safety |
+| [networking.md](./networking.md) | Server-authoritative ownership, the duplication root-cause catalog with real incidents, 2-phase-commit trades + escrow + row locks + idempotency, append-only ledgers / event sourcing, reconciliation, anti-cheat, sharding/account-stash consistency |
+| [pitfalls.md](./pitfalls.md) | 16 failure modes (symptom → cause → prevention) with real incidents (D4 trade dupe, D3 integer-overflow gold dupe, D2 SoJ economy), debugging order, ship checklist |
 
 ## Build order (4 shippable tiers)
 
 ```
 Tier 1 — Model and tabs
-- [ ] Definition/instance/count split; stable GUIDs on instances
-      (never engine object IDs); save integration
+- [ ] Definition/instance/count split; stable GUIDs (never engine object IDs)
 - [ ] Polymorphic tabs with per-tab caps; the new-item flag
 - [ ] The lock invariant (isDestroyable = !locked && !equipped)
-- [ ] Cap behavior decided: block-acquire with message + the
-      cap-check-before-grant contract (progression-economy overflow)
+- [ ] Online: server-authoritative mutation path; client sends intent only
 Tier 2 — Generation and enhancement
-- [ ] The 4-draw pipeline as weighted data tables (server-side roll;
-      solo: roll-at-spawn from loot-drop-system)
-- [ ] Affix-ID encoding (stat+tier per ID; instance = ID list)
-- [ ] The unified enhancement service with per-type tables, 80%
-      recycling, exp-overflow refunds, batch fodder (cap ~15) with
-      locked-excluded and high-value confirmation
-- [ ] The deterministic track (refinement by duplicates) alongside
+- [ ] Generation as weighted data tables (gacha 4-draw, or ARPG affix pools
+      with ilvl gating); affix-ID encoding (stat+tier per ID)
+- [ ] The crafting layer placed on the determinism dial (chosen deliberately)
+- [ ] Unified enhancement service: per-type tables, recycling, batch with
+      locked-excluded + high-value confirmation
 Tier 3 — UI
-- [ ] Virtualized grid + detail panel; async icon loading with
-      placeholders
-- [ ] Stable sort with deterministic tiebreakers (instance ID last);
-      per-tab sort keys; filter system (sets, states, affixes)
-- [ ] Batch operations: multi-select dissolve (cap ~100), auto-add
-      rules mirroring lock plans
-- [ ] Equip flows: equipped-by indicator, swap confirmation, the
-      compare panel (beat the reference: full before/after stats)
-Tier 4 — Equipment depth
-- [ ] Set counting service: equipped-only, per-character; bonuses as
-      data-driven affixes; re-resolve effects on change (not just
-      count)
-- [ ] Loadouts: pick pin-by-instance (with skip/steal/clone-warn
-      fallbacks) or clone-by-rule (the Genshin choice — robust to
-      churn, can't pin exact pieces); document the trade
-- [ ] The recycle-into-value loop (strongbox) + defined crafting
-- [ ] Equip locks during activities (combat/instance) + stat
-      recompute events (progression-economy pipeline)
+- [ ] Virtualized grid/list + detail panel; async icons with placeholders
+- [ ] Stable sort with instance-ID tiebreakers; filter + lock-plan rule engine
+- [ ] Loot filter (drop-time) if acquisition outpaces curation
+- [ ] Equip flows + compare panel (full before/after stats); mass-salvage
+      gated by favorite/lock
+Tier 4 — Equipment depth & online
+- [ ] Set counting: equipped-only, per-character; bonuses as data affixes
+- [ ] Loadouts: pin-by-instance vs clone-by-rule (choose + document fallback)
+- [ ] Trade: 2-phase commit + escrow + row locks + idempotency + hash-chained
+      log; soulbound gating on the most valuable items
+- [ ] Persistence: ACID over an append-only ledger; reconciliation job
 ```
 
-## Numbers (starting points — sourced anchors)
+## Key numbers (starting points — sourced anchors)
 
 | Parameter | Value | Anchor |
 | --- | --- | --- |
-| Caps | weapons 2,000; artifacts repeatedly raised 1,000→1,500→1,800→2,100 (5.3; one source reports a further 2,400 — flagged); 2,000 material TYPES; stacks 9,999 general / 99,999 ores-exp | wiki |
-| Main stat pools | sands 26.68/26.66/26.66/10/10% (HP%/ATK%/DEF%/ER/EM); goblet 19.25/19.25/19.00 + 8×5% DMG + 2.5% EM; circlet 3×22 + 3×10 + 4% (leaked server weights: 1334/1333/1333/500/500…) | datamine |
-| Substat weights | flat 6 / %-EM-ER 4 / crit 3 (pool total 44); four-liner start: 20% domains / 34% boss-strongbox | datamine/KQM |
-| Roll tiers | 4 equiprobable: 70/80/90/100% of max (5★ CD max/roll 7.77%, flat HP 298.75); upgrade slot equiprobable | datamine |
-| Enhancement | 5★ +20 = 270,475 EXP and Mora (1:1); fodder 420/840/1,260/2,520/3,780; recycling base + 80% invested; exp crit 90/9/1% (×1/×2/×5); batch ~15 | wiki |
-| Guarantees | ≥1 5★ per AR45 domain run (mean ~1.07); strongbox 3→1 chosen set; elixir defines set+piece+main+2 subs (piece-dependent cost) | wiki/KQM |
-| Perfect odds | community-computed only, criteria-dependent (a specific max-CD piece ≈ 1/20M) — always cite the criterion | community |
-| BotW pouches | weapons 8→19(+1), bows 5→13(+1), shields 4→20 via 208/73/160 koroks; materials 999; meals 60 fixed — slot caps AS progression | wiki |
+| Genshin main-stat pools | sands 1334/1333/1333/500/500 weights; substat weights flat 6 / %·EM·ER 4 / crit 3 | leaked server datamine |
+| Genshin roll tiers | 4 equiprobable: 70/80/90/100% of max; upgrade every +4 | datamine |
+| PoE rare mod cap | 3 prefix + 3 suffix = 6; T1–T2 need ilvl ~82–86 | poewiki |
+| D2 gamble odds | Unique 0.05% / Set 0.10% / Rare 10% / Magic ~89.85%; ilvl clvl−5..+4 | Arreat Summit |
+| D3 smart loot | ~85% class-tailored / ~15% random | D3 2.0.1 notes |
+| D4 (post-2.5) | 4 base affixes; tempering deterministic pick; masterwork max Quality 20 | Blizzard 2.5.0 |
+| Last Epoch | forging potential ~20–40 (rare→exalted); craftable cap T5 | community |
+| Enhancement | 5★ +20 = 270,475 EXP; fodder recycling = base + 80% invested | Genshin wiki |
+| BotW pouches | weapons 8→19(+1), bows 5→13(+1), shields 4→20 (slot caps AS progression) | wiki |
 
-Flagged — never invent: the exact elixir costs for sands/goblet
-(sources diverge), the boss-material 2,000 stack, over-cap domain-drop
-behavior, grid sizes per platform, the main-stat pity semantics
-(plausible RE interpretation). Full tables in
-[architecture.md](./architecture.md).
+Full sourced tables (with flagged "do-not-invent" gaps) live in each
+reference file.
 
-## Engine mapping
+## Engine mapping (summary)
 
-| Generic block | Unity 6 | UE5 (5.4+) |
+| Generic block | Unity 6 | UE5 (5.4+) — Lyra is the first-party reference |
 | --- | --- | --- |
-| Model | SO definitions + serializable instance classes linked by ID; custom GUIDs (never `GetInstanceID()` — session-unstable); never serialize the SO itself | **Lyra is the first-party reference**: `ItemDefinition` (const, data-only) + `ItemInstance` (runtime) + `ItemFragments` (composition: SetStats, EquippableItem…); InventoryManager on Controller, EquipmentManager on Pawn |
-| Equipment stats | Hand-rolled recompute pipeline | Equip = **infinite GameplayEffect** (removal guaranteed by handle); set bonuses via tag-count requirements (componentized GEs 5.3+); never SetNumericAttributeBase directly |
-| Replication | Mirror/NGO ownership | Registered subobject lists (5.1+, the Iris-compatible method) + **FFastArraySerializer** for item lists (delta; order NOT guaranteed client/server — hence stable UI sorts); REPNOTIFY_Always trap on subobjects |
-| UI grid | UITK ListView virtualization (FixedHeight; **no native GridView** — rows-of-cells pattern); runtime data binding for details; drag-and-drop = custom PointerManipulator (Drag events are Editor-only) | UMG ListView/TileView (pooled entry widgets); CommonUI for controller nav; `UCommonLazyImage` for async icons |
-| Icons | Addressables async + placeholder | `TSoftObjectPtr<UTexture2D>` + StreamableManager async |
-| Backend | UGS Cloud Code rolls + Economy writes (deny client Write); PlayFab v2: per-instance StackId, DisplayProperties ≤1000 bytes, IdempotencyId | No first-party economy (custom/PlayFab); the authoritative-but-cached mirror pattern for UI |
+| Model | SO definitions + serializable instances linked by custom GUID (never `GetInstanceID()`) | `ItemDefinition` (const) + `ItemInstance` (runtime) + `ItemFragments` (composition) |
+| Equipment stats | hand-rolled recompute pipeline | equip = infinite GameplayEffect (handle-guaranteed removal); set bonuses via tag-count |
+| Replication | Mirror/NGO ownership | registered subobject lists + `FFastArraySerializer` (order NOT guaranteed → stable UI sorts) |
+| UI grid | UITK ListView virtualization (no native GridView → rows-of-cells) | UMG ListView/TileView (pooled); CommonUI for controller nav |
+| Backend | UGS Cloud Code rolls + Economy writes (deny client Write) | custom/PlayFab v2 (per-instance StackId, IdempotencyId) |
 
-## Failure modes
-
-The 14 classic inventory bugs (instance identity loss, duplication
-races, fodder eating the god roll, the 99.9%-trash flood, sort
-instability, stat recompute drift, set-counting edge cases, loadout
-fallback holes, cap-hit reward loss, icon loading hitches, hidden
-server roundtrips, lying enhancement previews, equip races in
-activities, the schema migration trap) are cataloged in
-[pitfalls.md](./pitfalls.md) with symptom → root cause → prevention
-and real incidents (the Diablo IV 2023 trade dupe).
+Full detail in [networking.md](./networking.md) and the reference files.
 
 ## Related skills
 
-- `progression-economy` — curve tables for item stats, the stat
-  aggregation pipeline, idempotent transactions, overflow-to-mail.
-- `loot-drop-system` — where instances come from (roll-at-spawn),
-  claim gating.
-- `coop-session` — replicated inventories follow its server-hard
-  authority rule (persistence is never client-trusted).
-- `save-persistence` — instance GUIDs, versioned schemas, migration
-  on load.
+- `progression-economy` — curve tables for item stats, the stat aggregation
+  pipeline, idempotent transactions, overflow-to-mail.
+- `loot-drop-system` — where instances come from (roll-at-spawn), claim gating.
+- `coop-session` — replicated inventories follow its server-hard authority rule
+  (persistence is never client-trusted).
+- `save-persistence` — instance GUIDs, versioned schemas, migration on load.
 - `menu-ui-manager` — inventory screens, focus, batch-select UX.
 - `hud-system` — pickup/enhancement toasts.

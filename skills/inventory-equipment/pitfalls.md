@@ -1,8 +1,11 @@
-# Pitfalls — the 14 classic inventory/equipment failure modes
+# Pitfalls — the 16 classic inventory/equipment failure modes
 
 Each: symptom → root cause → prevention, with real incidents where
 documented. Read before designing; re-read when a player feeds their
-god roll or a set bonus applies twice.
+god roll or a set bonus applies twice. Deep dives:
+[data-model.md](./data-model.md), [gear-generation.md](./gear-generation.md),
+[enhancement.md](./enhancement.md), [inventory-ui.md](./inventory-ui.md),
+[networking.md](./networking.md).
 
 ## 1. Instance identity loss
 
@@ -167,6 +170,37 @@ god roll or a set bonus applies twice.
   defaults for new fields, atomic writes, golden-save libraries
   tested in CI per release.
 
+## 15. Mass-salvage destroys keepers
+
+- **Symptom** — a "Salvage All" / "Sell All" sweep destroys high-rarity
+  or wanted items the player meant to keep.
+- **Root cause** — the bulk-destroy scope includes everything not
+  equipped; rarity is no longer an implicit guard. Real case:
+  **Diablo IV S4** changed Salvage-All to destroy everything not
+  equipped *or favorited*, including Legendaries — accidental loss
+  followed.
+- **Prevention** — favorite/lock blocks salvage AND sell at the **model
+  level** (not a UI filter); scope bulk ops to the *active tab* (the
+  "Sell All Junk sells only this tab" pattern); a confirm prompt on
+  destroying max rarity. See [inventory-ui.md](./inventory-ui.md).
+
+## 16. Networked persistence dupes / drift
+
+- **Symptom** — items duplicate across a trade, crash, or shard hop; or
+  the authoritative count drifts from what the player sees.
+- **Root cause** — non-atomic two-party transfer; client trusted for
+  item state; async save before reconciliation; an item existing
+  authoritatively in two shards; integer overflow on a stack value
+  (the **Diablo III 1.0.8** RMAH gold dupe).
+- **Prevention** — the [networking.md](./networking.md) playbook: client
+  sends intent, server owns state; trades as 2-phase commit + escrow +
+  row locks + idempotency key + hash-chained log; persist via ACID over
+  an append-only ledger (reverse with compensating events, never edits);
+  single-shard or single-writer account stash; soulbound gating on the
+  most valuable items; a reconciliation/dupescan job. Incident playbook:
+  disable feature → isolate → audit logs → targeted bans → avoid full
+  rollback.
+
 ## Debugging order
 
 When the inventory misbehaves: (1) grep for engine-ID or index-based
@@ -199,4 +233,7 @@ cold icon cache (#10), (8) load a previous-release save (#14).
 - [ ] Previews show ranges for unrolled RNG
 - [ ] Equip mutations gated by activity context
 - [ ] Instance schema versioned; golden saves migrate in CI
+- [ ] Mass-salvage gated by favorite/lock; bulk ops scoped to active tab
+- [ ] Online: trades 2-phase + escrow + idempotent; ledger + reconcile;
+      soulbound on top-value items
 ```
