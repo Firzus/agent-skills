@@ -1,7 +1,10 @@
-# Pitfalls — the 14 classic enemy-AI failure modes
+# Pitfalls — the 16 classic enemy-AI failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when "the enemy does whatever" and nobody can say why.
+when "the enemy does whatever" and nobody can say why. Deep dives:
+[decision-perception.md](./decision-perception.md),
+[combat-tokens.md](./combat-tokens.md), [genres.md](./genres.md),
+[techniques.md](./techniques.md), [believability.md](./believability.md).
 
 ## 1. AI writes the transform directly
 
@@ -150,6 +153,39 @@ when "the enemy does whatever" and nobody can say why.
   debugger + visual logger. Unity: gizmos + a custom overlay are
   mandatory, not optional.
 
+## 15. Smart-but-not-fun / unfair AI
+
+- **Symptom** — the AI is technically capable (perfect aim, optimal play,
+  reads inputs) but players find it frustrating, "cheap", or unbeatable;
+  or it's so legible-but-dumb it reads as broken.
+- **Root cause** — optimizing for *smart* instead of *fun to beat*; no
+  fairness contract (input-reading, perfect tracking, omniscience,
+  instant reactions); mistakes made via RNG instead of intelligently.
+- **Prevention** — design AI to **lose believably**
+  ([believability.md](./believability.md)): the fairness contract (no
+  input-reading, throttled reaction, plausibly-perceivable info only);
+  calibrated "artificial stupidity" (second-best moves, shallower search,
+  learnable routines — never RNG whiffs); make decisions **legible** via
+  barks announcing intent (the single biggest believability multiplier);
+  variety of archetypes over raw intelligence.
+
+## 16. Wrong architecture / genre-mismatched AI
+
+- **Symptom** — a behavior tree buckles under an RTS's strategic
+  reasoning; a stealth game's enemies have no graceful alert-and-lose
+  loop; an attempt to ship ML NPCs is undebuggable; a crowd of full-brain
+  agents tanks the frame rate.
+- **Root cause** — applying the action-game decision stack to a genre
+  with a different shape, or reaching for ML where hand-authored control
+  is needed, or no LoD/crowd strategy at scale.
+- **Prevention** — pick the architecture by the problem
+  ([techniques.md](./techniques.md), [genres.md](./genres.md)): RTS =
+  3-layer command hierarchy + influence maps; stealth = the alert-state
+  ladder with search/give-up; sims = utility/smart-objects or ThinkTrees;
+  director = a meta-AI adjusting pacing not difficulty. Keep core combat
+  AI **hand-authored** (ML is for QA/playtest); scale crowds with flow
+  fields + Mass/DOTS + per-module LoD.
+
 ## Debugging order
 
 When AI misbehaves: (1) turn on the debug overlay and watch the brain
@@ -173,4 +209,6 @@ distance (#10).
 - [ ] Difficulty tiers change behavior, not just HP
 - [ ] Debug overlay shows: state, target, tokens, path, perception
 - [ ] Soak test: an AI brain driving the player character survives 30 min
+- [ ] Fairness: no input-reading / perfect tracking; barks make intent legible
+- [ ] Architecture fits the genre; core combat AI hand-authored (ML for QA only)
 ```
