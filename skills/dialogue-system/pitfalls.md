@@ -1,8 +1,10 @@
-# Pitfalls — the 14 classic dialogue-system failure modes
+# Pitfalls — the 16 classic dialogue-system failure modes
 
 Each: symptom → root cause → prevention. Read before designing;
 re-read when a player gets stuck in dialogue mode or the German build
-overflows every box.
+overflows every box. Deep dives: [graph.md](./graph.md),
+[runtime.md](./runtime.md), [narrative-design.md](./narrative-design.md),
+[presentation.md](./presentation.md), [pipeline.md](./pipeline.md).
 
 ## 1. Text embedded in logic
 
@@ -179,6 +181,40 @@ overflows every box.
   as data); a single writer-side source of truth with automated
   import + validation (#11) on every sync.
 
+## 15. The paraphrase-betrayal wheel
+
+- **Symptom** — the player picks a short wheel option and the
+  protagonist says something tonally different; "save before every
+  conversation" becomes community advice; choices feel misrepresented.
+- **Root cause** — a paraphrase/abbreviated wheel (one or two words)
+  whose mapping to the full spoken line is ambiguous, with no fidelity
+  guarantee — the Mass Effect "betrayal" and Fallout 4 4-option cases.
+  Reception tracks **fidelity + consequence**, not the wheel/list form
+  (Witcher 3 paraphrases too and was praised).
+- **Prevention** — for a voiced protagonist, keep the paraphrase an
+  honest summary of *tone and intent* (position-encode tone, never
+  surprise the player); for precision, use **full-text** options
+  (BG3/Disco Elysium) at the cost of screen space. Never let a label
+  collapse to filler when content < the wheel's slot count. See
+  [narrative-design.md](./narrative-design.md).
+
+## 16. Generative-NPC canon/latency/consent failures
+
+- **Symptom** — an LLM NPC states a lore-breaking falsehood; replies lag
+  1–3 s and kill presence; the build ships an un-consented voice replica;
+  stochastic output breaks QA.
+- **Root cause** — calling a frontier cloud model for everything, with no
+  lore grounding, no latency budget, no SAG-AFTRA consent process, and no
+  eval harness for non-deterministic output.
+- **Prevention** — the [pipeline.md](./pipeline.md) playbook: **tier the
+  routing** (on-device SLM for ambient, cloud only for plot-critical with
+  a wait affordance); **ground with RAG + constrained decoding** so the
+  model can't name entities outside the lore trie; budget latency (<1 s,
+  prompt-cache toward ~200 ms); secure **SAG-AFTRA-compliant consent**
+  (Real-Time Generation = 7.5× scale, 90-day usage report); keep authored
+  content on the critical path and scope generative to ambient/optional;
+  add a non-deterministic QA eval harness + input/output moderation.
+
 ## Debugging order
 
 When dialogue misbehaves: (1) exit a session by every abnormal path
@@ -208,4 +244,7 @@ referenced (#10).
 - [ ] Auto-mode timing text-aware and player-configurable
 - [ ] Subtitle accessibility: size options, 2x40 budget, speaker
       indication (beat the reference games — they ship none)
+- [ ] Wheel paraphrases honest (tone/intent); or full-text options
+- [ ] Generative NPCs (if any): tiered routing, RAG grounding, latency
+      budget, SAG-AFTRA consent, authored critical path
 ```
