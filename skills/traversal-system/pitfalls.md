@@ -1,7 +1,10 @@
-# Pitfalls — the 13 classic traversal failure modes
+# Pitfalls — the 15 classic traversal failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
 when players climb out of the map or the climb state flickers on seams.
+Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
+[implementation.md](./implementation.md),
+[mounts-vehicles.md](./mounts-vehicles.md), [economy.md](./economy.md).
 
 ## 1. Climbing forbidden geometry
 
@@ -155,6 +158,40 @@ when players climb out of the map or the climb state flickers on seams.
   non-resumable verbs (mid-zipline) or snap to the nearest resumable
   point (`save-persistence` CanSave).
 
+## 14. Automation overriding player intent (parkour)
+
+- **Symptom** — in a contextual/automated traversal system, "one
+  movement is expected, but another comes out, throwing off the planned
+  route"; the character gets "sucked into" unwanted ledges; the player
+  feels the game is playing itself.
+- **Root cause** — a single "hold one button, climb anything" input with
+  automated move-selection that magnetically latches onto geometry,
+  removing the player's ability to *express* route choice (the
+  documented Assassin's Creed backlash).
+- **Prevention** — give the player directional intent over the
+  automation (AC Unity's parkour-up / parkour-down split: hold up → the
+  higher route, down → the lower); keep some inputs the player *can* get
+  wrong (Mirror's Edge's losable manual moves); telegraph affordances
+  consistently so the authored route doesn't fight the player's read. See
+  [verbs.md](./verbs.md) and [world-data.md](./world-data.md).
+
+## 15. Readability lies / momentum-vs-stamina mismatch
+
+- **Symptom** — with assist/highlight off, "some surfaces look climbable
+  but aren't, others are but don't look it"; or a momentum-based parkour
+  game bolts on a stamina drain (or a stamina-climbing game expects
+  momentum chaining) and the feel fights itself.
+- **Root cause** — a curated highlighted path (Runner Vision) hiding
+  inconsistent affordances; or mixing the two opposite economies
+  (momentum = accumulate/protect vs stamina = spend/deplete) without
+  deciding which behavior the game rewards.
+- **Prevention** — make affordances **consistent** even under the
+  highlight (don't let the cue lie); pick the economy school deliberately
+  ([economy.md](./economy.md)): stamina-as-wall (read the cliff, manage
+  the pool) OR momentum-as-fuel (never stop, loss felt as slowdown), and
+  tune every number to that choice. If blending (Dying Light), accept and
+  budget the level-design cost of climb-anything.
+
 ## Debugging order
 
 When traversal misbehaves: (1) turn on the climbability visualization
@@ -180,4 +217,6 @@ from wrong angles (#10).
 - [ ] Glide at max speed toward an unloaded cell: verb denied/held
 - [ ] Save/reload during every verb: sane restore, no mid-air spawns
 - [ ] Assist settings: full-assist and expert both playable end-to-end
+- [ ] Automation gives directional intent; no "sucked-into-ledge" overrides
+- [ ] Affordances consistent under highlight-off; one economy school chosen
 ```
