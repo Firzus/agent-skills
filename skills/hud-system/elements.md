@@ -1,9 +1,13 @@
-# Architecture — events, view-models, elements, visibility
+# Elements — events, view-models, bars, numbers, notifications, prompts
 
-The components of a production HUD system. All numbers are **starting
-points — tune by UX test**. References: Genshin/Relink (party action-RPG),
-GoW 2018/Horizon (dynamic HUD), Destiny/The Division (GDC UI architecture
-talks).
+The engineering of a production HUD: the event-driven core and each
+screen-space element. All numbers are **starting points — tune by UX
+test**. Design philosophy and genre conventions are in
+[design-genres.md](./design-genres.md); accessibility in
+[accessibility.md](./accessibility.md); world-anchored bars/nameplates/
+reticles in [world-space.md](./world-space.md). References: Genshin/Relink
+(party action-RPG), GoW 2018/Horizon (dynamic HUD), Destiny/The Division
+(GDC UI architecture talks).
 
 ## The event-driven core
 
@@ -24,6 +28,9 @@ gameplay systems ──events──> HUD event router ──> view-models ──
 - **Update cadence**: event-driven for everything possible; throttle the
   few genuinely continuous elements (distance readouts, compass) to
   ~10 Hz; per-frame updates reserved for active gauge sweeps.
+- **Redundancy as a contract**: a critical event fans out to ≥2 channels
+  (bar + vignette + audio) — the accessibility requirement
+  ([accessibility.md](./accessibility.md)) the event bus makes free.
 
 ## Layout & information hierarchy
 
@@ -31,7 +38,7 @@ gameplay systems ──events──> HUD event router ──> view-models ──
   non-diegetic): use spatial elements (world markers, off-screen arrows)
   and meta effects (damage vignette) to offload the 2D overlay. GoW is
   non-diegetic but splits a near-empty cinematic HUD from a fuller combat
-  HUD.
+  HUD. (Full treatment in [design-genres.md](./design-genres.md).)
 - **Three tiers**: combat-critical (HP, cooldowns, boss bar, threat
   indicators — persistent placement, highest contrast) > contextual
   (prompts, tracker, ammo) > ambient (XP, currency — appear on change
@@ -60,7 +67,8 @@ VisibilityRule {
 - A central **HUD context service** publishes flags; one resolver
   evaluates rule + user override → target alpha. This is the shape behind
   Horizon Forbidden West's per-element Custom HUD menu and GoW's
-  Immersive mode.
+  Immersive mode (the combat-vs-exploration HUD split —
+  [design-genres.md](./design-genres.md)).
 - **HUD pulse**: one button reveals everything for ~5 s then fades
   (Horizon's touchpad swipe). Photo mode force-hides the whole HUD layer.
 - Show triggers that ship: value change (damage, resource spent), state
@@ -82,12 +90,15 @@ VisibilityRule {
   ring, Relink's SBA gauge under HP).
 - **Juice** (widget layer only): white flash on damage, pulse on big
   hits, low-HP heartbeat ~1–2 Hz hard-capped below 3 flashes/s (WCAG
-  photosensitivity), scale-pop on gauge full.
+  photosensitivity — [accessibility.md](./accessibility.md)), scale-pop
+  on gauge full. Calibrate by hierarchy; the full juice kit is in
+  [design-genres.md](./design-genres.md).
 
 ## Damage numbers / floating combat text
 
 - **Pooling is mandatory**: pre-warm the pool, never allocate in combat;
-  on overflow recycle the oldest non-crit.
+  on overflow recycle the oldest non-crit. (Measured UE case: 4 ms →
+  0.5 ms just by pooling — [world-space.md](./world-space.md).)
 - **Projection**: spawn at `WorldToScreenPoint(hit location)`, then drift
   in screen space. Project in LateUpdate/after-camera; cull when
   `dot(camForward, toTarget) <= 0` (behind-camera mirror bug).
@@ -96,6 +107,8 @@ VisibilityRule {
   drops oldest/smallest non-crit first — never crits.
 - **Grammar**: element colors (Genshin), crit = bigger + distinct color +
   punch pop, heal green, resist grey/small; abbreviate ≥6 digits (1.2M).
+  Avoid the "12 +4 reads as 124" stacking bug; double-code for colorblind
+  players ([accessibility.md](./accessibility.md)).
 - **Animation**: scale-overshoot pop (0.2–0.4 s) → drift 50–150 px with
   ±20–40 px X-jitter → hold ~60–70% of lifetime → fade. Lifetime
   0.5–1.5 s.
@@ -136,30 +149,17 @@ VisibilityRule {
   animates (check, slide to next) and echoes a toast.
 - **Off-screen markers**: project; if behind camera (negative z), flip;
   clamp to screen edge minus margin and rotate an arrow toward the
-  target. Same machinery serves GoW's threat arrows (color-coded by
-  urgency).
+  target. Same machinery serves GoW's threat arrows — the full edge-clamp
+  math and behind-camera guard are in [world-space.md](./world-space.md).
 - The tracker is a prime Dynamic-visibility candidate: hide in combat,
   show on update or pulse.
-
-## Accessibility & ship checklist
-
-The modern AAA baseline is a **HUD options menu**:
-
-- HUD scale 80–150%; text scalable to 200% of the 26 px @1080p console
-  minimum (XAG); opacity sliders 0–100%.
-- Colorblind: ship deuteranopia/protanopia/tritanopia presets; never
-  encode by hue alone (pair with shape/size/motion); Okabe-Ito palette as
-  the safe default (`#D55E00` danger / `#56B4E9` ally / `#009E73` safe).
-- Subtitles: ≥46 px @1080p available, ≤37–40 chars/line, max 2 lines,
-  background opacity slider.
-- Safe-area calibration screen; everything critical inside the 90% box.
-- Damage numbers off switch, screen-shake/flash intensity sliders.
 
 ## Performance budget
 
 - **HUD < 0.5–1 ms CPU/frame.** Profile with the engine UI profiler;
   pool everything transient; split static from dynamic
-  (invalidation boxes / separate canvases / `DynamicTransform` hints).
+  (invalidation boxes / separate canvases / `DynamicTransform` hints —
+  world-space detail in [world-space.md](./world-space.md)).
 - Never touch layout properties at high frequency — move with
   `translate`, reserve fixed widths for changing text, quantize displayed
   values (update on integer change).
@@ -171,8 +171,8 @@ The modern AAA baseline is a **HUD options menu**:
 Fagerholt & Lorentzon *Beyond the HUD* (Chalmers 2009) · GDC: *Tenacious
 Design and the Interface of Destiny* (2016), *Lessons Learned Creating UI
 for The Division* (2017), *Juice It or Lose It* · Nystrom *Game
-Programming Patterns* (Event Queue) · Xbox Accessibility Guidelines
-101/102/104 · WCAG 2.3.1 · BBC subtitle guidelines · Okabe-Ito CUD
-palette · SMPTE safe areas + platform cert practice · Horizon/GoW HUD
-options coverage · gameuidatabase.com · Unity UITK perf guide · Epic UMG
-Viewmodel/Slate invalidation docs.
+Programming Patterns* (Event Queue) · Horizon/GoW HUD options coverage ·
+gameuidatabase.com · Unity UITK perf guide · Epic UMG Viewmodel/Slate
+invalidation docs. Accessibility standards in
+[accessibility.md](./accessibility.md); design sources in
+[design-genres.md](./design-genres.md).
