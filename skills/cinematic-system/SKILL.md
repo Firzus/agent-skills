@@ -9,24 +9,39 @@ description: >-
   subtitles, the seam problem), the gameplay-to-cutscene transition
   contract (the datamined BotW bdemo checklist: preload gates, world
   staging, exit positions), skip with the all-events-fire guarantee,
-  replay galleries and the context problem, and the full production
-  pipeline (previz, mocap, dailies, binary asset versioning).
-  References: Genshin Impact (USM mix) and BotW/TotK (Demo events
-  datamine), with Naughty Dog/Santa Monica/Guerrilla GDC talks for
-  production. Use when designing or building cutscenes, timelines,
-  in-game cinematics, video playback, skip systems, or when skips break
-  quest state, bindings T-pose, or first shots show low-res textures.
+  replay galleries and the context problem, the full production pipeline
+  (previz, mocap, dailies, binary asset versioning); the cinematography
+  craft (film language and shot grammar — the 180/30-degree rules,
+  shot/reverse-shot, J/L-cuts, shot sizes; camera and lens craft — focal-
+  length emotion, dolly zoom, motivated movement; cinematic lighting and
+  color grading; virtual production — LED volumes/ICVFX, virtual cameras,
+  simulcam; performance capture — optical/inertial/markerless, facial and
+  MetaHuman Animator; realtime cinematic tech — the physical camera model,
+  Movie Render Queue warm-up); and the interactive-cinematic design layer
+  (the cutscene/ludonarrative debate, QTEs, playable cinematics — the
+  Naughty Dog active-cinematic and GoW one-shot, branching and choice-driven
+  cinematics — Mass Effect/Telltale/Until Dawn and the combinatorial-
+  explosion patterns, player-state-reflective cutscenes — the equipment-
+  mismatch and canonize-vs-reflect problem, and cutscene/QTE accessibility).
+  References: Genshin Impact (USM mix), BotW/TotK (Demo events datamine),
+  God of War/Naughty Dog/Half-Life (interactive craft), with GDC talks for
+  production. Use when designing or building cutscenes, timelines, in-game
+  cinematics, cinematography, virtual production, QTEs, branching/interactive
+  cinematics, video playback, skip systems, or when skips break quest state,
+  bindings T-pose, first shots show low-res textures, the film grammar feels
+  off, or a QTE locks players out.
 ---
 
 # Cinematic System
 
-Build the cutscene layer of an open-world game — realtime timelines,
-pre-rendered video, transitions, skip/replay, and the full production
-pipeline. Lip sync/facial stays in `dialogue-system` (the cinematic
-hosts it). References: Genshin Impact (the realtime/USM mix) and
-BotW/TotK (the datamined Demo system — the most complete public
-transition contract), with the Naughty Dog / Santa Monica / Guerrilla
-GDC canon for production.
+Build the cutscene layer of a game — realtime timelines, pre-rendered
+video, transitions, skip/replay, the production pipeline, the
+cinematography craft, and the interactive-cinematic design layer. Lip
+sync/facial stays in `dialogue-system` (the cinematic hosts it).
+References: Genshin Impact (the realtime/USM mix), BotW/TotK (the datamined
+Demo system — the most complete public transition contract), God of War /
+Naughty Dog / Half-Life (the interactive-craft poles), with the Naughty
+Dog / Santa Monica / Guerrilla GDC canon for production.
 
 ## The architecture rule
 
@@ -64,10 +79,20 @@ THE SESSION (the same finally-scope as dialogue)
          buffered-input flush — on EVERY path (end, skip, error)
 ```
 
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [timeline-transitions.md](./timeline-transitions.md) | The timeline model (three implementations, one schema), binding resolution (possess vs spawn, role tables), event markers, the bdemo transition contract, the session scope, skip/replay (the all-events-fire rule, the context problem), the timeline engine mapping |
+| [production.md](./production.md) | Realtime vs pre-rendered (the decision matrix), codecs & middleware (USM/Bink/VP9, overlay subtitles), the realtime↔video seam, the mocap-to-final production pipeline, localization re-timing, binary versioning, the sourced number tables |
+| [cinematography.md](./cinematography.md) | Film language & shot grammar (180/30-degree, shot/reverse-shot, J/L-cuts, shot sizes), camera/lens craft (focal-length emotion, dolly zoom, motivated movement), cinematic lighting & color, virtual production (LED volumes, virtual cameras, simulcam), performance capture, realtime cinematic tech (physical camera, Movie Render Queue) |
+| [interactive.md](./interactive.md) | The cutscene/ludonarrative debate, QTEs (history, good design, decline), playable cinematics (ND active-cinematic, GoW one-shot, Half-Life), branching & choice-driven cinematics (Mass Effect/Telltale/Until Dawn, combinatorial-explosion patterns), player-state-reflective cutscenes (equipment mismatch, canonize-vs-reflect), cutscene/QTE accessibility |
+| [pitfalls.md](./pitfalls.md) | 16 failure modes (symptom → cause → prevention) with debugging order and ship checklist |
+
 ## Realtime vs pre-rendered
 
 Default to realtime; pre-render only what exceeds the runtime budget.
-The decision matrix (sourced in [architecture.md](./architecture.md)):
+The decision matrix (sourced in [production.md](./production.md)):
 visual complexity vs player-state reflection (outfits/weather),
 determinism vs file weight (Genshin's USM archive: ~42 GB cumulative),
 localization (overlay subtitles + per-language audio tracks in the
@@ -136,7 +161,7 @@ Tier 4 — Production pipeline
 Flagged — never invent: letterbox/hold durations in shipped games,
 input flush timings, preload distances, game-specific ASL, timeline
 track-count budgets, the exact Genshin general-skip version (sources
-conflict). Full tables in [architecture.md](./architecture.md).
+conflict). Full tables in [production.md](./production.md).
 
 ## Engine mapping
 
@@ -154,14 +179,15 @@ conflict). Full tables in [architecture.md](./architecture.md).
 
 ## Failure modes
 
-The 14 classic cutscene bugs (the unskippable cutscene, skip leaving
+The 16 classic cutscene bugs (the unskippable cutscene, skip leaving
 broken state — the 007 First Light and Ship of Harkinian cases,
 binding breaks across contexts, the streaming hitch and low-res first
 shots, video/realtime seam pops, session state leaks, the
 mid-cutscene interruption hole, frame-rate-dependent timelines, audio
 drift on long scenes, the localization re-timing trap,
 letterbox/ultrawide bugs, the binary merge disaster, cutscene-applied
-world-change desync, the replay-context problem) are cataloged in
+world-change desync, the replay-context problem, **broken film grammar**,
+and **QTEs that exclude players**) are cataloged in
 [pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
 
 ## Related skills

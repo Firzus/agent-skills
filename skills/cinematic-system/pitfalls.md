@@ -1,8 +1,12 @@
-# Pitfalls — the 14 classic cutscene failure modes
+# Pitfalls — the 16 classic cutscene failure modes
 
 Each: symptom → root cause → prevention, with real incidents where
 documented. Read before designing; re-read when a skip strands the
-player or the first shot shows low-res faces.
+player or the first shot shows low-res faces. Timeline/transition detail
+is in [timeline-transitions.md](./timeline-transitions.md), production in
+[production.md](./production.md), the cinematography craft in
+[cinematography.md](./cinematography.md), and interactive/branching design
+in [interactive.md](./interactive.md).
 
 ## 1. The unskippable cutscene
 
@@ -186,6 +190,43 @@ player or the first shot shows low-res faces.
   Recollection (6.3) "preserves cameras, voices, environments" —
   mechanism undocumented; present strategies, not their internals.
 
+## 15. Broken film grammar (the disorienting cut)
+
+- **Symptom** — a dialogue scene feels "off": characters seem to swap
+  sides between shots, a cut makes someone jump, the player loses track of
+  who is where; a no-cut camera reverses the spatial relationship; an
+  unmotivated camera move pulls focus from the performance.
+- **Root cause** — the cinematography ignores continuity grammar: crossing
+  the **180-degree line** without a neutral shot or on-screen arc, cutting
+  under the **30-degree** threshold (a jump cut), a mismatched eyeline, or
+  a move with no motivation (the "unmotivated move" — GoW's explicit
+  anti-pattern).
+- **Prevention** — apply the film-language rules in
+  [cinematography.md](./cinematography.md): keep the camera on one side of
+  the axis of action (cross only via a neutral shot or an on-screen arc —
+  mandatory for a no-cut camera); shift ≥30° or one shot-size step between
+  cuts of the same subject; match eyelines and screen direction; motivate
+  every move. Storyboard/previz the coverage before the mocap shoot.
+
+## 16. QTE / interactive cinematic that excludes players
+
+- **Symptom** — a player with a motor impairment can't pass a mash-QTE and
+  is hard-locked out of the story; failure forces a full re-watch of the
+  preceding cutscene; an interactive scene has no skip/pause; a deaf player
+  misses key visual events in a dark scene with no description.
+- **Root cause** — the interactive layer was bolted onto the cinematic with
+  no accessibility: no auto-complete, no mash→hold, fixed sub-second timing
+  windows, failure = game-over → cutscene repeat, and no audio description/
+  captions.
+- **Prevention** — the interactive-cinematic accessibility set
+  ([interactive.md](./interactive.md)): a **QTE auto-complete toggle**,
+  **mash→hold** conversion, **adjustable timing windows** (≥1 s or no
+  limit), failure that branches rather than game-overs (the Until Dawn
+  model), **pause at any point**, accessible **captions** (speaker ID,
+  solid background), the **≤3-flash** rule, and **cinematic audio
+  description** for key visual events. Let the player choose their position
+  on the interactive↔passive axis.
+
 ## Debugging order
 
 When cutscenes misbehave: (1) skip every scene and diff state
@@ -195,7 +236,9 @@ watch the first shot (#4), (4) exit by every abnormal path and check
 input/HUD/camera (#6), (5) run a 5-minute scene at uncapped fps and
 timescale 0.5 (#8, #9), (6) play the German build (#10), (7) play on
 a 32:9 monitor (#11), (8) replay from the gallery at 100% completion
-(#14).
+(#14), (9) review every dialogue scene's coverage for line/eyeline
+continuity (#15), (10) run every QTE/interactive scene with auto-complete
+off and a motor-impairment lens (#16).
 
 ## Ship checklist
 
@@ -215,4 +258,8 @@ a 32:9 monitor (#11), (8) replay from the gallery at 100% completion
 - [ ] World changes fire through shared gameplay events only
 - [ ] Gallery replays tested against endgame world state
 - [ ] Video seams masked or grading-matched; audio on the game bus
+- [ ] Dialogue coverage respects the 180/30-degree rules and eyelines;
+      every camera move motivated
+- [ ] QTEs: auto-complete + mash->hold + adjustable timers; failure
+      branches not game-overs; cinematic captions + audio description
 ```
