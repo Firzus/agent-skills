@@ -1,8 +1,11 @@
-# Pitfalls — the 14 classic loot/drop failure modes
+# Pitfalls — the 16 classic loot/drop failure modes
 
 Each: symptom → root cause → prevention, with real incidents where
 documented. Read before designing; re-read when a rare drop vanishes
-unseen or the community proves your RNG biased.
+unseen or the community proves your RNG biased. Deep dives:
+[tables.md](./tables.md), [distribution.md](./distribution.md),
+[claims-coop.md](./claims-coop.md), [perception.md](./perception.md),
+[compliance.md](./compliance.md).
 
 ## 1. Client-side rolling
 
@@ -161,6 +164,37 @@ unseen or the community proves your RNG biased.
   mass data-crunching, fix + compensation followed. Test the output
   distribution.
 
+## 15. True-random reads as rigged (perception)
+
+- **Symptom** — a statistically correct drop rate generates a flood of
+  "rigged" / "cursed account" complaints and churn; players farm 3×
+  the average count and quit.
+- **Root cause** — memoryless RNG clusters (a 10% drop missing 20
+  kills happens to ~12% of players); rates uncommunicated; weak PRNG
+  seeding can make it genuinely streaky.
+- **Prevention** — manage *perception*, not just math
+  ([perception.md](./perception.md)): pseudo-random distribution (PRD,
+  the variance-reducing proc model), drop-side guaranteed-after-N,
+  shuffle-bags (draw-without-replacement), a kill/attempt counter and
+  "guaranteed within X" messaging, and a proper CSPRNG. Round displayed
+  odds (7–8%, not 7.1253%).
+
+## 16. The drop-rate lie (compliance)
+
+- **Symptom** — displayed odds don't match the real RNG; a regulator
+  or the community proves it → fines, class actions, trust collapse.
+- **Root cause** — two sources of truth (a marketing odds table vs the
+  server's actual weights), or deliberately hidden/altered rates. Real
+  case: **Nexon / MapleStory** — secretly lowered "Cube" odds (some to
+  zero) since 2010, denied it publicly, fined ~$8.9M by Korea's KFTC
+  (2024), the largest such penalty in Korean history.
+- **Prevention** — the invariant: **displayed odds == the exact odds
+  the server RNG uses, one shared source, never two**; publish odds
+  in-game + online as a percentage where required (Korea hard law since
+  2024; Apple/Google policy); disclose pity; keep an immutable audit
+  log of grants (≥90 days); gate paid loot boxes by region (Belgium).
+  Full checklist in [compliance.md](./compliance.md).
+
 ## Debugging order
 
 When loot misbehaves: (1) run the distribution test on the live
@@ -191,4 +225,8 @@ cell with a guest (#8), (7) save-reload around a chest open (#4),
 - [ ] Daily caps + claim gating bound the farm
 - [ ] Pickup toasts aggregated; chest ceremony non-blocking
 - [ ] Table version handshake; no mid-session table swaps
+- [ ] Perception managed: PRD / guaranteed-after-N / counters if
+      true-random reads as rigged
+- [ ] Monetized: displayed odds == rolled odds; odds published where
+      required; grant audit log; regional gating
 ```
