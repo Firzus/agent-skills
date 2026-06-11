@@ -1,7 +1,11 @@
-# Pitfalls — the 14 classic menu failure modes
+# Pitfalls — the 16 classic menu failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when gamepad focus dies or Esc closes two screens.
+when gamepad focus dies or Esc closes two screens. Deep dives:
+[router-focus.md](./router-focus.md),
+[settings-screens.md](./settings-screens.md),
+[architecture-patterns.md](./architecture-patterns.md),
+[accessibility.md](./accessibility.md), [juice-diegetic.md](./juice-diegetic.md).
 
 ## 1. Focus loss
 
@@ -144,6 +148,38 @@ when gamepad focus dies or Esc closes two screens.
   focus service triad. (PlayStation TRC / Xbox XR both demand graceful
   recovery.)
 
+## 15. The UI perf sink
+
+- **Symptom** — the menu or HUD tanks the frame rate; a hitch every time a
+  number updates; the pause screen drops more frames than gameplay.
+- **Root cause** — a single dirtied element rebuilding the whole UGUI
+  canvas; per-frame property bindings ticking; `TMP_Text.Rebuild()` spikes
+  on every-frame text; UI overdraw; no virtualization on a long list.
+- **Prevention** — the [architecture-patterns.md](./architecture-patterns.md)
+  rules: **split canvases** (static vs frequently-changing); prefer
+  **event-driven bindings** over per-frame property bindings (UE
+  Invalidation Box / Volatile; UITK retained tree); isolate dynamic SDF
+  text on its own sub-canvas (avoid Best Fit); atlas sprites; **virtualize
+  long lists** (ListView / UTileView recycling); profile `Canvas.BuildBatch`
+  / `stat slate`.
+
+## 16. Accessibility bolted on at the end
+
+- **Symptom** — a screen reader hears silence or "Button 3"; color-coded UI
+  is unusable for colorblind players; text doesn't scale; remapping is
+  partial — and fixing it late costs a refactor.
+- **Root cause** — no parallel accessibility node tree, unlabeled widgets,
+  hardcoded input, color-only meaning, no settings-as-data registry —
+  retrofitting requires auditing hundreds of widgets.
+- **Prevention** — build it in from day one
+  ([accessibility.md](./accessibility.md)): a **parallel accessibility node
+  tree** (label/role/value/state per node) bridged to the OS screen reader;
+  **label everything** at creation (icon-only/custom widgets explicitly);
+  the **settings-as-data registry** feeding Vision/Motor/Hearing presets;
+  "never color alone"; text scalable to 200%; full remapping and
+  hold→toggle; a boot-time accessibility screen; a CI check that every
+  focusable element has a label.
+
 ## Debugging order
 
 When menus misbehave: (1) dump the stack state (CommonUI:
@@ -169,4 +205,6 @@ stack/contract mismatch, (2) trace who holds focus and who last moved it
 - [ ] Controller disconnect on every screen: pause + prompt + recovery
 - [ ] Pseudo-loc pass: nothing truncates; CJK renders (no tofu)
 - [ ] Safe-area + text-size matrix on TV distance
+- [ ] UI perf profiled: canvases split / bindings event-driven; no rebuild hitch
+- [ ] Accessibility: node tree + labels + presets + screen-reader tested
 ```
