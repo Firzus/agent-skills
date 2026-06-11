@@ -1,8 +1,12 @@
-# Pitfalls — the 14 classic co-op failure modes
+# Pitfalls — the 16 classic co-op failure modes
 
 Each: symptom → root cause → prevention, with real incidents where
 documented. Read before designing; re-read when a late joiner sees
-closed chests or two players claim the same reward.
+closed chests or two players claim the same reward. Session/authority
+detail is in [session-authority.md](./session-authority.md), replication
+and the content matrix in [replication.md](./replication.md), the wider
+netcode landscape in [netcode-models.md](./netcode-models.md), and co-op
+design/UX in [coop-design.md](./coop-design.md).
 
 ## 1. The host advantage
 
@@ -168,6 +172,44 @@ closed chests or two players claim the same reward.
   cost, RTS territory). Corollary: **the AI belongs to the server**;
   a client never decides an AI state change.
 
+## 15. The netcode-model mismatch
+
+- **Symptom** — combat feels terrible online despite the architecture
+  being "correct": a precise shooter has unfair hit-reg; a fighting
+  game stutters and freezes; an RTS desyncs after ten minutes; the
+  Genshin-style client-trusted model gets exploited the moment PvP or
+  trading is added.
+- **Root cause** — the wrong netcode model for the genre. The dedicated-
+  instance + client-trusted-PvE model fits latency-tolerant co-op PvE
+  and *nothing else*. A competitive shooter needs server-authoritative
+  **lag compensation** (favor-the-shooter rewind); a fighting game needs
+  **rollback** (determinism + state save/load); an RTS needs
+  **deterministic lockstep** (fixed-point + checksums).
+- **Prevention** — pick the model by trust × scale × genre up front
+  ([netcode-models.md](./netcode-models.md)): protect persistence
+  server-hard always; add lag-comp the moment hit-reg fairness matters;
+  add rollback only if you can make the sim deterministic and
+  serializable; never bolt PvP/trading onto a client-trusted PvE model
+  without moving outcome authority to the server.
+
+## 16. Co-op designed as a single-player afterthought
+
+- **Symptom** — co-op "works" but isn't fun: one player carries while
+  the other watches; players never need each other; a downed friend
+  across the map is just an annoyance; strangers can't communicate
+  without voice; a join/leave causes a jarring difficulty jump.
+- **Root cause** — the *design* (not the netcode) ignored co-op:
+  self-sufficient mechanics (no interdependence), static headcount
+  difficulty multipliers, no pingless comms, shared loot that rewards
+  the faster looter, no per-player skill assist.
+- **Prevention** — the design craft in [coop-design.md](./coop-design.md):
+  build **interdependence** (neither player self-sufficient); a
+  **room-based** drop-in model with empowerment-without-invalidation;
+  **performance-based** encounter scaling (not headcount multipliers);
+  **pingless context comms** (the Apex model) for the stranger path;
+  **personal/instanced loot** and **per-player assist** to absorb skill
+  disparity; a forgiving **downed/revive** economy.
+
 ## Debugging order
 
 When co-op misbehaves: (1) join late into a heavily-mutated world and
@@ -176,7 +218,10 @@ diff against the store (#2), (2) play as guest at emulated 200 ms
 the host mid-encounter (#8), (5) trigger a host dialogue while guests
 fight (#10), (6) let a session idle 15 minutes and compare enemy
 positions across clients (#14), (7) drop the connection mid-claim and
-reconnect (#13), (8) profile bandwidth in the densest camp (#12).
+reconnect (#13), (8) profile bandwidth in the densest camp (#12), (9)
+stress the chosen netcode model against the genre's worst case — precise
+hit-reg / frame-perfect input / 10-minute determinism (#15), (10)
+playtest with a skill-mismatched stranger pair, mics muted (#16).
 
 ## Ship checklist
 
@@ -199,4 +244,8 @@ reconnect (#13), (8) profile bandwidth in the densest camp (#12).
 - [ ] AI server-owned; periodic snapshots overwrite drift
 - [ ] Emulated lag/loss test pass (100/200/300 ms, 1-5% loss)
 - [ ] Solo treated as a one-player session (no retrofit debt)
+- [ ] Netcode model justified by genre (lag-comp / rollback / lockstep
+      only if the design demands it); persistence server-hard regardless
+- [ ] Co-op design: interdependence, pingless comms, per-player assist,
+      performance-based scaling, forgiving revive (stranger pair tested)
 ```
