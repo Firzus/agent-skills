@@ -1,7 +1,9 @@
-# Architecture — solver, states, ground, feel, animation
+# Solver & states — collide-and-slide, the HSM, ground, jump, traversal
 
 The components of a production character controller, with shipped-game
-evidence. All numbers are **starting points — tune by playtest**.
+evidence. All numbers are **starting points — tune by playtest**. The
+FPS/momentum movement camp is in [fps-movement.md](./fps-movement.md); the
+animation/feel/accessibility layer in [animation-feel.md](./animation-feel.md).
 
 ## Collide-and-slide (the solver)
 
@@ -23,6 +25,9 @@ UE `SafeMoveUpdatedComponent`, Godot `move_and_slide`, Fauerby 2003):
   small → stuck; too large → jitter and visible hover.
 - **Bound depenetration impulses** — uncapped ejection velocity is how Sea
   of Thieves' "ladder launching" exploit happened.
+- Note: step-4's plane projection is the *same math* behind FPS surf
+  ([fps-movement.md](./fps-movement.md)) — surf just never enters the
+  grounded state.
 
 ## Movement state machine
 
@@ -63,7 +68,8 @@ transition to Airborne/Grounded. No terminal states without timeouts.
   stairs), sweep down and snap rather than entering falling — otherwise the
   character bunny-hops down slopes. Suppress snapping the frame a jump
   fires. UE keeps the capsule floating ~2 cm above the floor and re-adjusts
-  every frame.
+  every frame. (Movement shooters deliberately *invert* this to enable
+  bhop/surf — [fps-movement.md](./fps-movement.md).)
 - **Moving platforms — basing, not parenting**: record the floor object +
   local offset, apply the base's delta transform (position + yaw only)
   before the character's own move; simulate platforms **before** the
@@ -92,7 +98,8 @@ g  = 2h / t²        v0 = 2h / t        (h = jump height, t = time to apex)
 - **Forgiveness is part of the design**: coyote time (~100–200 ms in 3P)
   and jump buffering (~120 ms), per Thorson's "Celeste & Forgiveness" —
   every window widened slightly in the player's favor, kept below conscious
-  perception (≤ ~150 ms).
+  perception (≤ ~150 ms). Expose these as accessibility sliders
+  ([animation-feel.md](./animation-feel.md)).
 
 ## Traversal states
 
@@ -129,7 +136,8 @@ on **composition**:
 - Each verb (glide, grapple, dash, region-specific traversal) is a
   self-contained unit: own state, activation/deactivation predicates, tick
   (Hazelight's "Capabilities", GDC 2025 — how It Takes Two/Split Fiction
-  ship hundreds of one-off mechanics).
+  ship hundreds of one-off mechanics). FPS wall-run/dash/bullet-jump are the
+  same model ([fps-movement.md](./fps-movement.md)).
 - **Composition rules**: (1) verbs never write position — they output
   desired velocity/state requests into the shared solver; (2) a single
   arbitration point (priority list or blocking tags) decides the active
@@ -144,7 +152,9 @@ on **composition**:
 - **Code drives motion; animation visualizes it.** The controller publishes
   speed, local-space direction, grounded flag, vertical velocity, state id,
   turn rate. Foot sliding is fixed visually (stride warping, IK) — never by
-  giving animation authority over position.
+  giving animation authority over position. (The full locomotion-animation
+  stack — blend trees, motion matching, foot IK — is in
+  [animation-feel.md](./animation-feel.md).)
 - **Root motion** is reserved for committed, contact-rich actions (melee,
   mantles, knockbacks): treat it as a **proposed velocity fed into the
   solver**, never a position set. On animation cancel, resync the mesh to
@@ -169,7 +179,9 @@ on **composition**:
 - All exponential damping as `1 - exp(-k*dt)`, never per-frame `lerp(a,b,k)`.
 - Use semi-implicit Euler (or better) — naive integration gives different
   jump heights at different frame rates.
-- **Test at 30 and 144 fps systematically.**
+- **Test at 30 and 144 fps systematically.** (Frame-rate-coupled movement
+  tech in FPS games is the explicit counter-example —
+  [fps-movement.md](./fps-movement.md).)
 
 ## Character–world interaction
 
@@ -194,4 +206,6 @@ Unity CharacterController manual + KCC (St-Amand) · PhysX CCT docs ·
 Fauerby *Improved Collision Detection and Response* · Naughty Dog Uncharted
 4 climbing + Gregory state scripts (GDC 2009) · *Breaking Conventions with
 BotW* (GDC 2017) · Hazelight *Capabilities* (GDC 2025) · Toyful Games
-floating-capsule deep dive · Genshin stamina wiki/KQM (community).
+floating-capsule deep dive · Genshin stamina wiki/KQM (community). FPS-
+movement sources in [fps-movement.md](./fps-movement.md); animation/feel
+sources in [animation-feel.md](./animation-feel.md).
