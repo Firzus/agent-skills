@@ -8,21 +8,34 @@ description: >-
   completion gates, reveal), loading screens with honest progress, the full
   online flow (auth, server select, resource download gates, enter-world
   handshake, queues, reconnection, forced logout), returning flows (logout
-  teardown, soft reset, New Game+), and cinematic contexts with guaranteed
-  state restore. References: Genshin Impact's documented login-to-world flow
-  and the bootstrap+persistent+additive scene pattern. Use when designing
+  teardown, soft reset, New Game+), cinematic contexts with guaranteed state
+  restore; the loading/lifecycle tech (async loading and the background-load/
+  main-thread-activate split, time-slicing, the double-resident memory peak,
+  mip convergence, PSO/shader-stutter warmup, the app suspend/resume model
+  and Quick Resume, platform cert — TRC/TCR/XR, patching and delta updates);
+  and the player-facing flow design (FTUE and time-to-fun, the title/attract/
+  reactive-menu flow, live-service session flow and the "popups before play"
+  critique, the UX of loading and waiting — progress-bar psychology, hidden
+  loads, playable loading screens, suspend-resume and save-state UX, error
+  and disconnect/queue UX). References: Genshin Impact's documented
+  login-to-world flow, the bootstrap+persistent+additive scene pattern,
+  Half-Life/God of War (cold-open FTUE), FFXIV (queue UX). Use when designing
   boot sequences, scene loading flow, loading screens, login flows, level
-  transitions, or when the second login behaves differently from the first.
+  transitions, onboarding, suspend/resume, PSO warmup, or when the second
+  login behaves differently from the first, the game stutters on first
+  traversal, or it crashes on resume.
 ---
 
 # Scene Flow Manager
 
 Build the application flow of a game: boot → title → (login) → world, and
-every transition between contexts. References: Genshin Impact's documented
-client flow (dispatch → gate → EnterScene handshake) and the bootstrap +
-persistent managers + additive content pattern. Excluded (separate skills):
-in-world spatial streaming (`open-world-streaming`), the screens inside a
-context (`menu-ui-manager`).
+every transition between contexts — plus the loading/lifecycle tech
+underneath and the player-facing flow design around it. References: Genshin
+Impact's documented client flow (dispatch → gate → EnterScene handshake),
+the bootstrap + persistent managers + additive content pattern, Half-Life/
+God of War (cold-open onboarding), and FFXIV (queue UX). Excluded (separate
+skills): in-world spatial streaming (`open-world-streaming`), the screens
+inside a context (`menu-ui-manager`).
 
 ## The architecture rules
 
@@ -57,6 +70,15 @@ context (`menu-ui-manager`).
 Any step can fail → abort cleanly to a safe context (Title) with an error
 dialog; never a half-state. New requests during a transition are rejected
 or queued — explicitly.
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [fsm-composition.md](./fsm-composition.md) | The context FSM (context vs screen, ownership, the one API), scene composition (bootstrap + persistent + additive, diff-based transitions), the atomic transition refinements, loading screens & honest progress, the boot dependency graph, the online flow (the Genshin EnterWorld handshake, queue/maintenance/reconnect), returning flows, cinematic contexts |
+| [loading-lifecycle.md](./loading-lifecycle.md) | Async loading (the background-load/main-thread-activate split, time-slicing, asset handles), memory during transitions (the double-resident peak, mip convergence), PSO/shader-stutter warmup, the app suspend/resume model (Xbox PLM, Quick Resume, mobile process death), platform cert (TRC/TCR/XR, public only), patching & delta updates |
+| [flow-design.md](./flow-design.md) | FTUE & onboarding (time-to-fun, cold-open, the veteran-game problem), the title/attract/reactive-menu flow, live-service session flow ("popups before play", FOMO, hubs), the UX of loading & waiting (progress-bar psychology, hidden loads, playable loading screens), suspend-resume & save-state UX, error/disconnect/queue UX |
+| [pitfalls.md](./pitfalls.md) | 16 failure modes (symptom → cause → prevention) with debugging order and ship checklist |
 
 ## Build order (4 shippable tiers)
 
@@ -109,7 +131,8 @@ Tier 4 — Online flow
 | Saving icon | visible ≥ ~1 s even if the write is faster | community/cert-adjacent |
 
 NDA'd values (PlayStation TRC, Lot Check timings, Genshin's AFK kick) are
-flagged in [architecture.md](./architecture.md) — never state them as fact.
+flagged in [loading-lifecycle.md](./loading-lifecycle.md) — never state
+them as fact.
 
 ## Engine mapping
 
@@ -126,12 +149,14 @@ flagged in [architecture.md](./architecture.md) — never state them as fact.
 
 ## Failure modes
 
-The 14 classic flow bugs (second-login state leaks, init races, scattered
+The 16 classic flow bugs (second-login state leaks, init races, scattered
 LoadScene calls, interrupted transitions, memory never released, loading
 screen too late, lying progress bars, unlocked input, audio bleed, double
 bootstrap, token expiry mid-load, save corruption on quit-during-transition,
-cutscenes not restoring state, editor-vs-build divergence) are cataloged in
-[pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
+cutscenes not restoring state, editor-vs-build divergence, **shader/PSO
+stutter on first traversal**, and **suspend/resume mishandled**) are
+cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
+prevention.
 
 ## Related skills
 

@@ -1,7 +1,10 @@
-# Pitfalls — the 14 classic flow failure modes
+# Pitfalls — the 16 classic flow failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when the second login behaves differently from the first.
+when the second login behaves differently from the first. Flow
+engineering is in [fsm-composition.md](./fsm-composition.md), the loading/
+lifecycle tech in [loading-lifecycle.md](./loading-lifecycle.md), and the
+player-facing flow design in [flow-design.md](./flow-design.md).
 
 ## 1. "The second login differs from the first"
 
@@ -154,13 +157,52 @@ when the second login behaves differently from the first.
   default maps). Game code never assumes "I arrived via Boot" unless the
   shim guarantees it.
 
+## 15. Shader/PSO stutter on first traversal
+
+- **Symptom** — random multi-frame freezes the first time the player
+  enters a new area, uses a new weapon, or sees a new effect; smooth on
+  the second playthrough; QA never hit it because they replayed built
+  caches.
+- **Root cause** — PSOs (shader + pipeline state) compiled **just-in-time
+  at draw time** on DX12/Vulkan (100+ ms each) instead of warmed up; no
+  bundled PSO cache; QA coverage didn't gather the missing permutations.
+- **Prevention** — the warmup discipline in
+  [loading-lifecycle.md](./loading-lifecycle.md): a **bundled PSO cache**
+  recorded from dev playthroughs + engine **PSO precaching**; **gate the
+  loading screen** until precompiles drain (UE: `NumPrecompilesRemaining
+  == 0`); render stream-in objects with a default material until their
+  PSO is ready; measure PSO coverage in QA. Treat shippable stutter as a
+  QA-coverage gap, not a driver problem.
+
+## 16. Suspend/resume mishandled
+
+- **Symptom** — the game crashes or hard-hangs when resumed from Quick
+  Resume or after the console slept; a weeks-old resumed session shows a
+  stale token / dead connection / T-pose; mobile process death loses
+  progress; cert fails on the suspend/resume test.
+- **Root cause** — the app assumes it's never backgrounded: no auto-save
+  on suspend, no fast suspend acknowledgement, no stale-session detection
+  on resume, mobile state never persisted before process death.
+- **Prevention** — the lifecycle contract in
+  [loading-lifecycle.md](./loading-lifecycle.md): **auto-save on suspend**
+  (within the ~1–5 s platform budget; release GPU buffers); on resume,
+  **revalidate the session/token/version** before re-entering gameplay
+  (the same end-of-transition gate as #11) and route a dead connection to
+  Reconnect/Title, never a crash; on mobile, persist restorable state
+  before `onPause`/backgrounding (don't rely on `onDestroy`). Pass the
+  public XR-001 suspend/resume test (no crash, input recognized, no lost
+  save).
+
 ## Debugging order
 
 When the flow misbehaves: (1) log every transition with its step-by-step
 progress — most bugs name themselves, (2) run the double login/logout
 smoke test (#1), (3) play from an arbitrary editor scene (#14), (4) diff
 memory between two visits to the same context (#5), (5) quit at every
-step of a transition (#4/#12), (6) pull the network cable mid-load (#11).
+step of a transition (#4/#12), (6) pull the network cable mid-load (#11),
+(7) play a fresh build cold and watch for first-traversal hitches with a
+PSO/shader-comp counter (#15), (8) suspend/resume (or Quick Resume) at
+every context, including after a long sleep (#16).
 
 ## Ship checklist
 
@@ -176,4 +218,7 @@ step of a transition (#4/#12), (6) pull the network cable mid-load (#11).
       under 2/3 min with indicators (XR-001)
 - [ ] Crash loop (3 failed boots) offers safe mode
 - [ ] First-boot and warm-boot paths both tested
+- [ ] Cold-build first-traversal pass: PSO warmup gated, no shader stutter
+- [ ] Suspend/resume + Quick Resume at every context: no crash, no lost
+      save, stale session re-validated (XR-001)
 ```

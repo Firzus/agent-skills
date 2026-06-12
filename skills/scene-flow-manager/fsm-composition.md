@@ -1,7 +1,13 @@
-# Architecture — FSM, composition, transitions, boot, online
+# FSM & composition — contexts, scenes, transitions, boot, online
 
-The components of a production game flow. All numbers are **starting
-points**; the only public citable cert ceilings are Microsoft's (XR-001).
+The flow engineering: the context FSM, scene composition, the atomic
+transition, boot, the online flow, returning flows, and cinematic
+contexts. All numbers are **starting points**; the only public citable
+cert ceilings are Microsoft's (XR-001). The loading *tech* (async,
+PSO warmup, suspend/resume, cert, patching) is in
+[loading-lifecycle.md](./loading-lifecycle.md); the player-facing flow
+*design* (FTUE, title, loading/error UX) in
+[flow-design.md](./flow-design.md).
 
 ## The context FSM
 
@@ -37,7 +43,8 @@ Per-context content sets (additive) — declared as data per context:
   what's missing, keep the intersection untouched — transitions are pure
   data, shared scenes survive (faster transitions for free).
 - Track every loaded scene/handle explicitly in the composer — it owns
-  them and releases them at teardown.
+  them and releases them at teardown (the handle-lifetime rules are in
+  [loading-lifecycle.md](./loading-lifecycle.md)).
 
 ## The atomic transition
 
@@ -53,10 +60,10 @@ The 7-step sequence (see SKILL.md). Key refinements:
   ~100–500 ms, content-dependent — the loading screen is the only place
   this is acceptable.
 - **Completion gates are barriers, never timers**: systems-ready, PSO
-  warmup remaining == 0, texture streaming converged, server ack
-  (online). UE's `ILoadingProcessInterface` (CommonLoadingScreen) is this
-  concept productized: any system registers as a reason to hold the
-  screen.
+  warmup remaining == 0 ([loading-lifecycle.md](./loading-lifecycle.md)),
+  texture streaming converged, server ack (online). UE's
+  `ILoadingProcessInterface` (CommonLoadingScreen) is this concept
+  productized: any system registers as a reason to hold the screen.
 - **Failure mid-transition**: abort to a safe context (Title) with an
   error dialog; teardown must be re-executable; log the exact failing
   step.
@@ -64,12 +71,14 @@ The 7-step sequence (see SKILL.md). Key refinements:
 ## Loading screens & progress
 
 - **Types**: fade-only (<1–2 s), full screen with progress + tips (the
-  live-service standard), interactive (the Namco patent expired in 2015),
-  diegetic/masked (corridors, GoW's cutscene-as-loading-mask).
+  live-service standard), interactive (the Namco patent expired in 2015 —
+  [flow-design.md](./flow-design.md)), diegetic/masked (corridors, GoW's
+  cutscene-as-loading-mask).
 - **Honest progress**: real progress is erratic — the standard is
   **weighted phases, smoothed, monotonic by construction** (clamp to max
   reached), with a reserved tail (~90–100%) for activation + warmup. A
-  determinate bar that accelerates near the end is perceived as faster.
+  determinate bar that accelerates near the end is perceived as faster
+  (the progress-bar psychology is in [flow-design.md](./flow-design.md)).
   If you can't be honest, show an indeterminate indicator instead of a
   lie.
 - **Indicator by wait length** (NN/g): <1 s nothing · 1–3 s spinner ·
@@ -79,7 +88,7 @@ The 7-step sequence (see SKILL.md). Key refinements:
 - **Cert ceilings (public, Xbox XR-001)**: any non-interactive screen
   >20 s = fail; loading >2 min without progress indicator = fail; >3 min
   with = fail. PlayStation TRC and Nintendo figures are **NDA'd** — never
-  state circulated numbers as fact.
+  state circulated numbers as fact ([loading-lifecycle.md](./loading-lifecycle.md)).
 - **What runs during loading**: PSO/shader warmup (gate on it), asset/pool
   prewarm, save migration, audio bank loads, server handshakes.
 
@@ -97,7 +106,8 @@ The 7-step sequence (see SKILL.md). Key refinements:
   trademark license).
 - **First boot vs warm boot**: first adds EULA/consents, save container
   creation, language select, calibration, bundled PSO compile (gate on
-  it). The flow parameterizes the branch.
+  it). The flow parameterizes the branch (FTUE design:
+  [flow-design.md](./flow-design.md)).
 - **Crash recovery**: corrupted-save detection (checksum/version) → user
   dialog (restore backup / reset), never silent; N consecutive failed
   boots (~2–3) → safe mode / graphics reset offer. Data loss is a cert
@@ -122,18 +132,22 @@ Title → Auth (account/token; silent refresh at ~75-80% of token lifetime)
 ```
 
 - **Queue**: a waiting context with position (estimated time only when
-  confident). **Maintenance**: signaled by dispatch pre-auth → message →
-  Title. **ForcedLogout** (session invalidated, concurrent login, kick):
-  full clean teardown → Title + dialog — never a partial return.
+  confident — the queue UX is in [flow-design.md](./flow-design.md)).
+  **Maintenance**: signaled by dispatch pre-auth → message → Title.
+  **ForcedLogout** (session invalidated, concurrent login, kick): full
+  clean teardown → Title + dialog — never a partial return.
 - **Reconnection**: N attempts (3–7) with exponential backoff + jitter
   (1/2/4/8 s, cap ~32 s — the AWS guidance; jitter prevents reconnection
   storms); servers typically keep a grace window with the avatar
   in-world; failure → Title.
 - **Session revalidation at the END of long transitions** — tokens expire
-  mid-load; re-validate before activating gameplay.
+  mid-load; re-validate before activating gameplay. This is also the
+  Quick-Resume stale-session recovery
+  ([loading-lifecycle.md](./loading-lifecycle.md)).
 - **Per-step user-facing error codes** (the Genshin model: "Error 4206" +
   plain sentence + suggested action): auth failed / version mismatch /
-  server full / maintenance / network lost are *distinct* messages.
+  server full / maintenance / network lost are *distinct* messages (the
+  error-UX craft is in [flow-design.md](./flow-design.md)).
 - AFK timeouts: the 10–30 min band is community convention (Genshin's
   "15 min" is lore, not documented) — pick yours, route through the
   ForcedLogout path.
@@ -146,8 +160,7 @@ Title → Auth (account/token; silent refresh at ~75-80% of token lifetime)
   Mitigation: an `IResettable`/`ISessionScoped` interface on every
   persistent manager, `ResetSession()` called by the FSM on logout; ban
   unregistered mutable statics; **smoke-test two login/logout cycles in
-  CI**. (Unity bonus: the same reset serves disabled domain reload via
-  `RuntimeInitializeOnLoadMethod(SubsystemRegistration)`.)
+  CI**.
 - **Character/server switch**: logout variant returning to Lobby; tear
   per-character state, keep account-level (token, settings).
 - **Soft reset** (bonfire/checkpoint): declared *partial* teardown —
@@ -164,29 +177,28 @@ Title → Auth (account/token; silent refresh at ~75-80% of token lifetime)
 - **Enter takes a state snapshot** (input mode, HUD, time scale, audio
   snapshot, camera); **exit restores it — guaranteed**, including on skip
   and on error (try/finally semantics). Never mutate globals outside
-  enter/exit.
+  enter/exit (the cutscene side is `cinematic-system`).
 - **Skip = jump to the final state, not an interruption**: every step
-  knows how to complete instantly (positions, camera, inventory, flags) —
-  otherwise: half-faded UI, orphaned cameras, missing items.
+  knows how to complete instantly (positions, camera, inventory, flags).
 - A cutscene ending elsewhere = its exit is a `RequestTransition` to the
   new context, with the target world loading *during* the cutscene (the
   cutscene is the loading mask — GoW/FFXIV pattern).
 
 ## NDA'd / undocumented — flag, never state
 
-PlayStation TRC timings (boot, save icons, loading), Nintendo Lot Check,
-Genshin's AFK kick value and handshake internals, tip-rotation standards,
-exact anti-flash minimums. The only public citable cert numbers are
-Microsoft's 20 s / 2 min / 3 min.
+PlayStation TRC timings, Nintendo Lot Check, Genshin's AFK kick value and
+handshake internals, tip-rotation standards, exact anti-flash minimums.
+The only public citable cert numbers are Microsoft's 20 s / 2 min / 3 min
+(full cert detail in [loading-lifecycle.md](./loading-lifecycle.md)).
 
 ## Sources
 
 Game Programming Patterns (State, Singleton) · Unity 6 docs (SceneManager,
-Addressables memory, Awaitable, GraphicsStateCollection, domain reload,
-splash) · Epic docs (travel, GameInstance subsystems, PSO precaching tech
-blog, Level Streaming Hitching Guide) · Lyra CommonLoadingScreen ·
-WizardCell Persistent Data Compendium · Grasscutter/hk4e ecosystem (the
-documented Genshin dispatch→gate→EnterScene flow) · Microsoft GDK XR-001
-(public) · NN/g response times + progress indicators · AWS Builders'
-Library (backoff + jitter) · Tom Looman (PSO) · CodeSmile bootstrap ·
-Mortoray editor bootstrap shim.
+Addressables, Awaitable, domain reload, splash) · Epic docs (travel,
+GameInstance subsystems, Level Streaming Hitching Guide) · Lyra
+CommonLoadingScreen · Grasscutter/hk4e ecosystem (the documented Genshin
+dispatch→gate→EnterScene flow) · Microsoft GDK XR-001 (public) · NN/g
+(response times, progress indicators) · AWS Builders' Library (backoff +
+jitter) · CodeSmile bootstrap · Mortoray editor bootstrap shim. Loading-
+tech and cert sources in [loading-lifecycle.md](./loading-lifecycle.md);
+flow-design sources in [flow-design.md](./flow-design.md).
