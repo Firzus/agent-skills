@@ -1,183 +1,155 @@
 ---
 name: loot-drop-system
 description: >-
-  Architecture blueprint for loot tables, world drop distribution, and
-  claim gating in open-world games: layered weighted tables (shared
-  sub-tables, null entries, guaranteed slots, conditionality via table
-  selection and actor substitution), world distribution (one-time placed
-  containers, per-node respawn timestamps, the three revival policies),
-  the drop execution pipeline (scatter, pickup classes, despawn rules,
-  the max-live-drops budget), and claim gating (kill-then-claim with
-  energy validation, per-player co-op instancing, idempotent claims).
-  References: Genshin Impact (Grasscutter drop data, verified co-op
-  rules) and BotW/TotK (datamined bdrop tables, ActorLimiter, revival
-  policies). Use when designing or building enemy drops, chests,
-  gathering nodes, respawn systems, loot distribution, or when rare
-  drops despawn unseen, weighted selection biases silently, or co-op
-  players grief one-time rewards.
+  Architecture blueprint for loot tables, world drop distribution, claim
+  gating, drop perception, and loot-box compliance across open-world, ARPG,
+  looter-shooter, and MMO games: layered weighted tables (shared sub-tables,
+  null entries, guaranteed slots, recursive treasure classes, NoDrop
+  player-scaling, ilvl/mlvl gating, magic find, conditionality via table
+  selection and actor substitution), world distribution and respawn (one-time
+  flags, per-node timestamps, the three revival policies, the never-on-screen
+  invariant), the drop execution pipeline (scatter, despawn, the max-live-drops
+  budget), claim gating and multiplayer loot distribution (kill-then-claim,
+  personal vs FFA vs need/greed vs master-looter/loot-council, the verified
+  co-op matrix, loot locks, idempotent claims), drop perception (the gambler's
+  fallacy, pseudo-random distribution, shuffle-bags, drop ceremony, near-miss
+  ethics, transparency), and regulatory compliance (China/Korea odds
+  disclosure, Apple/Google policy, loot-box gambling law, server-authoritative
+  anti-cheat, the Nexon drop-rate-lie fine). References: Genshin (Grasscutter
+  drop data), BotW/TotK (bdrop, ActorLimiter), Diablo II/III/IV, Path of Exile,
+  Destiny 2, WoW, Warframe, with Unity 6 / UE5 mappings. Use when designing or
+  building enemy drops, chests, gathering nodes, respawn, loot distribution,
+  drop rates, or when rare drops despawn unseen, weighted selection biases
+  silently, co-op players grief rewards, players call the RNG rigged, or you
+  must disclose drop odds.
 ---
 
 # Loot & Drop System
 
-Build the loot layer of an open-world game — layered tables, world
-distribution/respawn, and claim gating. Scope: simple rates (no pity /
-bad-luck protection — see `progression-economy` for deterministic
-economies) and no rolled item generation (artifact substats live
-elsewhere). References: Genshin Impact (server model, Grasscutter drop
-data, officially verified co-op rules) and BotW/TotK (datamined bdrop
-tables, ActorLimiter, revival policies).
+Build the loot layer of a game — layered tables, world distribution/respawn,
+the drop pipeline, claim gating, drop perception, and (for monetized random
+loot) regulatory compliance. The skill spans four traditions and tells you
+which patterns are shared:
+
+- **Open-world** (Genshin via Grasscutter drop data + verified co-op rules;
+  BotW/TotK via datamined bdrop tables, ActorLimiter, revival policies).
+- **ARPG / looter** (Diablo II Treasure Classes, magic find, D3 smart loot,
+  D4 drop pools, PoE rarity/quantity — the depth references).
+- **Multiplayer/MMO** (WoW loot-system history, Destiny 2 instanced drops,
+  loot locks, master-looter vs personal vs group loot).
+- **Monetized** (drop-rate disclosure law, loot-box gambling classification,
+  server-authoritative anti-cheat).
+
+Excluded (separate skills): deterministic pity/bad-luck *currency* economies
+(`progression-economy`) and rolled item *stat generation* (substats live in
+`inventory-equipment`). This skill owns the *drop event*, not the item's stats.
 
 ## The architecture rule
 
-**Tables are layered data, drops are budgeted world objects, and a
-claim is a transaction.**
+**Tables are layered data, drops are budgeted world objects, a claim is a
+transaction — and in any monetized or online game the server rolls, never the
+client.**
 
 ```
-TABLES (layered, weighted, shared)
-  entries = {item | sub-table ref}, INTEGER weight, quantity range,
-  plus the NULL entry (nothing drops) as a first-class weighted row
-  guaranteed slots (always-roll tables) stack ALONGSIDE chance slots —
-  BotW tiers don't raise percentages, they ADD guaranteed tables
-  shared sub-tables (CommonOres, RegionalHerbs) referenced by many
-  parents; thin regional overrides — never hand-copied tables
-  conditionality by THREE mechanisms, prefer the last two:
-    (a) condition fields in entries (industry default)
-    (b) TABLE SELECTION by context — BotW: the death mode picks the
-        table (Normal / Iced / Burnout / per-ammo-type)
-    (c) ACTOR SUBSTITUTION — BotW tiers are different actors with
-        their own tables; Genshin ships multiple monster IDs to cut
-        drops in quest contexts
-  scaling shifts entities across reward tiers; it never edits tables
-  (Genshin: probability and material tier scale with enemy level —
-  quantity does not)
-
-WORLD DISTRIBUTION (placed vs spawned)
-  one-time placed (chests, koroks): persistent flags, NEVER respawn
-  resource nodes: per-node timestamps (delay-insensitive — late
-  harvesting doesn't shift the rhythm), real-time independent of
-  daily resets
-  enemies/weapons: a reset policy per category — event-driven (blood
-  moon), probabilistic (1%/60 s off-area), daily, never
-  the invariant: NOTHING respawns on screen
-
-EXECUTION (drops are budgeted)
-  on-death: evaluate the selected table, spawn with data-driven
-  position/impulse; settle-then-freeze physics
-  pickup classes: auto-by-contact (currency, orbs) vs interact
-  despawn: placed-idle persists, dropped despawns on unload;
-  the MAX-LIVE-DROPS budget with oldest-eviction and a
-  priority/rarity exemption tag (BotW ships this literally:
-  10/10/20 caps + PriorityMaterial)
-
-CLAIM (a transaction, not a pickup)
-  kill-then-claim: victory spawns a CLAIMABLE WORLD OBJECT; the
-  claim validates the energy cost server-side (nothing drops on
-  death itself)
-  one-time claims: atomic flag+grant (the progression-economy
-  idempotent discipline); per-player claim state in co-op
+TABLES         weighted entries (integer weights) + null rows + sub-table refs
+               + guaranteed slots; recursive (treasure classes); ilvl-gated
+WORLD          one-time flags (never respawn) vs per-node timestamps vs
+               policy-driven respawn; NOTHING respawns on screen
+EXECUTION      data-driven scatter, settle-then-freeze, the max-live-drops budget
+CLAIM          kill-then-claim; server-validated cost; per-player co-op state;
+               idempotent (atomic flag+grant)
 ```
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [tables.md](./tables.md) | Layered weighted tables, the null entry, guaranteed slots, recursive treasure classes (D2), NoDrop player-scaling, ilvl/mlvl gating, magic find & rarity/quantity modifiers, conditionality (table selection, actor substitution), scaling without editing tables, the two datamined formats |
+| [distribution.md](./distribution.md) | One-time placed vs spawned, per-node respawn timestamps, the three revival policies, the never-on-screen invariant, the execution pipeline (scatter, physics, pickup classes, despawn), the max-live-drops budget, rare-drop guards |
+| [claims-coop.md](./claims-coop.md) | Kill-then-claim, server-validated cost, idempotent claims, the verified co-op matrix, multiplayer loot distribution models (personal/FFA/round-robin/need-greed/master-looter/loot-council/DKP), loot locks & weekly caps, anti-farm bounds |
+| [perception.md](./perception.md) | The gambler's fallacy and drought math, pseudo-random distribution (PRD) with the C-table, drop-side bad-luck protection, shuffle-bags, drop ceremony and the "beam of disappointment", near-miss ethics, transparency and "guaranteed within X" |
+| [compliance.md](./compliance.md) | Drop-rate disclosure (China/Korea law, Apple/Google policy, ESRB/PEGI labels), loot-box gambling classification by jurisdiction, server-authoritative anti-cheat for rolls, seed/replay protection, audit logging, the Nexon drop-rate-lie fine, a compliance checklist |
+| [pitfalls.md](./pitfalls.md) | 16 failure modes (symptom → cause → prevention) with real incidents (Weightgate, D3 gold dupe, Nexon, the despawned rare), debugging order, ship checklist |
 
 ## The co-op matrix (verified)
 
-Decide instanced-vs-shared **per category, explicitly** — the shipped
-Genshin model is complete:
+Decide instanced-vs-shared **per category, explicitly** — the shipped Genshin
+model is complete:
 
 | Category | Rule |
 | --- | --- |
-| One-time world rewards (chests, oculi, investigation) | **host-only** (guests can't interact — no loss possible) |
+| One-time world rewards (chests, oculi) | **host-only** (guests can't interact — no loss possible) |
 | Enemy drops, ore | **instanced per player** (each sees their copy) |
 | Plants/specialties | **shared** (first-come; one harvest per session) |
-| Energy-gated claims (bosses, ley lines) | **instanced per player** — each claims with own resin; the boss respawns only after the LAST player claims (HoYoverse-confirmed) |
+| Energy-gated claims (bosses, ley lines) | **instanced per player** — each claims with own resin; the boss respawns only after the LAST player claims |
+
+Full multiplayer distribution taxonomy (FFA / round-robin / need-greed /
+master-looter / loot-council / DKP) in [claims-coop.md](./claims-coop.md).
 
 ## Build order (4 shippable tiers)
 
 ```
 Tier 1 — Tables and rolling
-- [ ] Layered table assets: weighted entries (integer weights),
-      null rows, quantity ranges, sub-table refs, guaranteed slots
+- [ ] Layered table assets: weighted entries (integer weights), null rows,
+      quantity ranges, sub-table refs, guaranteed slots
 - [ ] Seeded per-system RNG stream (deterministic, serializable)
-- [ ] Distribution unit tests: 10^6-roll chi-squared on REAL output
-      (test the sampler, not the config — the Weightgate lesson)
-- [ ] Fallback for empty/all-conditions-false tables (never silent
-      null)
+- [ ] Distribution tests: 10^6-roll chi-squared on REAL sampler output
+- [ ] Server-side roll (or solo roll-at-spawn decision documented)
 Tier 2 — World distribution
-- [ ] One-time containers: persistent ID flags; atomic open
-      (grant-then-flag if not transactional)
-- [ ] Resource nodes: per-node timestamps in the save,
-      delay-insensitive cycles
+- [ ] One-time containers: persistent flags; atomic open
+- [ ] Resource nodes: per-node timestamps; delay-insensitive cycles
 - [ ] Reset policies per category + the never-on-screen check
-      (area/frustum test before any respawn)
-- [ ] Conditionality via table selection + actor substitution
 Tier 3 — Execution pipeline
-- [ ] Drop spawn: data-driven scatter (position mode + impulse),
-      settle-then-freeze, water/edge recovery policy
+- [ ] Drop spawn: data-driven scatter, settle-then-freeze, water/edge policy
 - [ ] Pickup classes (auto radius vs interact) + magnetism
-- [ ] The live-drops budget: caps with oldest-eviction + rarity
-      exemption; rare-drop guards (no despawn for high rarity,
-      beam VFX, minimap ping)
-- [ ] Pickup feedback contract: aggregated toasts ("x5"), chest
-      ceremony, claim UI (hud-system)
-Tier 4 — Claims and co-op
-- [ ] Kill-then-claim: claimable world objects, server-validated
-      energy spend, per-player claim state
-- [ ] The co-op matrix implemented per category
-- [ ] Anti-farm bounds: daily interaction caps, claim gating as the
-      structural bot answer
-- [ ] Solo: roll-at-spawn + RNG-state-in-save (anti save-scum), or
-      accept it explicitly (the BotW stance)
+- [ ] The live-drops budget: caps + oldest-eviction + rarity exemption
+- [ ] Aggregated pickup feedback (hud-system); rarity beams/ceremony
+Tier 4 — Claims, co-op, compliance
+- [ ] Kill-then-claim: claimable objects, server-validated cost, per-player state
+- [ ] The co-op matrix + the distribution model (personal/group/etc.)
+- [ ] Perception: PRD or guaranteed-after-N if true-random feels "rigged"
+- [ ] Monetized: published odds == rolled odds; audit log; regional gating
 ```
 
-## Numbers (starting points — sourced anchors)
+## Key numbers (starting points — sourced anchors)
 
 | Parameter | Value | Anchor |
 | --- | --- | --- |
-| Table formats | BotW bdrop: RepeatNumMin/Max + items with probabilities **summing to 100.0** per table; Grasscutter: weight windows on a 0-10,000 scale + min/maxCount | datamine |
-| Live-drops budget | BotW ActorLimiter: 10 dropped items / 10 player-discarded weapons / 20 enemy drops / 15 amiibo, oldest evicted, `PriorityMaterial` exempt | datamine |
-| Respawn policies | BotW: blood moon (~168 min active play) for enemies/weapons; RevivalRandom 1%/60 s off-area for materials **and ore** (not blood moon — guides are wrong); Genshin: plants 48 h, crystals/fishing 72 h, commons 12-24 h, elites daily 04:00, bosses ~5 s post-claim | datamine/wiki |
-| Drop scaling | probability + tier scale, quantity doesn't (masks 16.8%→42% by level; boss materials mean 1.62→2.56 WL0→WL8); tier thresholds at levels 40+/60+ | wiki |
-| Chest tiers | 0-2 / 2-5 / 5-10 / 10-40 primogems (Common→Luxurious), region-parameterized; **never respawn** | wiki |
-| Claim values | ley line mora 12k→60k (capped at WL6), 20 resin; boss 40; weeklies 30 first 3 then 60 | wiki |
-| Anti-farm caps | 400 elites/day (then zero drops), 100 investigations/day; chest one-time; resin as the structural bound | wiki |
-| Despawn | BotW: idle-placed persists, dropped despawns on area unload; D2's graded timers (10/30 min by rarity) as the historical rare-guard | community/datamine |
+| BotW live-drops budget | 10 items / 10 weapons / 20 enemy drops, oldest evicted, `PriorityMaterial` exempt | datamine |
+| BotW respawn | blood moon ~168 min active (enemies); RevivalRandom 1%/60 s off-area (materials + ore) | datamine |
+| D2 act-boss picks | 7 picks; NoDrop weight shrinks with player count | wiki |
+| D2 magic find | effective = floor(Factor·MF/(Factor+MF)); Factor 250 U / 500 S / 600 R | wiki |
+| D3 smart loot | ~85% class-tailored / ~15% random | D3 2.0.1 |
+| PoE party scaling | +10% IIQ / +40% IIR per member (other drops); killing-blow counts | poewiki |
+| Destiny 2 raid exotic | base ~5% (1KV 10%); Eyes of Tomorrow → 100% pity @ ~20–30 clears | community |
+| PRD (Dota) | listed 25% → C≈0.0847, guaranteed by 12th try; >50% nominal diverges from actual | Dota 2 Wiki |
+| Drought math | 10% drop: P(0 in 20 kills) ≈ 12%; 0.5%: P(0 after 100) ≈ 60.6% | math |
+| Korea disclosure law | mandatory in-game + online odds, % form, since 2024-03-22 | Game Industry Promotion Act |
 
-Flagged — never invent: Genshin pickup radii and despawn timer
-(~10-15 min community only), the auto-pickup class boundary, toast
-timings, generic engine pickup budgets (ActorLimiter is the only
-anchor). Full tables in [architecture.md](./architecture.md).
+Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 
-## Engine mapping
+## Engine mapping (summary)
 
 | Generic block | Unity 6 | UE5 (5.4+) |
 | --- | --- | --- |
-| Tables | ScriptableObject entries (`[SerializeReference]` for item-vs-subtable polymorphism), `OnValidate` weight totals | DataTable rows + `FDataTableRowHandle` refs; **Composite DataTables** for regional overrides; DataRegistry; Instanced Structs (5.5) for row polymorphism |
-| Sampling | Linear cumulative scan fine to ~100 entries; alias method (Walker/Vose) O(1) for huge tables — **integer weights** (float alias instability is documented) | Same algorithms; server rolls, client renders |
-| RNG | `Unity.Mathematics.Random` — seedable struct, per-system streams, Burst-compatible (the save-state option); exclusive upper bounds gotcha | `FRandomStream` — seedable, thread-safe; replicate results not streams (call-order desync trap) |
-| Drop spawning | `UnityEngine.Pool.ObjectPool<T>` (first-party, main-thread); impulse scatter; trigger vs OverlapSphere pickup; MoveTowards magnetism | **No first-party actor pooling** (subsystem + OnAcquire/OnRelease pattern or plugins); GAS is NOT the loot domain; Mass = overkill |
-| Co-op instancing | Mirror/NGO ownership filtering | Replicated pickup actors (budget the network cost: relevancy distance, low NetUpdateFrequency, dormancy); `COND_OwnerOnly` has documented dynamic-toggle traps — the robust pattern: server-side loot list + per-client RepNotify visibility |
-| Streaming | Drops parented to cell lifetime | **Runtime-spawned actors are NOT unloaded by World Partition** (Epic guidance: manual lifetime — destroy on cell unload, respawn via in-cell spawners) |
-| Persistence | Node timestamps + flag sets in the save | SaveGame + per-node timestamps |
+| Tables | SO entries (`[SerializeReference]` polymorphism), `OnValidate` weight totals | DataTable + `FDataTableRowHandle`; Composite DataTables for overrides; Instanced Structs (5.5) |
+| Sampling | linear scan ≤~100 entries; alias method O(1) for huge tables — integer weights | same; server rolls, client renders |
+| RNG | `Unity.Mathematics.Random` (seedable, per-system streams) | `FRandomStream` (replicate results, not streams — call-order desync trap) |
+| Drop spawning | `UnityEngine.Pool.ObjectPool<T>`; impulse scatter | no first-party actor pooling (subsystem pattern); runtime actors NOT unloaded by World Partition |
+| Co-op | Mirror/NGO ownership filtering | server loot list + per-client RepNotify visibility |
 
-## Failure modes
-
-The 14 classic loot bugs (client-side rolling, perceived-broken RNG
-streaks, table drift across regions, save-scum farming, the despawned
-rare, respawn-on-screen, one-time flag leaks, co-op griefing, the
-farming-bot economy hole, drop physics chaos, the invisible drop
-budget, mid-event table edits, notification floods, weighted-selection
-bias — Weightgate) are cataloged in [pitfalls.md](./pitfalls.md) with
-symptom → root cause → prevention and real incidents.
+Full detail in the reference files.
 
 ## Related skills
 
-- `progression-economy` — idempotent grants, RNG-state-in-save,
-  data-version handshakes, energy (resin) as the claim currency.
-- `save-persistence` — one-time flags, per-node timestamps, atomic
-  claim writes.
+- `progression-economy` — idempotent grants, RNG-state-in-save, data-version
+  handshakes, energy (resin) as the claim currency, deterministic pity systems.
+- `save-persistence` — one-time flags, per-node timestamps, atomic claim writes.
 - `world-time-weather` — daily resets, the per-node real-time clocks.
 - `enemy-ai-framework` — tier substitution via the spawn director.
-- `coop-session` — the host-only/instanced/shared matrix is the loot
-  side of its content rules.
-- `inventory-equipment` — rolled instances (roll-at-spawn) land in its
-  item model.
+- `coop-session` — the host-only/instanced/shared matrix is the loot side of
+  its content rules.
+- `inventory-equipment` — rolled instances (roll-at-spawn) land in its item
+  model; shares the server-authoritative dupe-prevention discipline.
 - `open-world-streaming` — drop lifetime vs cell lifecycle.
 - `hud-system` — aggregated pickup toasts, claim UI, rarity beams.

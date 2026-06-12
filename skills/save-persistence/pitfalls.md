@@ -1,7 +1,9 @@
-# Pitfalls — the 14 classic save failure modes
+# Pitfalls — the 16 classic save failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when saves corrupt, bloat, or break on update.
+when saves corrupt, bloat, or break on update. Deep dives:
+[store-model.md](./store-model.md), [serialization.md](./serialization.md),
+[networked.md](./networked.md), [ux-cloud.md](./ux-cloud.md).
 
 ## 1. Serializing runtime objects directly
 
@@ -125,6 +127,37 @@ when saves corrupt, bloat, or break on update.
   (the scene-flow contract); the load path is identical mid-session and
   from boot — and tested both ways.
 
+## 15. Insecure or brittle serialization format
+
+- **Symptom** — a corrupted/edited save achieves code execution; or a
+  field renumber/reorder silently corrupts every existing save; or the
+  game ships on `BinaryFormatter` and breaks on .NET 9.
+- **Root cause** — `BinaryFormatter` / Newtonsoft `TypeNameHandling` on
+  untrusted save input (CWE-502 RCE); reusing a deleted field ID; a
+  fixed-width/order-sensitive binary format treated as if it were
+  schema-tolerant.
+- **Prevention** — never `BinaryFormatter` (removed in .NET 9) or
+  type-name handling on saves; pick a format deliberately
+  ([serialization.md](./serialization.md)); **never reuse a field ID**
+  (`reserved` it; enforce with `buf breaking` in CI); append-only for
+  FlatBuffers/MemoryPack; treat the file as hostile input.
+
+## 16. Networked persistence dupes / botched rollback
+
+- **Symptom** — online player state duplicates on a retry/crash, drifts
+  from the server's truth, or an exploit forces a punitive global
+  rollback that wipes innocent players' progress.
+- **Root cause** — non-idempotent grants, no write-back discipline, two
+  servers writing one player's key, or no audit log to enable a targeted
+  clawback.
+- **Prevention** — the [networked.md](./networked.md) playbook: RAM-of-
+  truth + write-back with event-triggered flushes; idempotency keys
+  (PlayFab `IdempotencyId`, deterministic server IDs); optimistic
+  concurrency / session locking (Roblox `UpdateAsync`); an append-only
+  ledger recording every mutation + actorId so a **targeted audit** (the
+  Diablo III >85%-reclaim model) beats a global rollback; point-in-time
+  recovery from write-ahead logs as the last resort.
+
 ## Debugging order
 
 When saves misbehave: (1) hexdump the envelope — version and checksum
@@ -152,4 +185,7 @@ load the same save from boot and mid-session and diff behavior (#14),
 - [ ] No hitch on autosave (profiled); icon held >=1 s, until fsync
 - [ ] Suspend/resume (console): zero progress loss (XR-001)
 - [ ] Tampered-file test: corrupted/edited saves fail gracefully
+- [ ] No BinaryFormatter/type-name handling; field IDs never reused
+- [ ] Online: idempotent writes; ledger + audit log; targeted-rollback
+      capability tested
 ```

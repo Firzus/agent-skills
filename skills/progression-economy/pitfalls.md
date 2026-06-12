@@ -1,8 +1,11 @@
-# Pitfalls — the 14 classic progression/economy failure modes
+# Pitfalls — the 16 classic progression/economy failure modes
 
 Each: symptom → root cause → prevention, with real incidents where
 documented. Read before designing; re-read when a balance drifts by
-one unit or a retry grants twice.
+one unit or a retry grants twice. Deep dives:
+[progression.md](./progression.md), [wallet-economy.md](./wallet-economy.md),
+[energy.md](./energy.md), [battle-pass.md](./battle-pass.md),
+[transactions.md](./transactions.md).
 
 ## 1. Client-authoritative balances
 
@@ -196,6 +199,39 @@ one unit or a retry grants twice.
   Cloud Code); Addressables: verify the remote catalog hash at boot
   before any transaction.
 
+## 15. Runaway inflation (faucets > sinks)
+
+- **Symptom** — prices climb relentlessly; new players can't afford
+  basics; the soft currency becomes worthless; gold-farming/RMT thrives.
+- **Root cause** — faucets (mob gold, quest rewards, vendoring) exceed
+  sinks structurally; mudflation devalues old wealth each patch; no
+  measurement of net flow. Real case: **Diablo III RMAH** — money
+  entered freely with no effective sink → hyperinflation (compounded by
+  a gold-dupe and farmers), forcing the AH shutdown.
+- **Prevention** — draw the faucet/sink map explicitly and keep net flow
+  matched to player/goods growth ([wallet-economy.md](./wallet-economy.md)):
+  currency sinks (AH fees, repair, respec, luxury/status goods aimed at
+  the rich), material sinks (destruction loops), and **out-compete RMT**
+  (a Token/Bond gold-for-time channel) rather than only banning. Measure
+  it with a price index and per-currency earn-vs-spend telemetry. Note
+  the EVE rule: **destroying items is not a currency sink** (the currency
+  was already spent player-to-player).
+
+## 16. Respec / skill-tree refund exploits
+
+- **Symptom** — players respec to arbitrage a buffed-then-nerfed node,
+  refund more points/currency than they spent, or lose invested
+  materials on a tree reset.
+- **Root cause** — refunds computed from the current tree state instead
+  of the invested record; no cost recorded per point; synergy/prereq
+  invariants not re-validated after a partial refund.
+- **Prevention** — record invested cost per node; refund from that
+  record (not the live catalog); re-validate prerequisites and mutual
+  exclusion after any refund; pick a respec-cost policy deliberately
+  (free vs currency vs one-shot item) and gate it server-side. Same
+  ledger discipline as currency refunds (#9). See skill trees in
+  [progression.md](./progression.md).
+
 ## Debugging order
 
 When the economy misbehaves: (1) diff the transaction journal against
@@ -226,4 +262,6 @@ the premium track at level 40 and count retroactive grants (#11).
 - [ ] Solo: RNG state saved or commit-on-action chosen explicitly
 - [ ] Table hash handshake at login; force-update on mismatch
 - [ ] Economy telemetry live (progression rates per breakpoint)
+- [ ] Faucet/sink map drawn; net flow measured; sinks sized to growth
+- [ ] Respec/skill refunds from the invested record; prereqs re-validated
 ```

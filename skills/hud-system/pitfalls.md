@@ -1,7 +1,11 @@
-# Pitfalls — the 12 classic HUD failure modes
+# Pitfalls — the 14 classic HUD failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when the HUD eats frame time or breaks on someone's TV.
+when the HUD eats frame time or breaks on someone's TV. Element
+engineering is in [elements.md](./elements.md), design/genre craft in
+[design-genres.md](./design-genres.md), accessibility in
+[accessibility.md](./accessibility.md), world-anchored elements in
+[world-space.md](./world-space.md).
 
 ## 1. Per-frame polling HUD
 
@@ -135,13 +139,46 @@ when the HUD eats frame time or breaks on someone's TV.
   gameplay (LateUpdate / tick groups); gate visibility until first valid
   data.
 
+## 13. Color-only encoding & single-channel critical info
+
+- **Symptom** — colorblind players can't tell danger from safe; a player
+  with audio off misses the "you're being hit" cue; red low-HP reads as
+  full to ~8% of male players.
+- **Root cause** — status encoded by hue alone (red/green the worst
+  pairing); critical state delivered on one channel only (just a color,
+  just a sound); juice colors not double-coded.
+- **Prevention** — **never color alone**: pair hue with shape/icon/text/
+  position (verify the HUD in grayscale); use the Okabe-Ito/CUD palette;
+  the **redundancy contract** — every critical event fans out to ≥2
+  channels (bar + vignette + audio). Full rules in
+  [accessibility.md](./accessibility.md). This is the design-time sibling
+  of pitfall #11.
+
+## 14. World-space HUD that doesn't scale
+
+- **Symptom** — frame rate collapses with 100+ enemy nameplates/health
+  bars; the editor is fine but a horde fight tanks; a `WidgetComponent`
+  on every actor costs Tick even when hidden.
+- **Root cause** — one canvas/widget per unit (per-unit Tick + canvas
+  rebuild/Slate paint); instantiate/destroy per spawn; per-plate
+  occlusion raycasts every frame; a `WidgetComponent` left on thousands
+  of idle actors.
+- **Prevention** — **pool** plates (reuse, never create/destroy);
+  frustum + distance + **priority cull** (only bosses/targeted/damaged
+  units get a plate); single canvas with repositioned children (split
+  static/dynamic); GPU-instanced quads at extreme counts; add the
+  component only when needed; throttle occlusion tests. Cost model and
+  billboarding in [world-space.md](./world-space.md).
+
 ## Debugging order
 
 When the HUD misbehaves: (1) profile one idle frame — anything above ~0 ms
 with nothing changing is #1/#2, (2) spawn 50 damage numbers and watch the
 pool (#3), (3) walk to a screen corner and spin the camera (#4), (4)
 respawn/reload and grep for null-refs (#5), (5) switch input device with
-prompts on screen (#6), (6) run the resolution + safe-area matrix (#7/#9).
+prompts on screen (#6), (6) run the resolution + safe-area matrix (#7/#9),
+(7) grayscale the HUD and mute audio to find color/single-channel gaps
+(#13), (8) spawn a 100-enemy horde and profile nameplates (#14).
 
 ## Ship checklist
 
@@ -156,4 +193,6 @@ prompts on screen (#6), (6) run the resolution + safe-area matrix (#7/#9).
 - [ ] Respawn/scene-reload: no stale bindings, no death flicker
 - [ ] Readability validated over the brightest/noisiest real capture
 - [ ] Low-HP pulse < 3 flashes/s (photosensitivity cap)
+- [ ] HUD legible in grayscale; critical info on >=2 channels (no color-only)
+- [ ] 100-enemy nameplate horde holds frame rate (pool + cull + priority)
 ```

@@ -8,24 +8,37 @@ description: >-
   loudness compliance — ASWG-R001), voice management (per-category
   concurrency, priority stealing, loop-aware virtualization), spatial
   audio (attenuation curves, raycast occlusion, reverb volumes, ambient
-  beds driven by region/weather), and the native-first middleware
-  decision (UE5 MetaSounds/Quartz and Unity Audio Mixer primary,
-  Wwise/FMOD as the authoring-workflow upgrade). References: BotW/TotK
-  (the CEDEC-documented environmental-BGM minimalism) and Genshin Impact
-  (Wwise-confirmed regional/combat music). Use when designing or
-  building game music systems, mixing, sound concurrency, audio
-  occlusion, ambience, or when combat music cuts mid-beat, layers
-  drift, ducking pumps, or footsteps steal the dialogue.
+  beds driven by region/weather), the native-first middleware decision
+  (UE5 MetaSounds/Quartz and Unity Audio Mixer primary, Wwise/FMOD as the
+  authoring upgrade); the DSP and synthesis layer (the audio render thread
+  and lock-free callback discipline, biquad filters, reverb algorithms —
+  Schroeder/FDN/convolution, dynamics and sidechain, granular/phase-vocoder
+  pitch, procedural and modal synthesis, HRTF/binaural and ambisonics,
+  wave-baked occlusion — Steam Audio/Project Acoustics, codec decode cost,
+  voice virtualization); and the sound-design craft (layering — mech/body/
+  top/sub/tail, hyperreal vs realistic, frequency-slotting, worldizing,
+  genre conventions — horror/rhythm/shooter/fighting/racing, composition
+  craft — leitmotif/Mick Gordon/Wintory, audio accessibility — SFX
+  captions/mono toggle/separate sliders/sound-viz/haptics, and the audio
+  production pipeline). References: BotW/TotK (CEDEC environmental-BGM),
+  Genshin (Wwise regional/combat music), DOOM/God of War/TLOU/Hellblade/
+  Returnal/RDR2 (craft case studies). Use when designing or building game
+  music systems, mixing, DSP/synthesis, sound concurrency, audio
+  occlusion, ambience, accessible audio, procedural audio, or when combat
+  music cuts mid-beat, layers drift, ducking pumps, footsteps steal the
+  dialogue, the audio thread glitches, or deaf players are locked out.
 ---
 
 # Adaptive Audio
 
-Build the audio layer of an open-world game — adaptive music, mix,
-voices, spatial — **native-first**: UE5 (MetaSounds/Quartz) and Unity
-(Audio Mixer + the DSP-clock pattern) as primary targets, Wwise/FMOD
-as the deliberate upgrade. References: BotW/TotK (the CEDEC 2017
-environmental-BGM philosophy) and Genshin Impact (Wwise confirmed by
-the official Wwise Tour and the `.bnk`/`.wem` datamine).
+Build the audio layer of a game — adaptive music, mix, voices, spatial,
+the DSP/synthesis underneath, and the sound-design craft around it —
+**native-first**: UE5 (MetaSounds/Quartz) and Unity (Audio Mixer + the
+DSP-clock pattern) as primary targets, Wwise/FMOD as the deliberate
+upgrade. References: BotW/TotK (the CEDEC 2017 environmental-BGM
+philosophy), Genshin Impact (Wwise, confirmed by the Wwise Tour and
+datamine), and the craft canon (DOOM, God of War, TLOU, Hellblade,
+Returnal, RDR2).
 
 ## The architecture rule
 
@@ -94,6 +107,16 @@ SPATIAL
   resuming exploration where it left off; quest/event music as
   override-stack entries.
 
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [music-mix.md](./music-mix.md) | Adaptive music (the three tools, the state machine + transition matrix, the two reference philosophies), the mix (bus hierarchy, ducking matrix, mix-state stack, loudness/ASWG-R001, HDR audio), voice management (concurrency, priority, virtualization, budgets), the native-first middleware decision |
+| [spatial.md](./spatial.md) | Attenuation curves, raycast occlusion (LPF + the limits), reverb/RT60, the ambience system (biome/weather beds), the third-person listener, the spatial engine mapping |
+| [dsp-synthesis.md](./dsp-synthesis.md) | The audio render thread + lock-free callback discipline, core DSP (biquad filters, reverb algorithms, dynamics/sidechain, pitch/time), synthesis & procedural audio (modal impacts, MetaSounds), spatial DSP (HRTF/binaural, ambisonics, wave-baked occlusion), voice/dialogue DSP, codec/perf/memory |
+| [design-craft.md](./design-craft.md) | Sound-design craft (layering, hyperreal, audio readability, frequency-slotting, worldizing), genre conventions, music composition craft (leitmotif, Mick Gordon, Wintory), audio accessibility (SFX captions, mono, separate sliders, sound-viz, haptics), the production pipeline, case studies |
+| [pitfalls.md](./pitfalls.md) | 16 failure modes (symptom → cause → prevention) with debugging order and ship checklist |
+
 ## Build order (4 shippable tiers)
 
 ```
@@ -154,7 +177,7 @@ source), per-category caps in shipped games, combat fade/linger times
 in Genshin (behavior documented, durations not), the exploration
 crossfade 2-5 s convention, night-mode ratios (only ND thresholds),
 PS5 Tempest voice counts. Full tables in
-[architecture.md](./architecture.md).
+[music-mix.md](./music-mix.md) and [spatial.md](./spatial.md).
 
 ## Engine mapping (native-first)
 
@@ -172,14 +195,15 @@ PS5 Tempest voice counts. Full tables in
 
 ## Failure modes
 
-The 14 classic audio bugs (unquantized transitions, layer drift,
+The 16 classic audio bugs (unquantized transitions, layer drift,
 ducking pumping, the 100-footsteps phasing problem, virtualization
 killing loops, snapshot fights, the silent priority budget, the
 third-person listener mismatch, occlusion raycast spikes, streaming
 hitches on music transitions, loudness non-compliance, the mobile mix
-disaster, decompressed-audio memory blowouts, missing debug tooling)
-are cataloged in [pitfalls.md](./pitfalls.md) with symptom → root
-cause → prevention.
+disaster, decompressed-audio memory blowouts, missing debug tooling,
+**blocking the audio thread**, and **audio-only information that locks
+out deaf/HoH players**) are cataloged in [pitfalls.md](./pitfalls.md)
+with symptom → root cause → prevention.
 
 ## Related skills
 
@@ -195,3 +219,5 @@ cause → prevention.
 - `camera-system` — the arbitrated-stack pattern (vcams) this music
   system mirrors; listener orientation.
 - `open-world-streaming` — audio bank/stream residency.
+- `hud-system` — the HUD-side captions/subtitles that pair with the
+  audio-accessibility set ([design-craft.md](./design-craft.md)).

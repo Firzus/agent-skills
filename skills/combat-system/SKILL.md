@@ -1,27 +1,43 @@
 ---
 name: combat-system
 description: >-
-  Architecture blueprint for action-game melee combat systems: data-driven
-  attack graphs (combo strings, branches, charge attacks, cancel windows),
-  animation-driven hit detection (active frames, hit registry, sweep traces),
-  damage pipeline (motion values, crits, damage caps), stagger/poise/stun
-  gauges and boss break cycles, the defensive kit (dodge i-frames, guard,
-  parry/perfect timing windows), the skills/ultimate layer, and combat feel
-  numbers (hit-stop, buffers, cancel timing). Primary reference: Granblue
-  Fantasy Relink's combo-chain model, with Monster Hunter, DMC, Bayonetta,
-  and souls-likes as calibration poles. Use when designing or building melee
-  combat, combo systems, hitboxes, damage formulas, stagger/break mechanics,
-  dodge/parry, or when combat feels unresponsive or mushy.
+  Architecture blueprint for action-game combat systems, melee AND ranged:
+  data-driven attack graphs (combo strings, branches, charge attacks, cancel
+  windows), animation-driven hit detection (active frames, hit registry,
+  sweep traces), damage pipeline (motion values, crits, damage caps),
+  stagger/poise/stun gauges and boss break cycles, the defensive kit (dodge
+  i-frames, guard, parry/perfect timing windows), the skills/ultimate layer,
+  combat feel numbers (hit-stop, buffers, cancel timing); the ranged/gunplay
+  layer (gun feel and cumulative micro-feedback, recoil patterns and spread/
+  bloom, hitscan vs projectile architecture and sub-stepping, aiming and aim
+  assist, ranged hit-registration and lag-compensation netcode, headshot/
+  falloff/TTK-breakpoint damage, and mixing melee + ranged through one
+  unified HitEvent); and the RPG/turn-based/balance layer (turn and
+  initiative models — ATB/CTB/tactical-grid, the damage-formula design space
+  — additive vs multiplicative, the mitigation curves and Effective HP,
+  stats and scaling, status effects and crowd-control diminishing returns,
+  combat balance via DPS/TTK/EHP, and the action-RPG bridge — soulslike
+  build-up meters, Monster Hunter hitzones, MMO GCD, Genshin elemental
+  reactions). Primary reference: Granblue Fantasy Relink's combo-chain model,
+  with Monster Hunter, DMC, Bayonetta, souls-likes, CS/Overwatch (gunplay),
+  and XCOM/Pokémon/WoW (RPG math) as calibration poles. Use when designing
+  or building melee or ranged combat, combo systems, hitboxes, gunplay,
+  damage formulas, stagger/break mechanics, dodge/parry, status effects,
+  combat balance, or when combat feels unresponsive or mushy, shots don't
+  register, or damage numbers run away.
 ---
 
 # Combat System
 
-Build the melee combat core of an action game. Primary reference: **Granblue
-Fantasy: Relink** (combo chains in the Monster Hunter lineage). This skill is
-the engine-agnostic blueprint: the attack graph, hit detection, damage
-pipeline, stagger economy, defensive kit, feel numbers, and failure modes.
-Excluded (separate skills): enemy AI (`enemy-ai-framework`), combat camera
-(`camera-system`), stats/equipment progression (`progression-economy`).
+Build the combat core of an action game — **melee and ranged** — over one
+unified pipeline, with the RPG/balance math underneath. Primary reference:
+**Granblue Fantasy: Relink** (combo chains in the Monster Hunter lineage),
+with CS/Overwatch (gunplay) and XCOM/Pokémon/WoW (RPG math) as calibration
+poles. This skill is the engine-agnostic blueprint: the attack graph, hit
+detection, the damage pipeline, the stagger economy, the defensive kit,
+ranged/gunplay, turn-based/RPG architecture, feel numbers, and failure
+modes. Excluded (separate skills): enemy AI (`enemy-ai-framework`), combat
+camera (`camera-system`), stats/equipment progression (`progression-economy`).
 
 ## Pick your philosophy first
 
@@ -59,6 +75,15 @@ lists):
 
 Designers add chains without touching code. The graph plugs into the
 movement HSM (`character-controller` skill) as the combat state's content.
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [attack-graph.md](./attack-graph.md) | The melee core: the data-driven attack graph (nodes/edges, cancel semantics), animation-driven hit detection (the unified HitEvent, sweep traces, the hit registry), the damage pipeline (motion values, caps), stagger/poise/break, the defensive kit (dodge/guard/parry), the skills/link layer, the feedback layer (hit-stop, screenshake, knockback) |
+| [ranged-gunplay.md](./ranged-gunplay.md) | The ranged half: gun feel (cumulative micro-feedback), recoil patterns and spread/bloom/ADS, hitscan vs projectile architecture (pooling, sub-stepping), aiming and aim assist, ranged hit-registration and lag-compensation netcode, headshot/falloff/TTK-breakpoint damage, mixing melee + ranged |
+| [rpg-combat.md](./rpg-combat.md) | The RPG/turn-based/balance layer: turn and initiative models (ATB/CTB/tactical grid, the action economy, the Gambit model), the damage-formula design space (additive vs multiplicative, mitigation curves, Effective HP), stats and scaling, status effects and CC diminishing returns, balance via DPS/TTK/EHP, the action-RPG bridge (build-up meters, MH hitzones, MMO GCD, Genshin reactions) |
+| [pitfalls.md](./pitfalls.md) | 14 failure modes (symptom → cause → prevention) with debugging order and playtest checklist |
 
 ## Build order (4 shippable tiers)
 
@@ -107,7 +132,9 @@ Tier 4 — Depth & scale
 | Break/KO window | 8-15 s; damage taken x1.2-1.5 | Relink Break, MH KO |
 | Screen shake | 0.15-0.25 s, trauma² amplitude, Perlin not random | GDC *Juicing Your Cameras* |
 
-Full sourced tables in [architecture.md](./architecture.md).
+Full sourced tables in [attack-graph.md](./attack-graph.md); ranged TTK/
+falloff in [ranged-gunplay.md](./ranged-gunplay.md); damage-formula and
+balance math in [rpg-combat.md](./rpg-combat.md).
 
 ## Engine mapping
 
@@ -123,10 +150,11 @@ Full sourced tables in [architecture.md](./architecture.md).
 
 ## Failure modes
 
-The 12 classic combat bugs (hitbox desync, multi-hit duplicates, point-blank
+The 14 classic combat bugs (hitbox desync, multi-hit duplicates, point-blank
 whiffs, eaten inputs, animation pops on cancel, hit-stop bleeding into
 UI/co-op, stagger-lock, duplicate damage, cancel exploits, knockback through
-walls, tracking overshoot, graph/state desync) are cataloged in
+walls, tracking overshoot, graph/state desync, **ranged hit-reg "I shot them
+but no hit"**, and **runaway or stagnant damage numbers**) are cataloged in
 [pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
 
 ## Related skills
@@ -141,5 +169,8 @@ walls, tracking overshoot, graph/state desync) are cataloged in
   gauges, boss state UI).
 - `game-architecture-patterns` — State, Type Object (attack data), Event
   Queue (hit events), Update Method theory.
+- `coop-session` — the netcode-model landscape (lag compensation, server
+  authority) behind ranged PvP hit registration
+  ([ranged-gunplay.md](./ranged-gunplay.md)).
 - `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine-wide
   practices assumed here.

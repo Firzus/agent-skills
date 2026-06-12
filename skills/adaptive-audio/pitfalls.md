@@ -1,8 +1,11 @@
-# Pitfalls — the 14 classic game-audio failure modes
+# Pitfalls — the 16 classic game-audio failure modes
 
 Each: symptom → root cause → prevention. Read before designing;
 re-read when combat music cuts mid-beat or the dialogue gets stolen
-by footsteps.
+by footsteps. Music/mix/voice detail is in [music-mix.md](./music-mix.md),
+spatial in [spatial.md](./spatial.md), the DSP layer in
+[dsp-synthesis.md](./dsp-synthesis.md), and the design/accessibility craft
+in [design-craft.md](./design-craft.md).
 
 ## 1. The unquantized transition
 
@@ -165,6 +168,41 @@ by footsteps.
   `au.Debug.SoundModulation`); Unity only has the profiler module —
   build the overlay.
 
+## 15. Blocking the audio thread
+
+- **Symptom** — periodic clicks/dropouts under load; a glitch exactly
+  when a sound loads, an effect is added, or the GC runs; the audio
+  "stutters" while the frame rate is fine.
+- **Root cause** — work on the audio render thread that isn't real-time
+  safe: a lock (priority inversion — a low-priority thread holding a
+  mutex stalls the callback), an allocation, file I/O, or a decode
+  happening *in* the callback, so it misses its buffer deadline and the
+  driver plays silence.
+- **Prevention** — the real-time discipline
+  ([dsp-synthesis.md](./dsp-synthesis.md)): **never lock, allocate, or
+  do I/O in the callback**; hand work to the render thread via a
+  **lock-free SPSC ring buffer**; pre-allocate; keep decode/baking on
+  worker threads; size the buffer for the worst-case, not the average.
+  This is the engine-level cousin of the streaming-hitch (#10) and
+  memory-blowout (#13) pitfalls.
+
+## 16. Audio-only information (deaf/HoH lockout)
+
+- **Symptom** — a deaf or hard-of-hearing player can't tell where a shot
+  came from, misses an off-screen cue, loses critical info carried only
+  by sound; a player with single-ear hearing misses everything panned to
+  one side; nobody can isolate dialogue from a wall of SFX.
+- **Root cause** — critical information delivered on the audio channel
+  *only*; no captions for significant non-verbal sounds; no mono toggle;
+  no separate volume sliders; no visual sound indicator.
+- **Prevention** — the audio-accessibility set
+  ([design-craft.md](./design-craft.md)): **no essential info conveyed by
+  sound alone** — caption significant SFX and add **directional
+  indicators** (damage direction, a footstep radar / sound-viz wheel like
+  Fortnite); an in-game **mono audio** toggle; **separate Master/Music/
+  SFX/VO sliders**; a dynamic-range "night mode"; haptics (with a toggle)
+  as a parallel channel. Build it in, not at the end.
+
 ## Debugging order
 
 When audio misbehaves: (1) open the debug HUD and read voice counts
@@ -173,7 +211,10 @@ to back (#1, #10), (3) let layered music run 10 minutes and check
 alignment (#2), (4) spam VO lines over music (#3), (5) spawn 50
 identical emitters (#4), (6) walk out of range of every looping bed
 and back (#5), (7) stack pause + combat + underwater (#6), (8) play
-on a phone speaker (#12), (9) run the loudness measurement (#11).
+on a phone speaker (#12), (9) run the loudness measurement (#11), (10)
+stress-load the audio thread (mass loads/effect adds) and listen for
+dropouts (#15), (11) play muted with captions/mono/sliders on to find
+audio-only info (#16).
 
 ## Ship checklist
 
@@ -196,4 +237,7 @@ on a phone speaker (#12), (9) run the loudness measurement (#11).
 - [ ] Mobile speaker pass + dynamic range option shipped
 - [ ] Compression policy per category audited; memory report clean
 - [ ] The audio debug HUD shipped (dev builds)
+- [ ] Audio thread real-time safe: no locks/alloc/IO in the callback
+- [ ] Accessibility: SFX captions + directional cues, mono toggle,
+      separate volume sliders, dynamic-range option (no audio-only info)
 ```

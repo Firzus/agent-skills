@@ -1,7 +1,10 @@
-# Pitfalls — the 11 classic streaming failure modes
+# Pitfalls — the 13 classic streaming failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read when
-debugging a streamed world.
+debugging a streamed world. The five components are in
+[components.md](./components.md), the sub-cell rendering frontier in
+[rendering-tech.md](./rendering-tech.md), and procedural/simulation in
+[procedural-simulation.md](./procedural-simulation.md).
 
 ## 1. Frame hitches on cell load
 
@@ -130,13 +133,53 @@ debugging a streamed world.
   Analyze); enforce soft references from persistent code into world content;
   CI memory test: persistent set only, assert below threshold.
 
+## 12. Sub-cell pool thrash (Nanite / virtual texture "never settles")
+
+- **Symptom** — textures stay blurry forever; geometry pops or shimmers
+  even on a *static* view; the streaming pool is pinned at 100% with the
+  camera not moving; a Nanite scene that fits in editor thrashes in the
+  cooked build.
+- **Root cause** — the **sub-cell** streaming pool is oversubscribed: too
+  many unique Nanite meshes shrink the streaming pool below the working set
+  (cache thrashing where streaming never settles), or the virtual-texture
+  physical cache / feedback throughput can't satisfy the visible tiles, so
+  high mips never arrive.
+- **Prevention** — the sub-cell budgets in
+  [rendering-tech.md](./rendering-tech.md): size the **Nanite streaming
+  pool** and **VT physical cache** as first-class budgets alongside the
+  cell budget; reduce unique-mesh count (merge/instance) so root pages don't
+  starve the pool; raise VT feedback resolution / upload throughput;
+  **prestream** desired pages/tiles (velocity prediction for the sub-cell
+  loop); profile a *static* view to confirm streaming actually settles.
+
+## 13. Procedural non-determinism & save bloat
+
+- **Symptom** — a procedurally generated world differs between players or
+  platforms (cross-play desync); revisiting a cell regenerates different
+  content; the save file balloons to tens of MB and grows every hour;
+  cell-edge biomes/terrain mismatch.
+- **Root cause** — generation isn't a pure function of (seed, cell coords):
+  floating-point non-determinism across CPUs/compilers, load-order-dependent
+  RNG, or state baked into the instance; and the save stores the whole
+  generated world instead of only the player's delta.
+- **Prevention** — the determinism + delta-persistence rules in
+  [procedural-simulation.md](./procedural-simulation.md): generation = a
+  **pure function of (seed, cell coords)** via a deterministic seed
+  hierarchy (integer/fixed-point math, fixed evaluation order, no fast-math,
+  or authoritative server-side gen); **save only the delta from the
+  generated baseline** (untouched cells regenerate from seed); garbage-
+  collect abandoned changes (revert long-untouched cells to baseline);
+  "stream the seed, not the geometry" in multiplayer.
+
 ## Debugging order
 
 When a streamed world misbehaves, check in this order: (1) cell state
 machine invariants (one op per cell?), (2) hysteresis margins, (3) frame
 budget adherence (profile the activation slice), (4) the always-loaded set's
-actual size (reference leak?), (5) collision vs visual residency offsets.
-Most streaming bugs are one of the 11 above wearing a costume.
+actual size (reference leak?), (5) collision vs visual residency offsets,
+(6) sub-cell pool occupancy on a static view (Nanite/VT thrash — #12),
+(7) regenerate the same cell twice and diff it, then chart save growth per
+hour (#13). Most streaming bugs are one of the 13 above wearing a costume.
 
 ## Soak testing (non-negotiable)
 
@@ -158,4 +201,8 @@ not waiting until alpha.
 - [ ] Soak test automated with memory/hitch thresholds that fail the build
 - [ ] Cross-cell logic goes through the state store/events with stable IDs,
       never direct object references between cells
+- [ ] Sub-cell pools (Nanite streaming pool / VT cache) sized and verified
+      to settle on a static view in the cooked build
+- [ ] (Procedural) generation deterministic per (seed, cell); save stores
+      only the delta; save growth/hour measured and bounded
 ```

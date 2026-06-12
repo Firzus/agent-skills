@@ -1,7 +1,10 @@
-# Pitfalls — the 12 classic movement failure modes
+# Pitfalls — the 14 classic movement failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when a controller "feels wrong" and nobody knows why.
+when a controller "feels wrong" and nobody knows why. The solver/HSM is in
+[solver-states.md](./solver-states.md), FPS/momentum movement in
+[fps-movement.md](./fps-movement.md), and the animation/feel/accessibility
+layer in [animation-feel.md](./animation-feel.md).
 
 ## 1. Jitter on slopes and stairs
 
@@ -133,6 +136,45 @@ when a controller "feels wrong" and nobody knows why.
   buffer instead of clearing it; coyote time and jump buffering live in the
   state machine, not in input code.
 
+## 13. First-person camera nausea & comfort gaps
+
+- **Symptom** — players report motion sickness; the camera snaps jarringly
+  on crouch/stand or mantle; head bob is fine walking but nauseating at
+  sprint; a fast FOV shift on sprint triggers discomfort; no comfort
+  options ship.
+- **Root cause** — the eye anchor is *set* (snapped) instead of
+  interpolated; head bob amplitude isn't scaled per-speed; FOV is shifted
+  too far/too fast; the comfort baseline (bob/FOV/shake/blur toggles, VR
+  locomotion styles) was never built.
+- **Prevention** — the first-person/comfort rules in
+  [fps-movement.md](./fps-movement.md) and
+  [animation-feel.md](./animation-feel.md): **interpolate the eye height**
+  (spring, not linear); scale bob per walk/run/crouch and counter-rotate
+  the view; cap and slow the sprint FOV kick (never a *fast* FOV shift);
+  ease the camera to ledge targets on mantle, don't snap; ship the
+  **default-on comfort baseline** (head-bob toggle, FOV slider, shake
+  0–100%, motion-blur toggle, vignette-on-movement) and, in VR, both
+  teleport and smooth + snap turn + tunneling.
+
+## 14. Networked movement desync & speedhacks
+
+- **Symptom** — rubber-banding under latency; a custom movement verb
+  (wall-run/dash/grapple) works in single-player but the server snaps the
+  player back in multiplayer; speedhackers move at impossible velocities;
+  fast movement produces phantom corrections.
+- **Root cause** — the controller isn't structured for prediction
+  (non-deterministic tick, raw input instead of intent, non-snapshotable
+  state); custom verbs aren't replayed in the server's saved-move cycle;
+  the server trusts client position instead of re-simulating from inputs.
+- **Prevention** — the network-movement contract in
+  [fps-movement.md](./fps-movement.md): the **day-one trio** (deterministic
+  `simulate(state, input, dt)`, input→intent separation, snapshotable
+  state); extend the saved-move cycle (UE `FSavedMove_Character`) for every
+  custom verb so the server can replay/validate it; **send inputs, never
+  positions** and re-simulate server-side with speed/air-time caps; bound
+  lag-comp leeway. Note the tension: frame-rate-coupled movement tech is at
+  odds with the determinism prediction needs.
+
 ## Debugging order
 
 When movement "feels wrong": (1) verify fixed-timestep + interpolation
@@ -140,7 +182,10 @@ When movement "feels wrong": (1) verify fixed-timestep + interpolation
 ground detection stability (log grounded transitions; flicker = #1/#4),
 (3) audit state transition logs (deadlock or thrash = #7/#10), (4) inspect
 the solver iteration count and depenetration magnitudes (#2/#3/#11),
-(5) only then touch the feel numbers.
+(5) only then touch the feel numbers. For first-person: (6) test the eye
+interpolation on crouch/mantle and bob at sprint with a comfort lens (#13);
+for multiplayer: (7) play every movement verb under emulated latency and
+try to speedhack the server (#14).
 
 ## Playtest checklist
 
@@ -157,4 +202,8 @@ the solver iteration count and depenetration magnitudes (#2/#3/#11),
 - [ ] Stand on a dynamic object that gets destroyed: clean fallback
 - [ ] Teleport everywhere (including mid-air): no fall-through, breadcrumb
       recovery works
+- [ ] First-person: eye interpolates on crouch/mantle; bob scales per
+      speed; comfort baseline (bob/FOV/shake/blur, VR locomotion) ships
+- [ ] Multiplayer: every movement verb survives emulated latency without
+      rubber-banding; server rejects speedhacked trajectories
 ```

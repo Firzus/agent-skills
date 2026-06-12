@@ -1,8 +1,11 @@
-# Pitfalls — the 14 classic time & weather failure modes
+# Pitfalls — the 16 classic time & weather failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
 when the sun jitters after long sessions or a quest leaves it raining
-forever.
+forever. Deep dives: [clock.md](./clock.md), [weather.md](./weather.md),
+[consumers.md](./consumers.md),
+[scheduler-persistence.md](./scheduler-persistence.md),
+[engine.md](./engine.md).
 
 ## 1. Frame-rate-dependent clock / float drift
 
@@ -168,6 +171,38 @@ forever.
   reset "becomes" 5 AM local during US DST); store timestamps in UTC;
   convert only at display.
 
+## 15. Season/calendar desync & time-travel exploits
+
+- **Symptom** — season-gated content (crops, spawns, festivals) fires on
+  the wrong date or duplicates; a real-time-clock game is trivially
+  exploited by setting the console clock forward.
+- **Root cause** — the date isn't a first-class persisted value (derived
+  ad hoc), or a real-time-clock game bakes seasonal rewards into the
+  client so "time-traveling" unlocks everything; out-of-season state
+  (withered crops, fallow tiles) not applied at the boundary.
+- **Prevention** — make the date a **first-class persisted save value**
+  (game-time: reproducible, authored pacing) or read the wall clock
+  deliberately (real-time-clock: gate seasonal items behind server
+  updates, not baked-in, to counter time-traveling — the Animal Crossing
+  countermeasures). Apply boundary transforms (crop death, art swap)
+  exactly once on the season change. See [clock.md](./clock.md).
+
+## 16. Simulated-weather cost & determinism
+
+- **Symptom** — a simulated weather/cloud/ocean system tanks the frame
+  rate (the storm-at-dusk cliff), or multiplayer clients see different
+  storms/waves/lightning.
+- **Root cause** — choosing "weather as system" (volumetric clouds, FFT
+  ocean, simulated fronts) without budgeting the combined peak or making
+  the simulation deterministic/server-authoritative.
+- **Prevention** — place the design on the sim-vs-authored spectrum
+  deliberately ([weather.md](./weather.md)): authored schedules for
+  narrative worlds, simulation only where it pays (flight/naval sims,
+  emergent multiplayer). Use temporal upsampling (clouds 1/16 px over 16
+  frames), keep it art-directable, and make any simulation **deterministic
+  + server-authoritative** (Sea of Thieves broadcasts the lightning seed
+  so all crew see the identical bolt). Budget the worst combined state.
+
 ## The timescale corollary
 
 Skyrim below timescale ~6–8 breaks quests, schedules, and AI — clock
@@ -205,4 +240,8 @@ profile the storm-at-dusk frame (#12).
 - [ ] Worst-state frame (storm at dusk) inside budget on min spec
 - [ ] Every environmental hazard telegraphed, with cutscene exemption
 - [ ] Resets defined in UTC/fixed-zone; DST transition tested both ways
+- [ ] Seasons/calendar (if used): date persisted; boundary transforms
+      fire once; time-travel countered
+- [ ] Simulated weather (if used): combined peak budgeted; deterministic
+      + server-authoritative in multiplayer
 ```

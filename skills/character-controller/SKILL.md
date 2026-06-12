@@ -1,26 +1,37 @@
 ---
 name: character-controller
 description: >-
-  Architecture blueprint for third-person action/adventure character
-  controllers in production games: kinematic collide-and-slide movement
+  Architecture blueprint for character controllers in production games,
+  third-person AND first-person: kinematic collide-and-slide movement
   solver, hierarchical movement state machine (ground/air/climb/swim/glide),
   ground handling (slopes, steps, snapping, moving platforms), jump
   parametrization and game-feel numbers (coyote time, input buffering,
   gravity multipliers), stamina economy, modular movement abilities, the
-  animation interface (root motion boundaries), and network-ready structure.
-  Includes sourced starting-point numbers and Unity 6 / UE5 mappings. Use
-  when designing or building a character controller, player movement,
-  locomotion, traversal (climbing, swimming, gliding), jump feel, third
-  person movement, or when diagnosing movement jitter, slope bugs, or
-  floaty controls.
+  animation interface, network-ready structure; the FPS/momentum movement
+  model (the Quake/Source friction+acceleration physics, bunnyhopping/
+  strafe-jumping/surf math, movement-shooter momentum — wall-running, slide-
+  hopping, the lurch, Doom/Tribes/Mirror's Edge, first-person camera
+  concerns — eye anchor, head bob, FOV-on-sprint, slide/crouch/mantle,
+  vehicle and mounted controllers, fast-movement netcode and anti-cheat);
+  and the locomotion-animation/feel/accessibility layer (blend trees and
+  foot IK, motion matching, procedural and active-ragdoll animation, game
+  feel and juice, movement accessibility — motion-sickness comfort, VR
+  locomotion, hold-vs-toggle, the Celeste assist model). Includes sourced
+  starting-point numbers and Unity 6 / UE5 mappings. Use when designing or
+  building a character controller, player movement, locomotion, traversal
+  (climbing, swimming, gliding), jump feel, FPS movement, momentum systems,
+  vehicles, networked movement, motion matching, or when diagnosing movement
+  jitter, slope bugs, floaty controls, camera nausea, or netcode desync.
 ---
 
 # Character Controller
 
-Build the movement layer of a third-person action/adventure game. This skill
-is the engine-agnostic architecture blueprint: components, the movement
-state machine, feel numbers, build order, and failure modes. Engine tooling
-specifics live in the engine mapping section and the dedicated engine skills
+Build the movement layer of a game — third-person AND first-person, from a
+kinematic adventure controller to a momentum FPS. This skill is the
+engine-agnostic architecture blueprint: the solver, the movement state
+machine, feel numbers, FPS/momentum movement, locomotion animation, build
+order, and failure modes. Engine tooling specifics live in the engine
+mapping section and the dedicated engine skills
 (`unity6-aaa-best-practices`, `ue5-aaa-best-practices`).
 
 ## The default stance: kinematic
@@ -48,10 +59,19 @@ input → intent → state machine → movement solver → collision → animati
 - The **solver** decides *where it ends up*.
 - **Collision** decides *what's legal*.
 - **Animation** only *visualizes* — it never writes position during
-  locomotion (root motion is a scoped exception, see architecture.md).
+  locomotion (root motion is a scoped exception, see solver-states.md).
 
 Keeping these one-directional is what allows per-state tuning without
 regressions. Never let the animation or the camera write into the capsule.
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [solver-states.md](./solver-states.md) | The kinematic core: collide-and-slide, the hierarchical movement state machine, ground handling (slopes/steps/snapping/platforms), jump & air control, traversal states (climb/swim/glide/stamina), modular movement verbs, the animation interface, frame-rate independence, character–world interaction |
+| [fps-movement.md](./fps-movement.md) | The rigidbody-momentum camp: the Quake/Source friction+acceleration model (bunnyhop/strafe-jump/surf math), movement shooters (wall-run, slide-hop, the lurch, Doom/Tribes/Mirror's Edge), first-person camera concerns (eye anchor, head bob, FOV-on-sprint), slide/crouch/mantle, vehicle and mounted controllers, fast-movement netcode and anti-cheat |
+| [animation-feel.md](./animation-feel.md) | Locomotion animation (blend trees, foot IK, stride warping, distance matching), motion matching (and Learned MM), procedural and active-ragdoll animation, game feel & juice for movement, movement accessibility (motion-sickness comfort, VR locomotion, hold-vs-toggle, the Celeste assist model) |
+| [pitfalls.md](./pitfalls.md) | 14 failure modes (symptom → cause → prevention) with debugging order and playtest checklist |
 
 ## Build order (4 shippable tiers)
 
@@ -102,7 +122,9 @@ Tier 4 — Scale & robustness
 
 Jump math: pick height `h` and time-to-apex `t`, derive `g = 2h/t²`,
 `v0 = 2h/t` (Pittman, GDC). Designers tune what they feel; constants fall
-out. Full sourced tables in [architecture.md](./architecture.md).
+out. Full sourced tables in [solver-states.md](./solver-states.md); FPS/
+momentum movement in [fps-movement.md](./fps-movement.md); animation/feel/
+accessibility in [animation-feel.md](./animation-feel.md).
 
 ## Network-ready structure (3 decisions, day one)
 
@@ -135,11 +157,12 @@ cycle.
 
 ## Failure modes
 
-The 12 classic movement bugs (slope/stair jitter, tunneling, edge sticking,
+The 14 classic movement bugs (slope/stair jitter, tunneling, edge sticking,
 capsule sliding off ledges, moving-platform desyncs, slope exploits, state
 deadlocks, root motion conflicts, frame-rate dependence, water/climb
-boundary oscillation, physics desync/crush, buffered-input misfires) are
-cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
+boundary oscillation, physics desync/crush, buffered-input misfires,
+**first-person camera nausea**, and **networked movement desync/speedhacks**)
+are cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
 prevention.
 
 ## Related skills
@@ -150,7 +173,9 @@ prevention.
   combat state's content.
 - `camera-system` — the one-clock interpolation contract (the #1 jitter
   source) and camera-relative input.
-- `coop-session` — prediction/reconciliation built on the deterministic
+- `coop-session` — prediction/reconciliation and the anti-cheat
+  re-simulation behind fast-movement netcode
+  ([fps-movement.md](./fps-movement.md)), built on the deterministic
   tick + intent + snapshot structure above.
 - `open-world-streaming` — the controller side of streaming (never simulate
   over missing collision) is covered there and in pitfalls.md.

@@ -1,8 +1,12 @@
-# Pitfalls — the 14 classic fast-travel failure modes
+# Pitfalls — the 16 classic fast-travel failure modes
 
 Each: symptom → root cause → prevention. Read before designing;
 re-read when players fall through the world on arrival or a quest
-leaves teleport locked forever.
+leaves teleport locked forever. Deep dives:
+[unlock-reveal.md](./unlock-reveal.md),
+[waypoint-registry.md](./waypoint-registry.md),
+[teleport-sequence.md](./teleport-sequence.md),
+[design-policy.md](./design-policy.md).
 
 ## 1. Teleport before residency
 
@@ -173,6 +177,37 @@ leaves teleport locked forever.
   `scene-flow-manager` (instance teardown, return-position snapshot
   taken at **entry**, not exit) — never a raw streaming-source move.
 
+## 15. Tower fatigue & icon soup
+
+- **Symptom** — the reveal loop degenerates into "climb tower → check
+  off icons"; the map drowns in `?` markers; the world becomes "a
+  spreadsheet with pretty scenery" and players stop exploring unaided.
+- **Root cause** — per-region tower reveal auto-populating every POI
+  icon (the Ubisoft-tower pattern), often used to paper over low world
+  density (the Ghost Recon Breakpoint confession: "checklists are
+  reassuring for our brains").
+- **Prevention** — choose the reveal method deliberately
+  ([unlock-reveal.md](./unlock-reveal.md)): reveal *terrain* but let
+  players spot POIs (BotW); proximity reveal that rewards real
+  exploration; an Exploration Mode (geographic directions, no quest
+  markers); category filters and decluttering. Fix world density rather
+  than hiding it behind icons.
+
+## 16. Seamless-travel streaming failure
+
+- **Symptom** — a "no-loading-screen" fast travel stalls, pops in
+  ungrounded geometry, or hands control back before the destination is
+  resident; on slower storage the masked jump hitches hard.
+- **Root cause** — the streaming budget exceeds the mask duration, or
+  control is released before residency, or the design assumed SSD-class
+  I/O that the target hardware doesn't have.
+- **Prevention** — the rule ([teleport-sequence.md](./teleport-sequence.md)):
+  seamless = (stream budget ≤ mask duration) OR (I/O fast enough to skip
+  the mask). Size the masking animation/"valve" to the worst-case stream
+  time on the slowest target storage; only hand control back **after**
+  residency is confirmed (the GoW Ragnarök "dump behind, load ahead, but
+  only after the squeeze finishes" rule); profile on HDD, not just NVMe.
+
 ## Debugging order
 
 When fast travel misbehaves: (1) teleport to the farthest cold cell
@@ -203,4 +238,7 @@ falling (#3, #9), (4) park something on every spawn point (#4),
 - [ ] Cross-instance teleports tear down through the scene-flow
       handshake; return position snapshotted at entry
 - [ ] Density reviewed against POI walk-times (last 100 meters)
+- [ ] Reveal method chosen; no tower→icon-soup; world density real
+- [ ] Seamless travel sized to worst-case stream time on slowest
+      storage; control released only after residency
 ```

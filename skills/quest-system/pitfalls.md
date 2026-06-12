@@ -1,8 +1,11 @@
-# Pitfalls — the 14 classic quest-system failure modes
+# Pitfalls — the 16 classic quest-system failure modes
 
 Each: symptom → root cause → prevention. Read before designing;
 re-read when a quest chain silently stops advancing or QA asks for a
-two-hour replay to test step 12.
+two-hour replay to test step 12. Deep dives:
+[data-model.md](./data-model.md), [runtime.md](./runtime.md),
+[emergent.md](./emergent.md), [scripting.md](./scripting.md),
+[tracking.md](./tracking.md).
 
 ## 1. Flag soup
 
@@ -179,6 +182,40 @@ two-hour replay to test step 12.
   hand-ins are inoperable for guests. Generic rule: decide the
   authority model before the first co-op feature, not after.
 
+## 15. Radiant filler fatigue
+
+- **Symptom** — an infinite procedural-quest generator spams the player
+  with repetitive "go to the nearest dungeon" busywork that crowds out
+  the authored content. The canonical case: Fallout 4's "Another
+  settlement needs your help".
+- **Root cause** — radiant/template quests with no pacing curve, no cap,
+  and too little variety; the alias system fills the same skeleton
+  forever; the CK docs themselves admit it "cannot create large,
+  complicated, or particularly interesting quests".
+- **Prevention** — treat procedural as **filler over an authored
+  backbone**, never the backbone ([emergent.md](./emergent.md)): cap the
+  active count per type, pace the offer rate, vary the templates, and
+  reserve stakes/twists/payoff for authored quests. Budget the real cost
+  of emergent systems — tuning/QA/tagging (Census) and reliability (the
+  A-Life shipping failure).
+
+## 16. The player can't find the objective
+
+- **Symptom** — with markers off (or in an anti-marker game) players get
+  lost and stuck; or, with markers on, the world becomes ornamental and
+  players "follow the arrow" through everything.
+- **Root cause** — the tracking layer was an afterthought: either no
+  organic guidance to replace markers, or auto-track-on-accept implying
+  importance and removing player agency, or markers set imperatively and
+  desyncing.
+- **Prevention** — pick a marker philosophy deliberately
+  ([tracking.md](./tracking.md)): full markers / area-search radius /
+  diegetic guidance (Ghost of Tsushima's "something calls every ≤30 s") /
+  player-authored log (the Elden Ring counter-proposal) — and offer a
+  toggle. Keep the contract: **markers derive from objective state**.
+  Provide organic cues (landmarks, environmental signposting) before
+  removing markers.
+
 ## Debugging order
 
 When quests misbehave: (1) dump the world-state store and diff
@@ -207,4 +244,8 @@ rewards (#12).
 - [ ] Reward grants idempotent (crash-loop tested)
 - [ ] Failed/Suspended in the enum; the fail policy documented
 - [ ] Co-op authority model decided and enforced
+- [ ] Emergent/radiant content (if any) capped, paced, varied, over an
+      authored backbone
+- [ ] Marker philosophy chosen + toggle; organic cues before removing
+      markers; objective findable with markers off
 ```

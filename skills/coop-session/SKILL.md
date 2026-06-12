@@ -2,18 +2,29 @@
 name: coop-session
 description: >-
   Architecture blueprint for drop-in/drop-out co-op (2-4 players) in
-  open-world action RPGs, modeled on Genshin Impact's lobby system: the
-  session lifecycle (unlock gates, world-level join rules, join/leave/
-  kick flows, the host's-world-as-server-instance model, late-join
-  state snapshots), the authority spectrum (server-hard economy,
-  client-trusted ephemera — the datamined Genshin hybrid), replication
-  at architecture level (prediction, reconciliation, interpolation,
-  relevance), the co-op content rules matrix (host-only / instanced /
-  shared as data — structural anti-grief), enemy scaling, and topology
-  trade-offs (dedicated instances vs listen-server vs P2P). Use when
-  designing or building co-op, multiplayer sessions, lobbies, network
-  authority, or when late joiners see desynced worlds, hosts have
-  unfair advantage, or two players claim the same chest.
+  open-world action RPGs, modeled on Genshin Impact's lobby system, plus
+  the wider netcode and co-op-design landscape: the session lifecycle
+  (unlock gates, world-level join rules, join/leave/kick flows, the
+  host's-world-as-server-instance model, late-join state snapshots), the
+  authority spectrum (server-hard economy, client-trusted ephemera — the
+  datamined Genshin hybrid), replication at architecture level (prediction,
+  reconciliation, interpolation, relevance), the co-op content rules matrix
+  (host-only / instanced / shared as data — structural anti-grief), enemy
+  scaling, topology trade-offs (dedicated instances vs listen-server vs
+  P2P); the netcode-model landscape (deterministic lockstep for RTS,
+  rollback for fighting games, client-server lag compensation / favor-the-
+  shooter for FPS, MMO-scale interest management / sharding / single-shard
+  time dilation / server meshing, matchmaking and SBMM — Elo/Glicko/
+  TrueSkill, relay vs dedicated, NAT traversal, EOS/Steam/PlayFab/Photon/
+  Nakama, host migration and reconnection); and the co-op design craft
+  (interdependence and the Hazelight co-op-first pole, the L4D AI Director,
+  split-screen/shared-camera engineering, pingless ping comms, loot
+  distribution, downed/revive, room-based drop-in, per-player assist,
+  cross-play). Use when designing or building co-op, multiplayer sessions,
+  lobbies, network authority, netcode, matchmaking, split-screen, or when
+  late joiners see desynced worlds, hosts have unfair advantage, two
+  players claim the same chest, the netcode is wrong for the genre, or the
+  co-op just isn't fun.
 ---
 
 # Co-op Session
@@ -22,7 +33,10 @@ Build the drop-in co-op layer (2–4 players) of an open-world action
 RPG — the Genshin lobby model: guests visit the **host's world**,
 content rules make griefing structurally impossible, and the session
 ends gracefully when the host leaves. Architecture level (authority,
-prediction, relevance) — no low-level netcode. Primary evidence: the
+prediction, relevance) — no low-level netcode. The hub also maps the
+**wider netcode landscape** (lockstep, rollback, FPS lag-comp, MMO
+scale, matchmaking) and the **co-op design craft** so you can pick the
+model that fits your genre, not just copy Genshin. Primary evidence: the
 Grasscutter server reimplementation + the verified co-op rules already
 sourced across this skill family.
 
@@ -74,6 +88,16 @@ CONTENT RULES (the matrix as data — the anti-grief)
   + story content disables co-op entirely; cutscenes are
   host-only presentation (guests keep playing, see a frozen avatar)
 ```
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [session-authority.md](./session-authority.md) | The session lifecycle (host's-world model, join/leave/kick flows, gates, party composition), the authority spectrum (server-hard ↔ client-trusted), the three topologies, regional infrastructure, the flagged "do not invent" gaps |
+| [replication.md](./replication.md) | Replication at architecture level (prediction, reconciliation, interpolation, relevance, enemy scaling, late-join snapshot), the content-rules anti-grief matrix as data, engine notes (NGO 2.x / UE5 CMC+GAS) |
+| [netcode-models.md](./netcode-models.md) | The wider landscape: deterministic lockstep (RTS), rollback (fighting games), FPS lag-comp / favor-the-shooter, MMO scale (interest management, sharding, EVE single-shard + TiDi, server meshing), matchmaking & SBMM (Elo/Glicko/TrueSkill), relay vs dedicated, NAT, middleware, host migration & reconnection |
+| [coop-design.md](./coop-design.md) | The design craft: interdependence and the Hazelight co-op-first pole, the L4D AI Director, split-screen/shared-camera engineering, pingless ping comms, loot distribution, downed/revive, room-based drop-in, per-player assist, cross-play |
+| [pitfalls.md](./pitfalls.md) | 16 failure modes (symptom → cause → prevention) with debugging order and ship checklist |
 
 ## Build order (4 shippable tiers)
 
@@ -137,7 +161,8 @@ Flagged — never invent: the official server tick rate (Grasscutter's
 1 Hz logic loop is NOT representative), AFK kick timers, the host
 disconnect grace period, per-player session bandwidth, Genshin
 replication radii, CCU figures. Full tables in
-[architecture.md](./architecture.md).
+[session-authority.md](./session-authority.md) and
+[replication.md](./replication.md).
 
 ## Engine mapping
 
@@ -153,14 +178,15 @@ replication radii, CCU figures. Full tables in
 
 ## Failure modes
 
-The 14 classic co-op bugs (host advantage, late-join desync, the
+The 16 classic co-op bugs (host advantage, late-join desync, the
 singleplayer-assumptions retrofit — with three documented postmortems,
 misprediction pops, the trust-the-client hole, relevance popping, the
 shared-interactable race, host-leave data loss, time/weather
 divergence, the cutscene collision, quest-state contamination, the
-bandwidth whale, disconnect mid-transaction, the desync iceberg) are
-cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
-prevention.
+bandwidth whale, disconnect mid-transaction, the desync iceberg, **the
+netcode-model mismatch**, and **co-op designed as a single-player
+afterthought**) are cataloged in [pitfalls.md](./pitfalls.md) with
+symptom → root cause → prevention.
 
 ## Related skills
 
@@ -180,3 +206,7 @@ prevention.
   reuses.
 - `dialogue-system` / `cinematic-system` — per-player presentation
   (host cutscenes don't capture guests).
+- `camera-system` — the multi-target framing rig reused for shared-screen
+  / split-screen co-op ([coop-design.md](./coop-design.md)).
+- `hud-system` — co-op nameplates, player colors, through-wall
+  silhouettes, and pingless ping comms live in the HUD layer.

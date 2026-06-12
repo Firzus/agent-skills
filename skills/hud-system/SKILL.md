@@ -4,21 +4,33 @@ description: >-
   Architecture blueprint for in-game HUD systems in action games: event-driven
   read-only UI architecture (MVP/MVVM, zero per-frame polling), HUD layout
   grammar and information hierarchy, dynamic visibility rules (contextual
-  show/hide, HUD breathing), pooled damage numbers and floating combat text,
-  notification/toast channels, bars and gauges (ghost drain, boss phase pips,
-  radial cooldowns), interaction prompts with glyph switching, quest tracker
-  and off-screen indicators, accessibility and safe areas. Includes sourced
-  numbers (text sizes, timings, performance budgets) and Unity 6 (UITK) /
-  UE5 (UMG/CommonUI) mappings. Use when designing or building a HUD, health
-  bars, damage numbers, notifications, interaction prompts, or when the HUD
-  costs too much frame time or breaks on TVs/ultrawide.
+  show/hide, the combat-vs-exploration HUD split), pooled damage numbers and
+  floating combat text, notification/toast channels, bars and gauges (ghost
+  drain, boss phase pips, radial cooldowns), interaction prompts with glyph
+  switching, quest tracker; the HUD design craft (the diegetic/spatial/meta/
+  non-diegetic taxonomy, diegetic HUD case studies — Dead Space RIG, Metroid
+  Prime visor, Far Cry 2 GPS — genre conventions for FPS/fighting/MMO/survival/
+  looter/BR, and the game-feel/juice that makes a HUD feel responsive); deep
+  HUD accessibility (XAG/GAG standards, text size and contrast, colorblindness
+  and the never-color-alone rule, subtitles/captions, motor and cognitive
+  support, photosensitivity, the settings-as-data options registry); and
+  world-space HUD at scale (nameplates/health-bars with pooling and culling,
+  off-screen threat/damage indicators and the edge-clamp math, reticle/
+  crosshair tech, the widget-vs-Niagara cost model). Includes sourced numbers
+  (text sizes, timings, performance budgets) and Unity 6 (UITK) / UE5 (UMG/
+  CommonUI) mappings. Use when designing or building a HUD, health bars,
+  damage numbers, notifications, interaction prompts, nameplates, an
+  accessible or diegetic HUD, or when the HUD costs too much frame time,
+  breaks on TVs/ultrawide, or fails colorblind/low-vision players.
 ---
 
 # HUD System
 
-Build the in-game HUD layer of an action game. References: Genshin Impact /
-Granblue Fantasy: Relink (party action-RPG HUDs), God of War 2018 / Horizon
-(dynamic minimalist HUDs). Excluded (separate skills): minimap/world map
+Build the in-game HUD layer of an action game — the engineering, the design
+craft, the accessibility, and the world-space elements. References: Genshin
+Impact / Granblue Fantasy: Relink (party action-RPG HUDs), God of War 2018 /
+Horizon (dynamic minimalist HUDs), Dead Space / Metroid Prime (diegetic
+HUD), TLOU2 (accessibility). Excluded (separate skills): minimap/world map
 (`minimap-worldmap`), full-screen menus (`menu-ui-manager`).
 
 ## The architecture rule
@@ -43,6 +55,16 @@ gameplay state → events → view-model layer → widgets
   (HP, gauges), events for things that happen** (buff icons, toasts, quest
   steps).
 - Juice (flash, shake, pulse) lives in the widget layer — never in data.
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [elements.md](./elements.md) | The event-driven core + view-models, layout/info hierarchy, dynamic-visibility rules engine, bars & gauges (ghost drain, boss pips, cooldown radials), pooled damage numbers, notification/toast channels, interaction prompts, quest tracker, performance budget |
+| [design-genres.md](./design-genres.md) | The diegesis taxonomy (diegetic/spatial/meta/non-diegetic), "what belongs on the HUD at all", diegetic case studies (Dead Space, Metroid Prime, Far Cry 2), genre conventions (FPS/fighting/MMO/survival/looter/RTS/BR), game-feel & juice, readability & the combat-vs-exploration split |
+| [accessibility.md](./accessibility.md) | Standards & legal (XAG/GAG/APX, CVAA/EAA), visual (text size, contrast, colorblindness, backplates), subtitles/captions, motor & cognitive, photosensitivity (the three-flash rule), the settings-as-data options registry |
+| [world-space.md](./world-space.md) | World-space vs screen-space, nameplate/health-bar systems at scale (pooling, culling, GPU instancing), off-screen indicators & threat/damage direction (edge-clamp math, behind-camera flip), reticle/crosshair tech, the widget-vs-Niagara cost model |
+| [pitfalls.md](./pitfalls.md) | 14 failure modes (symptom → cause → prevention) with debugging order and ship checklist |
 
 ## Layout grammar (the genre standard)
 
@@ -104,7 +126,9 @@ Tier 4 — Ship quality
 | Colorblind-safe pair | danger `#D55E00` / ally `#56B4E9` (Okabe-Ito) | CUD palette |
 | Center clearance | middle ~25–33% width free of persistent UI | genre convention |
 
-Full sourced tables in [architecture.md](./architecture.md).
+Full sourced tables in [elements.md](./elements.md); accessibility numbers
+(text/contrast/subtitle/photosensitivity) in
+[accessibility.md](./accessibility.md).
 
 ## Engine mapping
 
@@ -120,12 +144,13 @@ Full sourced tables in [architecture.md](./architecture.md).
 
 ## Failure modes
 
-The 12 classic HUD bugs (per-frame polling, layout thrash, damage-number
+The 14 classic HUD bugs (per-frame polling, layout thrash, damage-number
 floods, projection bugs at screen edges, binding leaks on respawn, glyph
 desync, safe-area violations, z-order wars, aspect-ratio breaks,
-localization overflow, unreadable-over-gameplay, update-order flicker) are
-cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
-prevention.
+localization overflow, unreadable-over-gameplay, update-order flicker,
+**color-only/single-channel critical info**, and **world-space HUD that
+doesn't scale**) are cataloged in [pitfalls.md](./pitfalls.md) with
+symptom → root cause → prevention.
 
 ## Related skills
 
@@ -139,6 +164,8 @@ prevention.
   events.
 - `game-architecture-patterns` — Event Queue and Observer theory behind the
   read-only consumer model.
+- `menu-ui-manager` — shares the accessibility standards and the
+  settings-as-data options registry ([accessibility.md](./accessibility.md)).
 - `unity6-aaa-best-practices` (UITK + tokens + MVP) /
   `ue5-aaa-best-practices` (CommonUI + MVVM, no-Bind rule) — the engine UI
   doctrines this skill builds on.
