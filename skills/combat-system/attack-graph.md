@@ -1,9 +1,12 @@
-# Architecture — attack graph, hits, damage, stagger, defense
+# Attack graph — hits, damage, stagger, defense, feedback
 
-The components of a production melee combat system. All numbers are
-**starting points — tune by playtest**. Primary reference: Granblue Fantasy:
-Relink; calibration poles: Monster Hunter (commitment) and DMC/Bayonetta
-(freeform).
+The melee-action core: the data-driven attack graph, hit detection, the
+damage pipeline, the stagger economy, the defensive kit, and feedback. All
+numbers are **starting points — tune by playtest**. Primary reference:
+Granblue Fantasy: Relink; calibration poles: Monster Hunter (commitment)
+and DMC/Bayonetta (freeform). The ranged half is in
+[ranged-gunplay.md](./ranged-gunplay.md); the RPG/turn-based/balance layer
+in [rpg-combat.md](./rpg-combat.md).
 
 ## The attack graph
 
@@ -29,6 +32,9 @@ AttackNode {
 include on-hit, on-whiff, resource ≥ X, mode active, charge held. Edges are
 **priority-ordered** (composed inputs like `R+O` evaluated before the `O`
 they contain) — this is verbatim how MH's `wp.fsm` weapon movesets work.
+The same data-driven, priority-ordered transition-list pattern recurs in
+the FFXII Gambit system and `enemy-ai-framework` intents
+([rpg-combat.md](./rpg-combat.md)).
 
 **Cancel semantics per edge** — preserve / reset / offset the string:
 Relink ships both semantics (dodge preserves position in the string; guard
@@ -48,12 +54,16 @@ data model (Cygames Tech Conference 2024, "21 types of game feel").
   (blade vs hilt) carry different hit properties.
 - **Fast swings sweep**: cast the shape from last-frame socket transform to
   current — in-place overlap misses targets between frames (tunneling).
+  *The same fix applies to fast projectiles* —
+  [ranged-gunplay.md](./ranged-gunplay.md).
 - **Hit registry**: per attack activation, a set of already-hit entity
   roots (not colliders — limbs duplicate); cleared on window open; declared
-  multi-hit attacks re-arm at fixed intervals.
+  multi-hit attacks re-arm at fixed intervals. (Ranged *intentionally*
+  separates limbs into per-bone capsules for zone multipliers.)
 - **Unified HitEvent**: `{attacker, target, attackData, contactPoint,
   normal, direction}` — same pipeline for melee and projectiles; direction
-  drives directional hit reactions.
+  drives directional hit reactions. This single stream is the whole reason
+  one combat core serves melee + ranged.
 - **Trades** are resolved by the stagger layer (hyperarmor/poise decide who
   flinches), not by hit detection.
 
@@ -73,15 +83,19 @@ raw = baseAttack × motionValue%
 ```
 
 - **Motion values** are the balancing currency: evaluate combos in MV/sec.
-  Starting points: lights 20–50, heavies 50–80, charged finishers 100–180.
+  Lights 20–50, heavies 50–80, charged finishers 100–180. (How MV sits
+  inside the fuller RPG pipeline — stat scaling, variance, mitigation,
+  crit EV — is in [rpg-combat.md](./rpg-combat.md).)
 - **Damage caps (Relink's distinctive layer)**: each node carries its own
   ceiling; cap-up is an equipment stat. Endgame progression shifts from ATK
   (useless once capped) to cap raises. Purpose: bound DPS variance so
-  endgame content stays balanced under stat inflation. Deliberate
-  cap-bypass channels (supplemental damage applied post-cap) are design
-  valves. Adopt only if you need long-tail gear progression.
+  endgame content stays balanced under stat inflation — the action answer
+  to multiplicative damage blow-up ([rpg-combat.md](./rpg-combat.md)).
+  Adopt only if you need long-tail gear progression.
 - **Damage types feed secondary systems**: blunt-on-head builds KO (MH);
-  every hit builds the stun gauge (Relink, scaled by a Stun stat).
+  every hit builds the stun gauge (Relink, scaled by a Stun stat). Ranged
+  inserts distance falloff + hit-zone as upstream terms
+  ([ranged-gunplay.md](./ranged-gunplay.md)).
 
 ## Stagger / poise / break — three separate mechanisms
 
@@ -91,16 +105,20 @@ raw = baseAttack × motionValue%
 2. **Accumulated stun gauge**: filled by sustained offense (and by perfect
    guards — defense feeding offense, Relink's loop); full gauge → a
    **vulnerability window** (Link Chance/KO). Anti-stunlock: threshold
-   escalates +50–100% per proc, gauge decays ~5%/s after 3 s quiet.
+   escalates +50–100% per proc, gauge decays ~5%/s after 3 s quiet. *This
+   is structurally the same accumulate→proc→escalate shape as RPG status
+   build-up meters and CC diminishing returns* —
+   [rpg-combat.md](./rpg-combat.md).
 3. **Boss state cycle (Relink/GBF)**: mode bar Normal → **Overdrive**
    (filled by damage taken; boss empowered, −10–30% damage taken) →
    **Break** (bar drained back to 0; no charge attacks, damage taken
    ×1.2–1.5, ≥10 s window). The state modulates the damage pipeline both
    ways and gates the boss AI's moveset.
 
-**Poise vs hyperarmor**: poise = static stat absorbing interruptions;
-hyperarmor = frames authored on committed attacks (the trade-resolver).
-Both player and enemies use the same model.
+**Poise vs hyperarmor**: poise = static stat absorbing interruptions
+(Souls makes it a stat you gear for); hyperarmor = frames authored on
+committed attacks (the trade-resolver). Both player and enemies use the
+same model.
 
 **The reward loop**: all three convert sustained aggression into
 vulnerability windows — the moments the full combo graph gets to express
@@ -130,13 +148,17 @@ All windows authored as frames on animations, parametrizable by equipment
   dodge", with explicit exception flags like no-dodge-during-hit-stun);
   perfect variants reopen offensive edges immediately (frame advantage).
   MH inverts the philosophy with the same data model — fewer windows.
+- **Projectile parry**: extend the perfect-guard window to test against
+  incoming projectile hitboxes, optionally reflecting
+  ([ranged-gunplay.md](./ranged-gunplay.md)).
 
 ## Skills & ultimate layer
 
 - **Decoupled from the graph**: skills are `{slot, cooldown, resource}`
   that *interrupt* the graph (skill = near-universal cancel target) and
   return to neutral. Relink: 4-skill loadout + SBA (ultimate) gauge built
-  by combat actions.
+  by combat actions. (The MMO GCD + priority system and the turn-based
+  action economy are this layer's cousins — [rpg-combat.md](./rpg-combat.md).)
 - **Coupling happens through data, not code**: shared resources (combo
   finishers level Adept Arts which empower skills; skills chain into
   charge attacks as authored edges) — never by the skill layer reaching
@@ -169,7 +191,8 @@ character combo graphs are untouched.
   sells weapon weight. World-freeze reserved for finishers.
 - **Screen shake**: trauma model (hits add 0.2–0.5 to a [0,1] trauma,
   amplitude = trauma², Perlin noise, 0.15–0.25 s ring-down, mostly
-  positional, always a player slider) — GDC *Juicing Your Cameras*.
+  positional, always a player slider) — GDC *Juicing Your Cameras*. The
+  same model serves gunfire screenshake ([ranged-gunplay.md](./ranged-gunplay.md)).
 - **Knockback in discrete tiers**, not a continuum: flinch (0 m) →
   stagger-step (~0.5–1 m) → knockback (2–3 m) → launch (3–5 m + air
   state).
@@ -188,4 +211,6 @@ Nenkai relink-modding (damage caps, level sync datamines) · granblue.fandom
 (commitment taxonomy) · SmashWiki/SuperCombo (hit-stop, buffers) ·
 Fextralife souls wikis (i-frames, poise) · Game8/Kiranico MH (motion
 values, KO thresholds, evade windows) · GDC 2016 Eiserloh *Juicing Your
-Cameras* · Cygames Tech Conference 2024.
+Cameras* · Cygames Tech Conference 2024. Ranged sources in
+[ranged-gunplay.md](./ranged-gunplay.md); RPG/balance sources in
+[rpg-combat.md](./rpg-combat.md).

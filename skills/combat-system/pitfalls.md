@@ -1,7 +1,10 @@
-# Pitfalls — the 12 classic combat failure modes
+# Pitfalls — the 14 classic combat failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
-when combat "feels mushy" and nobody knows why.
+when combat "feels mushy" and nobody knows why. The melee core is in
+[attack-graph.md](./attack-graph.md), the ranged half in
+[ranged-gunplay.md](./ranged-gunplay.md), and the RPG/balance layer in
+[rpg-combat.md](./rpg-combat.md).
 
 ## 1. Hitbox desync from animation
 
@@ -134,6 +137,43 @@ when combat "feels mushy" and nobody knows why.
   graph node); windows closed by state-exit hooks, never only by
   end-events.
 
+## 13. "I shot them but no hit" (ranged hit-reg)
+
+- **Symptom** — visible-on-screen hits don't register in PvP; players hit
+  "around corners" after reaching cover; the crosshair was dead-on but the
+  shot whiffed; console players feel "auto-aimed" or PC players cry
+  "aimbot" in crossplay.
+- **Root cause** — client-authoritative or unconfirmed hit detection, or
+  the inverse — **no lag compensation** so you aimed at a 50–150 ms-old
+  interpolated position; per-bone hitboxes lagging the animated mesh; aim
+  assist mis-tuned for crossplay.
+- **Prevention** — the ranged netcode in
+  [ranged-gunplay.md](./ranged-gunplay.md): **server-authoritative hit
+  detection** with **lag compensation** (rewind hitboxes to the shooter's
+  view — "favor the shooter"); validate the per-bone capsule model against
+  the mesh; expect peeker's advantage and tune interp/tick; treat
+  crossplay aim-assist as a per-platform tuning problem with no universal
+  answer.
+
+## 14. Runaway or stagnant damage numbers
+
+- **Symptom** — player damage explodes into the millions and trivializes
+  content (or the inverse: everything scales so nothing ever changes);
+  +10% items feel worthless; a 90%-displayed hit "feels" like a coin flip;
+  one-shots and stunlock dominate.
+- **Root cause** — the wrong stat-combination/mitigation model picked
+  blindly: unchecked **multiplicative** stacking, exponential stat+enemy-HP
+  growth (the "everything scales" trap), tuning around the displayed DR%
+  instead of EHP, or no anti-stunlock/CC diminishing returns.
+- **Prevention** — the damage-formula discipline in
+  [rpg-combat.md](./rpg-combat.md): pick an **additive vs multiplicative**
+  policy (or the Diablo bucket hybrid) deliberately; tune around
+  **EHP/TTK**, not DR%; design **breakpoints** intentionally; cap per-node
+  damage if you need long-tail gear; apply **CC diminishing returns** /
+  the stun-gauge escalation; avoid the feel-bad set (one-shots, unavoidable
+  damage, stunlock, displayed-high-% misses) and ship accessibility damage
+  sliders.
+
 ## Debugging order
 
 When combat misbehaves: (1) turn on hitbox debug-draw and watch a slow-mo
@@ -141,7 +181,10 @@ swing (#1/#3), (2) log the hit registry per swing (#2/#8), (3) log buffer
 consume vs window-open timestamps (#4), (4) check what scopes the hit-stop
 actually touches (#6), (5) force a stagger mid-attack and verify every
 window closed and the graph reset (#12). Most "combat feels bad" reports
-are #4 (eaten inputs) or #1 (desynced windows) wearing a costume.
+are #4 (eaten inputs) or #1 (desynced windows) wearing a costume. For
+ranged: (6) `sv_showimpacts`-style visualize the client/server hitbox gap
+under latency (#13); for balance: (7) chart DPS/TTK/EHP across the gear
+curve and look for runaway or stagnation (#14).
 
 ## Playtest checklist
 
@@ -159,4 +202,8 @@ are #4 (eaten inputs) or #1 (desynced windows) wearing a costume.
 - [ ] Knockback an enemy into every wall/corner: nothing clips through
 - [ ] Lunge attack from max soft-lock range: no teleport feel, clamped
 - [ ] Same fight at 30 / 60 / 144 fps: identical windows and damage counts
+- [ ] Ranged PvP under emulated latency: hits register where the screen
+      showed (lag comp), no client/server hitbox gap
+- [ ] DPS/TTK/EHP charted across the gear curve: no runaway, no stagnation;
+      CC/stunlock bounded; accessibility damage sliders present
 ```
