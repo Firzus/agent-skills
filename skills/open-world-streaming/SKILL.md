@@ -5,20 +5,33 @@ description: >-
   production games: world partitioning into cells, streaming sources and
   velocity prediction, async load/unload lifecycle with hysteresis and
   priorities, layered streaming (gameplay vs visual vs audio), memory and
-  frame-time budgets, HLOD/distant world representation, and fast-travel
-  loading gates. Includes sourced starting-point numbers from shipped AAA
-  games and Unity 6 / UE5 concept mappings. Use when designing or building an
-  open world, world streaming, level streaming, world partition, chunk/cell
-  loading, seamless world, large world, fast travel, or when diagnosing
-  streaming hitches, pop-in, or memory issues in a streamed world.
+  frame-time budgets, HLOD/distant world representation, fast-travel loading
+  gates; the sub-cell rendering frontier (virtualized geometry — Nanite
+  clusters and geometry pages, virtual texturing — the page-table/feedback
+  cache, GPU-driven rendering and culling, the DirectStorage/PS5-IO-complex
+  storage tier, world-scale rendering — large-world coordinates and terrain
+  clipmaps, HLOD/impostors and dithered transitions); and procedural
+  generation + living-world simulation (noise/biome/erosion terrain, scatter,
+  UE5 PCG and Houdini, infinite chunk worlds — Minecraft/No Man's Sky,
+  generate-on-load vs pre-bake, simulation-LOD and the "bubble", NPC
+  schedules and the Nemesis system, delta-from-seed persistence and the
+  determinism/seed-hierarchy rules). Includes sourced starting-point numbers
+  from shipped AAA games and Unity 6 / UE5 concept mappings. Use when
+  designing or building an open world, world streaming, level streaming,
+  world partition, chunk/cell loading, seamless world, large world, fast
+  travel, procedural generation, Nanite/virtual-texture budgets, or when
+  diagnosing streaming hitches, pop-in, memory issues, sub-cell pool thrash,
+  or procedural non-determinism.
 ---
 
 # Open-World Streaming
 
-Build a world larger than memory by loading only what surrounds the player.
-This skill is the engine-agnostic architecture blueprint: components, data
-flow, budgets, build order, and failure modes. Engine tooling specifics live
-in the engine mapping section and the dedicated engine skills
+Build a world larger than memory by loading only what surrounds the player —
+the cell-level streaming system, the sub-cell rendering frontier underneath
+it, and the procedural-generation/living-world layers around it. This skill
+is the engine-agnostic architecture blueprint: components, data flow,
+budgets, build order, and failure modes. Engine tooling specifics live in
+the engine mapping section and the dedicated engine skills
 (`unity6-aaa-best-practices`, `ue5-aaa-best-practices`).
 
 ## The core invariant
@@ -39,7 +52,7 @@ or hide the load behind a transition (fast-travel fade).
 ## System anatomy
 
 A streaming system is five components; build them in this order
-(see [architecture.md](./architecture.md) for each in detail):
+(see [components.md](./components.md) for each in detail):
 
 1. **Partitioning** — the world divided into cells (uniform grid by default:
    128 m dense city, 256 m mixed, 512 m sparse) with content assigned per
@@ -56,6 +69,15 @@ A streaming system is five components; build them in this order
    main thread (1–5 ms/frame).
 5. **Distant representation** — HLOD proxies/impostors covering everything
    beyond loading range, so the unloaded world is still visible.
+
+## Reference map
+
+| File | Covers |
+| --- | --- |
+| [components.md](./components.md) | The five components in detail: partitioning (schemes, cell-size drivers), streaming sources & velocity prediction, the cell lifecycle state machine, the async pipeline & activation budgets, distant representation/HLOD, layered streaming, memory budgets, the IO throughput tiers, fast travel |
+| [rendering-tech.md](./rendering-tech.md) | The sub-cell frontier: virtualized geometry (Nanite clusters/geometry pages/streaming pool), virtual texturing (page table + feedback cache), GPU-driven rendering & culling, the DirectStorage/PS5-IO-complex storage tier, world-scale rendering (large-world coordinates, terrain clipmaps, Lumen at scale), HLOD/impostors and dithered transitions |
+| [procedural-simulation.md](./procedural-simulation.md) | Procedural generation (noise/biome/erosion terrain, scatter, UE5 PCG, Houdini, WFC), infinite chunk worlds (Minecraft/No Man's Sky), runtime-PCG↔streaming integration, large-scale simulation (simulation-LOD, the bubble, NPC schedules, the Nemesis system), persistence at scale (delta-from-seed), determinism & seeds |
+| [pitfalls.md](./pitfalls.md) | 13 failure modes (symptom → cause → prevention) with debugging order, soak testing, and production checklist |
 
 ## Build order (4 shippable tiers)
 
@@ -88,7 +110,7 @@ world size and traversal speed stop demanding more.
 
 Sourced from shipped games and engine defaults — **starting points, profile
 to confirm** (full tables with sources in
-[architecture.md](./architecture.md)):
+[components.md](./components.md)):
 
 | Parameter | Starting point |
 | --- | --- |
@@ -119,14 +141,16 @@ hysteresis, prediction, and HLOD are yours to build — author the world in a
 master scene and write an editor tool that splits it into cell scenes early
 (hand-maintaining cell scenes doesn't scale), and keep the streaming manager
 engine-agnostic C# so it's testable in edit mode. Full mapping detail in
-[architecture.md](./architecture.md).
+[components.md](./components.md).
 
 ## Failure modes
 
-The 11 classic streaming bugs (hitches on load, pop-in, seams at borders,
+The 13 classic streaming bugs (hitches on load, pop-in, seams at borders,
 double-load races, unload thrash, AI freezing at borders, physics falling
 through unloaded collision, fast-travel into void, lost object state,
-co-op divergence, cook/reference leaks) are cataloged with symptom → root
+co-op divergence, cook/reference leaks, **sub-cell pool thrash (Nanite/VT)**,
+and **procedural non-determinism & save bloat**) are cataloged with
+symptom → root
 cause → prevention in [pitfalls.md](./pitfalls.md). Read it before designing;
 re-read it when debugging.
 
@@ -137,7 +161,10 @@ re-read it when debugging.
 - `scene-flow-manager` — context transitions (boot/title/world) around
   this in-world spatial streaming; fast-travel loading screens.
 - `save-persistence` — the persistent world-state store for object state
-  across unload/reload (Tier 4).
+  across unload/reload (Tier 4); the delta-from-seed persistence for
+  procedural worlds ([procedural-simulation.md](./procedural-simulation.md)).
+- `world-time-weather` — procedural terrain/biome generation and the
+  living-world simulation share the deterministic-seed discipline.
 - `character-controller` / `enemy-ai-framework` — the simulation side of
   streaming guards (never simulate over missing collision, AI residency
   at cell borders).

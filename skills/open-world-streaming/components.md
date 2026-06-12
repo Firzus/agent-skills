@@ -1,7 +1,10 @@
-# Architecture — components, data flow, budgets
+# Components — partitioning, sources, lifecycle, async, distant rep, budgets
 
 The five components of a streaming system, with shipped-game evidence and
 sourced numbers. All numbers are **starting points — profile to confirm**.
+The sub-cell rendering frontier (Nanite, virtual texturing, GPU-driven IO)
+is in [rendering-tech.md](./rendering-tech.md); procedural generation and
+living-world simulation in [procedural-simulation.md](./procedural-simulation.md).
 
 ## 1. Partitioning
 
@@ -38,7 +41,9 @@ game's cell size without its traversal speed, IO tier, and density is the
 (via dependency graph), collision, foliage placements, spawn data, local
 audio. What does NOT: player, key NPCs, global managers, quest state — the
 always-loaded set (keep it small; every always-loaded object is permanent
-memory).
+memory). For procedural worlds, the cell's "load" is **generate**, and the
+seed + global config *is* the always-loaded set
+([procedural-simulation.md](./procedural-simulation.md)).
 
 ## 2. Streaming sources
 
@@ -59,7 +64,8 @@ demands decides cell residency.
 **The worked example** (from the Spider-Man GDC 2019 postmortem): 128 m
 tiles, top swing speed consumes ~1 tile/s, worst-case HDD 25 MB/s → tile
 budget ~20–33 MB compressed, loaded in 0.8–1.33 s. Run this math for your
-own game: it dimensions everything.
+own game: it dimensions everything. (NVMe + DirectStorage radically change
+the IO term — [rendering-tech.md](./rendering-tech.md).)
 
 ## 3. Cell lifecycle manager
 
@@ -96,7 +102,8 @@ demand → IO dispatch → decompress → deserialize → [main thread] activate
 - **No file IO on the main thread, ever.**
 - **Activation is the modern bottleneck**, not IO (on SSD targets).
   Instantiation, component registration, physics body creation, and script
-  initialization happen on the main thread — time-slice them:
+  initialization happen on the main thread — time-slice them. GPU-driven
+  rendering pushes this toward ~0 ([rendering-tech.md](./rendering-tech.md)):
 
 | Budget | Value | Source |
 | --- | --- | --- |
@@ -111,7 +118,10 @@ demand → IO dispatch → decompress → deserialize → [main thread] activate
   Prefer instanced/packed representations (ISM/prefab packing); UE 5.6
   FastGeo streams static geometry without actor registration entirely.
 - **Pre-warm shaders/PSOs** during loading screens — first-use compilation
-  in the world is a classic hitch.
+  in the world is a classic hitch (the PSO-stutter discipline in
+  `scene-flow-manager`). For procedural worlds, **generation competes for
+  this same activation budget**
+  ([procedural-simulation.md](./procedural-simulation.md)).
 
 ## 5. Distant representation
 
@@ -120,14 +130,18 @@ Everything beyond loading range still needs pixels:
 - **HLOD rings:** full detail inside loading range → merged/simplified proxy
   per cell-group out to ~2 km → impostors/skyline beyond. Shipped configs:
   Fortnite HLOD0 256 m cells/512 m range, HLOD1 512 m cells/2048 m range,
-  tree impostors always loaded.
+  tree impostors always loaded. **HLOD is not obsoleted by Nanite** — it's
+  repurposed (instance-count collapse + occlusion proxy + Lumen Far Field
+  GI — [rendering-tech.md](./rendering-tech.md)).
 - **Always-resident low-detail world:** Sunset Overdrive keeps proxy meshes
   for the entire city resident (~500 MB, 1/10 of RAM) and cross-fades.
   Proxies don't need to mirror dynamic changes — nobody notices.
 - **Virtual texturing** for terrain at scale (Far Cry 4 AVT: 10×10 km at
-  ~220 MB resident); UE5 SVT/RVT continue this lineage.
+  ~220 MB resident); UE5 SVT/RVT continue this lineage
+  ([rendering-tech.md](./rendering-tech.md)).
 - **Transitions:** cross-fade/dither HLOD↔full swaps and align them with fog
-  to hide them.
+  to hide them (the dithered-TAA mechanism is in
+  [rendering-tech.md](./rendering-tech.md)).
 
 ## Layered streaming
 
@@ -135,7 +149,8 @@ Different systems need different radii. Collision and gameplay data load
 further than visual detail (cheap, and prevents physics/AI failure at the
 frontier); audio has its own (smaller) radius; AI simulation degrades by
 distance (full sim near, light sim far, abstract beyond — Genshin runs
-distant AI at 5 fps with animation skipped).
+distant AI at 5 fps with animation skipped — the simulation-LOD generalized
+in [procedural-simulation.md](./procedural-simulation.md)).
 
 Practical per-class visual distances (community UE5 practice): landmarks
 2000 m+, buildings 500–1000 m, medium props 200–500 m, clutter 50–200 m.
@@ -152,6 +167,8 @@ Practical per-class visual distances (community UE5 practice): landmarks
 - Set **hard budgets per category** (textures, meshes, audio, gameplay) and
   enforce per cell at build time; a rough planning sketch on current-gen
   console: ~60% geometry+textures, ~25% gameplay/CPU, ~5% audio, rest pools.
+  (Nanite's 512 MB pool and the VT physical cache are *sub-cell* budgets
+  that live alongside this — [rendering-tech.md](./rendering-tech.md).)
 - Keep **≥ 15–20% headroom** below the platform budget so eviction fires
   *before* the cap, and limit concurrent in-flight cell loads (2–4) to avoid
   IO saturation.
@@ -170,12 +187,13 @@ Practical per-class visual distances (community UE5 practice): landmarks
 | --- | --- | --- |
 | HDD (PS4 era) | ~25 MB/s worst-case design floor | Small cells, data duplicated on disk to kill seeks, speed caps |
 | SATA SSD | ~0.5–1 GB/s | Comfortable Tier 2-3 |
-| PS5 / NVMe + DirectStorage | 5.5 GB/s raw, 8–9+ compressed | ~200× HDD: larger cells OK, sub-asset streaming (mips, animation frames, geometry pages), activation becomes the bottleneck |
+| PS5 / NVMe + DirectStorage | 5.5 GB/s raw, 8–9+ compressed | ~200× HDD: larger cells OK, sub-asset streaming, activation becomes the bottleneck |
 
 Modern trend (2023+): streaming granularity is shrinking below the cell —
 virtualized geometry pages (Nanite), animation frame streaming (Spider-Man 2
 keeps every 3rd-4th frame resident), GPU-feedback-driven texture tiles. The
-cell remains the gameplay/logic granularity.
+cell remains the gameplay/logic granularity; the sub-cell loops are in
+[rendering-tech.md](./rendering-tech.md).
 
 ## Fast travel & teleports
 
@@ -186,7 +204,9 @@ cell remains the gameplay/logic granularity.
 4. Deactivate the origin source; let unload run lazily.
 
 Same gate for cutscene camera jumps and respawns. Ghost of Tsushima's
-seconds-fast travel works because tiles are tiny and only deltas load.
+seconds-fast travel works because tiles are tiny and only deltas load. For a
+procedural world, insert a **generate** step and **apply saved deltas**
+before revealing ([procedural-simulation.md](./procedural-simulation.md)).
 
 ## Sources
 
@@ -196,4 +216,6 @@ example) · GDC 2017 *Player Traversal in Horizon Zero Dawn* · GDC 2021 *Zen
 of Streaming: Ghost of Tsushima* · GDC 2015 *Streaming in Sunset Overdrive*
 · CEDEC 2022 Elden Ring · Cyberpunk 2077 GDC + modding docs · SIGGRAPH 2021
 *Nanite: A Deep Dive* · UE `CoreSettings.cpp` · Unity Entities streaming
-docs.
+docs. Rendering-tech sources in [rendering-tech.md](./rendering-tech.md);
+procedural/simulation sources in
+[procedural-simulation.md](./procedural-simulation.md).
