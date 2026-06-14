@@ -28,11 +28,11 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 
 ## Available skills
 
-34 skills, grouped by domain. Click a category to jump to it.
+35 skills, grouped by domain. Click a category to jump to it.
 
 | Category | Skills |
 | -------- | ------ |
-| [Agent workflow & tooling](#agent-workflow--tooling) | `code-review`, `workflow`, `imagegen` |
+| [Agent workflow & tooling](#agent-workflow--tooling) | `code-review`, `workflow`, `tdd-for-unity`, `imagegen` |
 | [Web & app development](#web--app-development) | `vite-plus-best-practices`, `tauri`, `image-optimization`, `extract-theme`, `shaders` |
 | [Engine best practices](#engine-best-practices) | `unity6-aaa-best-practices`, `ue5-aaa-best-practices`, `figma-to-unity` |
 | [Graphics & rendering](#graphics--rendering) | `stylized-rendering` |
@@ -50,6 +50,7 @@ The repo is distributed through the [skills CLI](https://github.com/vercel-labs/
 | ----- | ----------- |
 | [`code-review`](./skills/code-review) | Reviews PRs, diffs, branches, and changes for bugs, regressions, guideline violations, and high-confidence risks before merge. |
 | [`workflow`](./skills/workflow) | UltraCode-style highest-effort mode for large or interconnected tasks: deep reasoning plus orchestration of parallel sub-agents with git checkpoints. |
+| [`tdd-for-unity`](./skills/tdd-for-unity) | Red-green-refactor TDD for Unity: EditMode-first tests for pure C# logic, PlayMode only for the player loop/physics/scenes, test asmdefs, mocking engine boundaries. |
 | [`imagegen`](./skills/imagegen) | Generates or edits project images with `gpt-image-2` via the local Codex CLI: mockups, logos, photorealistic scenes, infographics, transparent backgrounds. |
 
 ### Web & app development
