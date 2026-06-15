@@ -1,30 +1,12 @@
 ---
 name: coop-session
 description: >-
-  Architecture blueprint for drop-in/drop-out co-op (2-4 players) in
-  open-world action RPGs, modeled on Genshin Impact's lobby system, plus
-  the wider netcode and co-op-design landscape: the session lifecycle
-  (unlock gates, world-level join rules, join/leave/kick flows, the
-  host's-world-as-server-instance model, late-join state snapshots), the
-  authority spectrum (server-hard economy, client-trusted ephemera — the
-  datamined Genshin hybrid), replication at architecture level (prediction,
-  reconciliation, interpolation, relevance), the co-op content rules matrix
-  (host-only / instanced / shared as data — structural anti-grief), enemy
-  scaling, topology trade-offs (dedicated instances vs listen-server vs
-  P2P); the netcode-model landscape (deterministic lockstep for RTS,
-  rollback for fighting games, client-server lag compensation / favor-the-
-  shooter for FPS, MMO-scale interest management / sharding / single-shard
-  time dilation / server meshing, matchmaking and SBMM — Elo/Glicko/
-  TrueSkill, relay vs dedicated, NAT traversal, EOS/Steam/PlayFab/Photon/
-  Nakama, host migration and reconnection); and the co-op design craft
-  (interdependence and the Hazelight co-op-first pole, the L4D AI Director,
-  split-screen/shared-camera engineering, pingless ping comms, loot
-  distribution, downed/revive, room-based drop-in, per-player assist,
-  cross-play). Use when designing or building co-op, multiplayer sessions,
-  lobbies, network authority, netcode, matchmaking, split-screen, or when
-  late joiners see desynced worlds, hosts have unfair advantage, two
-  players claim the same chest, the netcode is wrong for the genre, or the
-  co-op just isn't fun.
+  Architecture blueprint for drop-in/drop-out co-op and multiplayer sessions:
+  lobby lifecycle, join rules, authority, replication, late-join snapshots,
+  anti-grief content rules, scaling, topology, matchmaking, host migration,
+  split-screen, loot distribution, revive, cross-play, and co-op design. Use
+  when designing co-op, lobbies, netcode, matchmaking, or when late joiners
+  desync, hosts gain unfair advantage, rewards conflict, or co-op is not fun.
 ---
 
 # Co-op Session

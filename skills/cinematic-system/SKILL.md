@@ -1,35 +1,13 @@
 ---
 name: cinematic-system
 description: >-
-  Architecture blueprint for cutscene systems in open-world games: the
-  universal timeline model (typed tracks, clips with blends, markers,
-  director-resolved bindings — the schema Unity Timeline, UE Sequencer,
-  and Nintendo's BFEVFL independently converge on), realtime vs
-  pre-rendered video decision matrix (codecs, middleware, overlay
-  subtitles, the seam problem), the gameplay-to-cutscene transition
-  contract (the datamined BotW bdemo checklist: preload gates, world
-  staging, exit positions), skip with the all-events-fire guarantee,
-  replay galleries and the context problem, the full production pipeline
-  (previz, mocap, dailies, binary asset versioning); the cinematography
-  craft (film language and shot grammar — the 180/30-degree rules,
-  shot/reverse-shot, J/L-cuts, shot sizes; camera and lens craft — focal-
-  length emotion, dolly zoom, motivated movement; cinematic lighting and
-  color grading; virtual production — LED volumes/ICVFX, virtual cameras,
-  simulcam; performance capture — optical/inertial/markerless, facial and
-  MetaHuman Animator; realtime cinematic tech — the physical camera model,
-  Movie Render Queue warm-up); and the interactive-cinematic design layer
-  (the cutscene/ludonarrative debate, QTEs, playable cinematics — the
-  Naughty Dog active-cinematic and GoW one-shot, branching and choice-driven
-  cinematics — Mass Effect/Telltale/Until Dawn and the combinatorial-
-  explosion patterns, player-state-reflective cutscenes — the equipment-
-  mismatch and canonize-vs-reflect problem, and cutscene/QTE accessibility).
-  References: Genshin Impact (USM mix), BotW/TotK (Demo events datamine),
-  God of War/Naughty Dog/Half-Life (interactive craft), with GDC talks for
-  production. Use when designing or building cutscenes, timelines, in-game
-  cinematics, cinematography, virtual production, QTEs, branching/interactive
-  cinematics, video playback, skip systems, or when skips break quest state,
-  bindings T-pose, first shots show low-res textures, the film grammar feels
-  off, or a QTE locks players out.
+  Architecture blueprint for game cutscene systems: timeline tracks, bindings,
+  realtime vs video playback, gameplay-to-cutscene transitions, skip/replay
+  guarantees, cinematography craft, production pipeline, QTEs, branching and
+  playable cinematics, virtual production, and accessibility. Use when designing
+  cutscenes, timelines, in-game cinematics, video playback, skip systems, QTEs,
+  or when skips break quest state, bindings T-pose, assets stream late, or film
+  grammar feels off.
 ---
 
 # Cinematic System

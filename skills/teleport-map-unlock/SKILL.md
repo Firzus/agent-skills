@@ -1,24 +1,13 @@
 ---
 name: teleport-map-unlock
 description: >-
-  Architecture blueprint for fast travel, waypoint networks, and map unlocking
-  across open-world games: the region-unlock and map-reveal model (towers/statues
-  revealing terrain vs POI layers, fog-of-war data structures, the Ubisoft-tower
-  lineage and its fatigue, item/proximity/purchase reveal methods), the waypoint
-  registry (stable IDs, designated spawn point + facing, map layers,
-  discovery/activation states, player-placed waypoints), the atomic teleport
-  sequence (validate, confirm, input lock, fade, streaming jump, residency gates,
-  physics-safe placement, camera warp, state restoration) including seamless
-  no-loading-screen travel, large-world precision, and networked/anti-cheat
-  teleport, and fast-travel design policy (the cost/restriction spectrum from
-  diegetic Morrowind networks to free map-warp, earned-only unlocks, the
-  cannibalization-vs-respecting-time debate, network density and topology).
-  References: BotW/TotK and Genshin, with Morrowind, Elden Ring, Dragon's Dogma,
-  Death Stranding, and the Ubisoft-tower lineage as design references, and
-  Spider-Man/Rift Apart for seamless tech. Use when designing or building fast
-  travel, teleport waypoints, map reveal/fog unlock, tower/statue activation, or
-  when players fall through the world on arrival, the camera whiplashes, the map
-  drowns in icons, or a quest leaves teleport locked.
+  Architecture blueprint for fast travel, waypoint networks, and map unlocking:
+  region reveal, fog-of-war data, tower/statue/item/proximity unlocks, waypoint
+  registries, stable IDs, spawn placement, discovery states, atomic teleport
+  sequences, streaming gates, camera warps, large-world precision, networked
+  teleport, and travel policy. Use when designing fast travel, teleports,
+  waypoint activation, map reveal, or when players fall through the world,
+  cameras whiplash, maps drown in icons, or quests leave travel locked.
 ---
 
 # Teleport & Map Unlock

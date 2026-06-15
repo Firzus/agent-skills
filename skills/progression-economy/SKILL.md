@@ -1,24 +1,12 @@
 ---
 name: progression-economy
 description: >-
-  Systems architecture blueprint for progression and economy in live-service
-  and single-player games: stat curve tables (base × curve[level], shared
-  curves as data) and the XP-curve families (Pokémon experience groups,
-  RuneScape's geometric curve, D&D thresholds, prestige/paragon infinite
-  progression), skill trees and soft caps / diminishing returns, the stat
-  aggregation contract, multi-currency wallets and the live-ops economy
-  discipline (faucets vs sinks, inflation control, the in-house economist,
-  player-driven markets, wealth concentration), energy gating with
-  timestamp-based regen, battle-pass and season models across the industry
-  (net-positive currency earn-back, FOMO-expiry vs never-expires, retroactive
-  entitlements, idempotent rollover), and the server-authoritative transaction
-  model (validate-commit-notify, idempotency keys, int64 currencies). References:
-  Genshin (datamined + Grasscutter), EVE Online (the economist's craft), WoW,
-  RuneScape, Diablo, Fortnite, Helldivers 2, with Unity 6 / UE5 mappings. Use
-  when designing or building leveling, XP curves, talents/skill trees, prestige,
-  currencies, economy balance, energy/stamina, battle passes, reward grants, or
-  when balances drift, grants duplicate on retry, the economy inflates, or a
-  curve-table edit breaks live players.
+  Systems architecture blueprint for game progression and economy: stat curves,
+  XP families, skill trees, soft caps, stat aggregation, wallets, faucets/sinks,
+  energy gates, battle passes, seasons, server-authoritative transactions,
+  idempotency, and int64 currencies. Use when designing leveling, XP curves,
+  talents, prestige, currencies, economy balance, stamina, reward grants, or when
+  balances drift, grants duplicate, inflation appears, or curve edits break saves.
 ---
 
 # Progression & Economy

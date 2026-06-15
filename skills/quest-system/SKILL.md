@@ -1,24 +1,13 @@
 ---
 name: quest-system
 description: >-
-  Architecture blueprint for quest systems across open-world, RPG, and
-  live-service games: the quest data model (quest/steps/objectives as data,
-  condition/action lists, the prerequisite DAG, taxonomy as policy data), the
-  event-driven runtime (objective evaluation, quest-driven world changes, the
-  shared-NPC conflict, no-fail design, commissions), emergent and procedural
-  quest generation (radiant/template quests, the Nemesis system, storyteller vs
-  AI-director pacing, simulation-driven A-Life, the authored-backbone hybrid),
-  the engineering of quest scripting (state machine vs behavior tree, the event
-  bus / dirty-queue, dependency graphs and topological sorting, condition/action
-  combinators, save/load and schema migration, debug tooling and telemetry),
-  objective-tracking UX (journal/log structures, markers and waypoints, the
-  anti-marker philosophy, knowledge-graph and deduction logs), and authoring
-  schools. References: BotW/TotK and Genshin (datamined), Witcher 3 REDkit,
-  Skyrim Creation Kit, Shadow of Mordor (Nemesis), Outer Wilds, Elden Ring, with
-  Unity 6 / UE5 (StateTree) mappings. Use when designing or building quests,
-  missions, objectives, quest logs, markers, daily commissions, branching or
-  emergent quests, or when quest chains break, flags turn to soup, saves corrupt
-  mid-quest, or players can't find the objective.
+  Architecture blueprint for quest systems in open-world, RPG, and live-service
+  games: quest/step/objective data, conditions/actions, prerequisite DAGs,
+  event-driven runtime, world changes, shared-NPC conflicts, procedural quests,
+  scripting, save migration, debug tools, telemetry, journals, markers, and
+  authoring workflows. Use when designing quests, missions, objectives, logs,
+  markers, commissions, branching quests, or when chains break, flags sprawl,
+  saves corrupt, or players cannot find objectives.
 ---
 
 # Quest System

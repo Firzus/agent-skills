@@ -1,24 +1,13 @@
 ---
 name: world-time-weather
 description: >-
-  Architecture blueprint for time-of-day, weather, seasons, and climate in
-  open-world games: the central game clock service (time scale, dual day
-  divisions, pause rules, dual server/diegetic clocks, calendars and seasonal
-  cycles), weather as data not simulation (climate profiles, pre-rolled regional
-  schedules, the override stack) AND simulation-driven weather (volumetric
-  clouds, atmospheric scattering, dynamic storm systems), systemic weather
-  consumed by traversal/combat/AI/audio (the BotW chemistry-engine model) plus
-  survival temperature and biome/climate systems, the event scheduler
-  (blood-moon-style resets, respawn policies, time-skip catch-up), the
-  time-of-day lighting/rendering engineering (dynamic GI under a moving sun, sky
-  and cloud rendering, precipitation and rain occlusion, the global param bus,
-  performance), and persistence. References: BotW/TotK and Genshin (datamined),
-  with RDR2/Horizon/Sea of Thieves for weather rendering, Stardew/RimWorld/Don't
-  Starve for seasons, and Unity 6 / UE5 mappings. Use when designing or building
-  day/night cycles, weather state machines, seasons/calendars, dynamic sky
-  systems, environmental hazards, survival temperature, daily resets, TOD
-  lighting, or when weather pops, quests leak forced weather, the sun jitters,
-  or sleeping fires ten hours of events in one frame.
+  Architecture blueprint for time-of-day, weather, seasons, and climate systems:
+  central game clocks, time scale, calendars, server/diegetic clocks, weather
+  profiles, regional schedules, overrides, volumetric clouds, storms, systemic
+  weather effects, survival temperature, event schedulers, daily resets, TOD
+  lighting, rendering integration, and persistence. Use when designing day/night,
+  weather, seasons, dynamic skies, hazards, resets, or when weather pops, forced
+  weather leaks, the sun jitters, or time-skip floods events.
 ---
 
 # World Time & Weather

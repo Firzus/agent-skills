@@ -1,27 +1,12 @@
 ---
 name: character-controller
 description: >-
-  Architecture blueprint for character controllers in production games,
-  third-person AND first-person: kinematic collide-and-slide movement
-  solver, hierarchical movement state machine (ground/air/climb/swim/glide),
-  ground handling (slopes, steps, snapping, moving platforms), jump
-  parametrization and game-feel numbers (coyote time, input buffering,
-  gravity multipliers), stamina economy, modular movement abilities, the
-  animation interface, network-ready structure; the FPS/momentum movement
-  model (the Quake/Source friction+acceleration physics, bunnyhopping/
-  strafe-jumping/surf math, movement-shooter momentum — wall-running, slide-
-  hopping, the lurch, Doom/Tribes/Mirror's Edge, first-person camera
-  concerns — eye anchor, head bob, FOV-on-sprint, slide/crouch/mantle,
-  vehicle and mounted controllers, fast-movement netcode and anti-cheat);
-  and the locomotion-animation/feel/accessibility layer (blend trees and
-  foot IK, motion matching, procedural and active-ragdoll animation, game
-  feel and juice, movement accessibility — motion-sickness comfort, VR
-  locomotion, hold-vs-toggle, the Celeste assist model). Includes sourced
-  starting-point numbers and Unity 6 / UE5 mappings. Use when designing or
-  building a character controller, player movement, locomotion, traversal
-  (climbing, swimming, gliding), jump feel, FPS movement, momentum systems,
-  vehicles, networked movement, motion matching, or when diagnosing movement
-  jitter, slope bugs, floaty controls, camera nausea, or netcode desync.
+  Architecture blueprint for first-person and third-person character
+  controllers: kinematic collide-and-slide, movement states, slopes, steps,
+  jumping, stamina, abilities, animation handoff, FPS momentum, vehicles,
+  networking, feel, and accessibility. Use when designing or diagnosing player
+  movement, locomotion, climbing, swimming, gliding, jump feel, FPS movement,
+  motion matching, jitter, slope bugs, floaty controls, nausea, or netcode desync.
 ---
 
 # Character Controller

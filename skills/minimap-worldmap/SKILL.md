@@ -1,27 +1,13 @@
 ---
 name: minimap-worldmap
 description: >-
-  Architecture blueprint for minimap and full-screen world map systems in
-  open-world games AND across genres: map content pipeline (automated
-  orthographic bake with stylization pass, tiled zoom pyramid), the single
-  world-to-map transform asset, a shared marker registry serving both
-  surfaces (categories, zoom-LOD tiers, clustering, label collision,
-  pooling), region-based fog of war with reveal policies, multi-layer/
-  underground maps, pan/zoom/pin interactions, fast-travel integration,
-  breadcrumb trails (Hero's Path), the cartography/GIS rendering tech
-  (slippy-map quadtree tiling, raster vs vector tiles, SDF labels and
-  icons, label-placement collision, hillshade/hypsometric relief, the
-  painted-map shader, large-world double-precision transform, BC7/ASTC
-  tile compression), and the cross-genre UX (RTS minimap-as-command-
-  surface, MOBA minimap-as-macro-game with ping wheels, FPS UAV/radar
-  info-warfare, the anti-minimap/diegetic movement — Far Cry 2 GPS, Ghost
-  of Tsushima guiding wind, Elden Ring minimal markers, Subnautica no-map).
-  References: Genshin Impact (richest shipped map: 300 pins, multi-layer
-  v4.0), Zelda BotW/TotK (nightly re-bake pipeline, tower reveal), Mapbox
-  (tiling/SDF). Use when designing or building a minimap, world map, fog of
-  war, map markers/pins, fast-travel map, map tile rendering, a diegetic
-  compass, or when map markers drift, fog reverts on load, precision breaks
-  far from origin, or the map tanks performance.
+  Architecture blueprint for minimap and full-screen world map systems:
+  content baking, tiled zoom pyramids, world-to-map transforms, shared marker
+  registries, clustering, label collision, fog of war, multi-layer maps,
+  pan/zoom/pins, fast travel, breadcrumbs, tile rendering, and cross-genre UX.
+  Use when designing minimaps, world maps, markers, fog reveal, diegetic
+  compasses, or when markers drift, fog reverts, precision breaks, or maps hurt
+  performance.
 ---
 
 # Minimap & World Map

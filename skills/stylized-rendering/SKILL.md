@@ -2,19 +2,12 @@
 name: stylized-rendering
 description: >-
   Architecture blueprint for stylized / non-photoreal (NPR) cel-shaded game
-  rendering in the anime lineage of Genshin Impact, Honkai: Star Rail, Guilty
-  Gear Xrd, and Zelda BotW. Covers the lighting model (half-lambert + ramp/step
-  lighting, the ILM/LightMap channel-packed control map, tinted shadows, fwidth
-  terminator AA, light-direction overrides), the line kit (inverted-hull
-  outlines with smoothed normals, post-process depth/normal edges, Xrd UV-beam
-  inner lines), character shading (SDF face shadow maps driven by light angle,
-  eyes-through-hair, anisotropic Kajiya-Kay hair, MatCap), materials and
-  post-process (stepped specular, light-masked rim, environment-softer-than-
-  hero, neutral tonemap vs ACES, AA/bloom for flat palettes), the art-direction
-  calibration dial, and Unity 6 (URP/HDRP) + UE5 mappings. Use when building a
-  toon/cel/anime/stylized look, authoring NPR shaders, outlines, ramp lighting,
-  face SDF shadows, or when a stylized character "reads flat", "looks uncanny",
-  shadows look noisy/blotchy, or outlines break up.
+  rendering in anime and painterly lineages. Covers ramp/step lighting,
+  channel-packed control maps, tinted shadows, outline techniques, SDF face
+  shadows, hair/eye shading, MatCap, rim light, tonemapping, bloom, art-direction
+  calibration, and Unity 6 / UE5 mappings. Use when building toon, cel, anime, or
+  stylized looks, NPR shaders, outlines, ramp lighting, face shadows, or when
+  characters read flat, look uncanny, or outlines break.
 ---
 
 # Stylized Rendering (NPR / cel-shaded)

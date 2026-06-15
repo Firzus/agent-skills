@@ -1,27 +1,12 @@
 ---
 name: hud-system
 description: >-
-  Architecture blueprint for in-game HUD systems in action games: event-driven
-  read-only UI architecture (MVP/MVVM, zero per-frame polling), HUD layout
-  grammar and information hierarchy, dynamic visibility rules (contextual
-  show/hide, the combat-vs-exploration HUD split), pooled damage numbers and
-  floating combat text, notification/toast channels, bars and gauges (ghost
-  drain, boss phase pips, radial cooldowns), interaction prompts with glyph
-  switching, quest tracker; the HUD design craft (the diegetic/spatial/meta/
-  non-diegetic taxonomy, diegetic HUD case studies — Dead Space RIG, Metroid
-  Prime visor, Far Cry 2 GPS — genre conventions for FPS/fighting/MMO/survival/
-  looter/BR, and the game-feel/juice that makes a HUD feel responsive); deep
-  HUD accessibility (XAG/GAG standards, text size and contrast, colorblindness
-  and the never-color-alone rule, subtitles/captions, motor and cognitive
-  support, photosensitivity, the settings-as-data options registry); and
-  world-space HUD at scale (nameplates/health-bars with pooling and culling,
-  off-screen threat/damage indicators and the edge-clamp math, reticle/
-  crosshair tech, the widget-vs-Niagara cost model). Includes sourced numbers
-  (text sizes, timings, performance budgets) and Unity 6 (UITK) / UE5 (UMG/
-  CommonUI) mappings. Use when designing or building a HUD, health bars,
-  damage numbers, notifications, interaction prompts, nameplates, an
-  accessible or diegetic HUD, or when the HUD costs too much frame time,
-  breaks on TVs/ultrawide, or fails colorblind/low-vision players.
+  Architecture blueprint for in-game HUD systems: event-driven read-only UI,
+  layout hierarchy, dynamic visibility, damage numbers, bars, gauges,
+  notifications, prompts, quest trackers, diegetic/spatial HUDs, accessibility,
+  nameplates, reticles, and world-space indicators. Use when designing HUDs,
+  health bars, prompts, damage text, accessible UI, or when HUDs cost frame time,
+  break on TVs/ultrawide, or fail colorblind/low-vision players.
 ---
 
 # HUD System

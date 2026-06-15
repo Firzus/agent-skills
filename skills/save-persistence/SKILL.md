@@ -1,23 +1,13 @@
 ---
 name: save-persistence
 description: >-
-  Architecture blueprint for game save systems across single-player and online
-  games: the versioned store decoupled from runtime objects (deltas keyed by
-  stable IDs, the world-state store), the save models compared (checkpoint,
-  save-anywhere, continuous souls-style, server-authoritative), the serialization
-  and storage engineering (format comparison — JSON/MessagePack/MemoryPack/
-  Protobuf/FlatBuffers, schema evolution and the never-reuse-a-field-ID rule,
-  compression, atomic writes and the fsync/rename correctness, stable references,
-  async save performance), networked/MMO persistence at scale (the RAM-of-truth
-  write-back pattern, SQL vs NoSQL backends, sharding, idempotency and ledgers,
-  the rollback playbook, live-service player-data platforms), save UX and
-  cross-progression (slots/autosave, cross-save vs cross-progression, New Game
-  Plus, save-scumming counters, platform certification, cloud quotas), and the
-  tamper-protection ladder. References: Skyrim changeforms, BotW revival flags,
-  souls journaling, Genshin/EVE/WoW server state, with Unity 6 / UE5 mappings.
-  Use when designing or building save/load, autosave, save slots, world
-  persistence, cloud/cross saves, MMO player data, or when saves corrupt, bloat,
-  break on game updates, or duplicate on retry.
+  Architecture blueprint for game save and persistence systems: versioned stores,
+  stable IDs, world-state deltas, checkpoint/save-anywhere/continuous/server saves,
+  serialization formats, schema evolution, compression, atomic writes, async saves,
+  MMO persistence, idempotency, ledgers, rollback, slots, autosave, cloud saves,
+  cross-progression, and tamper protection. Use when designing save/load,
+  autosave, world persistence, MMO player data, or when saves corrupt, bloat,
+  break after updates, or duplicate on retry.
 ---
 
 # Save & Persistence
