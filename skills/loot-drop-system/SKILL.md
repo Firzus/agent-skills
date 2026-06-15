@@ -1,27 +1,13 @@
 ---
 name: loot-drop-system
 description: >-
-  Architecture blueprint for loot tables, world drop distribution, claim
-  gating, drop perception, and loot-box compliance across open-world, ARPG,
-  looter-shooter, and MMO games: layered weighted tables (shared sub-tables,
-  null entries, guaranteed slots, recursive treasure classes, NoDrop
-  player-scaling, ilvl/mlvl gating, magic find, conditionality via table
-  selection and actor substitution), world distribution and respawn (one-time
-  flags, per-node timestamps, the three revival policies, the never-on-screen
-  invariant), the drop execution pipeline (scatter, despawn, the max-live-drops
-  budget), claim gating and multiplayer loot distribution (kill-then-claim,
-  personal vs FFA vs need/greed vs master-looter/loot-council, the verified
-  co-op matrix, loot locks, idempotent claims), drop perception (the gambler's
-  fallacy, pseudo-random distribution, shuffle-bags, drop ceremony, near-miss
-  ethics, transparency), and regulatory compliance (China/Korea odds
-  disclosure, Apple/Google policy, loot-box gambling law, server-authoritative
-  anti-cheat, the Nexon drop-rate-lie fine). References: Genshin (Grasscutter
-  drop data), BotW/TotK (bdrop, ActorLimiter), Diablo II/III/IV, Path of Exile,
-  Destiny 2, WoW, Warframe, with Unity 6 / UE5 mappings. Use when designing or
-  building enemy drops, chests, gathering nodes, respawn, loot distribution,
-  drop rates, or when rare drops despawn unseen, weighted selection biases
-  silently, co-op players grief rewards, players call the RNG rigged, or you
-  must disclose drop odds.
+  Architecture blueprint for loot tables, world drops, respawn, claim gating,
+  multiplayer loot, drop perception, and loot-box compliance across open-world,
+  ARPG, looter-shooter, and MMO games. Covers weighted tables, guaranteed drops,
+  magic find, scatter/despawn, personal/FFA loot, pseudo-randomness, odds
+  disclosure, and anti-cheat. Use when designing drops, chests, nodes, respawn,
+  drop rates, or when loot despawns, RNG feels rigged, rewards conflict, or odds
+  need disclosure.
 ---
 
 # Loot & Drop System

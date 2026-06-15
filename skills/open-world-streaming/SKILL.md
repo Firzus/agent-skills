@@ -1,27 +1,13 @@
 ---
 name: open-world-streaming
 description: >-
-  Architecture blueprint for building open-world streaming systems in
-  production games: world partitioning into cells, streaming sources and
-  velocity prediction, async load/unload lifecycle with hysteresis and
-  priorities, layered streaming (gameplay vs visual vs audio), memory and
-  frame-time budgets, HLOD/distant world representation, fast-travel loading
-  gates; the sub-cell rendering frontier (virtualized geometry — Nanite
-  clusters and geometry pages, virtual texturing — the page-table/feedback
-  cache, GPU-driven rendering and culling, the DirectStorage/PS5-IO-complex
-  storage tier, world-scale rendering — large-world coordinates and terrain
-  clipmaps, HLOD/impostors and dithered transitions); and procedural
-  generation + living-world simulation (noise/biome/erosion terrain, scatter,
-  UE5 PCG and Houdini, infinite chunk worlds — Minecraft/No Man's Sky,
-  generate-on-load vs pre-bake, simulation-LOD and the "bubble", NPC
-  schedules and the Nemesis system, delta-from-seed persistence and the
-  determinism/seed-hierarchy rules). Includes sourced starting-point numbers
-  from shipped AAA games and Unity 6 / UE5 concept mappings. Use when
-  designing or building an open world, world streaming, level streaming,
-  world partition, chunk/cell loading, seamless world, large world, fast
-  travel, procedural generation, Nanite/virtual-texture budgets, or when
-  diagnosing streaming hitches, pop-in, memory issues, sub-cell pool thrash,
-  or procedural non-determinism.
+  Architecture blueprint for open-world streaming: world partitioning, cells,
+  streaming sources, async load/unload, hysteresis, layered streaming, memory and
+  frame budgets, HLOD, fast-travel gates, virtualized geometry/textures,
+  large-world rendering, procedural generation, and living-world simulation. Use
+  when designing open worlds, level streaming, chunk loading, seamless worlds,
+  procedural terrain, or diagnosing hitches, pop-in, memory issues, pool thrash,
+  or non-determinism.
 ---
 
 # Open-World Streaming

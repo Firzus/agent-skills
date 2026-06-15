@@ -2,22 +2,11 @@
 name: inventory-equipment
 description: >-
   Architecture blueprint for inventory and equipment systems across gacha,
-  ARPG/looter, and online/MMO games: the instance-vs-count data model (stable
-  GUIDs, polymorphic tabs, caps as policy), gear generation (the datamined
-  Genshin 4-draw RNG pipeline AND ARPG affix systems — prefix/suffix slots,
-  ilvl-gated tiers, weighted pools — plus the deterministic↔random crafting
-  spectrum: PoE currency orbs, D4 tempering/masterworking, Last Epoch forging
-  potential, runewords), unified enhancement (per-type tables, fodder
-  recycling, lock-as-invariant), inventory UI (grid/list/Tetris layouts,
-  loot-filter DSLs, search syntax, stable sorts, compare tooltips, loadouts
-  and transmog), and networked persistence (server-authoritative ownership,
-  duplication prevention via 2-phase-commit trades + escrow + idempotency +
-  append-only ledgers, real dupe postmortems). References: Genshin
-  (Grasscutter schema), Diablo II/III/IV, Path of Exile, Last Epoch, Destiny 2,
-  WoW, EVE, with Unity 6 and UE5 (Lyra) mappings. Use when designing or
-  building inventories, gear generation, item enhancement, crafting, equipment
-  screens, trade/dupe-safe item moves, or when players feed their god roll,
-  sets double-apply, sorts jump, or items duplicate.
+  ARPG/looter, and online/MMO games: instance-vs-count items, stable IDs, caps,
+  gear RNG, affixes, crafting, enhancement, lock invariants, inventory UI,
+  loadouts, transmog, trades, and dupe-safe persistence. Use when designing
+  inventories, gear generation, crafting, equipment screens, trade flows, or
+  when players destroy rare items, sets double-apply, sorts jump, or items dupe.
 ---
 
 # Inventory & Equipment

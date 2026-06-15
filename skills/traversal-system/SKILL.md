@@ -1,25 +1,13 @@
 ---
 name: traversal-system
 description: >-
-  Architecture blueprint for the traversal layer above the character controller
-  in open-world and action games: world traversability data (climbable-by-default
-  markup, runtime surface probing, traversal volumes, anchors, readability and
-  telegraphing), composable traversal verbs (systemic climbing, glide, swim/dive,
-  grapple, mounts, regional verbs) AND the parkour/momentum tradition (wall-run,
-  free-running, web-swinging, the momentum-vs-stamina opposite economies, the
-  automation-vs-expression tension), the technical implementation (mantle/vault
-  detection trace cascades, motion warping, procedural IK, surface probing at
-  scale, wall-run and grapple physics, custom movement modes and networking),
-  mounts and vehicles (bonding, flying-mount trivialization, build-your-own
-  vehicles, multi-crew sailing, traversal-as-loop), stamina as the open-world
-  governor, and the design valves against traversal trivializing content.
-  References: BotW/TotK and Genshin (the systemic school), with Mirror's Edge,
-  Titanfall 2, Spider-Man, Assassin's Creed, RDR2, Elden Ring, and Death Stranding
-  as references, and Unity 6 / UE5 (GASP, Motion Warping, Mover) mappings. Use
-  when designing or building climbing, parkour, gliding, swimming, mounts,
-  vehicles, grappling, web-swinging, traversal progression, or when players climb
-  out of bounds, probes fail on seams, automation overrides intent, or endgame
-  traversal trivializes the world.
+  Architecture blueprint for traversal above the character controller:
+  traversability markup, surface probing, volumes, anchors, climb/glide/swim,
+  grapple, parkour, wall-run, web-swinging, mantle/vault traces, motion warping,
+  IK, mounts, vehicles, stamina, networking, readability, and design constraints.
+  Use when designing climbing, parkour, gliding, swimming, mounts, vehicles,
+  grappling, traversal progression, or when players escape bounds, probes fail,
+  automation overrides intent, or traversal trivializes the world.
 ---
 
 # Traversal System

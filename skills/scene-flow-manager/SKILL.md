@@ -1,29 +1,13 @@
 ---
 name: scene-flow-manager
 description: >-
-  Architecture blueprint for game application flow: an explicit context state
-  machine (boot, splash, title, login, in-world, cinematic) with declarative
-  scene composition per context (bootstrap + persistent managers + additive
-  content), atomic gated transitions (teardown, unload, GC, load, init,
-  completion gates, reveal), loading screens with honest progress, the full
-  online flow (auth, server select, resource download gates, enter-world
-  handshake, queues, reconnection, forced logout), returning flows (logout
-  teardown, soft reset, New Game+), cinematic contexts with guaranteed state
-  restore; the loading/lifecycle tech (async loading and the background-load/
-  main-thread-activate split, time-slicing, the double-resident memory peak,
-  mip convergence, PSO/shader-stutter warmup, the app suspend/resume model
-  and Quick Resume, platform cert — TRC/TCR/XR, patching and delta updates);
-  and the player-facing flow design (FTUE and time-to-fun, the title/attract/
-  reactive-menu flow, live-service session flow and the "popups before play"
-  critique, the UX of loading and waiting — progress-bar psychology, hidden
-  loads, playable loading screens, suspend-resume and save-state UX, error
-  and disconnect/queue UX). References: Genshin Impact's documented
-  login-to-world flow, the bootstrap+persistent+additive scene pattern,
-  Half-Life/God of War (cold-open FTUE), FFXIV (queue UX). Use when designing
-  boot sequences, scene loading flow, loading screens, login flows, level
-  transitions, onboarding, suspend/resume, PSO warmup, or when the second
-  login behaves differently from the first, the game stutters on first
-  traversal, or it crashes on resume.
+  Architecture blueprint for game application flow: context state machines,
+  boot/title/login/world/cinematic states, additive scene composition, atomic
+  transitions, loading screens, online auth and enter-world handshakes, queues,
+  reconnection, soft reset, async loading, lifecycle, suspend/resume, patching,
+  FTUE, and loading UX. Use when designing boot flows, scene loading, login,
+  transitions, onboarding, PSO warmup, or when relogin differs, traversal
+  stutters, queues fail, or resume crashes.
 ---
 
 # Scene Flow Manager

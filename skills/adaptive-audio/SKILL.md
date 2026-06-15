@@ -1,32 +1,12 @@
 ---
 name: adaptive-audio
 description: >-
-  Architecture blueprint for game audio systems in open-world games:
-  adaptive music (vertical layers, horizontal re-sequencing, stingers,
-  the music state machine with quantized transition rules), mix
-  architecture (bus hierarchy, the ducking matrix, mix-state stacks,
-  loudness compliance — ASWG-R001), voice management (per-category
-  concurrency, priority stealing, loop-aware virtualization), spatial
-  audio (attenuation curves, raycast occlusion, reverb volumes, ambient
-  beds driven by region/weather), the native-first middleware decision
-  (UE5 MetaSounds/Quartz and Unity Audio Mixer primary, Wwise/FMOD as the
-  authoring upgrade); the DSP and synthesis layer (the audio render thread
-  and lock-free callback discipline, biquad filters, reverb algorithms —
-  Schroeder/FDN/convolution, dynamics and sidechain, granular/phase-vocoder
-  pitch, procedural and modal synthesis, HRTF/binaural and ambisonics,
-  wave-baked occlusion — Steam Audio/Project Acoustics, codec decode cost,
-  voice virtualization); and the sound-design craft (layering — mech/body/
-  top/sub/tail, hyperreal vs realistic, frequency-slotting, worldizing,
-  genre conventions — horror/rhythm/shooter/fighting/racing, composition
-  craft — leitmotif/Mick Gordon/Wintory, audio accessibility — SFX
-  captions/mono toggle/separate sliders/sound-viz/haptics, and the audio
-  production pipeline). References: BotW/TotK (CEDEC environmental-BGM),
-  Genshin (Wwise regional/combat music), DOOM/God of War/TLOU/Hellblade/
-  Returnal/RDR2 (craft case studies). Use when designing or building game
-  music systems, mixing, DSP/synthesis, sound concurrency, audio
-  occlusion, ambience, accessible audio, procedural audio, or when combat
-  music cuts mid-beat, layers drift, ducking pumps, footsteps steal the
-  dialogue, the audio thread glitches, or deaf players are locked out.
+  Architecture blueprint for game audio systems: adaptive music, mix states,
+  voice management, spatial audio, DSP/synthesis, middleware choices, audio
+  accessibility, and production pipelines. Use when designing or building game
+  music, ambience, occlusion, procedural audio, sound concurrency, or when music
+  cuts mid-beat, layers drift, ducking pumps, dialogue is stolen, the audio
+  thread glitches, or accessibility is missing.
 ---
 
 # Adaptive Audio

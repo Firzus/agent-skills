@@ -1,23 +1,12 @@
 ---
 name: menu-ui-manager
 description: >-
-  Architecture blueprint for game menu and screen management frameworks: a central
-  router owning layered screen stacks with declarative screen contracts, hub-and-
-  spoke navigation with shortcut wheels, multi-input focus management, refcounted
-  pause with audio ducking, screen transitions, data-driven settings (apply/revert,
-  rebinding), a promise-style modal API, the UI architecture patterns (MVC/MVP/MVVM/
-  MVU, immediate vs retained mode, data binding and reactivity, UI performance — the
-  canvas-rebuild and invalidation rules, responsive/adaptive scaling), game UI
-  accessibility (the standards and legal landscape — GAG/XAG/CVAA/EAA/AGI, screen
-  readers and the parallel accessibility node tree, visual/motor/cognitive/hearing
-  accessibility, building it in from day one), and UI feel and identity (juice and
-  micro-interactions, diegetic vs non-diegetic UI, spatial/3D menus, menu art
-  direction, loading screens and the boot flow). References: Genshin (Paimon hub),
-  Lyra/CommonUI (the layer-stack reference), Persona 5 (motion identity), Dead Space
-  (diegetic UI), TLOU2/GoW (accessibility). Use when designing or building menus,
-  pause screens, settings, UI navigation, screen stacks, UI architecture, accessible
-  UI, or when gamepad focus dies, back buttons misbehave, menus leak input to
-  gameplay, or the UI tanks the frame rate.
+  Architecture blueprint for game menus and screen frameworks: central routers,
+  layered screen stacks, declarative contracts, hub navigation, multi-input focus,
+  pause, transitions, settings, rebinding, modal APIs, UI architecture,
+  performance, accessibility, and menu feel. Use when designing menus, pause
+  screens, settings, UI navigation, screen stacks, or when gamepad focus dies,
+  back buttons misbehave, menus leak input, or UI hurts frame rate.
 ---
 
 # Menu / UI Manager

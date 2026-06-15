@@ -1,26 +1,12 @@
 ---
 name: enemy-ai-framework
 description: >-
-  Architecture blueprint for game AI across genres: designer-authorable decision
-  architectures (FSM/HSM vs behavior trees vs GOAP vs HTN vs utility/IAUS — the
-  decision matrix), the brain-to-intent-to-execution separation (AI drives the
-  same character controller and combat as the player), perception (sight cones,
-  hearing propagation, the alert ladder), threat and target selection with
-  hysteresis, attack tokens as the pacing/difficulty regulator, lifecycle (spawn,
-  patrol, leash, respawn), AI LoD and crowd scale, group coordination, genre AI
-  beyond action (RTS command hierarchy and influence maps, stealth alert states
-  and Alien Isolation's two-brain model, racing Drivatar imitation, sim smart-
-  objects and needs, director/macro AI, companion AI, the Nemesis social system),
-  the technical foundations (navmesh/Recast, pathfinding and the funnel, RVO/ORCA
-  avoidance, steering and context-steering, influence maps and EQS, ML reality vs
-  hype, crowds via flow fields and Mass/DOTS), and AI believability (the fun-vs-
-  smart thesis, the illusion of intelligence via barks, difficulty as behavior not
-  stats, the fairness contract, archetypes and encounter composition, reactivity).
-  References: Genshin's GDC 2021 scalable AI, Doom/God of War attack tokens, F.E.A.R.
-  GOAP, Halo, souls aggro/leash. Use when designing or building enemy AI, behavior
-  trees, aggro, spawning, AI performance, stealth/RTS/racing/sim AI, or when
-  enemies all attack at once, flip targets, walk through walls, or feel like
-  identical robots.
+  Architecture blueprint for game AI across genres: FSM/HSM, behavior trees,
+  GOAP/HTN/utility AI, brain-intent-execution separation, perception, aggro,
+  threat selection, attack tokens, lifecycle, AI LoD, group coordination,
+  pathfinding, avoidance, crowds, and believability. Use when designing enemy AI,
+  behavior trees, spawning, stealth/RTS/racing/sim AI, or when enemies swarm,
+  flip targets, path badly, or feel robotic.
 ---
 
 # Enemy AI Framework

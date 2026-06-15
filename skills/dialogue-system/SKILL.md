@@ -1,23 +1,12 @@
 ---
 name: dialogue-system
 description: >-
-  Architecture blueprint for dialogue systems across open-world, RPG, and
-  narrative games: the dialogue graph data model (flow/text/conditions as three
-  separate stores, branching-structure patterns, storylet/quality-based and
-  salience-based narrative), the runtime session (input/camera/HUD scope,
-  in-world staging as data, voice-end advancing, interruption policies), barks
-  and the Valve fact-matching model, narrative-design mechanics (skill-check and
-  dice-roll dialogue, dialogue wheels vs full-text, reactivity budgets, delayed
-  consequence, timed/real-time conversation, internal-voice systems),
-  presentation (typewriter, auto/skip, backlog, deep subtitle accessibility),
-  and the authoring/VO/localization pipeline (writer tools — Ink/Yarn/articy,
-  line IDs, lip-sync, RTL/CJK, text expansion, AI/LLM-driven NPCs and the
-  SAG-AFTRA constraints). References: BotW/TotK and Genshin (datamined), Valve
-  GDC 2012, Disco Elysium, Baldur's Gate 3, Mass Effect, Witcher 3, Oxenfree,
-  with Unity 6 / UE5 mappings. Use when designing or building NPC conversations,
-  dialogue trees, skill-check dialogue, barks, subtitles, VO pipelines,
-  generative NPCs, or when players get stuck in dialogue mode, text overflows in
-  German, NPCs freeze mid-routine, or a dialogue wheel misrepresents the line.
+  Architecture blueprint for dialogue systems in open-world, RPG, and narrative
+  games: graph data, separated text/conditions, runtime sessions, barks,
+  branching patterns, skill checks, presentation, subtitles, VO, localization,
+  lip-sync, and generative NPC constraints. Use when designing conversations,
+  dialogue trees, barks, subtitles, VO pipelines, or when players get stuck in
+  dialogue, text overflows, NPCs freeze, or dialogue wheels mislead.
 ---
 
 # Dialogue System

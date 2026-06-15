@@ -1,25 +1,12 @@
 ---
 name: camera-system
 description: >-
-  Architecture blueprint for game cameras across genres: the virtual-camera
-  stack with a single blending brain (the Cinemachine model), orbit/follow rigs
-  with screen-composition, collision vs occlusion resolution, combat cameras
-  (soft-lock, hard lock-on, group and big-enemy framing), contextual states and
-  designer volumes, procedural dialogue cameras and the 180-degree rule,
-  genre-specific cameras (FPS view models and recoil, racing speed-FOV, RTS
-  edge-pan, fighting-game both-fighters framing, platformer look-ahead via the
-  Keren taxonomy, VR comfort-first rules), cinematography theory and dynamic
-  framing (shot vocabulary, the dolly-zoom, procedural cinematography systems,
-  auto-director spectator cameras), the camera math and engineering (frame-rate-
-  independent damping and the critically-damped spring, the update-order/jitter
-  problem, collision/occlusion math, look-at and quaternion math, FOV/projection,
-  networked and split-screen cameras), screen shake via the trauma model, FOV as
-  a feel tool, motion-sickness accessibility, and photo mode. References: John
-  Nesky's 50 Game Camera Mistakes, God of War, Itay Keren's Scroll Back, the
-  Toric-space camera-control research, Cinemachine. Use when designing or
-  building any game camera, camera collision, lock-on, camera shake, dynamic
-  framing, a genre-specific camera, or when the camera jitters, fights the
-  player, or causes motion sickness.
+  Architecture blueprint for game cameras across genres: virtual-camera stacks,
+  blending brains, orbit/follow rigs, collision and occlusion, combat lock-on,
+  genre-specific cameras, damping math, shake, FOV, photo mode, and comfort. Use
+  when designing or building game cameras, dynamic framing, camera collision,
+  lock-on, shake, split-screen, VR comfort, or when the camera jitters, fights
+  the player, or causes motion sickness.
 ---
 
 # Camera System

@@ -1,30 +1,12 @@
 ---
 name: combat-system
 description: >-
-  Architecture blueprint for action-game combat systems, melee AND ranged:
-  data-driven attack graphs (combo strings, branches, charge attacks, cancel
-  windows), animation-driven hit detection (active frames, hit registry,
-  sweep traces), damage pipeline (motion values, crits, damage caps),
-  stagger/poise/stun gauges and boss break cycles, the defensive kit (dodge
-  i-frames, guard, parry/perfect timing windows), the skills/ultimate layer,
-  combat feel numbers (hit-stop, buffers, cancel timing); the ranged/gunplay
-  layer (gun feel and cumulative micro-feedback, recoil patterns and spread/
-  bloom, hitscan vs projectile architecture and sub-stepping, aiming and aim
-  assist, ranged hit-registration and lag-compensation netcode, headshot/
-  falloff/TTK-breakpoint damage, and mixing melee + ranged through one
-  unified HitEvent); and the RPG/turn-based/balance layer (turn and
-  initiative models — ATB/CTB/tactical-grid, the damage-formula design space
-  — additive vs multiplicative, the mitigation curves and Effective HP,
-  stats and scaling, status effects and crowd-control diminishing returns,
-  combat balance via DPS/TTK/EHP, and the action-RPG bridge — soulslike
-  build-up meters, Monster Hunter hitzones, MMO GCD, Genshin elemental
-  reactions). Primary reference: Granblue Fantasy Relink's combo-chain model,
-  with Monster Hunter, DMC, Bayonetta, souls-likes, CS/Overwatch (gunplay),
-  and XCOM/Pokémon/WoW (RPG math) as calibration poles. Use when designing
-  or building melee or ranged combat, combo systems, hitboxes, gunplay,
-  damage formulas, stagger/break mechanics, dodge/parry, status effects,
-  combat balance, or when combat feels unresponsive or mushy, shots don't
-  register, or damage numbers run away.
+  Architecture blueprint for melee, ranged, RPG, and turn-based combat systems:
+  attack graphs, hit detection, damage pipelines, stagger/poise, defensive kits,
+  gunplay, aim assist, lag compensation, status effects, formulas, balance, and
+  combat feel. Use when designing combat, combos, hitboxes, gunplay, dodge/parry,
+  stagger, status effects, TTK/DPS/EHP balance, or when combat feels mushy, shots
+  miss, or damage numbers run away.
 ---
 
 # Combat System
