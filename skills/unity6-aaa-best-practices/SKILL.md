@@ -6,7 +6,9 @@ description: >-
   Toolkit design systems with USS tokens and MVP/MVVM data binding, Awaitable
   async, assembly definitions, ScriptableObject architecture, Addressables,
   GPU Resident Drawer, zero-allocation discipline, Input System, audio
-  middleware decisions, Build Profiles, CI, and testing. Use when developing,
+  middleware decisions, Build Profiles, CI, and testing. Also covers project
+  structure: folder layout, asset/file naming conventions, type prefixes,
+  namespace-to-folder alignment, and GUID-safe renames. Use when developing,
   reviewing, or architecting a Unity 6 project, or when the user mentions
   Unity, UITK, UGUI, Addressables, URP/HDRP, DOTS, IL2CPP, or Unity-specific
   performance and build questions.
@@ -55,6 +57,8 @@ skill covers what is Unity-specific.
    behind thin MonoBehaviour adapters; assembly definitions along
    architectural seams with one-way dependencies; ScriptableObjects for shared
    config and event channels. See [architecture.md](./architecture.md).
+   For folder layout, naming, and file conventions, see
+   [project-structure.md](./project-structure.md).
 3. **Assets = Addressables + presets + additive scenes.** Never `Resources/`.
    Enforce import settings with folder presets committed to VCS. Structure
    levels as bootstrap + persistent managers + additive content scenes. See
@@ -73,6 +77,7 @@ skill covers what is Unity-specific.
 | --- | --- |
 | UI Toolkit, design tokens, data binding, MVP/MVVM, UGUI cases | [ui.md](./ui.md) |
 | ScriptableObjects, asmdefs, Awaitable/UniTask, DOTS/Jobs/Burst | [architecture.md](./architecture.md) |
+| Folder layout, naming, type prefixes, namespace↔folder, GUID-safe renames | [project-structure.md](./project-structure.md) |
 | Addressables, import presets, scenes, prefab workflows | [assets.md](./assets.md) |
 | Profiling, GC discipline, pooling, GPU Resident Drawer, URP/HDRP | [performance.md](./performance.md) |
 | Input System, audio/middleware, version control, CI, builds, testing | [workflow.md](./workflow.md) |
@@ -89,6 +94,9 @@ When writing or reviewing Unity code:
 - [ ] Any direct device polling? -> Input System action maps
 - [ ] Any Instantiate/Destroy churn? -> UnityEngine.Pool
 - [ ] New logic testable in edit mode? -> plain C# in its own asmdef + tests
+- [ ] Asset/folder naming off-convention or per-type subfolders? -> PascalCase + type prefix, organize by feature
+- [ ] File holds multiple types or namespace mismatches its folder? -> one type per file, namespace mirrors path
+- [ ] Renaming/moving assets without their .meta (or without git mv)? -> move the pair, keep GUID/LFS intact
 ```
 
 When the user's choice conflicts with these rules, state the rule, the cost of
