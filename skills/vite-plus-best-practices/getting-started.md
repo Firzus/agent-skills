@@ -41,18 +41,28 @@ Managed runtime + downloads live under `~/.vite-plus` by default. Override with 
 
 ## Per-Project Node.js
 
-- Pin with `.node-version` at the project root (created by `vp env pin lts` or `vp env pin 22`)
-- Install the pinned version with `vp env install`
-- `vp install`, `vp dev`, `vp build`, etc. automatically pick up the right runtime
+The project Node.js version is resolved in this priority order:
+
+1. `VP_NODE_DIST_MIRROR` (custom mirror)
+2. `.node-version` (current or parent directories)
+3. `devEngines.runtime` in `package.json`
+4. `engines.node` in `package.json`
+5. Global default (`vp env default`), then latest LTS
+
+`vp env pin` is source-aware: it updates an existing `.node-version` if present, otherwise writes to `package.json#devEngines.runtime`; it only creates `.node-version` when there is no `package.json`. Force the target with `--target node-version` or `--target dev-engines`. An existing `engines.node` is never modified.
 
 ```bash
-vp env pin lts            # write `.node-version`
-vp env install            # install the version from .node-version or package.json
+vp env pin lts            # pin project version (devEngines.runtime or .node-version)
+vp env install            # install the version from the pin / package.json
 vp env default lts        # set the global default version
 vp env use 20             # set version for current shell only
+vp env unpin              # remove the pin from wherever it was written
 vp env current            # show resolved environment
+vp env doctor             # diagnose conflicting version sources
 vp env which node         # show which binary is used
 ```
+
+> **PowerShell:** to make `vp env use` affect only the current shell, dot-source the generated script once: `. "$env:USERPROFILE\.vite-plus\env.ps1"` (add it to your `$PROFILE` to persist).
 
 ## Corporate Mirror
 

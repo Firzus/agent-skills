@@ -14,7 +14,7 @@ vp check --no-fmt --no-lint # type-check only (requires lint.options.typeCheck)
 
 Powered by:
 - [Oxfmt](https://oxc.rs/docs/guide/usage/formatter.html) — Prettier-compatible formatting
-- [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) — 600+ ESLint-compatible rules
+- [Oxlint](https://oxc.rs/docs/guide/usage/linter.html) — hundreds of ESLint-compatible rules
 - [tsgolint](https://github.com/oxc-project/tsgolint) — type-aware checks via the TypeScript Go toolchain (`tsgo`)
 
 ## Recommended Base Config

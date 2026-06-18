@@ -7,16 +7,17 @@
 Vite+ resolves the package manager from the workspace root in this order:
 
 1. `packageManager` in `package.json`
-2. `pnpm-workspace.yaml`
-3. `pnpm-lock.yaml`
-4. `yarn.lock` or `.yarnrc.yml`
-5. `package-lock.json`
-6. `bun.lock` or `bun.lockb`
-7. `.pnpmfile.cjs` or `pnpmfile.cjs`
-8. `bunfig.toml`
-9. `yarn.config.cjs`
+2. `devEngines.packageManager` in `package.json`
+3. `pnpm-workspace.yaml`
+4. `pnpm-lock.yaml`
+5. `yarn.lock` or `.yarnrc.yml`
+6. `package-lock.json`
+7. `bun.lock` or `bun.lockb`
+8. `.pnpmfile.cjs` or `pnpmfile.cjs`
+9. `bunfig.toml`
+10. `yarn.config.cjs`
 
-If nothing matches, Vite+ falls back to **pnpm**. The matching package manager is downloaded automatically.
+If nothing matches, Vite+ falls back to **pnpm**. The matching package manager is downloaded automatically. When detection comes from a lockfile or config file, the resolved version is written to `devEngines.packageManager` for determinism; projects that already declare `packageManager` or `devEngines.packageManager` are left as-is.
 
 To pin a specific package manager + version, set `packageManager` in `package.json`:
 
@@ -25,6 +26,18 @@ To pin a specific package manager + version, set `packageManager` in `package.js
   "packageManager": "pnpm@9.12.0"
 }
 ```
+
+Or declare a semver range via `devEngines.packageManager` (stays the source of truth, never frozen into an exact pin):
+
+```json
+{
+  "devEngines": {
+    "packageManager": { "name": "pnpm", "version": "^11.0.0", "onFail": "download" }
+  }
+}
+```
+
+When both are set, `packageManager` drives selection and Vite+ warns (`vp env doctor`) if it does not satisfy the `devEngines` range.
 
 ## Core Commands
 

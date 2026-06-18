@@ -49,19 +49,25 @@ This is the recommended validation loop for both humans and coding agents.
 
 ### Vitest
 
-`vp migrate` rewrites imports automatically. If migrating by hand:
+`vp migrate` rewrites imports automatically. `vite-plus` re-exports upstream `vitest@4.x` under `vite-plus/test*` and ships `vite`/`vitest` as direct deps, so a single `vite-plus` install is enough for node-mode tests. If migrating by hand:
 
 ```ts
 // before
 import { describe, expect, it, vi } from 'vitest';
+import { playwright } from '@vitest/browser-playwright';
 const { page } = await import('@vitest/browser/context');
 
 // after
 import { describe, expect, it, vi } from 'vite-plus/test';
+import { playwright } from 'vite-plus/test/browser-playwright';
 const { page } = await import('vite-plus/test/browser/context');
 ```
 
-**Only remove `vite` / `vitest` from dependencies after the rewrites are verified.**
+**Only remove `vite` / `vitest` / `@vitest/browser*` from dependencies after the rewrites are verified.**
+
+> **Browser providers stay opt-in.** `vite-plus` bundles `@vitest/browser` and `@vitest/browser-preview`, but the Playwright and WebdriverIO providers are not shipped. If you migrate by hand and use one, install the provider package and its peer (`playwright` / `webdriverio`) yourself, pinned to the bundled vitest version.
+
+> **Do NOT rewrite type augmentations.** Leave `declare module 'vitest'` / `declare module '@vitest/browser*'` pointing at the upstream module — `vite-plus/test*` is a thin re-export, so augmentations must target the upstream identity to merge correctly.
 
 ### tsdown
 
@@ -124,9 +130,10 @@ before migrating.
 After the migration:
 
 - Confirm `vite` imports were rewritten to `vite-plus` where needed
-- Confirm `vitest` imports were rewritten to `vite-plus/test` where needed
-- Remove old `vite` and `vitest` dependencies only after those rewrites are
-  confirmed
+- Confirm `vitest` imports were rewritten to `vite-plus/test` (and
+  `@vitest/browser*` to `vite-plus/test/browser*`) where needed
+- Remove old `vite`, `vitest`, and `@vitest/browser*` dependencies only after
+  those rewrites are confirmed — `vite-plus` ships them as direct deps
 - Move remaining tool-specific config into the appropriate blocks in
   `vite.config.ts`
 
