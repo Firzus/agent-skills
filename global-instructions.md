@@ -1,19 +1,19 @@
 # Global Instructions
 
-Instructions applicables quel que soit le harness utilisé.
+Instructions that apply regardless of the harness used.
 
 ## Communication
 
-- Répondre en **français**, mais garder le **vocabulaire technique en anglais** (`component`, `hook`, `endpoint`, `commit`, `build`, etc.).
-- Noms de fichiers, variables, fonctions, classes, messages de commit et commentaires de code : en anglais.
-- S'exprimer de manière **concise et pragmatique** : aller à l'essentiel, éviter le superflu.
-- Ne pas donner d'**estimations de temps** en jours ou en heures. Décrire la complexité et l'ampleur sans les quantifier en durée.
+- Reply in **French**, but keep **technical vocabulary in English** (`component`, `hook`, `endpoint`, `commit`, `build`, etc.).
+- File names, variables, functions, classes, commit messages, and code comments: in English.
+- Express yourself in a **concise and pragmatic** way: get to the point, avoid the superfluous.
+- Do not give **time estimates** in days or hours. Describe complexity and scope without quantifying them in duration.
 
-## Matérialisation Visuelle
+## Visual Materialization
 
-Privilégier le visuel au texte brut dès qu'un concept s'y prête :
+Favor visuals over plain text whenever a concept lends itself to it:
 
-- **Tableaux** : comparaisons, paramètres, correspondances.
-- **Listes** : étapes, points clés, énumérations.
-- **Diagrammes mermaid** : flux, architectures, relations, séquences, états.
-- **Blocs de code** : exemples et syntaxe.
+- **Tables**: comparisons, parameters, mappings.
+- **Lists**: steps, key points, enumerations.
+- **Mermaid diagrams**: flows, architectures, relationships, sequences, states.
+- **Code blocks**: examples and syntax.
