@@ -18,7 +18,7 @@ It ships in two parts:
 
 ## Setup
 
-The fastest path to a working project. Full details in [getting-started.md](./getting-started.md).
+The fastest path to a working project. Full details in [setup.md](./setup.md).
 
 ```bash
 # 1. Install the global vp CLI (once per machine)
@@ -52,12 +52,12 @@ vp build      # production build (apps) — use vp pack for libs/CLIs
 
 These are the high-leverage rules. Each links to deeper reference material.
 
-1. **One config file.** Everything lives in a single `vite.config.ts` using blocks (`server`, `build`, `preview`, `test`, `lint`, `fmt`, `run`, `pack`, `staged`, `create`). Never create `vitest.config.ts`, `tsdown.config.ts`, `oxlint.config.*`, `.oxfmtrc.*`, `.prettierrc`, `eslint.config.*`, or `lint-staged.config.*`. → [configuration.md](./configuration.md)
-2. **Import from `vite-plus`, not `vite`/`vitest`.** Config from `vite-plus`, tests from `vite-plus/test`, browser context from `vite-plus/test/browser/context`. → [configuration.md](./configuration.md), [testing.md](./testing.md)
+1. **One config file.** Everything lives in a single `vite.config.ts` using blocks (`server`, `build`, `preview`, `test`, `lint`, `fmt`, `run`, `pack`, `staged`, `create`). Never create `vitest.config.ts`, `tsdown.config.ts`, `oxlint.config.*`, `.oxfmtrc.*`, `.prettierrc`, `eslint.config.*`, or `lint-staged.config.*`. → [config.md](./config.md)
+2. **Import from `vite-plus`, not `vite`/`vitest`.** Config from `vite-plus`, tests from `vite-plus/test`, browser context from `vite-plus/test/browser/context`. → [config.md](./config.md)
 3. **Built-in commands ≠ scripts.** `vp build`/`vp test`/`vp dev` always run the bundled tool. To run a `package.json` script of the same name, use `vp run <name>` (alias `vpr`). → [commands.md](./commands.md)
-4. **`vp check` is the validation command.** It dedupes work across Oxfmt + Oxlint + type-check (`tsgolint`/`tsgo`). Prefer it over standalone `vp lint` / `vp fmt` / `tsc --noEmit`. Keep `lint.options.typeAware` and `typeCheck` on. → [check-lint-fmt.md](./check-lint-fmt.md)
-5. **`vp build` for apps, `vp pack` for libraries/CLIs.** Never package a library with `vp build`. → [build-and-pack.md](./build-and-pack.md)
-6. **Migrate, then verify, then clean up.** Run `vp migrate`, confirm import rewrites, only then remove old `vite`/`vitest` deps, finally run `vp install && vp check && vp test && vp build`. → [migration.md](./migration.md)
+4. **`vp check` is the validation command.** It dedupes work across Oxfmt + Oxlint + type-check (`tsgolint`/`tsgo`). Prefer it over standalone `vp lint` / `vp fmt` / `tsc --noEmit`. Keep `lint.options.typeAware` and `typeCheck` on. → [config.md](./config.md)
+5. **`vp build` for apps, `vp pack` for libraries/CLIs.** Never package a library with `vp build`. → [config.md](./config.md)
+6. **Migrate, then verify, then clean up.** Run `vp migrate`, confirm import rewrites, only then remove old `vite`/`vitest` deps, finally run `vp install && vp check && vp test && vp build`. → [monorepo-and-migration.md](./monorepo-and-migration.md)
 
 ## Do / Don't
 
@@ -80,20 +80,9 @@ These are the high-leverage rules. Each links to deeper reference material.
 
 Read the relevant file on demand:
 
-| Topic | File |
-|-------|------|
-| Install, managed runtime, `vp env`, per-project Node.js | [getting-started.md](./getting-started.md) |
-| Full command surface, built-in vs scripts | [commands.md](./commands.md) |
-| Single `vite.config.ts`, blocks, aliases, imports | [configuration.md](./configuration.md) |
-| `vp check` / `vp lint` / `vp fmt`, type-aware linting | [check-lint-fmt.md](./check-lint-fmt.md) |
-| `vp test`, Vitest config, browser mode | [testing.md](./testing.md) |
-| `vp build` (apps) vs `vp pack` (libs/CLIs), executables | [build-and-pack.md](./build-and-pack.md) |
-| `vp install`/`add`/`update`, detection order, lockfiles | [package-management.md](./package-management.md) |
-| `vpx` / `vp exec` / `vp dlx` | [binaries.md](./binaries.md) |
-| `vp run`, Vite Task, caching, dependencies | [task-runner.md](./task-runner.md) |
-| Monorepo: root config, `lint`/`fmt` overrides, workspace filters | [monorepo.md](./monorepo.md) |
-| `vp config`, `vp staged`, the `staged` block | [commit-hooks.md](./commit-hooks.md) |
-| `vp create` templates, org templates, generators | [scaffolding.md](./scaffolding.md) |
-| `vp migrate` flow, tool-specific migrations, agent prompt | [migration.md](./migration.md) |
-| `vp upgrade`, updating aliased packages, `vp implode` | [upgrading.md](./upgrading.md) |
-| Coding-agent integration, validation loop, command mapping | [agent-workflow.md](./agent-workflow.md) |
+| File | Covers |
+|------|--------|
+| [setup.md](./setup.md) | Install, managed runtime (`vp env`), per-project Node.js, dependencies (`vp install`/`add`/`update`, detection order), scaffolding (`vp create`), upgrading |
+| [commands.md](./commands.md) | Command surface (built-in vs scripts), binaries (`vpx`/`vp exec`/`vp dlx`), task runner & caching (`vp run`), agent workflow & command mapping |
+| [config.md](./config.md) | Single `vite.config.ts` & blocks, aliases/imports, `vp check`/`lint`/`fmt`, `vp test`, `vp build` vs `vp pack`, commit hooks & `staged` |
+| [monorepo-and-migration.md](./monorepo-and-migration.md) | Root config, `lint`/`fmt` overrides, workspace filters & concurrency, `vp migrate` flow, tool-specific migrations, agent prompt |
