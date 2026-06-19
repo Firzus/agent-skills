@@ -75,6 +75,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 ### Graphics & rendering
 
 - [`stylized-rendering`](./skills/stylized-rendering) — Stylized / NPR cel-shaded rendering with Unity/UE5 mappings.
+- [`magica-cloth-2`](./skills/magica-cloth-2) — Code-first cloth/jiggle physics with Magica Cloth 2 in Unity via the Unity MCP.
 
 ### Game architecture & foundation
 
