@@ -114,19 +114,3 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 | Numeric | `long` minor units | int64; caps below type limits |
 
 Full detail in [transactions.md](./transactions.md) and the reference files.
-
-## Related skills
-
-- `save-persistence` — atomic save writes for solo transactions; minimal
-  persisted derivable state.
-- `world-time-weather` — the 4 AM reset class; UTC discipline for regen/seasons.
-- `quest-system` — typed objective events reused by BP missions; idempotent grants.
-- `loot-drop-system` — claims spend the energy currency; shares the
-  idempotent-grant discipline; owns drop-rate pity/perception.
-- `inventory-equipment` — item stats ride these curve tables; the aggregation
-  pipeline recomputes on equip.
-- `coop-session` — reuses the server-authoritative transaction model and
-  idempotency keys.
-- `hud-system` — wallet/energy display contracts (client predicts, server owns).
-- `game-architecture-patterns` — Type Object (currency/item defs), Event Queue
-  (transaction notifications).

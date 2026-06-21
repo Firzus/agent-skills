@@ -108,16 +108,3 @@ flags) in each reference file.
 | Perf | split canvases / UITK retained tree | Invalidation Box / Volatile / Retainer |
 
 Full detail in [architecture-patterns.md](./architecture-patterns.md).
-
-## Related skills
-
-- `hud-system` — the Game layer below these stacks; shares the glyph service and
-  safe-area root.
-- `adaptive-audio` — the pause mix snapshot and audio-duck contract.
-- `scene-flow-manager` — boot → title → game context switches; this skill owns
-  in-context screens.
-- `dialogue-system` — subtitle config UI shares the accessibility standards.
-- `save-persistence` — the settings split (machine config local, preferences synced).
-- `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine UI doctrines.
-- `game-architecture-patterns` — State (screen lifecycle), Command (navigation),
-  Service Locator trade-offs.

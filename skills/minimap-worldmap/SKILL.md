@@ -133,18 +133,3 @@ markers, aspect-ratio offsets, save-size creep, **precision breakdown far
 from origin**, and **a minimap that makes the world ornamental**) are
 cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
 prevention.
-
-## Related skills
-
-- `hud-system` — the minimap lives in the HUD layer system; quest tracker
-  consumes the same marker registry.
-- `teleport-map-unlock` — owns the unlock *data model* (region flags,
-  waypoint registry, teleport sequence); this skill owns the display.
-- `quest-system` — quest markers derive from objective state into the
-  shared marker registry.
-- `save-persistence` — fog-of-war state and pins persist through the
-  world-state store (the fog-reverts-on-load bug class).
-- `open-world-streaming` — fast-travel requests raised by the map are
-  fulfilled by the streaming gate; map tiles stream like world cells.
-- `game-architecture-patterns` — Observer (registry events), Type Object
-  (marker categories), Spatial Partition (marker indexing) theory.

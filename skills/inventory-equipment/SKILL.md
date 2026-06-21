@@ -105,14 +105,3 @@ reference file.
 | Backend | UGS Cloud Code rolls + Economy writes (deny client Write) | custom/PlayFab v2 (per-instance StackId, IdempotencyId) |
 
 Full detail in [networking.md](./networking.md) and the reference files.
-
-## Related skills
-
-- `progression-economy` — curve tables for item stats, the stat aggregation
-  pipeline, idempotent transactions, overflow-to-mail.
-- `loot-drop-system` — where instances come from (roll-at-spawn), claim gating.
-- `coop-session` — replicated inventories follow its server-hard authority rule
-  (persistence is never client-trusted).
-- `save-persistence` — instance GUIDs, versioned schemas, migration on load.
-- `menu-ui-manager` — inventory screens, focus, batch-select UX.
-- `hud-system` — pickup/enhancement toasts.

@@ -117,16 +117,3 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 | Mounts | controller-swap (disable rider wholesale) | possession swap vs attached pawn |
 
 Full detail in [implementation.md](./implementation.md).
-
-## Related skills
-
-- `character-controller` — the movement HSM, stamina rates, mantle cascade, intent
-  pipeline this layer drives.
-- `world-time-weather` — weather as the traversal valve (rain slip, updrafts).
-- `teleport-map-unlock` — the teleport-vs-traversal tension; earned-only unlocks.
-- `open-world-streaming` — verbs check world-data residency; traversal speed defines
-  streaming radii.
-- `camera-system` — per-verb camera presets.
-- `save-persistence` — mid-traversal restore policies.
-- `game-architecture-patterns` — Component (verbs), Type Object (surface profiles),
-  Event Queue (volume intents) theory.

@@ -141,14 +141,3 @@ Full sourced tables live in each reference file.
 
 Full detail, gotchas, and version flags (Forward+, Render Graph 6.1, Nanite
 custom-depth, Lumen vs flat) in [engine-mapping.md](./engine-mapping.md).
-
-## Related skills
-
-- `extract-theme` — palette/token extraction for the art-direction target.
-- `shaders` — screen-space shader composition (web/React context).
-- `camera-system` — framing and the post-process stack the NPR look sits in.
-- `hud-system` — UI must share the stylized palette without heavy outlines.
-- `game-architecture-patterns` — Type Object (per-material shading data),
-  Flyweight (shared ramps/maps), data-driven authoring theory.
-- `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — render pipeline,
-  asset, and performance practice assumed here.

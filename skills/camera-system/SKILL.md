@@ -104,14 +104,3 @@ Full sourced tables (with the "undocumented — don't invent" list) in each file
 | Shake | Impulse Source/Listener | `UCameraShakeBase` + PerlinNoise pattern |
 
 Full detail in [math-tech.md](./math-tech.md).
-
-## Related skills
-
-- `character-controller` — the interpolation/clock contract (jitter) and the
-  camera-relative input reframe problem.
-- `combat-system` — hit-stop interaction (shake on unscaled time), hit impulses.
-- `cinematic-system` — the timeline takeover and Brain handoff; the snapshot/restore.
-- `dialogue-system` — dialogue sessions consume the procedural shot-reverse-shot.
-- `scene-flow-manager` — camera state across context transitions.
-- `hud-system` — photo-mode HUD hiding, reticle clearance.
-- `game-architecture-patterns` — State (vcam contexts), Event Queue (impulse bus).

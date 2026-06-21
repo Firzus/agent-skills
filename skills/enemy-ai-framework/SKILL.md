@@ -113,16 +113,3 @@ Full sourced tables (with the "undocumented — don't invent" list) in each file
 
 UE5 ships ~5 of the 6 blocks natively; the one block custom everywhere: **attack
 tokens**. Full detail in [techniques.md](./techniques.md).
-
-## Related skills
-
-- `character-controller` / `combat-system` — the body: AI intents drive these;
-  staggers and hit events flow back to the brain.
-- `open-world-streaming` — AI residency at cell borders, the bubble model.
-- `world-time-weather` — time divisions and weather flags as blackboard inputs.
-- `adaptive-audio` — the aggro/threat ladder triggers combat music.
-- `loot-drop-system` — death hands off to the drop pipeline; tier substitution.
-- `coop-session` — server-owned AI, per-player threat tables.
-- `dialogue-system` — the LLM-NPC frontier; combat barks share the bark arbiter.
-- `game-architecture-patterns` — State (HSM), Type Object (archetypes), Event Queue
-  (stimuli), Update Method (LoD) theory.
