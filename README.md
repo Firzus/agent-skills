@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 36 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 35 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -53,7 +53,6 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 ### Agent workflow & tooling
 
 - [`workflows`](./skills/workflows) — Orchestrate many subagents (fan-out, verify, synthesize) for comprehensive, high-confidence, or large-scale work.
-- [`tdd-for-unity`](./skills/tdd-for-unity) — Red-green-refactor TDD for Unity, EditMode-first with PlayMode when needed.
 - [`imagegen`](./skills/imagegen) — Generates and edits project images with `gpt-image-2` via the Codex CLI.
 
 ### Web & app development
