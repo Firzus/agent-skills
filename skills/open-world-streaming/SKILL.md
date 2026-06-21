@@ -139,23 +139,3 @@ and **procedural non-determinism & save bloat**) are cataloged with
 symptom → root
 cause → prevention in [pitfalls.md](./pitfalls.md). Read it before designing;
 re-read it when debugging.
-
-## Related skills
-
-- `teleport-map-unlock` — fast travel is a streaming jump: it awaits the
-  residency gates defined here.
-- `scene-flow-manager` — context transitions (boot/title/world) around
-  this in-world spatial streaming; fast-travel loading screens.
-- `save-persistence` — the persistent world-state store for object state
-  across unload/reload (Tier 4); the delta-from-seed persistence for
-  procedural worlds ([procedural-simulation.md](./procedural-simulation.md)).
-- `world-time-weather` — procedural terrain/biome generation and the
-  living-world simulation share the deterministic-seed discipline.
-- `character-controller` / `enemy-ai-framework` — the simulation side of
-  streaming guards (never simulate over missing collision, AI residency
-  at cell borders).
-- `game-architecture-patterns` — Spatial Partition, Object Pool, Dirty Flag
-  theory behind these systems.
-- `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine-wide
-  practices this skill assumes (Addressables discipline, World Partition
-  hygiene, zero-alloc, profiling workflow).

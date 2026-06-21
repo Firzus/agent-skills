@@ -111,14 +111,3 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 | Lip-sync | uLipSync · SALSA · OVRLipSync (legacy) | MetaHuman Animator (offline/editor, no runtime) |
 
 Full detail in [runtime.md](./runtime.md) and [pipeline.md](./pipeline.md).
-
-## Related skills
-
-- `quest-system` — end-of-talk as a quest event; the shared-NPC lock.
-- `cinematic-system` — cutscenes host facial/lip-sync production; shared session
-  scope discipline.
-- `camera-system` — the dialogue camera consumes session events (180° rule).
-- `hud-system` — HUD hiding during sessions; subtitle rendering.
-- `enemy-ai-framework` — NPC schedules, approach reactions, the dialogue lock.
-- `world-time-weather` — time/weather condition gates on lines.
-- `save-persistence` — dialogue-seen flags, first-meet state, narrative variables.

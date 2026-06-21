@@ -118,17 +118,3 @@ seconds, corruption telemetry, Genshin server internals.
 | World streaming | per-scene GUID registry | WP doesn't persist cell state — subsystem snapshots (SPUD) |
 
 Full detail in [serialization.md](./serialization.md).
-
-## Related skills
-
-- `scene-flow-manager` — owns `CanSave` and the transition save triggers.
-- `quest-system` — quest state and the shared world-state store this serializes.
-- `progression-economy` — atomic save writes as the solo transaction boundary;
-  shares the idempotency and ledger discipline.
-- `open-world-streaming` / `enemy-ai-framework` / `minimap-worldmap` — consumers of
-  the world-state store.
-- `menu-ui-manager` — the settings split and slot/load UI.
-- `coop-session` / `inventory-equipment` / `loot-drop-system` — the
-  server-authoritative dupe-prevention discipline shared with networked saves.
-- `game-architecture-patterns` — Memento-adjacent store thinking, Type Object,
-  Event Queue (dirty-flag save requests).

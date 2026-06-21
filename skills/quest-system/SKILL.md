@@ -118,15 +118,3 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 | Ecosystem | Quest Machine (Pixel Crushers) | Narrative Pro |
 
 Full detail in [scripting.md](./scripting.md).
-
-## Related skills
-
-- `dialogue-system` — end-of-talk events advance objectives; the shared-NPC lock.
-- `save-persistence` — the world-state store, versioned quest state, CanSave gates.
-- `world-time-weather` — time-gated quests, the reset scheduler, quest-owned
-  weather override handles.
-- `teleport-map-unlock` — priority-quest teleport locks, quest-gated waypoints.
-- `minimap-worldmap` / `hud-system` — marker and tracker contracts.
-- `enemy-ai-framework` — NPC schedule overrides per quest step; the Nemesis-style
-  procedural-antagonist link.
-- `scene-flow-manager` — quest-triggered scene/cinematic transitions.

@@ -125,17 +125,3 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 | Co-op | Mirror/NGO ownership filtering | server loot list + per-client RepNotify visibility |
 
 Full detail in the reference files.
-
-## Related skills
-
-- `progression-economy` — idempotent grants, RNG-state-in-save, data-version
-  handshakes, energy (resin) as the claim currency, deterministic pity systems.
-- `save-persistence` — one-time flags, per-node timestamps, atomic claim writes.
-- `world-time-weather` — daily resets, the per-node real-time clocks.
-- `enemy-ai-framework` — tier substitution via the spawn director.
-- `coop-session` — the host-only/instanced/shared matrix is the loot side of
-  its content rules.
-- `inventory-equipment` — rolled instances (roll-at-spawn) land in its item
-  model; shares the server-authoritative dupe-prevention discipline.
-- `open-world-streaming` — drop lifetime vs cell lifecycle.
-- `hud-system` — aggregated pickup toasts, claim UI, rarity beams.

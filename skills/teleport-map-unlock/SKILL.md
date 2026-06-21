@@ -114,16 +114,3 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 | Networked | server validates intent, replicates position | `Server` RPC + `WithValidation` |
 
 Full detail in [teleport-sequence.md](./teleport-sequence.md).
-
-## Related skills
-
-- `open-world-streaming` — the residency gates this sequence awaits.
-- `scene-flow-manager` — cross-instance teleports use its handshake.
-- `minimap-worldmap` — fog rendering, marker registry, map layers UI (this skill
-  owns the unlock *data model*, that one owns the display).
-- `save-persistence` — unlock flags, CanSave gate, atomic writes.
-- `traversal-system` — the teleport-vs-traversal tension; earned-only as the
-  shared principle.
-- `quest-system` — priority-quest teleport locks; quest-gated waypoint visibility.
-- `camera-system` — warp notification, post-teleport framing.
-- `coop-session` — server-authoritative teleport, spawn-slot resolution.

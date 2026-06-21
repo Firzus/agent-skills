@@ -138,21 +138,3 @@ UI/co-op, stagger-lock, duplicate damage, cancel exploits, knockback through
 walls, tracking overshoot, graph/state desync, **ranged hit-reg "I shot them
 but no hit"**, and **runaway or stagnant damage numbers**) are cataloged in
 [pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
-
-## Related skills
-
-- `character-controller` — the movement HSM this graph plugs into; shared
-  input-buffer principles (intent + timestamp + context).
-- `enemy-ai-framework` — the AI brain drives this same combat system via
-  intents; attack tokens pace the enemies using these attacks.
-- `camera-system` — hit-stop interaction (shake on unscaled time),
-  lock-on and combat framing.
-- `hud-system` — consumes the HitEvent pipeline (damage numbers, stun
-  gauges, boss state UI).
-- `game-architecture-patterns` — State, Type Object (attack data), Event
-  Queue (hit events), Update Method theory.
-- `coop-session` — the netcode-model landscape (lag compensation, server
-  authority) behind ranged PvP hit registration
-  ([ranged-gunplay.md](./ranged-gunplay.md)).
-- `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine-wide
-  practices assumed here.

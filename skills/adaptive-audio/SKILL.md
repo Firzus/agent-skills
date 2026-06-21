@@ -184,20 +184,3 @@ disaster, decompressed-audio memory blowouts, missing debug tooling,
 **blocking the audio thread**, and **audio-only information that locks
 out deaf/HoH players**) are cataloged in [pitfalls.md](./pitfalls.md)
 with symptom → root cause → prevention.
-
-## Related skills
-
-- `world-time-weather` — weather/time drive ambient beds and music
-  variants; the override-stack pattern shared.
-- `enemy-ai-framework` — the aggro/threat link triggering combat
-  music.
-- `dialogue-system` — VO ducking, the dialogue bus.
-- `menu-ui-manager` — the pause mix snapshot contract (refcounted
-  pause + audio duck).
-- `scene-flow-manager` — context transitions own the audio fades and
-  bootstrap residency of the audio services.
-- `camera-system` — the arbitrated-stack pattern (vcams) this music
-  system mirrors; listener orientation.
-- `open-world-streaming` — audio bank/stream residency.
-- `hud-system` — the HUD-side captions/subtitles that pair with the
-  audio-accessibility set ([design-craft.md](./design-craft.md)).

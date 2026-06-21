@@ -136,21 +136,3 @@ localization overflow, unreadable-over-gameplay, update-order flicker,
 **color-only/single-channel critical info**, and **world-space HUD that
 doesn't scale**) are cataloged in [pitfalls.md](./pitfalls.md) with
 symptom → root cause → prevention.
-
-## Related skills
-
-- `combat-system` — emits the HitEvents/gauge events this HUD consumes
-  (damage numbers, stun gauges, boss states).
-- `menu-ui-manager` — the screen-stack layers above this Game(HUD) layer;
-  shares the glyph service and safe-area root.
-- `minimap-worldmap` — the minimap lives in this layer system; the quest
-  tracker consumes the same marker registry.
-- `quest-system` — quest tracker and objective updates derive from its
-  events.
-- `game-architecture-patterns` — Event Queue and Observer theory behind the
-  read-only consumer model.
-- `menu-ui-manager` — shares the accessibility standards and the
-  settings-as-data options registry ([accessibility.md](./accessibility.md)).
-- `unity6-aaa-best-practices` (UITK + tokens + MVP) /
-  `ue5-aaa-best-practices` (CommonUI + MVVM, no-Bind rule) — the engine UI
-  doctrines this skill builds on.

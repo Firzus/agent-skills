@@ -115,14 +115,3 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 | Managers | always-loaded bootstrap scene | AlwaysLoaded Data Layer (don't hard-ref streamed actors) |
 
 Full detail in [engine.md](./engine.md).
-
-## Related skills
-
-- `traversal-system` — weather as the traversal valve (rain slip, updrafts).
-- `open-world-streaming` — region map residency; managers always loaded.
-- `enemy-ai-framework` — time divisions and weather flags as AI blackboard inputs.
-- `quest-system` — time-gated quests and quest-owned weather override handles.
-- `adaptive-audio` — weather/time drive ambient beds; the override-stack pattern.
-- `save-persistence` — serializing clock, schedule, scheduler timestamps.
-- `scene-flow-manager` — bootstrap residency for the services.
-- `hud-system` — forecast UI, hazard gauges, telegraphs.

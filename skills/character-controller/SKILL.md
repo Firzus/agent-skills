@@ -149,22 +149,3 @@ boundary oscillation, physics desync/crush, buffered-input misfires,
 **first-person camera nausea**, and **networked movement desync/speedhacks**)
 are cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
 prevention.
-
-## Related skills
-
-- `traversal-system` — the layer above: world traversability data, the
-  verb catalog, and the stamina economy driving these movement states.
-- `combat-system` — the attack graph plugs into this movement HSM as the
-  combat state's content.
-- `camera-system` — the one-clock interpolation contract (the #1 jitter
-  source) and camera-relative input.
-- `coop-session` — prediction/reconciliation and the anti-cheat
-  re-simulation behind fast-movement netcode
-  ([fps-movement.md](./fps-movement.md)), built on the deterministic
-  tick + intent + snapshot structure above.
-- `open-world-streaming` — the controller side of streaming (never simulate
-  over missing collision) is covered there and in pitfalls.md.
-- `game-architecture-patterns` — State (HSM), Component, Update Method
-  theory.
-- `unity6-aaa-best-practices` / `ue5-aaa-best-practices` — engine-wide
-  practices this skill assumes.

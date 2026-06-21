@@ -169,26 +169,3 @@ bandwidth whale, disconnect mid-transaction, the desync iceberg, **the
 netcode-model mismatch**, and **co-op designed as a single-player
 afterthought**) are cataloged in [pitfalls.md](./pitfalls.md) with
 symptom → root cause → prevention.
-
-## Related skills
-
-- `progression-economy` — server-authoritative transactions and
-  idempotency keys reused for every network op.
-- `character-controller` — the deterministic tick + intent + snapshot
-  structure that prediction/reconciliation build on.
-- `save-persistence` — the world-state store feeding the late-join
-  snapshot; server-authoritative as one of its four save models.
-- `quest-system` — host-only progression, the world-state store the
-  late-join snapshot reads from.
-- `world-time-weather` — host-clock authority, seed replication.
-- `loot-drop-system` — the instanced/shared drop matrix, per-player
-  claims.
-- `enemy-ai-framework` — server-owned AI, per-player threat.
-- `scene-flow-manager` — the EnterScene handshake the join flow
-  reuses.
-- `dialogue-system` / `cinematic-system` — per-player presentation
-  (host cutscenes don't capture guests).
-- `camera-system` — the multi-target framing rig reused for shared-screen
-  / split-screen co-op ([coop-design.md](./coop-design.md)).
-- `hud-system` — co-op nameplates, player colors, through-wall
-  silhouettes, and pingless ping comms live in the HUD layer.

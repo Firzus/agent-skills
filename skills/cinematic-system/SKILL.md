@@ -167,20 +167,3 @@ letterbox/ultrawide bugs, the binary merge disaster, cutscene-applied
 world-change desync, the replay-context problem, **broken film grammar**,
 and **QTEs that exclude players**) are cataloged in
 [pitfalls.md](./pitfalls.md) with symptom → root cause → prevention.
-
-## Related skills
-
-- `scene-flow-manager` — cinematic contexts, transition gates, state
-  restore on context exit.
-- `camera-system` — the Brain handoff, dialogue cameras, the GoW
-  one-shot constraint.
-- `dialogue-system` — facial/lip sync production and VO timing; the
-  session-scope discipline shared.
-- `quest-system` — event tracks fire the same events as gameplay;
-  single source of truth for world changes.
-- `open-world-streaming` — preload gates, streaming modes per scene.
-- `hud-system` — HUD hide channel, subtitle safe areas.
-- `coop-session` — host cutscenes as per-player presentation (guests
-  keep playing).
-- `save-persistence` — seen/completion flag separation, auto-save
-  after cutscenes.
