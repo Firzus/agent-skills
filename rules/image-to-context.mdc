@@ -1,0 +1,71 @@
+---
+description: Transformer une image en contexte texte pour le LLM (vision via Codex CLI, proxy text-only)
+globs: **/*.{png,jpg,jpeg,gif,webp,bmp,tiff}
+alwaysApply: false
+---
+
+# Image → contexte LLM (vision via Codex CLI)
+
+Le modèle est routé via un proxy text-only : les images attachées ou lues avec
+l'outil Read **n'atteignent pas le modèle**. Ne prétends jamais voir une image
+directement.
+
+Pour transformer une image en contexte exploitable (décrire, résumer, "utiliser
+comme référence", OCR, analyser un screenshot de debug), délègue au `codex` CLI
+local (modèle vision, auth via l'abonnement ChatGPT) et ne récupère que le
+**texte final** — le texte traverse le proxy.
+
+## Pré-check
+
+Vérifie que `codex` est disponible avant tout :
+
+```bash
+command -v codex
+```
+
+Absent ou déloggé (`codex login`) → **STOP** et dis-le. Ne substitue jamais une
+autre API vision et n'invente pas le contenu de l'image.
+
+## Commande
+
+Windows → **Git Bash**, pas WSL (le bash WSL ne peut pas lancer le `codex`
+Windows, faute de `node`). Écris la sortie **hors du workspace** (temp système),
+pour ne polluer aucun repo où la rule est portée :
+
+```bash
+& "C:\Program Files\Git\bin\bash.exe" -lc 'printf "%s" "<INSTRUCTION>" | codex exec --skip-git-repo-check --sandbox read-only --config mcp_servers="{}" -o "$TMP/codex-ctx.txt" -i "/c/chemin/absolu/image.png" -'
+```
+
+Depuis un shell bash directement :
+
+```bash
+printf '%s' '<INSTRUCTION>' | codex exec --skip-git-repo-check --sandbox read-only --config mcp_servers='{}' -o "$TMP/codex-ctx.txt" -i "/c/abs/image.png" -
+```
+
+Puis lis le fichier avec l'outil Read (chemin Windows, ex.
+`C:\Users\<user>\AppData\Local\Temp\codex-ctx.txt`) pour récupérer le contexte.
+
+## Règles
+
+- Plusieurs images : répéter `-i "/c/abs/img.png"` pour chacune, en un seul appel.
+- `-o <fichier>` isole le message final (sortie propre, proxy-safe). Écris-le
+  hors du workspace (`$TMP/codex-ctx.txt`) puis relis-le avec Read. Sinon, lire
+  le dernier message imprimé sur stdout.
+- `--config mcp_servers="{}"` désactive les MCP du `codex` et évite les lignes
+  parasites `ERROR rmcp::transport::worker ... connection timeout` sur stderr.
+  Si elles apparaissent malgré tout, ignore-les : sans impact sur le résultat.
+- Prompt passé sur **stdin** avec un `-` final (évite les pièges de quoting).
+  Entoure `<INSTRUCTION>` de single quotes ; ne le passe pas en argument positionnel.
+- Chemins d'image **absolus**, en style Git Bash (`/c/Users/...`).
+- N'utilise jamais `OPENAI_API_KEY` ; cette voie passe par l'abonnement ChatGPT.
+- Compte ~30–60 s par appel (modèle vision, plusieurs milliers de tokens).
+
+## Instructions selon l'intention (`<INSTRUCTION>`)
+
+| Intention | Instruction |
+| --- | --- |
+| Générique | `Describe this image factually and structured so another LLM can use it as context: subject, layout, colors, verbatim text, style. Be concise.` |
+| Réf perso / art | `Describe this character reference: silhouette, hair, outfit (pieces/colors/materials), accessories/weapon, palette, pose, render style.` |
+| UI / maquette | `Describe this UI: regions, components, verbatim labels, color/spacing cues, interaction hints.` |
+| OCR | `Extract ALL text verbatim, preserving reading order. Output only text.` |
+| Screenshot debug | `Describe this editor/app screenshot: screen, panels, verbatim error/log text, selected elements, current state.` |
