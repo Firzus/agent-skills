@@ -1,71 +1,70 @@
 ---
-description: Transformer une image en contexte texte pour le LLM (vision via Codex CLI, proxy text-only)
+description: Turn an image into text context for the LLM (vision via Codex CLI, text-only proxy)
 globs: **/*.{png,jpg,jpeg,gif,webp,bmp,tiff}
 alwaysApply: false
 ---
 
-# Image → contexte LLM (vision via Codex CLI)
+# Image → LLM context (vision via Codex CLI)
 
-Le modèle est routé via un proxy text-only : les images attachées ou lues avec
-l'outil Read **n'atteignent pas le modèle**. Ne prétends jamais voir une image
-directement.
+The model is routed through a text-only proxy: images attached or read with the
+Read tool **never reach the model**. Never claim to see an image directly.
 
-Pour transformer une image en contexte exploitable (décrire, résumer, "utiliser
-comme référence", OCR, analyser un screenshot de debug), délègue au `codex` CLI
-local (modèle vision, auth via l'abonnement ChatGPT) et ne récupère que le
-**texte final** — le texte traverse le proxy.
+To turn an image into usable context (describe, summarize, "use as reference",
+OCR, analyze a debug screenshot), delegate to the local `codex` CLI (vision
+model, auth via the ChatGPT subscription) and only retrieve the **final text** —
+the text passes through the proxy.
 
-## Pré-check
+## Pre-check
 
-Vérifie que `codex` est disponible avant tout :
+Verify that `codex` is available first:
 
 ```bash
 command -v codex
 ```
 
-Absent ou déloggé (`codex login`) → **STOP** et dis-le. Ne substitue jamais une
-autre API vision et n'invente pas le contenu de l'image.
+Missing or logged out (`codex login`) → **STOP** and say so. Never substitute
+another vision API and never invent the image content.
 
-## Commande
+## Command
 
-Windows → **Git Bash**, pas WSL (le bash WSL ne peut pas lancer le `codex`
-Windows, faute de `node`). Écris la sortie **hors du workspace** (temp système),
-pour ne polluer aucun repo où la rule est portée :
+Windows → **Git Bash**, not WSL (WSL bash cannot launch the Windows `codex`, no
+`node`). Write the output **outside the workspace** (system temp), so it never
+pollutes any repo the rule is ported into:
 
 ```bash
-& "C:\Program Files\Git\bin\bash.exe" -lc 'printf "%s" "<INSTRUCTION>" | codex exec --skip-git-repo-check --sandbox read-only --config mcp_servers="{}" -o "$TMP/codex-ctx.txt" -i "/c/chemin/absolu/image.png" -'
+& "C:\Program Files\Git\bin\bash.exe" -lc 'printf "%s" "<INSTRUCTION>" | codex exec --skip-git-repo-check --sandbox read-only --config mcp_servers="{}" -o "$TMP/codex-ctx.txt" -i "/c/absolute/path/image.png" -'
 ```
 
-Depuis un shell bash directement :
+From a bash shell directly:
 
 ```bash
 printf '%s' '<INSTRUCTION>' | codex exec --skip-git-repo-check --sandbox read-only --config mcp_servers='{}' -o "$TMP/codex-ctx.txt" -i "/c/abs/image.png" -
 ```
 
-Puis lis le fichier avec l'outil Read (chemin Windows, ex.
-`C:\Users\<user>\AppData\Local\Temp\codex-ctx.txt`) pour récupérer le contexte.
+Then read the file with the Read tool (Windows path, e.g.
+`C:\Users\<user>\AppData\Local\Temp\codex-ctx.txt`) to retrieve the context.
 
-## Règles
+## Rules
 
-- Plusieurs images : répéter `-i "/c/abs/img.png"` pour chacune, en un seul appel.
-- `-o <fichier>` isole le message final (sortie propre, proxy-safe). Écris-le
-  hors du workspace (`$TMP/codex-ctx.txt`) puis relis-le avec Read. Sinon, lire
-  le dernier message imprimé sur stdout.
-- `--config mcp_servers="{}"` désactive les MCP du `codex` et évite les lignes
-  parasites `ERROR rmcp::transport::worker ... connection timeout` sur stderr.
-  Si elles apparaissent malgré tout, ignore-les : sans impact sur le résultat.
-- Prompt passé sur **stdin** avec un `-` final (évite les pièges de quoting).
-  Entoure `<INSTRUCTION>` de single quotes ; ne le passe pas en argument positionnel.
-- Chemins d'image **absolus**, en style Git Bash (`/c/Users/...`).
-- N'utilise jamais `OPENAI_API_KEY` ; cette voie passe par l'abonnement ChatGPT.
-- Compte ~30–60 s par appel (modèle vision, plusieurs milliers de tokens).
+- Multiple images: repeat `-i "/c/abs/img.png"` for each one, in a single call.
+- `-o <file>` isolates the final message (clean, proxy-safe output). Write it
+  outside the workspace (`$TMP/codex-ctx.txt`) then read it back with Read.
+  Otherwise, read the last message printed on stdout.
+- `--config mcp_servers="{}"` disables `codex` MCP servers and avoids the noisy
+  `ERROR rmcp::transport::worker ... connection timeout` lines on stderr. If
+  they show up anyway, ignore them: no impact on the result.
+- Prompt passed on **stdin** with a trailing `-` (avoids quoting pitfalls).
+  Wrap `<INSTRUCTION>` in single quotes; do not pass it as a positional argument.
+- Image paths must be **absolute**, in Git Bash style (`/c/Users/...`).
+- Never use `OPENAI_API_KEY`; this path goes through the ChatGPT subscription.
+- Expect ~30–60 s per call (vision model, several thousand tokens).
 
-## Instructions selon l'intention (`<INSTRUCTION>`)
+## Instructions by intent (`<INSTRUCTION>`)
 
-| Intention | Instruction |
+| Intent | Instruction |
 | --- | --- |
-| Générique | `Describe this image factually and structured so another LLM can use it as context: subject, layout, colors, verbatim text, style. Be concise.` |
-| Réf perso / art | `Describe this character reference: silhouette, hair, outfit (pieces/colors/materials), accessories/weapon, palette, pose, render style.` |
-| UI / maquette | `Describe this UI: regions, components, verbatim labels, color/spacing cues, interaction hints.` |
+| Generic | `Describe this image factually and structured so another LLM can use it as context: subject, layout, colors, verbatim text, style. Be concise.` |
+| Character / art ref | `Describe this character reference: silhouette, hair, outfit (pieces/colors/materials), accessories/weapon, palette, pose, render style.` |
+| UI / mockup | `Describe this UI: regions, components, verbatim labels, color/spacing cues, interaction hints.` |
 | OCR | `Extract ALL text verbatim, preserving reading order. Output only text.` |
-| Screenshot debug | `Describe this editor/app screenshot: screen, panels, verbatim error/log text, selected elements, current state.` |
+| Debug screenshot | `Describe this editor/app screenshot: screen, panels, verbatim error/log text, selected elements, current state.` |
