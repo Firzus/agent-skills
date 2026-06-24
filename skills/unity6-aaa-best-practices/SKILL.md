@@ -37,7 +37,7 @@ lot in older blog posts).
 | World-space UI Toolkit | **6.2** | Panel Settings → world-space render mode |
 | **Render Graph = only path** (URP Compatibility Mode removed), UI Shader Graph + USS filters, UI Test Framework, SVG as core module, `[SerializeField]` fields-only (compile error) | **6.3** (LTS) | First LTS since 6.0; `URP_COMPATIBILITY_MODE` define removed in 6.4 |
 | ECS (Entities/Collections/Mathematics/Entities Graphics) as **Core packages**, `EntityId` deprecates `InstanceID`, DirectStorage, PVRTC removed | **6.4** | |
-| `EntityId` replaces `InstanceID` (**legacy int APIs + `GameObject.rigidbody/.camera` now compile errors**), Built-in RP + dynamic batching deprecated, Advanced Text Generator = default, Panel Renderer replaces UI Document, on-tile post-processing, WebAssembly 2023 default | **6.5** | Plan the `InstanceID` migration carefully |
+| `EntityId` replaces `InstanceID` (**obsolete int `InstanceID` APIs now compile errors**), Built-in RP + dynamic batching deprecated, Advanced Text Generator = default, Panel Renderer replaces UI Document, on-tile post-processing, WebAssembly 2023 default | **6.5** | Plan the `InstanceID` migration carefully; legacy `.rigidbody`/`.camera` accessors were already gone (5.x), warnings just promoted to errors |
 
 Treat "6.2+ can do X" claims with suspicion: SVG-as-core, the Render-Graph-only
 path, and UITK custom shaders are **6.3**, not 6.2.
@@ -61,8 +61,8 @@ skill covers what is Unity-specific.
 | One global define list, hand-edited per platform | **Build Profiles** (per-profile settings, defines, scene lists) |
 | Hand-rolled object pools | **`UnityEngine.Pool`** (`ObjectPool<T>`, `CollectionPool`) |
 | Built-in Render Pipeline for new projects (deprecated in 6.5) | **URP** (cross-platform/stylized) or **HDRP** (high-fidelity PC/console) |
-| `GetInstanceID()` / `int` instance ids, `MaterialPropertyBlock` to vary one material | **`EntityId`** (int APIs are compile errors in 6.5) / **per-renderer RSUV** (`SetShaderUserValue`, GRD-safe) |
-| `GameObject.rigidbody` / `.camera` / `AddComponent("Name")` legacy accessors | **`GetComponent<T>()` / `AddComponent<T>()`** (legacy forms removed in 6.5) |
+| `GetInstanceID()` / `int` instance ids, `MaterialPropertyBlock` to vary one material | **`EntityId`** (obsolete int APIs are compile errors in 6.5) / **per-renderer RSUV** (`SetShaderUserValue`, GRD-safe) |
+| `GameObject.rigidbody` / `.camera` / `AddComponent("Name")` legacy accessors | **`GetComponent<T>()` / `AddComponent<T>()`** (legacy forms gone since 5.x; residual warnings became errors in 6.5) |
 | Installing Entities/Collections/Mathematics as packages | **Built-in Core packages** (ship with the Editor since 6.4; `Unity.Mathematics` is a built-in module in 6.5) |
 | `[SerializeField]` on properties/methods | **`[field: SerializeField]`** (anything else is a compile error since 6.3) |
 

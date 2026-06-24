@@ -61,12 +61,14 @@
 - **DO** treat **`EntityId`** as the object-identity type going forward (6.4
   deprecates `InstanceID`; 6.5 unifies GameObject + entity identity on a 64-bit
   `EntityId`). It is the bridge type between GameObjects and ECS.
-- **DON'T** call `Object.GetInstanceID()`, `Resources.InstanceIDToObject`, or
-  `Selection.instanceIDs`, and **don't cast ids to/from `int`** or rely on their
-  sign, bit layout, or sort order — these are **compile errors in 6.5**.
-- **DON'T** use the long-deprecated `GameObject.rigidbody` / `.camera` /
-  `Component.renderer` accessors or `AddComponent("TypeName")` — removed in 6.5;
-  use `GetComponent<T>()` / `AddComponent<T>()`.
+- **DON'T** call the integer `InstanceID` APIs — `Object.GetInstanceID()`,
+  `Resources.InstanceIDToObject`, `Selection.instanceIDs` — or cast ids to/from
+  `int` or rely on their sign, bit layout, or sort order. These obsolete int
+  APIs become **compile errors in 6.5** (the genuinely new break this release).
+- **DON'T** use the legacy quick accessors `GameObject.rigidbody` / `.camera` /
+  `Component.renderer` or `AddComponent("TypeName")` — long deprecated (gone
+  since the Unity 5.x era), with any remaining `[Obsolete]` warnings promoted to
+  errors in 6.5; use `GetComponent<T>()` / `AddComponent<T>()`.
 - **DO** budget an explicit **`InstanceID` → `EntityId` migration** when moving a
   project to 6.4/6.5; upgrades have surfaced lost component references when this
   identity change is ignored.
