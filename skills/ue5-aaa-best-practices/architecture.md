@@ -57,8 +57,3 @@
   replication and Iris (5.4+) at scale.
 - **DON'T** trust the client, and don't plan to "retrofit networking later" —
   retrofitting replication is a rewrite.
-
-## Related
-
-- Engine-agnostic pattern theory (Component, State, Service Locator
-  trade-offs): see the `game-architecture-patterns` skill.

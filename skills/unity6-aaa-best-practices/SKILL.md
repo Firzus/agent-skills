@@ -24,10 +24,8 @@ only path...) unless the project is explicitly locked on an older 6.x. Several
 defaults changed in Unity 6: the **unlearn list** below corrects habits from
 older Unity versions that are now wrong.
 
-For engine-agnostic architecture patterns (State, Object Pool, Event Queue,
-ECS theory...), use the `game-architecture-patterns` skill; for implementing
-Figma designs as UI Toolkit interfaces, use the `figma-to-unity` skill. This
-skill covers what is Unity-specific.
+For implementing Figma designs as UI Toolkit interfaces, use the
+`figma-to-unity` skill. This skill covers what is Unity-specific.
 
 ## Unlearn list (old habits that are now wrong)
 

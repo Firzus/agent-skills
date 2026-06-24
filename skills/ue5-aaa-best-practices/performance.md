@@ -59,9 +59,3 @@
   keep 100+ characters in budget.
 - **DON'T** run full anim/AI/VFX fidelity on every distant or off-screen
   agent.
-
-## Engine-agnostic theory
-
-For when to apply Object Pool, Dirty Flag, Spatial Partition, and Data
-Locality (and when not to), see the `game-architecture-patterns` skill's
-optimization reference.

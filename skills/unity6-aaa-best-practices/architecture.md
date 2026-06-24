@@ -51,8 +51,3 @@
   speed and ecosystem compatibility. AAA teams apply DOTS selectively.
 - **DON'T** call `.Complete()` immediately after scheduling a job — schedule
   early, complete late (`JobHandle` chaining), or you discard the parallelism.
-
-## Related
-
-- Engine-agnostic pattern theory (Component/ECS, State, Event Queue, Service
-  Locator trade-offs): see the `game-architecture-patterns` skill.
