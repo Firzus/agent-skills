@@ -7,6 +7,10 @@
   snapshots — before optimizing anything.
 - **DON'T** optimize from editor-only numbers or gut feeling: the editor adds
   overhead and hides device-specific bottlenecks.
+- **DO** use the newer instrumentation: the **Render Graph Viewer on-device**
+  (6.3) for pass merging on player builds, the **redesigned Rendering Statistics
+  window** (6.4, shows SRP Batcher / GRD / BRG / instancing breakdown), and
+  Profiler **Captures List** + Highlights detail (6.3).
 
 ## Allocation discipline
 
@@ -39,8 +43,33 @@
   CBUFFER layout); use GPU instancing for repeated meshes not covered by GRD.
 - **DON'T** vary material properties per-renderer via `MaterialPropertyBlock`
   on objects you want batched — it silently breaks SRP Batcher/GRD paths.
-- **DO** write custom render passes as **Render Graph** passes — the legacy
-  `ScriptableRenderPass.Execute` compatibility path is removed in 6.3+.
+- **DO** use **per-renderer shader user value (RSUV)** instead (6.3):
+  `MeshRenderer/SkinnedMeshRenderer.SetShaderUserValue` + `unity_RendererUserValue`
+  feeds per-renderer data (color, atlas index) through **one** material while
+  staying **GPU Resident Drawer-compatible** — the supported way to vary
+  instances without breaking batching.
+- **DO** write custom render passes as **Render Graph** passes. The URP
+  **Compatibility Mode is removed in 6.3** (Render Graph is the only path) and
+  the `URP_COMPATIBILITY_MODE` escape define is gone in 6.4.
+- **DON'T** start new projects on the **Built-in Render Pipeline** (deprecated
+  in 6.5) or rely on **dynamic batching** (deprecated in 6.5).
+
+## Rendering: newer levers (6.2–6.5)
+
+- **DO** enable **Mesh LOD** (auto LOD generation at import, all LODs in one
+  Mesh — 6.2) instead of external LOD tools; it cuts memory and is compatible
+  with Entities Graphics (6.5).
+- **DO** turn on **on-tile post-processing** + **Tile-Only Mode** on mobile
+  (6.5): HDR, tone mapping, color grading, and vignette run in a single GPU-tile
+  pass with no system-memory readback — major bandwidth/thermal wins on
+  Vulkan/Metal.
+- **DO** prefer the **GPU Lightmapper** and **xAtlas** packing — the new baking
+  defaults for fresh scenes/projects in 6.3 (faster bakes, less VRAM/disk).
+- **DO** consider **DirectStorage** (6.4, PC & Xbox) for texture/mesh/ECS data
+  on NVMe — large load-time reductions; the Windows `AsyncReadManager` rewrite
+  (6.5) extends fast I/O to custom reads.
+- **DON'T** target **PVRTC** (removed in 6.4) — use ASTC (mobile) or BC
+  (desktop/console).
 
 ## Hot paths
 
