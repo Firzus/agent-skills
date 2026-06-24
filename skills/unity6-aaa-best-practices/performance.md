@@ -77,9 +77,3 @@
   `NativeArray` / `Unity.Mathematics`, scheduled early and completed late.
 - **DON'T** consider job batch sizes irrelevant on `IJobParallelFor`, and
   don't `.Complete()` right after scheduling.
-
-## Engine-agnostic theory
-
-For when to apply Data Locality, Dirty Flag, Object Pool, and Spatial
-Partition (and when not to), see the `game-architecture-patterns` skill's
-optimization reference.

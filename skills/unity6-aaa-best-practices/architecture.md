@@ -89,8 +89,3 @@
   Editor and keeps enter-play-mode fast.
 - **DON'T** hold un-reset `static` mutable state expecting a domain reload to
   clear it when fast enter-play-mode / reload-free mode is on.
-
-## Related
-
-- Engine-agnostic pattern theory (Component/ECS, State, Event Queue, Service
-  Locator trade-offs): see the `game-architecture-patterns` skill.

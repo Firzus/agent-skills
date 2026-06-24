@@ -42,10 +42,8 @@ lot in older blog posts).
 Treat "6.2+ can do X" claims with suspicion: SVG-as-core, the Render-Graph-only
 path, and UITK custom shaders are **6.3**, not 6.2.
 
-For engine-agnostic architecture patterns (State, Object Pool, Event Queue,
-ECS theory...), use the `game-architecture-patterns` skill; for implementing
-Figma designs as UI Toolkit interfaces, use the `figma-to-unity` skill. This
-skill covers what is Unity-specific.
+For implementing Figma designs as UI Toolkit interfaces, use the
+`figma-to-unity` skill. This skill covers what is Unity-specific.
 
 ## Unlearn list (old habits that are now wrong)
 

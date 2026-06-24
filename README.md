@@ -59,6 +59,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 ### Web & app development
 
+- [`software-architecture`](./skills/software-architecture) — Stack-agnostic architecture for any software (game, desktop, web, service): macro structures, runtime patterns, boundaries, state, cross-cutting concerns.
 - [`vite-plus-best-practices`](./skills/vite-plus-best-practices) — Best practices for Vite+ (`vp`): config, migrations, testing, monorepos.
 - [`tauri`](./skills/tauri) — Tauri v2+ app development: IPC, capabilities, permissions, mobile-safe structure.
 - [`dokploy-best-practices`](./skills/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
@@ -80,7 +81,6 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 ### Game architecture & foundation
 
-- [`game-architecture-patterns`](./skills/game-architecture-patterns) — Battle-tested game patterns with a symptom→pattern table.
 - [`save-persistence`](./skills/save-persistence) — Save systems for single-player and online, with versioning and storage.
 - [`scene-flow-manager`](./skills/scene-flow-manager) — Game application flow: state machine, scene composition, gated transitions.
 - [`open-world-streaming`](./skills/open-world-streaming) — Open-world streaming: partitioning, async load/unload, HLOD, budgets.

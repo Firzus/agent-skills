@@ -20,9 +20,7 @@ the DO/DON'T rules below by default; deviate only with an explicit, stated
 reason. These practices target the UE5 era (5.4/5.5/5.6+). Many UE4 defaults
 are now wrong: the **unlearn list** below corrects them.
 
-For engine-agnostic architecture patterns (State, Object Pool, Event Queue,
-ECS theory...), use the `game-architecture-patterns` skill; this skill covers
-what is Unreal-specific.
+This skill covers what is Unreal-specific.
 
 ## Unlearn list (UE4 habits that are now wrong)
 
