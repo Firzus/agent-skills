@@ -20,6 +20,9 @@
   `Dispose()` the rebind operation.
 - **DO** define **control schemes** (KBM, Gamepad, Touch) and swap UI glyphs
   on control-scheme change instead of hardcoding prompts per platform.
+- **DO** use the **Input System UI module** for UITK input; on 6.4 the
+  `OnMouseDown/Drag/Up` MonoBehaviour callbacks finally work with the Input
+  System package, easing migration off legacy input.
 
 ## Audio
 
@@ -40,6 +43,13 @@
 - **DO** match load types: Streaming for music/long ambiences,
   Compressed-In-Memory for mid-length, Decompress-On-Load only for short
   frequent SFX; force mono where stereo adds nothing.
+- **DO** benefit from the **Enhanced Audio Foundation** (6.3, opt-in/experimental
+  through 6.5) — it moves costly device operations (enumeration, start) off the
+  main thread, removing audio-related frame hitches on Windows/macOS.
+- **DO** consider the **scriptable audio pipeline** (Burst-compiled C# signal
+  units, 6.3) and `AudioClip.CreateInstance` generators (6.5) for adaptive
+  sequencing/blending/looping in-engine before reaching for middleware on
+  mid-scope projects.
 
 ## Version control
 
@@ -68,13 +78,22 @@
   company/product names in shipping configs.
 - **DO** run IL2CPP CI jobs on runners matching the target OS — IL2CPP needs
   the target platform's native toolchain.
+- **DO** script Build Profiles with the `CreateBuildProfile` API (6.5,
+  auto-installs platform packages) for reproducible CI setup.
+- **DO** track the breaking platform-default shifts when bumping CI to 6.5:
+  **WebAssembly 2023 is on by default** (Emscripten 4) and **Android minimum is
+  API 26** with **AGP 9 / Gradle 9.1** and **x86-64 removed** — update build
+  scripts, ProGuard config, and plugin namespaces accordingly.
 
 ## Testing & quality
 
 - **DO** use the **Unity Test Framework** with separate test asmdefs:
   **edit-mode tests as the default** for logic (milliseconds per run),
   play-mode tests only for behavior needing the player loop/physics/scene
-  lifecycle.
+  lifecycle. UTF is a **core package** since 6.2 (no manual install).
+- **DO** automate UI Toolkit interaction tests with the **UI Test Framework**
+  package (6.3): clicks, keyboard, scroll against UXML — close the coverage gap
+  on presenters/views.
 - **DO** keep production code in custom asmdefs — test assemblies cannot
   reference `Assembly-CSharp`; this constraint is the #1 reason teams "can't
   test".
@@ -85,7 +104,13 @@
   (not a vanity total), and enforce **Roslyn analyzers**
   (Microsoft.Unity.Analyzers + `.editorconfig` severities as build-breaking)
   to mechanically catch Unity footguns (allocs in Update, null-comparison on
-  UnityEngine.Object...).
+  UnityEngine.Object...). On 6.5, keep the built-in **serialization rules
+  analyzer** on as build-breaking — it turns silent runtime data loss into
+  compile errors.
+- **DO** run the **Project Auditor** (built into the Editor by default since
+  6.4, Window → Analysis) in review/CI to catch perf, memory, and obsolete-API
+  issues; its rules live in the separate `com.unity.project-auditor-rules`
+  package.
 - **DO** keep logging disciplined: leveled logger wrapper, verbose logs
   stripped from release, `Debug.Assert` for invariants (compiled out of
   non-dev builds).

@@ -51,6 +51,42 @@
   speed and ecosystem compatibility. AAA teams apply DOTS selectively.
 - **DON'T** call `.Complete()` immediately after scheduling a job — schedule
   early, complete late (`JobHandle` chaining), or you discard the parallelism.
+- **DON'T** install **Entities / Collections / Mathematics / Entities Graphics**
+  as manual packages on 6.4+ — they ship as **built-in Core packages** with the
+  Editor (`Unity.Mathematics` is a built-in module in 6.5). Lower friction means
+  Jobs+Burst+Mathematics is a reasonable default for hot paths, not an opt-in.
+
+## Object identity: EntityId, not InstanceID
+
+- **DO** treat **`EntityId`** as the object-identity type going forward (6.4
+  deprecates `InstanceID`; 6.5 unifies GameObject + entity identity on a 64-bit
+  `EntityId`). It is the bridge type between GameObjects and ECS.
+- **DON'T** call `Object.GetInstanceID()`, `Resources.InstanceIDToObject`, or
+  `Selection.instanceIDs`, and **don't cast ids to/from `int`** or rely on their
+  sign, bit layout, or sort order — these are **compile errors in 6.5**.
+- **DON'T** use the long-deprecated `GameObject.rigidbody` / `.camera` /
+  `Component.renderer` accessors or `AddComponent("TypeName")` — removed in 6.5;
+  use `GetComponent<T>()` / `AddComponent<T>()`.
+- **DO** budget an explicit **`InstanceID` → `EntityId` migration** when moving a
+  project to 6.4/6.5; upgrades have surfaced lost component references when this
+  identity change is ignored.
+
+## Serialization & domain reload
+
+- **DO** apply `[SerializeField]` to **fields only** — on properties, methods,
+  or types it is a **compile error since 6.3**; use `[field: SerializeField]`
+  for auto-properties.
+- **DO** let the **serialization Roslyn analyzer** (6.5) gate builds: it turns
+  silent runtime data loss (missing `[Serializable]`, bad `[SerializeReference]`,
+  unsupported collections) into compile-time errors — keep it on as
+  build-breaking.
+- **DO** design for **disabled domain reload**: prefer the **Editor Lifecycle
+  API** (`OnCodeLoaded`/`OnCodeInitializing`) and `[AutoStaticsCleanup]` /
+  `OnEnteringPlayMode` attributes (6.5) over event-based `playModeStateChanged`
+  and manual static resets — this is the foundation for the reload-free CoreCLR
+  Editor and keeps enter-play-mode fast.
+- **DON'T** hold un-reset `static` mutable state expecting a domain reload to
+  clear it when fast enter-play-mode / reload-free mode is on.
 
 ## Related
 

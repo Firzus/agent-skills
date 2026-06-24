@@ -2,8 +2,8 @@
 
 Default for new UI in Unity 6: **UI Toolkit (UITK)** for screen-space AND
 world-space, structured as a design system, with data shown through MVP/MVVM
-and runtime bindings. This assumes a current Unity 6 version (6.2+); stay on
-the latest Unity 6 release unless the project is locked.
+and runtime bindings. World-space UITK shipped in 6.2; custom shaders and USS
+filters in 6.3. Stay on the latest Unity 6 release unless the project is locked.
 
 ## Choosing the system
 
@@ -11,16 +11,19 @@ the latest Unity 6 release unless the project is locked.
   multi-resolution interfaces, and world-space UI (Panel Settings →
   world-space render mode, since 6.2). UITK is retained-mode, renders
   textureless with a dynamic atlas, and gets all new Unity UI investment
-  (world-space, SVG, custom materials/shaders all landed in the 6.x cycle).
+  (world-space in 6.2; UI Shader Graph, USS filters, SVG-as-core all in 6.3).
 - **DO** keep UGUI only where its remaining gaps bite: UI that needs
   Animator/Timeline keyframed animation, or a team shipping imminently on
   existing UGUI screens.
 - **DON'T** migrate working UGUI screens mid-project. Mixing both systems
   per-view is supported and fine.
-- **DON'T** apply pre-6.2 limitations to current versions: "UITK can't do
-  world space / custom shaders" is only true on 6.0/6.1. Only if the project
-  is locked on 6.0/6.1 do world-space UITK workarounds (render texture) or
-  UGUI world canvases apply.
+- **DON'T** mis-attribute capabilities by version: world-space UITK is **6.2**;
+  **custom shaders (UI Shader Graph) and USS filters are 6.3** (not 6.0/6.1/6.2).
+  On a project locked below the capability's version, the old workaround
+  (render texture, UGUI world canvas) still applies.
+- **DO** add UITK content to scenes with the **Panel Renderer** component on
+  6.5+ (it replaces UI Document and improves world-space UI); UI Document still
+  works but is the legacy path.
 
 ## Design system (tokens)
 
@@ -33,6 +36,11 @@ the latest Unity 6 release unless the project is locked.
 - **DON'T** hardcode colors/sizes inline on elements or duplicate values across
   USS files — every visual constant goes through a token.
 - **DO** let UI artists own UXML/USS in UI Builder; keep C# out of layout.
+- **DO** reach for **USS filters** (blur, grayscale, sepia, tint, invert,
+  opacity — 6.3, URP) and **UI Shader Graph** custom materials (6.3) for visual
+  effects instead of pre-rendered textures or per-frame C# tinting.
+- **DON'T** assume these exist below 6.3 — gate any shader/filter-based design
+  on the project's Unity version.
 
 ## Showing data: MVP / MVVM
 
@@ -55,7 +63,11 @@ the latest Unity 6 release unless the project is locked.
 - **DON'T** write `style.*` properties per frame (triggers layout/repaint);
   prefer USS class toggling and transitions.
 - **DO** keep hierarchies shallow and selector complexity bounded on huge
-  screens (`:hover`-heavy selectors on large lists are costly).
+  screens (`:hover`-heavy selectors on large lists are costly). On 6.5+, the
+  **USS Stats Profiler** (Project Settings → UI Toolkit) surfaces per-panel
+  selector cost.
+- **DO** rely on the **Advanced Text Generator** (default in 6.5, 10–40% text
+  CPU win) and let it own line-breaking/Best Fit; don't hand-roll text layout.
 
 ## Input wiring
 
