@@ -1,7 +1,5 @@
 ---
-description: Turn an image into text context for the LLM (vision via Codex CLI, text-only proxy)
-globs: **/*.{png,jpg,jpeg,gif,webp,bmp,tiff}
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Image → LLM context (vision via Codex CLI)
