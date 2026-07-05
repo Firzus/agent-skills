@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 38 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 39 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -67,6 +67,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`image-optimization`](./skills/image-optimization) — Audits and optimizes web images for performance, SEO, and accessibility.
 - [`extract-theme`](./skills/extract-theme) — Extracts a website's design tokens into shadcn/ui + Tailwind CSS v4.
 - [`shaders`](./skills/shaders) — GPU-accelerated visual effects in React/Next.js with the `shaders` npm package.
+- [`swr`](./skills/swr) — SWR v2 data fetching for React/Next.js: cache keys, revalidation, mutations, pagination, and subscriptions.
 
 ### Engine best practices
 
