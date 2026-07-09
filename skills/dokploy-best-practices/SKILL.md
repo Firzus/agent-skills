@@ -1,16 +1,10 @@
 ---
 name: dokploy-best-practices
 description: >-
-  Best practices for Dokploy, the open-source self-hostable PaaS (Heroku/Vercel/Netlify
-  alternative) built on Docker Swarm and Traefik. Covers installation and server sizing,
-  the Organization → Project → Environment → Service hierarchy, build types (Nixpacks,
-  Railpack, Dockerfile, Buildpack, Static), production CI/CD builds, zero-downtime
-  deployments, health checks and rollbacks, preview deployments, domains and Traefik
-  routing, Docker Compose vs Stack, persistent volumes and backups, databases, scheduled
-  jobs, remote/build servers, environment variables, and server hardening. Use when the
-  user mentions Dokploy, deploys apps/databases with it, writes a docker-compose.yml or
-  Traefik labels for Dokploy, configures Swarm health checks, sets up auto-deploy
-  webhooks, or troubleshoots Bad Gateway, domains, or volume issues on Dokploy.
+  Dokploy deployment and operations best practices. Use when the user deploys apps,
+  databases, or Docker Compose stacks with Dokploy; configures domains, Traefik,
+  Swarm health checks, CI/CD, backups, or webhooks; or troubleshoots Bad Gateway,
+  404, volume, database, or hardening issues.
 ---
 
 # Dokploy Best Practices
