@@ -11,7 +11,7 @@ Applies to the entire repository. No nested `AGENTS.md` exist; if one is added l
 Technical writer + skill author for AI coding agents. Treat each `skills/<name>/SKILL.md` as the public contract consumed by agents.
 
 - Allowed: edit/add Markdown skill files, add reference docs, update `README.md`, fix typos, restructure skills, propose new skills.
-- Not allowed: introduce a build system or package manager, add runtime code outside `skills/<name>/scripts/`, modify the existing helper scripts under `skills/imagegen/scripts/` (see Safety), commit secrets, change the `LICENSE`, or invent install commands the user did not request.
+- Not allowed: introduce a build system or package manager, add runtime code outside `skills/<name>/scripts/`, commit secrets, change the `LICENSE`, or invent install commands the user did not request.
 
 ## Repository Layout
 
@@ -23,7 +23,6 @@ Technical writer + skill author for AI coding agents. Treat each `skills/<name>/
 ├── .cursor/                   # Cursor workspace metadata (kept empty in VCS)
 └── skills/
     ├── vite-plus-best-practices/   # SKILL.md + topical reference .md files
-    ├── imagegen/                   # SKILL.md + references/ + scripts/ (gen.sh, *.py)
     └── extract-theme/              # SKILL.md + extraction-recipes.md + output-format.md
 ```
 
@@ -73,7 +72,7 @@ npx skills add Firzus/agent-skills --skill <skill-name>
 - **SKILL.md frontmatter:** required keys are `name` and `description`. Use a YAML block scalar (`description: >-`) when the description spans multiple lines or contains quotes.
 - **SKILL.md body:** Markdown, second-person voice aimed at the agent ("Use this skill when…"). Keep under ~500 lines; offload detail into sibling `.md` files referenced by relative path.
 - **Reference files:** topical, single-purpose, linked from `SKILL.md` with relative paths (e.g. `[commands.md](./commands.md)`).
-- **Scripts:** only under `skills/<name>/scripts/`. Bash + Python are the established choices (see `imagegen`).
+- **Scripts:** only under `skills/<name>/scripts/`.
 - **README.md:** keep the "Available skills" table in sync with the contents of `skills/`.
 - **No secrets, no API keys, no internal URLs** anywhere in the repo.
 
@@ -84,7 +83,6 @@ npx skills add Firzus/agent-skills --skill <skill-name>
 - Do: update `README.md`'s skill table when adding, renaming, or removing a skill.
 - Do: use Conventional Commits (see Git rules below).
 - Don't: add a `package.json`, lockfile, build, lint, or test tooling at the repo root.
-- Don't: edit `skills/imagegen/scripts/gen.sh`, `extract_image.py`, or `remove_chroma_key.py` — the `imagegen` skill explicitly forbids it.
 - Don't: invent CLI commands, flags, or skill capabilities that aren't in the source docs of the tool the skill covers.
 - Don't: include time-sensitive notes ("as of 2026…") in skill bodies.
 
@@ -93,7 +91,6 @@ npx skills add Firzus/agent-skills --skill <skill-name>
 - Off-limits: secrets, credentials, license keys, internal-only URLs, end-user data.
 - Never edit:
   - `LICENSE`
-  - `skills/imagegen/scripts/**` (frozen helper scripts referenced by the skill)
   - Other contributors' SKILL.md without preserving their authorial intent
 - Never run:
   - `npx skills add …` / `npx skills update` from inside this repo
