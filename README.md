@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 35 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 36 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -83,7 +83,8 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 - [`combat-system`](./skills/combat-system) — Action and RPG combat: attack graphs, hit detection, damage pipeline.
 - [`character-controller`](./skills/character-controller) — 1st/3rd-person controllers: movement states, jump feel, locomotion.
-- [`traversal-system`](./skills/traversal-system) — Traversal verbs (climb/glide/swim/grapple), parkour, mantle/vault, mounts.
+- [`mount-system`](./skills/mount-system) — Unreal creature mounts: lifecycle, Mover locomotion, safe dismount, co-op replication, and persistence.
+- [`traversal-system`](./skills/traversal-system) — Traversal verbs (climb/glide/swim/grapple), parkour, mantle/vault, and world affordances.
 - [`camera-system`](./skills/camera-system) — Game cameras: virtual-camera stack, orbit rigs, collision, screen shake.
 - [`enemy-ai-framework`](./skills/enemy-ai-framework) — Game AI: FSM/BT/GOAP/utility, perception, navmesh, genre AI.
 
