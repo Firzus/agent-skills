@@ -12,11 +12,14 @@ description: >-
 
 # Traversal System
 
-Build the traversal layer of an open-world or action game — the system **above**
-the character controller (`character-controller` owns the movement states, stamina
-rates, and the mantle cascade basics; this skill owns the world data, the verb
-catalog, the technical implementation, vehicle traversal design, and the economy;
-`mount-system` owns creature-mount lifecycle, control handoff, and movement).
+Build the traversal layer above `character-controller`. `traversal-system` owns
+affordance discovery, authored world facts, candidate scoring, verb and cost policy,
+progression valves, and the stamina economy. `character-controller` owns Mover
+modes, collision, replay, final displacement, and `Movement Outcome`; it consumes
+typed `Traversal Request` and authorized `Traversal Lease` data. A traversal or
+gameplay-resource authority owns persistent stamina and commits confirmed
+consumption. `mount-system` owns creature-mount lifecycle, control handoff, and
+movement.
 References: BotW/TotK and Genshin (the systemic-climbing school), broadened with
 the parkour/momentum tradition (Mirror's Edge, Titanfall 2, Spider-Man) and vehicle
 traversal design (Death Stranding, TotK, Sea of Thieves).
@@ -30,17 +33,20 @@ WORLD SIDE   climbable-by-default markup (BotW) OR authored+telegraphed routes
              (parkour); runtime shape-sweep probing; volumes (water/updraft/
              current/ladder); anchors; readability cues
 VERB SIDE    composable modules (the Capabilities pattern); each declares its
-             required world data, controller services, costs, animation/IK,
-             and interrupt contract; granted by progression/equipment/region
-IMPLEMENTATION  mantle/vault trace cascade → motion-warp → IK; surface probing
-                at scale; wall-run/grapple physics; custom movement modes + net
+             required world facts, immutable request, optional lease, costs,
+             presentation, interrupt policy, and expected outcomes
+EXECUTION    `character-controller` revalidates the active contact and resolves
+             modes/influences through Mover; traversal consumes the outcome
 VEHICLES    terrain gating, build-your-own, multi-crew; world-authored mount
             restrictions are facts consumed by `mount-system`
 ECONOMY      stamina (spend/deplete) OR momentum (accumulate/protect) as the
              governor; the anti-trivialization valves
 ```
 
-Verbs emit intents into the controller pipeline — never write velocity or position.
+Verbs submit an immutable `Traversal Request` and, when required, an authorized
+`Traversal Lease`. The controller revalidates the active contact, resolves movement
+through Mover, and returns a `Movement Outcome`. Traversal never calls movement-mode
+setters or writes velocity or transforms.
 
 ## The two economies (the headline contrast)
 
@@ -64,7 +70,7 @@ the cost of breaking level-design smoke-and-mirrors).
 | --- | --- |
 | [world-data.md](./world-data.md) | Climbable-by-default markup (the BotW inversion), runtime surface probing, volumes, anchors, guidance without walls, AND readability/telegraphing (Runner Vision, the yellow=climbable convention, the freedom-vs-authored-route tension) |
 | [verbs.md](./verbs.md) | The verb declaration contract, climbing/glide/swim/grapple deep dives, AND the parkour/momentum verbs (wall-run, free-running, web-swinging, the automation-vs-expression axis, coyote-time/buffering for flow) |
-| [implementation.md](./implementation.md) | Mantle/vault/climb detection (the trace cascade, GASP), motion warping, procedural IK, surface probing at scale, wall-run and grapple physics, custom movement modes and network prediction |
+| [implementation.md](./implementation.md) | Mantle/vault/climb detection, candidate construction, warping/IK presentation requirements, wall-run/grapple models, and the Mover request/outcome seam |
 | [vehicles.md](./vehicles.md) | Mechanical vehicles as traversal: terrain-gated transport, build-your-own physics, and multi-crew traversal design; runtime implementation belongs in a future `vehicle-system` |
 | [economy.md](./economy.md) | Stamina as the governor (upgrade curves, consumables, regional pools), the climb→glide loop, and the design valves against endgame trivialization |
 | [pitfalls.md](./pitfalls.md) | 14 failure modes (symptom → cause → prevention) with debugging order and ship checklist |
@@ -76,7 +82,8 @@ Tier 1 — Climb/parkour the world
 - [ ] Surface markup channel (climbable-by-default + authored no-climb) with a
       DEBUG VISUALIZATION, OR authored+telegraphed parkour routes
 - [ ] Surface prober: shape sweep + refinement → stable climb frame; hysteresis
-- [ ] Climb/parkour verb over the controller HSM
+- [ ] Climb/parkour discovery plus a typed request/outcome round trip with
+      `character-controller`
 - [ ] Mantle/vault: the GDC windows + the trace cascade
 Tier 2 — The air/momentum loop
 - [ ] Glide + dive (stamina school) OR wall-run + momentum chaining (parkour)
@@ -84,7 +91,7 @@ Tier 2 — The air/momentum loop
 - [ ] Terminal stamina policy / momentum-loss feedback
 - [ ] Per-verb camera presets
 Tier 3 — Water, anchors, regions, grapple
-- [ ] Swim/dive; grapple/swing through the SAME collide-and-slide solver
+- [ ] Swim/dive; grapple/swing through the controller's Mover-owned collision path
 - [ ] Regional verb granting; IK visual layer (warp first, IK polishes)
 Tier 4 — World integration, vehicles, polish
 - [ ] World-authored mount restrictions/candidates expose typed facts to
@@ -109,10 +116,10 @@ Full sourced tables (with flagged "do-not-invent" gaps) in each reference file.
 
 | Generic block | Unity 6 | UE5 (5.4+) |
 | --- | --- | --- |
-| Movement base | Kinematic Character Controller + custom states | CMC `MOVE_Custom` + `PhysCustom`; **Mover plugin** (experimental) |
+| Movement base | Kinematic Character Controller + custom states | `character-controller`: project-owned Mover modes/layered moves on Network Prediction; no CMC fallback |
 | Mantle detection | `CapsuleCast`/`SphereCast` cascade | trace cascade → **GASP** `TryTraversalAction` |
 | Align anim→geometry | `Animator.MatchTarget` + Animation Rigging | **Motion Warping** (`AddOrUpdateWarpTarget*`, Skew Warp) |
 | Limb IK | Animation Rigging `TwoBoneIKConstraint` | Control Rig FBIK, Foot Placement |
-| Wall-run/grapple | custom state + Verlet/distance constraint | `MOVE_Custom` + Verlet; Cable Component for rope |
+| Wall-run/grapple | custom state + Verlet/distance constraint | Typed `Traversal Request` → verified Mover mode/layered move and collision path; Cable Component for rope presentation |
 
 Full detail in [implementation.md](./implementation.md).

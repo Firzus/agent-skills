@@ -1,151 +1,187 @@
 ---
 name: character-controller
 description: >-
-  Architecture blueprint for first-person and third-person character
-  controllers: kinematic collide-and-slide, movement states, slopes, steps,
-  jumping, stamina, abilities, animation handoff, FPS momentum, vehicles,
-  networking, feel, and accessibility. Use when designing or diagnosing player
-  movement, locomotion, climbing, swimming, gliding, jump feel, FPS movement,
-  motion matching, jitter, slope bugs, floaty controls, nausea, or netcode desync.
+  Design, build, or diagnose Unreal Engine third-person action-RPG character
+  controllers with Mover and Network Prediction. Use for C++ locomotion
+  architecture, grounded/falling/swimming/climbing/gliding modes, moving bases,
+  teleport, dedicated-server rollback, combat displacement, Motion Warping,
+  animation handoff, jitter, correction storms, or movement desync. This skill
+  is Mover-first and does not fall back to Character Movement Component.
 ---
 
 # Character Controller
 
-Build the movement layer of a game — third-person AND first-person, from a
-kinematic adventure controller to a momentum FPS. This skill is the
-engine-agnostic architecture blueprint: the solver, the movement state
-machine, feel numbers, FPS/momentum movement, locomotion animation, build
-order, and failure modes. Engine tooling specifics live in the engine
-mapping section and the dedicated engine skills
-(`unity6-aaa-best-practices`, `ue5-aaa-best-practices`).
+Build the physical execution layer for a networked Unreal character. Keep Mover
+as the guarded simulation and the only displacement writer. Let input, traversal,
+combat, targeting, camera, and animation communicate through replay-safe data;
+never let them move the pawn directly.
 
-## The default stance: kinematic
+## Non-negotiable stance
 
-Use a **kinematic collide-and-slide** controller for player characters.
-This is the AAA consensus (Unity CharacterController/KCC, UE CMC, PhysX CCT):
-exact designer-authored response, instant stops, no mass/friction leakage
-into feel, stable on slopes and steps, deterministic and replayable for
-networking. A force-driven character can't express "stop exactly here" or
-"ignore this push" without fighting the solver.
+- Use the installed character-specialized Mover implementation
+  (`UCharacterMoverComponent` where verified) on the kinematic Network Prediction
+  backend.
+- Do not implement or propose a Character Movement Component fallback. If the
+  installed Mover capabilities are insufficient, stop the `build` branch and
+  report the missing capability.
+- Keep simulation-critical code and Input/Sync/Aux data in native C++. Use
+  Blueprints for authoring, tuning, and assembly.
+- Make the controller dedicated-server capable. Validate standalone, listen
+  server, dedicated server, autonomous proxies, and simulated proxies.
+- Preserve one displacement authority: modes, layered moves, modifiers, and
+  instant effects all resolve through Mover.
+- Treat every simulation tick as replayable. Read no raw device, camera, target,
+  GAS, external discovery/policy query, or mutable gameplay state during
+  resimulation. Allow only the Mover-owned collision/contact queries required to
+  execute the captured command.
+- Treat Epic examples and public game behavior as references, not shipping code
+  or evidence of another game's internal architecture.
+- Treat Mover maturity and API churn as explicit project risk. This skill's
+  Mover-only policy is a deliberate choice, not universal AAA consensus.
 
-Rigidbody-driven is the justified exception: physics-as-gameplay (Human:
-Fall Flat), vehicles/boards, or momentum-trading designs — typically built
-as a **floating capsule** (ground spring holding a hover height, force
-toward target velocity, torsional upright spring; Genshin ships a steered
-variant of this hybrid).
+## Route the request
 
-## The one-directional pipeline
+Choose exactly one primary branch from the user's requested outcome. Do not
+silently turn a review or diagnosis into an implementation.
 
+| Branch | Select when the user wants | Primary output |
+| --- | --- | --- |
+| `design` | architecture, ownership, a movement spec, or a migration plan | A movement contract with mode, data, authority, and validation matrices |
+| `build` | a new controller, a refactor, or a concrete movement feature | Working C++/assets plus proportionate tests and captured validation evidence |
+| `diagnose` | the cause of broken, jittery, divergent, or slow movement | A reproduction, evidence chain, isolated cause, and regression test proposal |
+
+If the request combines branches, run them in the order `diagnose → design →
+build`, but only implement when implementation is authorized.
+
+## Establish the movement brief
+
+Inspect the project before asking questions. Record discovered facts and state
+any assumptions. Ask one focused question only when the answer materially changes
+the architecture or requested result.
+
+| Fact | Required decision |
+| --- | --- |
+| Engine | Installed version, launcher or source build, Mover/Network Prediction capabilities |
+| Pawn | Shape, one active pawn per controller by default, player and AI intent producers |
+| Topology | Standalone, listen, dedicated, expected join/reconnect and co-op pawn-collision behavior |
+| Modes | Grounded, falling, surface swim, underwater swim, climb, glide, and project extensions |
+| World | Slopes, steps, water volumes, climb affordances, moving/rotating bases, streaming teleport |
+| Gameplay | Stamina owner, traversal permission, combat displacement, cancellation, targeting/facing |
+| Presentation | In-place locomotion, allowed root motion, presentation facts consumed by animation |
+
+For a Genshin-like open-world profile, start with grounded, falling, climbing,
+gliding, surface swimming, and a separate underwater mode. Use general traversal
+stamina at the surface and a separate aquatic sprint budget underwater only when
+the project requests that product behavior. Do not invent tuning values.
+
+## Preserve the data flow
+
+```text
+device / AI
+    -> Movement Intent
+    -> gameplay + traversal authorization
+    -> Mover Input / Sync / Aux state
+    -> active mode + layered moves + modifiers + instant effects
+    -> collision-resolved Movement Outcome
+    -> presentation state for camera and animation
 ```
-input → intent → state machine → movement solver → collision → animation
-```
 
-- The **state machine** decides *what* the character does.
-- The **solver** decides *where it ends up*.
-- **Collision** decides *what's legal*.
-- **Animation** only *visualizes* — it never writes position during
-  locomotion (root motion is a scoped exception, see solver-states.md).
+Keep these invariants visible in every branch:
 
-Keeping these one-directional is what allows per-state tuning without
-regressions. Never let the animation or the camera write into the capsule.
+1. Input producers express intent; they do not write velocity or transforms.
+2. `traversal-system` discovers affordances and owns world rules. The controller
+   accepts a `Traversal Request`, revalidates the active contact/anchor, and
+   returns a `Movement Outcome`.
+3. GAS is optional and external. An adapter converts abilities and resource
+   authorization into replay-safe Mover requests.
+4. Combat owns combo graphs, cancel windows, target requirements, costs, and
+   group actions. The controller owns collision-resolved displacement.
+5. Targeting alone selects targets; camera and targeting provide desired
+   facing/input facts. They are never read from inside the simulation.
+6. Animation consumes movement facts. Root motion contributes only through a
+   Mover-supported path; Anim Notifies are never sole gameplay authority.
+7. `mount-system` owns mount lifecycle and movement. The controller exposes the
+   rider suspend/resume and on-foot safe-placement contract; a mount never becomes
+   an implicit character movement mode.
+
+Read [architecture.md](./architecture.md) whenever defining or changing one of
+these seams.
+
+## `design` branch
+
+1. Read [architecture.md](./architecture.md) and run the capability/risk gate in
+   [mover-build.md](./mover-build.md) far enough to classify required engine facts
+   as supported, adapter-required, missing, or unknown.
+2. Read [movement-modes.md](./movement-modes.md) for every requested mode or
+   world interaction.
+3. Read [combat-animation.md](./combat-animation.md) when abilities, targeting,
+   facing, root motion, Motion Warping, or animation are involved.
+4. Produce a movement contract containing:
+   - ownership and displacement-authority table;
+   - mode/transition matrix with explicit priorities and loss conditions;
+   - Input/Sync/Aux/rollback-blackboard allocation;
+   - typed requests, outcomes, cancellation, and teleport policies;
+   - topology and validation matrix;
+   - version-sensitive capabilities and unresolved risks.
+5. Mark facts, project policies, and inferences distinctly.
+
+Complete `design` only when each movement-affecting fact has one owner, one
+replay representation, and an observable validation case.
+
+## `build` branch
+
+1. Read [architecture.md](./architecture.md), [mover-build.md](./mover-build.md),
+   [movement-modes.md](./movement-modes.md), and [validation.md](./validation.md).
+2. Read [combat-animation.md](./combat-animation.md) only when the slice touches
+   actions, facing, root motion, warping, or animation presentation.
+3. Run the capability gate before writing version-specific code.
+4. Build tracer slices in dependency order: dedicated-capable walking/falling,
+   adverse-network reconstruction, moving bases, requested traversal modes,
+   teleport, then combat displacement.
+5. Add tests at the project-owned interfaces, not against incidental Mover
+   implementation details.
+6. Capture validation evidence in every required topology.
+
+Complete `build` only when the requested slice works through Mover, resimulates
+without external state reads, has no competing transform writer, and passes its
+declared validation matrix. If a topology or capability cannot be exercised,
+report the branch as incomplete rather than claiming success.
+
+## `diagnose` branch
+
+1. Read [diagnostics.md](./diagnostics.md) and the reference matching the failing
+   mode or integration.
+2. Reproduce in the smallest relevant topology; do not begin with tuning.
+3. Capture input, mode, transition, base/contact, layered-move, Sync/Aux, and
+   correction evidence over the same simulation frames.
+4. Locate the first divergent fact or competing writer.
+5. State the cause and the smallest regression test. Implement a fix only when
+   requested.
+
+Complete `diagnose` only when evidence connects symptom to cause and distinguishes
+the cause from downstream animation, camera, and smoothing artifacts.
 
 ## Reference map
 
-| File | Covers |
+| Reference | Load when |
 | --- | --- |
-| [solver-states.md](./solver-states.md) | The kinematic core: collide-and-slide, the hierarchical movement state machine, ground handling (slopes/steps/snapping/platforms), jump & air control, traversal states (climb/swim/glide/stamina), modular movement verbs, the animation interface, frame-rate independence, character–world interaction |
-| [fps-movement.md](./fps-movement.md) | The rigidbody-momentum camp: the Quake/Source friction+acceleration model (bunnyhop/strafe-jump/surf math), movement shooters (wall-run, slide-hop, the lurch, Doom/Tribes/Mirror's Edge), first-person camera concerns (eye anchor, head bob, FOV-on-sprint), slide/crouch/mantle, vehicle and mounted controllers, fast-movement netcode and anti-cheat |
-| [animation-feel.md](./animation-feel.md) | Locomotion animation (blend trees, foot IK, stride warping, distance matching), motion matching (and Learned MM), procedural and active-ragdoll animation, game feel & juice for movement, movement accessibility (motion-sickness comfort, VR locomotion, hold-vs-toggle, the Celeste assist model) |
-| [pitfalls.md](./pitfalls.md) | 14 failure modes (symptom → cause → prevention) with debugging order and playtest checklist |
+| [architecture.md](./architecture.md) | Defining ownership, interfaces, replay data, authority, player/AI adapters, or the rider mount handoff |
+| [mover-build.md](./mover-build.md) | Inspecting an Unreal project or implementing native Mover/Network Prediction code |
+| [movement-modes.md](./movement-modes.md) | Designing or building locomotion modes, stamina, moving bases, water, climb, glide, or teleport |
+| [combat-animation.md](./combat-animation.md) | Integrating combat movement, targeting/facing, root motion, Motion Warping, or animation |
+| [diagnostics.md](./diagnostics.md) | Investigating movement, collision, rollback, proxy, base, or animation symptoms |
+| [validation.md](./validation.md) | Defining tests, network emulation, completion gates, or engine-upgrade conformance |
 
-## Build order (4 shippable tiers)
+## Stop conditions
 
-```
-Tier 1 — Walking skeleton
-- [ ] Capsule + collide-and-slide solver (or engine-native equivalent)
-- [ ] Grounded/Airborne states; jump parametrized by height + time-to-apex
-- [ ] Ground detection by shape cast (not a single ray); slope limit
-- [ ] Camera-relative input -> intent vector
-Tier 2 — Production feel
-- [ ] Coyote time + jump buffering (buffer = intent + timestamp, revalidated)
-- [ ] Asymmetric gravity (fall multiplier), variable jump, apex hang
-- [ ] Step-up/step-down + ground snapping (no bunny-hop downhill)
-- [ ] Fixed-timestep simulation + visual interpolation (test 30/60/144 fps)
-- [ ] Squash/stretch, dust, camera assists (feel without touching physics)
-Tier 3 — Traversal states
-- [ ] Moving platforms (basing: delta-transform, velocity imparted on exit)
-- [ ] Climb / swim (surface + underwater) / glide as HSM states
-- [ ] Stamina economy as the traversal governor (drain/regen/exhaustion)
-- [ ] Animation interface: publish state + velocity; root motion as
-      proposed-velocity only
-Tier 4 — Scale & robustness
-- [ ] Modular movement verbs (composition over transition edges)
-- [ ] Network-ready structure (see below)
-- [ ] Rigidbody interaction (capped push impulses, crush handling)
-- [ ] World-streaming guards (no simulation over missing collision)
-```
+Stop and report a concrete blocker when:
 
-## Feel numbers (starting points — tune by playtest)
+- the installed engine lacks a required Mover or Network Prediction capability;
+- the project requires a physics-driven Chaos character instead of the selected
+  kinematic backend;
+- another system must remain an uncontrolled transform/velocity writer;
+- movement depends on data that cannot be captured or reconstructed for replay;
+- server, client, or proxy behavior required by the request cannot be exercised.
 
-| Parameter | 3P action/adventure | Source anchor |
-| --- | --- | --- |
-| Coyote time | 100–200 ms | Celeste ships 0.1 s (source) |
-| Jump input buffer | 100–150 ms | Celeste 0.08 s; 120 ms canonical |
-| Time to apex | 0.4–0.7 s (>0.7 = floaty) | UE5 template ≈0.71 s, deliberately generous |
-| Jump height | 1–2.5 m | UE5 template ≈2.5 m, UE4 default ≈0.9 m |
-| Fall gravity multiplier | 1.5–2× | Pittman GDC; piecewise parabola |
-| Time to max speed | 0.2–0.4 s | UE default ≈0.3 s |
-| Turn rate | 360–720°/s | UE5 template 500°/s |
-| Air control | 20–50% of ground accel | UE5 template 0.35 |
-| Run / sprint speed | 4.5–6 / 6.5–8 m/s | UE 6 m/s default, Genshin ≈5.3 |
-| Capsule | r 0.3–0.5 m, h ≈ character | UE template 42×192 cm |
-| Step height | 25–45 cm | UE default 45 cm, Unity 30 cm |
-| Slope limit | 45–50° | UE default ≈44.8° |
-| Skin width | ≥0.01 m, ~10% of radius | Unity official rule |
-| Solver iterations | 3–5 slide passes | PhysX/Fauerby/KCC practice |
-| Stamina | sprint 15–20/s · climb 8–12/s · glide 3–5/s · regen 25/s after 1–1.5 s | Genshin/BotW model |
-
-Jump math: pick height `h` and time-to-apex `t`, derive `g = 2h/t²`,
-`v0 = 2h/t` (Pittman, GDC). Designers tune what they feel; constants fall
-out. Full sourced tables in [solver-states.md](./solver-states.md); FPS/
-momentum movement in [fps-movement.md](./fps-movement.md); animation/feel/
-accessibility in [animation-feel.md](./animation-feel.md).
-
-## Network-ready structure (3 decisions, day one)
-
-Even a solo game should structure these three things — retrofitting is a
-rewrite:
-
-1. **Deterministic tick:** `simulate(state, input, fixed_dt)` as a pure
-   step — fixed timestep, no reads from real time or render state.
-2. **Input → intent separation:** the simulation consumes an intent struct
-   (move vector, action flags), never raw device input.
-3. **Snapshotable state:** controller state (position, velocity, state id,
-   timers) serializable in one struct.
-
-Prediction/rollback/reconciliation are covered at architecture level in
-`coop-session`; UE's CMC gives them free if you respect its saved-move
-cycle.
-
-## Engine mapping
-
-| Generic block | Unity 6 | UE5 (5.4+) |
-| --- | --- | --- |
-| Solver | Built-in `CharacterController.Move` (collide-and-slide included, but: no capsule rotation, no platforms, no collision callbacks beyond `OnControllerColliderHit`, outside physics) · **kinematic `Rigidbody` + manual capsule sweeps** (roll your own collide-and-slide: `MovePosition` alone teleports through walls — sweep first; gains real collision callbacks, rotatable capsule, interpolation; **KCC is this pattern productized**, support frozen) · `com.unity.charactercontroller` (DOTS) | **CMC** `PhysWalking/Falling/...` + `SafeMoveUpdatedComponent` · **Mover 2.0** (beta in 5.7, not yet production default) |
-| State machine | Yours to build (KCC callbacks consume it) | CMC modes + `MOVE_Custom`; Mover: modes + transitions = the FSM is the framework |
-| Ground handling | KCC ground probing/snapping; `Step Offset`/`Slope Limit` | `FindFloor`, perch radius, step-up, walkable angle — free |
-| Moving platforms | `PhysicsMover` pattern (simulate platforms before character, same fixed loop) | Based movement — free |
-| Animation | Animator params; root motion via `OnAnimatorMove` → velocity into solver | AnimBP property access; root motion sources; **motion warping** for mantle/vault |
-| Input | Input System: read in Update, consume in FixedUpdate | Enhanced Input: contexts per movement state |
-| Network | DIY (KCC is determinism-friendly); DOTS: Netcode for Entities | CMC saved moves = free prediction; replicate anything that affects speed |
-| Simulation | **FixedUpdate + interpolation**, camera on LateUpdate | CMC ticks per-frame but substeps (`MaxSimulationTimeStep` 0.05) |
-
-## Failure modes
-
-The 14 classic movement bugs (slope/stair jitter, tunneling, edge sticking,
-capsule sliding off ledges, moving-platform desyncs, slope exploits, state
-deadlocks, root motion conflicts, frame-rate dependence, water/climb
-boundary oscillation, physics desync/crush, buffered-input misfires,
-**first-person camera nausea**, and **networked movement desync/speedhacks**)
-are cataloged in [pitfalls.md](./pitfalls.md) with symptom → root cause →
-prevention.
+Do not hide these conditions behind generic advice, a CMC fallback, or unverified
+sample code.

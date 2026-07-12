@@ -41,12 +41,20 @@ and telegraphed**, making *route-reading* the skill.
 
 ## Volumes
 
-Each volume declares: enabled verb, gravity override, drain policy.
+Each volume publishes versioned world facts: verb/capability gates, medium and
+field parameters, drain-policy inputs, and a validation revision. Traversal
+resolves movement-relevant values into an immutable request snapshot.
 
 - **Water** (+ min depth for dive), **updrafts** (placed AND emergent — BotW's
   grass fires feed the chemistry engine), **currents**, **ladders** (free climb).
-- Volumes **publish forces as intents** — never write velocity directly; each verb
-  declares its response (glide takes full updraft, climb damps it — pitfalls #8).
+- Volumes publish facts rather than forces. Each verb resolves its response (glide
+  takes full updraft, climb damps it — pitfalls #8); `character-controller`
+  captures accepted values in Mover replay data and owns final displacement.
+
+Traversal owns authored facts, discovery/scoring, and stable candidate IDs and
+revisions. Consumers own transition execution. The controller revalidates only the
+active contact/candidate required for physical execution; it never rediscovers
+alternatives during resimulation.
 
 ## External locomotion capability gates
 
@@ -81,7 +89,7 @@ data; placement in scene markers; queried via a registry + angle/LoS filter
 | Generic block | Unity 6 | UE5 (5.4+) |
 | --- | --- | --- |
 | Traversability data | Layer query filter + `SurfaceProfile` SO (collider-keyed cache); terrain via splat/vertex channels | Collision channel + Gameplay Tags + Physical Material SurfaceType |
-| Volumes | trigger volumes → intent pipeline (never direct velocity) | `APhysicsVolume`/custom overlaps → CMC force accumulator |
+| Volumes | trigger volumes → typed world facts | `APhysicsVolume`/custom overlaps → immutable request data → `character-controller` Mover adapter |
 | Anchors | scene markers + SO definitions; registry + LoS filter | anchor actors; registry query |
 | Readability | shader recolor by tag (Runner-Vision style) | post-process / material highlight by Gameplay Tag |
 
