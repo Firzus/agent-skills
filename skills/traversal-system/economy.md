@@ -18,6 +18,23 @@ analysis).
   [verbs.md](./verbs.md)): stamina is *spent and depleted*; momentum is *accumulated
   and protected*. They reward opposite behaviors.
 
+## Traversal-as-loop vs traversal-as-utility
+
+The structuring axis is **"is the journey the point, or the obstacle?"**:
+
+- **Journey = the point (Death Stranding)**: traversal is the game — route
+  optimization, cargo balance, terrain as antagonist, and end-of-mission scoring.
+  The friction creates the decisions and reward.
+- **Journey = utility (many open worlds)**: traversal and fast travel minimize
+  friction so players reach combat, quests, and exploration rewards, at the risk of
+  trivializing world topology.
+- **Middle path (Elden Ring/BotW/Just Cause)**: traversal is useful but remains
+  engaging through constraint, route choice, or momentum mastery.
+
+Set the axis from the game's core loop, then place friction deliberately. Removing
+friction from a traversal-as-loop game erases its decisions; adding repeated friction
+to a utility system delays the content it should serve.
+
 ## Upgrades redraw the map
 
 Each stamina tier changes which cliffs are climbable:
@@ -50,9 +67,9 @@ valve before shipping the verb). Three strategies:
    verbs scaling.
 3. **Composition spaces** (TotK Ultrahand) — combinatorial verbs never exhaust.
 
-The flying-mount debate (Elden Ring Torrent as the "verticality without flight"
-counter-model) is the mount-side version of the same valve — see
-[mounts-vehicles.md](./mounts-vehicles.md).
+Creature-mount capabilities follow the same rule. `mount-system` owns their runtime
+movement; traversal owns the authored world constraints and progression valves that
+prevent those capabilities from trivializing content.
 
 ## Numbers (sourced anchors)
 

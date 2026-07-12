@@ -1,10 +1,10 @@
-# Pitfalls — the 15 classic traversal failure modes
+# Pitfalls — the 14 classic traversal failure modes
 
 Each: symptom → root cause → prevention. Read before designing; re-read
 when players climb out of the map or the climb state flickers on seams.
 Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
 [implementation.md](./implementation.md),
-[mounts-vehicles.md](./mounts-vehicles.md), [economy.md](./economy.md).
+[vehicles.md](./vehicles.md), [economy.md](./economy.md).
 
 ## 1. Climbing forbidden geometry
 
@@ -93,21 +93,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   partial); inner/outer boundary hysteresis; ease lift near the volume
   top.
 
-## 9. Mount desyncs
-
-- **Symptom** — the mount clips through doorways the rider can't pass;
-  dismount drops the player inside a wall; the summoned mount can't
-  path to the player.
-- **Root cause** — divergent collision profiles; unvalidated dismount
-  positions; summons assuming navmesh coverage.
-- **Prevention** — validated dismount queries (capsule overlap at
-  candidates, fallback ring, dismount-in-place last resort);
-  auto-dismount volumes for rider-only spaces; summon = navmesh query +
-  teleport-to-valid-when-unobserved fallback; disable the rider's
-  controller/collision wholesale (half-disabled states are the desync
-  source).
-
-## 10. Grapple exploits
+## 9. Grapple exploits
 
 - **Symptom** — grapple attaches through walls; pendulums swing the
   player through geometry; anchors reachable from unintended angles
@@ -119,7 +105,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   intent, the solver constrains position); per-anchor approach cones
   when needed; a design-time reachability audit tool.
 
-## 11. Traversal trivializing content
+## 10. Traversal trivializing content
 
 - **Symptom** — endgame players glide over every encounter; climbing
   skips dungeon interiors; designed routes become decoration.
@@ -131,7 +117,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   verb-disabled zones must be telegraphed visually); stamina as the
   tunable governor; the regional verb refresh strategy.
 
-## 12. Streaming integration
+## 11. Streaming integration
 
 - **Symptom** — climbing into an unloaded cell = falling through the
   world; glide outpaces streaming; an anchor exists but its collision
@@ -145,7 +131,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   volumes registered through the streaming lifecycle so validity
   queries inherently know residency.
 
-## 13. Save/load mid-traversal
+## 12. Save/load mid-traversal
 
 - **Symptom** — reloading while climbing spawns the character mid-air;
   a glide save restores into a fall.
@@ -158,7 +144,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   non-resumable verbs (mid-zipline) or snap to the nearest resumable
   point (`save-persistence` CanSave).
 
-## 14. Automation overriding player intent (parkour)
+## 13. Automation overriding player intent (parkour)
 
 - **Symptom** — in a contextual/automated traversal system, "one
   movement is expected, but another comes out, throwing off the planned
@@ -175,7 +161,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   consistently so the authored route doesn't fight the player's read. See
   [verbs.md](./verbs.md) and [world-data.md](./world-data.md).
 
-## 15. Readability lies / momentum-vs-stamina mismatch
+## 14. Readability lies / momentum-vs-stamina mismatch
 
 - **Symptom** — with assist/highlight off, "some surfaces look climbable
   but aren't, others are but don't look it"; or a momentum-based parkour
@@ -199,7 +185,7 @@ and walk the area (#1), (2) climb across every kit seam in slow motion
 (#2), (3) circle a building corner both ways (#3), (4) chain
 jump→glide→dive while mashing (#4), (5) drain stamina on an overhang
 (#5), (6) climb the moving platform (#7), (7) grapple at every anchor
-from wrong angles (#10).
+from wrong angles (#9).
 
 ## Ship checklist
 
@@ -211,7 +197,6 @@ from wrong angles (#10).
 - [ ] jump->glide->dive chains buffer cleanly at any timing
 - [ ] Stamina-zero on an overhang: the terminal policy fires, fair
 - [ ] Moving-platform climb: attached, no drift, clean mantle
-- [ ] Mount: doorway restrictions, validated dismounts, summon fallbacks
 - [ ] Grapple: no through-wall attaches, swing collides properly
 - [ ] Endgame valve test: interiors deny verbs diegetically, telegraphed
 - [ ] Glide at max speed toward an unloaded cell: verb denied/held

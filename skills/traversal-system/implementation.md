@@ -98,7 +98,7 @@ scales/skews root motion so one clip serves a height band.
   then if `dist(player, anchor) > tetherLength` pull back onto the radius — Verlet
   ≈ conserves energy, so the pendulum neither decays nor explodes). The correction
   must run **through the collide-and-slide solver** so the swung body still collides
-  (pitfalls #10). Real constraint swings decay → inject the player's input energy
+  (pitfalls #9). Real constraint swings decay → inject the player's input energy
   near the bottom of the arc to feel like Spider-Man. Render the rope decoupled
   (UE Cable Component / a Verlet chain); snapshot nearby colliders once per frame,
   reuse across iterations.

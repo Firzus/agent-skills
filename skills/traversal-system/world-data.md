@@ -48,12 +48,26 @@ Each volume declares: enabled verb, gravity override, drain policy.
 - Volumes **publish forces as intents** — never write velocity directly; each verb
   declares its response (glide takes full updraft, climb damps it — pitfalls #8).
 
+## External locomotion capability gates
+
+Traversal owns the authored world facts consumed by external locomotion systems:
+
+- `Mount.NoSummon`: invocation is forbidden at the current location.
+- `Mount.ForceDismount`: the mount system must complete a safe transition before
+  entering or continuing through the restricted area.
+- Terrain, medium, landing, shore, and capability tags describe access; they never
+  execute mount lifecycle.
+
+`mount-system` validates the facts and candidates on the server, then executes the
+resulting summon, movement, or dismount transition. Traversal volumes never spawn,
+possess, attach, move, or destroy a mount actor.
+
 ## Anchors
 
 Grapple points / hookpoints: hand-placed data — the designer-controlled
 counterpoint to systemic surfaces. Definition (range class, swing type) in shared
 data; placement in scene markers; queried via a registry + angle/LoS filter
-(pitfalls #10).
+(pitfalls #9).
 
 ## Guidance without walls (CEDEC)
 
