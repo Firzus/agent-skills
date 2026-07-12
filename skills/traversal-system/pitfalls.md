@@ -45,7 +45,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   same wall forever; dive→surface→climb fails at the waterline.
 - **Root cause** — transitions legal only in narrow windows with no
   buffering; re-entry conditions identical to exit conditions.
-- **Prevention** — all verb requests through the buffered intent system
+- **Prevention** — all verb requests through the typed `Traversal Request` pipeline
   (timestamped, revalidated); re-entry refractory after climb→jump
   (~200–300 ms or wall distance); the waterline as an explicit boundary
   state, not an emergent collision of conditions.
@@ -88,10 +88,10 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
   off a wall unexpectedly.
 - **Root cause** — volumes writing forces directly into velocity,
   bypassing the state machine; lift flipping at the volume boundary.
-- **Prevention** — volumes publish intents; **each verb declares its
-  wind response** (glide full, climb zero-or-grip-event, ground
-  partial); inner/outer boundary hysteresis; ease lift near the volume
-  top.
+- **Prevention** — volumes publish versioned facts; **each verb resolves its
+  wind response** (glide full, climb zero-or-grip-event, ground partial) into
+  immutable request/replay data; inner/outer boundary hysteresis; ease lift near
+  the volume top.
 
 ## 9. Grapple exploits
 
@@ -101,7 +101,7 @@ Deep dives: [world-data.md](./world-data.md), [verbs.md](./verbs.md),
 - **Root cause** — distance-only anchor validation; untested swing
   paths; no reachability review.
 - **Prevention** — LoS raycast in anchor validation; swing movement
-  through the **same collide-and-slide solver** (the rope constrains
+  through the **same Mover-owned collision path** (the rope constrains
   intent, the solver constrains position); per-anchor approach cones
   when needed; a design-time reachability audit tool.
 

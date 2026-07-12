@@ -1,7 +1,9 @@
-# Implementation — detection, warping, IK, physics, networking
+# Implementation — discovery, presentation, and movement requirements
 
-The engineering of traversal moves for working programmers. Concrete API names
-and gotchas. Version-specifics flagged `[VER]`; uncertainty `[?]`.
+Use this reference for detection, candidate construction, warping/IK presentation,
+and movement-model requirements. `character-controller` owns Unreal physical
+execution, Mover integration, collision, and Network Prediction. Version-specifics
+are flagged `[VER]`; uncertainty `[?]`.
 
 ## Mantle/vault/climb detection (the trace cascade)
 
@@ -88,64 +90,61 @@ scales/skews root motion so one clip serves a height band.
 
 ## Wall-run & grapple physics
 
-- **Wall-run as a custom movement mode**: UE5 `SetMovementMode(MOVE_Custom,
-  CMOVE_WallRunning)` + logic in `PhysCustom`. Project velocity onto the wall plane
-  (`V − (V·N)N`), keep speed, apply a stick-to-wall force (≈ `−N·stickForce`) while
-  reducing gravity; exit to falling when the side trace fails. **Override
-  `IsMovingOnGround`** to include custom modes or jump/landing transitions break.
+- **Wall-run**: traversal supplies a semantic request and stable wall-contact frame.
+  A project-owned Mover mode projects captured intent onto the wall plane
+  (`V − (V·N)N`), applies the declared gravity/contact policy, and emits the exit
+  outcome when contact becomes invalid. Traversal never calls movement-mode setters.
 - **Grapple/swing as a constrained pendulum**: raycast to pick the anchor; the
   dominant solve is **position-based Verlet + a distance constraint** (integrate,
   then if `dist(player, anchor) > tetherLength` pull back onto the radius — Verlet
   ≈ conserves energy, so the pendulum neither decays nor explodes). The correction
-  must run **through the collide-and-slide solver** so the swung body still collides
+  must run **through the Mover-owned collision path** so the swung body still collides
   (pitfalls #9). Real constraint swings decay → inject the player's input energy
   near the bottom of the arc to feel like Spider-Man. Render the rope decoupled
   (UE Cable Component / a Verlet chain); snapshot nearby colliders once per frame,
   reuse across iterations.
 
-## Custom movement modes & networking
+## Mover execution and networking
 
-- **UE5 CMC `MOVE_Custom`**: a `uint8` submode enum; override `PhysCustom`,
-  `OnMovementModeChanged`, and the `IsMovingOnGround`/`IsCrouching` predicates. The
-  **Mover plugin** (experimental in 5.4 → late-experimental through 5.7 `[VER]`) is
-  the data-oriented successor on the Network Prediction Plugin (works on any actor,
-  explicit Input/Sync/Aux structs for deterministic replay); UE5.7 integrated Mover
-  into GASP.
-- **Unity**: Kinematic Character Controller + hand-rolled states.
-- **Network prediction (the hard problem)**: CMC route extends
-  `FSavedMove_Character` — pack custom inputs into compressed flags, replicate,
-  server re-simulates and corrects. Wall-run repos threshold wall-normal deltas and
-  use independent client/server timers to minimize corrections. **Root-motion
-  replication** is the sharp edge (montage root motion + Motion Warping must
-  replicate consistently or you rubber-band); **Mover + GAS don't integrate cleanly
-  yet** `[?]` (GAS's "server cancels the ability" model conflicts with Mover/NPP
-  rollback) — treat GAS-driven traversal on Mover as experimental.
+- This repository's Unreal controller contract is Mover-only. Map semantic
+  traversal modes and influences to capabilities verified in the installed engine.
+- Capture the accepted request, candidate revision, resolved field values, and
+  lease state in the appropriate Mover Input/Sync/Aux representation.
+- Keep resimulation self-contained: read captured state rather than traversal,
+  GAS, volumes, anchors, camera, or mutable world policy.
+- Let Mover own collision-resolved displacement and return typed outcomes.
+  Traversal/gameplay commit persistent effects only from confirmed, deduplicated
+  outcomes.
+- Route authored root motion through the verified Mover integration path.
+- If the installed Mover version lacks a required capability, stop the build branch
+  and report the gap; keep CMC outside this contract.
 
 ## Unity ↔ UE5 mapping
 
 | Concern | UE5 | Unity |
 | --- | --- | --- |
-| Movement base | CMC `MOVE_Walking/Falling/Custom` + `PhysCustom`; **Mover** (5.4+ exp) | Kinematic Character Controller + state machine |
-| Custom submodes | `SetMovementMode(MOVE_Custom, CMOVE_*)` | hand-rolled enum |
+| Movement base | Project-owned Mover modes/layered moves | Kinematic Character Controller + state machine |
+| Custom submodes | Semantic mode IDs mapped to verified Mover types | hand-rolled enum |
 | Align anim→geometry | **Motion Warping** (`AddOrUpdateWarpTarget*`, Skew Warp) | `Animator.MatchTarget` + Animation Rigging |
 | Limb IK | Control Rig FBIK, `TwoBoneIK`, Foot Placement | Animation Rigging `TwoBoneIKConstraint`, FinalIK (3rd-party) |
 | Anim selection | Chooser Table + Motion Matching | Animator state machine + blend trees |
 | Ledge probe | `LineTrace*`/`SweepMulti*` (`bTraceComplex`) | `Raycast`/`CapsuleCast`/`SphereCast` |
 | Rope/swing | Verlet/distance constraint; Cable Component for render | Verlet or Configurable Joint; LineRenderer |
-| Net prediction | CMC `FSavedMove_Character` / Mover NPP structs | manual / DOTS NetCode |
+| Net prediction | Mover Input/Sync/Aux state on Network Prediction | manual / DOTS NetCode |
 | Reference project | **GASP** (Game Animation Sample), Valley of the Ancient | Starter Assets + community KCC samples |
 
 ## Flagged gaps — do NOT invent
 
 GASP mantle/float bugs and the "swap to walk montage" fix are community-reported,
-not Epic-documented · Mover production-readiness timeline (5.8/5.9) and Mover↔GAS
-integration are moving targets — verify per version · FBIK/Foot Placement perf
-numbers are single-report anecdotes.
+not Epic-documented · installed Mover APIs and root-motion hooks are
+version-sensitive — run the capability gate rather than projecting a timeline ·
+FBIK/Foot Placement perf numbers are single-report anecdotes.
 
 ## Sources
 
-Epic — Valley of the Ancient docs (Motion Warping notify states); `UMotionWarpingComponent`
-/ `UCharacterMovementComponent` (5.7 docs); UE forums (GASP mantle bug, Mover/GAS) ·
+Epic — Valley of the Ancient docs (Motion Warping notify states);
+`UMotionWarpingComponent` and installed Mover documentation/source · UE forums
+(GASP mantle bug) ·
 GitHub `peilunnn/UE5ParkourSystem`, `Pavel-Konarik/ReplicatedMovementWallrun` ·
 MoCap Online (climbing trace cascade, animation LOD) · UpRoom Games (procedural
 climbing 5-effector) · Unity Animation Rigging docs · Elliot Couvignou (client-

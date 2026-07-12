@@ -4,6 +4,15 @@ The traversal economy as level design. All numbers are **starting points**.
 Sources: GDC BotW/TotK talks, Genshin wikis/KQM, longwintershadows (trivialization
 analysis).
 
+## Ownership contract
+
+Traversal owns economy rules, consumption rates, progression, and terminal policy.
+The selected gameplay-resource authority—traversal-owned or a GAS adapter—owns
+persistent stamina and grants a server-authorized, client-predictable
+`Traversal Lease`. `character-controller` consumes the captured lease replayably
+and reports usage through `Movement Outcome`; only confirmed, deduplicated outcomes
+commit persistent spend.
+
 ## The economy is the level design
 
 - **No invisible walls: stamina is the wall, weather is the valve.** BotW's gating

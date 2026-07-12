@@ -1,17 +1,22 @@
 # Verbs — the catalog, climbing, air, water, parkour
 
-Each verb is a self-contained module (the Capabilities pattern). All numbers are
+Each verb is a self-contained capability. All numbers are
 **starting points**. Sources: GDC BotW/TotK talks, Genshin/KQM, and the parkour
 canon (Mirror's Edge, Titanfall 2, Spider-Man).
 
 ## The declaration contract (per verb)
 
-- **required world data** (surface tags / volumes / anchors / nothing)
-- **controller services** (gravity off, collision profile — TotK Ascend ignores
-  ceiling collision —, normal reorientation, motion warping)
-- **costs** (drain/s, per-action bursts, alternate pools)
-- **animation set + IK policy**
-- **interrupt contract** (what cuts me, exit state, what buffers through)
+- required world facts and candidate identity/revision;
+- semantic verb, entry transition, stable anchor/surface frame, and clearance facts
+  carried by an immutable `Traversal Request`;
+- optional authorized `Traversal Lease`, exhaustion, cancel, and fallback policy;
+- expected accepted, blocked, cancelled, invalidated, and completed outcomes with
+  stable reason codes;
+- animation/IK presentation and interrupt policy.
+
+Use the semantic request/lease/outcome schemas owned by `character-controller`.
+Traversal discovers and authorizes; the controller executes through Mover and
+returns a `Movement Outcome`.
 
 **Granting**: progression (paraglider, Ascend), equipment/gadget (Sorush), region
 (Fontaine diving — gating expressed as a world-data requirement satisfiable only
