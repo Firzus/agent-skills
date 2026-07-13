@@ -1,0 +1,4 @@
+interface:
+  display_name: "Describe App"
+  short_description: "Investigate and document any application"
+  default_prompt: "Use $describe-app to investigate and describe this application from its repository, web sources, and installed behavior."
