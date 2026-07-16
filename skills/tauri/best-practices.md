@@ -1,5 +1,8 @@
 # Tauri v2 Best Practices
 
+Patterns for **owned IPC**, state, events, channels, windows, and long work.
+Read this file when adding or changing commands, invoke calls, or shared state.
+
 ## Async Commands
 
 Use owned parameters in async commands:
@@ -11,18 +14,10 @@ async fn load_profile(user_id: String) -> Result<Profile, AppError> {
 }
 ```
 
-Avoid borrowed parameters:
-
-```rust
-#[tauri::command]
-async fn load_profile(user_id: &str) -> Result<Profile, AppError> {
-    // Invalid: async commands cannot hold borrowed command inputs.
-}
-```
-
-At the IPC boundary, owned values are often required because Tauri deserializes
+Borrowed command inputs fail in async handlers (`user_id: &str` is invalid).
+At the IPC boundary, owned values are required because Tauri deserializes
 arguments and async commands may outlive the original call frame. After the
-boundary, prefer borrowing in plain Rust helpers:
+boundary, borrow in plain Rust helpers:
 
 ```rust
 #[tauri::command]
@@ -37,13 +32,13 @@ mod profile_service {
 }
 ```
 
-Avoid cloning request payloads just to satisfy helper APIs. If a helper only
-reads a list or string, accept `&[T]` or `&str`; if it must keep data after the
-command returns or move it into a task, make ownership explicit in that helper.
+If a helper only reads a list or string, accept `&[T]` or `&str`; if it must
+keep data after the command returns or move it into a task, make ownership
+explicit in that helper.
 
 ## Frontend Invoke
 
-Use the Tauri v2 API package:
+Import from the v2 package path:
 
 ```ts
 import { invoke } from '@tauri-apps/api/core';
@@ -51,9 +46,8 @@ import { invoke } from '@tauri-apps/api/core';
 const profile = await invoke<Profile>('load_profile', { userId });
 ```
 
-Do not use the v1 `@tauri-apps/api/tauri` import path in v2 projects. Remember
-that frontend argument names are camelCase while Rust struct fields are usually
-snake_case.
+The v1 path `@tauri-apps/api/tauri` is removed in v2. Frontend argument names
+are camelCase; Rust struct fields are usually snake_case.
 
 ## Serializable Errors
 
@@ -92,9 +86,9 @@ async fn read_config(app: tauri::AppHandle) -> Result<AppConfig, AppError> {
 }
 ```
 
-Do not use `unwrap()` or `expect()` in commands for missing files, invalid
-frontend input, plugin failures, poisoned locks, or unavailable windows. Those
-are runtime failures the frontend can usually display or recover from.
+Return `Result` for missing files, invalid frontend input, plugin failures,
+poisoned locks, or unavailable windows — runtime failures the frontend can
+usually display or recover from.
 
 ## State
 
@@ -129,9 +123,9 @@ primitives that match the access pattern:
 - `Arc<T>` when long-running tasks need shared ownership.
 - `OnceLock<T>` or `LazyLock<T>` for process-wide immutable initialization.
 
-Avoid `Rc<T>` and `RefCell<T>` in managed Tauri state or spawned work; they are
-single-threaded and can fight Tauri's async/runtime bounds. Also avoid holding a
-lock while performing filesystem, network, compression, or child-process work:
+Use thread-safe types in managed Tauri state and spawned work (`Rc`/`RefCell`
+fight Tauri's async bounds). Copy or clone what you need under the lock, then
+release it before filesystem, network, compression, or child-process work:
 
 ```rust
 #[tauri::command]
@@ -193,13 +187,12 @@ fn focus_main(app: &tauri::AppHandle) {
 }
 ```
 
-The v1 `app.get_window()` API is removed. In v2, import `tauri::Manager` and use
-`get_webview_window`.
+Import `tauri::Manager` and use `get_webview_window` (the v1 `get_window` API
+is removed).
 
 ## Paths
 
-Use Tauri path APIs and scoped filesystem permissions instead of hardcoded user
-directories:
+Use Tauri path APIs and scoped filesystem permissions:
 
 ```rust
 let data_dir = app.path().app_local_data_dir()?;
@@ -210,9 +203,9 @@ capabilities rather than widening access globally.
 
 ## Long Work
 
-Do not block command handlers with slow filesystem, network, compression, or
-child-process work. Use async I/O when available or spawn work with
-`tauri::async_runtime::spawn`, then report progress through events or channels.
+Run slow filesystem, network, compression, or child-process work with async I/O
+or `tauri::async_runtime::spawn`, then report progress through events or
+channels.
 
 When spawning work, move only the data the task needs. Values captured by the
 task generally need to be owned and satisfy `Send + 'static`; shared services

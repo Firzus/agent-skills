@@ -1,28 +1,31 @@
 # Automated Tauri Debugging
 
-Use this workflow when a Tauri desktop app needs repeatable investigation. The
-goal is to gather frontend, Rust, and webview evidence without pretending Tauri
-has portable CDP guarantees across platforms.
+Climb the **evidence ladder** for repeatable desktop investigation: process and
+dev-server logs first, then WebView DevTools, then Playwright CLI on a CDP
+endpoint (Windows/WebView2), then fallback instrumentation. Tauri has no
+portable CDP guarantee across platforms.
+
+Read this file before launching a debug session.
 
 ## Debug Strategy
 
-Start every Tauri desktop investigation by collecting evidence the app exposes
-by default, then add automation only when the platform and launch command make
-it observable.
+Start every Tauri desktop investigation on the lowest rung that already exposes
+evidence, then climb only when the platform and launch command make the next
+rung observable.
 
 1. Capture the Tauri process stdout/stderr and frontend dev server output.
 2. Open WebView DevTools when the debug build exposes them.
-3. If automated webview inspection is needed, enable a platform-specific inspect
-   path and probe for a CDP endpoint.
-4. If the probe does not find a page target, continue with logs, debug-only
-   commands, screenshots, and event traces.
+3. On Windows, when automated webview inspection is useful, relaunch with CDP
+   and attach **Playwright CLI** to the Tauri WebView (not a separate Chrome tab).
+4. If attach fails, continue with logs, debug-only commands, OS/DevTools
+   screenshots, and event traces.
 
 ## Platform Matrix
 
 | Platform | Webview | Best first evidence | Automation notes |
 | --- | --- | --- | --- |
-| Windows | WebView2 | stdout/stderr, WebView DevTools, plugin logs | CDP may work with `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`, but only after probing. |
-| macOS | WKWebView | stdout/stderr, Safari/WebKit inspection, plugin logs | Do not assume CDP. Prefer DevTools and instrumentation. |
+| Windows | WebView2 | stdout/stderr, WebView DevTools, plugin logs | CDP via `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`, then `playwright-cli attach`. |
+| macOS | WKWebView | stdout/stderr, Safari/WebKit inspection, plugin logs | CDP unreliable. Prefer DevTools and instrumentation. |
 | Linux | WebKitGTK | stdout/stderr, WebKit inspector when enabled, plugin logs | CDP is not a portable path. Use logs and app instrumentation. |
 
 ## Baseline Capture
@@ -43,9 +46,7 @@ python skills/tauri/scripts/check-dev-url.py http://localhost:3000
 From another repository, run the script by absolute path and replace the URL with
 the project's configured `build.devUrl`.
 
-4. Start the app through that existing launch command. Do not introduce or prefer
-   a package manager that the project does not already use.
-
+4. Start the app through that existing launch command.
 5. Capture stdout/stderr from the Tauri process. In dev, this usually includes
    Rust `println!`, `log` output, plugin logs, frontend build output, and panic
    messages.
@@ -65,121 +66,102 @@ If the app disables browser accelerator keys, check whether debug builds keep
 DevTools allowed. For example, apps using `tauri-plugin-prevent-default` may
 need to exclude `DEV_TOOLS` from blocked flags during `debug_assertions`.
 
-## Automation Workflow
+## Playwright CLI On The Tauri Shell (Windows)
 
-1. Start with the normal project command and capture logs. Do not change the
-   launch path until the baseline failure is visible.
-2. If `beforeDevCommand` fails because `build.devUrl` is already in use, stop the
-   stale dev server or choose the project's supported alternate port before
-   retrying.
-3. If the issue is frontend-only, reproduce `build.devUrl` in a normal browser
-   with Playwright or Chrome DevTools, then compare against the Tauri shell.
-4. On Windows/WebView2, relaunch with CDP arguments only when automated webview
-   inspection is useful.
-5. Probe the endpoint with `scripts/probe-cdp.py`. A non-zero exit code means
-   no page target was found; continue with instrumentation instead of retrying
-   blindly.
-6. When CDP works, use a CDP-capable tool to collect console errors, network
-   failures, screenshots, and DOM state.
-7. Save ad hoc debug logs under `.cursor/` and remove temporary artifacts when
-   they are no longer useful.
+Use Playwright CLI on the **agent machine** only. Never add `@playwright/cli` to
+the Tauri app's `package.json`. Install globally if missing:
 
-## WebView Input Injection
-
-When automating text entry in a Tauri WebView, target the real WebView process,
-not a separate Chrome tab opened at `build.devUrl`. The browser tab is useful for
-frontend-only checks, but it does not provide the Tauri IPC bridge exposed by the
-desktop shell.
-
-Use this order:
-
-1. Verify CDP access to the Tauri WebView with `scripts/probe-cdp.py`.
-2. Select the page target whose URL matches `build.devUrl` and whose title or
-   window state matches the desktop app.
-3. Focus the element before typing. Prefer user-level CDP events or Playwright
-   `locator.fill()` when available.
-4. If direct value assignment is needed, update the native value setter and
-   dispatch `input` and `change` events so controlled components observe it:
-
-```js
-const element = document.querySelector(selector);
-element.focus();
-const setter = Object.getOwnPropertyDescriptor(
-  element instanceof HTMLTextAreaElement
-    ? HTMLTextAreaElement.prototype
-    : HTMLInputElement.prototype,
-  "value",
-).set;
-setter.call(element, text);
-element.dispatchEvent(new InputEvent("input", { bubbles: true, inputType: "insertText", data: text }));
-element.dispatchEvent(new Event("change", { bubbles: true }));
+```bash
+npm install -g @playwright/cli@latest
 ```
 
-5. Verify the app state changed through visible DOM output, frontend logs, or a
-   Tauri-backed command result. Do not treat a changed DOM property alone as
-   proof that the framework state or IPC path updated.
-
-For chat boxes, also check whether the control is an `<input>`, `<textarea>`, or
-`contenteditable` element. For `contenteditable`, focus it and use real keyboard
-or CDP `Input.dispatchKeyEvent` events; plain `.value = ...` will not work.
-
-If no Tauri WebView CDP endpoint is available, report that IPC-backed chat
-commands were not automated and use fallback instrumentation instead of testing
-them through Chrome at `localhost`.
-
-## Optional CDP Probe
-
-Use a CDP probe only when the app or platform has been configured for it. Do not
-claim browser automation support unless these checks pass.
-
-On Windows WebView2, set the additional browser arguments before launching the
-Tauri process:
+Relaunch the project's existing Tauri command with WebView2 remote debugging:
 
 ```bash
 WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS="--remote-debugging-port=9222" <existing-launch-command>
 ```
 
-Replace `<existing-launch-command>` with the exact launch command already used by
-the project.
-
-Probe common ports without assuming success:
+Attach to the shell WebView, then drive it with the session flag Playwright CLI
+prints (`default` unless overridden):
 
 ```bash
-python skills/tauri/scripts/probe-cdp.py
+playwright-cli attach --cdp=http://127.0.0.1:9222
+playwright-cli -s=default snapshot
+playwright-cli -s=default screenshot --filename=.cursor/tauri-shell.png
 ```
 
-From another repository, run the script by absolute path or copy the command
-logic into a project-local debug helper.
+Useful commands once attached (always pass `-s=<session>`):
 
-If a page target appears, connect with a CDP-capable tool such as Chrome
-DevTools MCP, Playwright's `connectOverCDP`, or another local browser
-automation bridge. If no endpoint appears, use the fallback instrumentation
-below.
+| Command | Use |
+| --- | --- |
+| `snapshot` | Accessibility tree + element refs (`e5`, …) |
+| `screenshot [target]` | Viewport or element PNG (vision) |
+| `console` | Page console messages |
+| `eval <func>` | JS in the page (IPC invoke, DOM probes) |
+| `click` / `dblclick` / `hover` | Pointer on a ref |
+| `fill` / `type` / `press` | Text and keys |
+| `find <text>` | Search the last snapshot |
+| `requests` / `request <n>` | Network traffic since load |
+| `reload` | Reload the webview page |
+| `detach` | Leave the app running; end the CLI session |
 
-A verified WebView2 response looks like a browser target plus a page target:
+For the full surface (`tab-*`, storage, tracing, video, …): `playwright-cli --help`.
 
-```text
-/json/version -> Browser: Edg/...
-/json/list -> title: <app window title>, url: http://localhost:<dev-port>/
+Claim shell automation only when attach succeeds and the page URL/title match
+the desktop app (`build.devUrl` and the window title). A Chrome tab opened at
+`build.devUrl` is frontend-only: it has no Tauri IPC bridge.
+
+If `attach` fails, optionally run `scripts/probe-cdp.py` to separate "no CDP
+endpoint" from "CLI cannot attach". Then fall back to instrumentation below.
+
+### IPC Proof
+
+A DOM change alone is not proof that Rust ran. Prefer, in order:
+
+1. Trigger UI that calls IPC, then correlate stdout / `tauri-plugin-log`.
+2. `eval` a read-only invoke via the public bridge when exposed, e.g.
+   `window.__TAURI__.core.invoke('…')` (or the project's typed bindings if
+   reachable from the page).
+3. Only if the public bridge is unavailable, use
+   `window.__TAURI_INTERNALS__.invoke('…')` for a safe read-only command from
+   the project, and treat that as an agent probe — not app code to ship.
+4. If invoke from the page is blocked, add a `#[cfg(debug_assertions)]` debug
+   command.
+
+Assert the returned value is a real Rust-side result (path, list, typed
+payload), not only a changed DOM property.
+
+### Input And Interaction
+
+```bash
+playwright-cli -s=default click e5
+playwright-cli -s=default fill e7 "text"
+playwright-cli -s=default type "text"
+playwright-cli -s=default press Enter
 ```
+
+Focus before typing. Verify with visible UI, logs, or an invoke result — not a
+DOM property alone.
+
+## Frontend-Only Checks
+
+For UI that does not need IPC, reproduce `build.devUrl` in a normal browser with
+Playwright CLI (`open`) or Chrome DevTools, then confirm the same path in the
+Tauri shell with logs or a shell attach session.
 
 ## Fallback Instrumentation
 
-When CDP is not available, make the app observable:
+When CDP / Playwright CLI attach is unavailable:
 
-- Add or use existing `tauri-plugin-log` targets for stdout, webview, and file
-  logs. Keep debug log artifacts under the project's `.cursor/` directory when
-  creating ad hoc logs during agent work.
-- Forward critical frontend events to Rust through a debug-only command or
-  existing logging plugin.
-- Add debug-only commands behind `#[cfg(debug_assertions)]` for deterministic
-  inspection of state, routes, feature flags, and filesystem paths.
-- Emit structured events for long-running tasks and capture them from frontend
-  logs.
-- Prefer screenshots from the OS or webview DevTools when visual state matters.
-- For frontend-only issues, reproduce first at `build.devUrl` in a normal browser
-  with Playwright or Chrome DevTools, then verify the same behavior in the
-  Tauri shell with logs.
+- Use `tauri-plugin-log` targets (stdout, webview, file). Keep ad hoc agent logs
+  under `.cursor/`.
+- Forward critical frontend events through a debug-only command or the logging
+  plugin.
+- Add debug-only commands behind `#[cfg(debug_assertions)]` for state, routes,
+  feature flags, and paths; register them in the same gated handler context.
+- Emit structured events for long-running work.
+- Prefer OS or DevTools screenshots when visual state matters but shell CDP is
+  down.
 
 Example debug-only command:
 
@@ -190,21 +172,6 @@ fn debug_snapshot(state: tauri::State<'_, AppState>) -> Result<DebugSnapshot, Ap
     Ok(state.snapshot())
 }
 ```
-
-Remember to register debug-only commands in the same gated context as the
-command definition, or through the project's invoke-handler abstraction.
-
-## Windows WebView2 Notes
-
-On Windows, Tauri uses WebView2. Useful evidence usually comes from:
-
-- Tauri process stdout/stderr.
-- `tauri-plugin-log` folder targets under the app local data directory.
-- Manual WebView DevTools in debug builds.
-- The frontend dev server opened separately in Chrome or Edge.
-
-Remote debugging may require WebView2-specific runtime options or app code. Do
-not assume Chromium flags are applied unless the CDP probe verifies a target.
 
 ## Failure Playbooks
 
@@ -247,16 +214,18 @@ not assume Chromium flags are applied unless the CDP probe verifies a target.
 1. Treat this as an evidence limitation, not a blocker.
 2. Use stdout/stderr, `tauri-plugin-log`, debug-only commands, screenshots, and
    frontend reproduction at `build.devUrl`.
-3. State that CDP was attempted only if a probe command or HTTP endpoint result
-   was actually observed.
+3. State that shell CDP was attempted only if `playwright-cli attach` was run
+   (or `probe-cdp.py` / an HTTP `/json/list` result was observed).
 
 ## Cleanup
 
 Before ending the task:
 
-- Stop frontend dev servers, `tauri dev`, watchers, and any spawned app process.
-- If launch failed partway through, check for orphaned desktop executables and
-  dev servers before retrying.
-- Preserve useful logs only when they help the investigation.
+- `playwright-cli -s=default detach` when a session is attached (leaves the app
+  running).
+- Stop frontend dev servers, `tauri dev`, watchers, and any spawned app
+  executable — including orphans after partial launch failures.
+- Remove temporary `.cursor/` screenshots and Playwright CLI session artifacts
+  when they are no longer useful.
 - State which evidence source was used: Tauri stdout, frontend logs, plugin log
-  files, DevTools, CDP endpoint, or fallback instrumentation.
+  files, DevTools, Playwright CLI on shell CDP, or fallback instrumentation.
