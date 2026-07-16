@@ -1,9 +1,11 @@
 # Tauri v2 Permissions And Capabilities
 
-Tauri v2 uses deny-by-default permissions. A plugin can be present in
-`Cargo.toml`, registered in `lib.rs`, and imported in the frontend, yet still
+**Capabilities-first**: Tauri v2 denies APIs by default. A plugin can be present
+in `Cargo.toml`, registered in `lib.rs`, and imported in the frontend, yet still
 fail at runtime if the matching permission is missing from a capability assigned
 to the window.
+
+Read this file before adding a plugin API or diagnosing `Permission denied`.
 
 ## Capability Shape
 

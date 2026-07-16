@@ -1,14 +1,18 @@
 # Testing Tauri Apps
 
-Use layered checks. A passing frontend test does not prove the Tauri shell works,
-and a compiling Rust backend does not prove the webview can invoke it.
+Use **layered checks**. A passing frontend test does not prove the Tauri shell
+works, and a compiling Rust backend does not prove the webview can invoke it.
+
+Read this file when validating a fix; report each layer with a command-or-skip
+reason.
 
 ## Pick Commands From The Project
 
 Read lockfiles, `package.json`, `src-tauri/tauri.conf.json`,
 `src-tauri/Cargo.toml`, and local docs before running checks. Use the command
-runner and scripts already present in the project. Do not assume or introduce a
-tool that the project does not already use.
+runner and scripts already present in the project for frontend and Rust layers.
+Playwright CLI for shell CDP is agent-side only — see [debugging.md](debugging.md);
+do not add it to the app.
 
 Common check categories:
 
@@ -51,8 +55,8 @@ Use Rust checks for backend and command logic:
 - Exercise command error paths. A command returning `Result<T, AppError>` should
   have tests for expected failures in the pure helper layer, and the error text
   or tagged shape should be stable enough for the frontend to handle.
-- Avoid `unwrap()` and `expect()` in production command paths. In tests, prefer
-  assertions that show the unexpected error, such as
+- Keep production command paths on `Result`. In tests, prefer assertions that
+  show the unexpected error, such as
   `assert!(result.is_ok(), "unexpected error: {result:?}")`.
 
 Keep tests close to the code they explain. Use descriptive names for backend
@@ -86,7 +90,8 @@ For shell checks:
 
 1. Capture stdout/stderr.
 2. Verify frontend logs or DevTools when available.
-3. Probe CDP only when configured; see [debugging.md](debugging.md).
+3. Use Playwright CLI on shell CDP only when configured; see
+   [debugging.md](debugging.md).
 4. Confirm plugin permissions with [permissions.md](permissions.md).
 5. Stop any dev server or spawned app process before ending the task.
 
@@ -107,7 +112,7 @@ State checks by layer:
 
 - Frontend: command or browser evidence.
 - Rust: `cargo check` or Rust test evidence.
-- Shell: Tauri run/build evidence, logs, DevTools, CDP endpoint, or fallback
-  instrumentation.
+- Shell: Tauri run/build evidence, logs, DevTools, Playwright CLI attach, or
+  fallback instrumentation.
 
 If a layer was not run, say why.
