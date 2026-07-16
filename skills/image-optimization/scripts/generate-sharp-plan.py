@@ -16,9 +16,11 @@ from typing import Any
 RASTER_EXTENSIONS = {"avif", "jpeg", "jpg", "png", "webp"}
 DEFAULT_FORMATS = ["avif", "webp", "jpg"]
 ICON_HINTS = {"app-icon", "favicon"}
-LOGO_HINTS = {"inline-img"}
+# Path/name logo hints from the scanner — not generic <img> markup.
+LOGO_HINTS = {"logo"}
 SMALL_RASTER_FORMATS = ["webp", "png"]
 SMALL_IMAGE_WIDTH = 128
+# Keep in sync with the quality table in ../sharp-cli.md
 QUALITY = {
     "avif": "50",
     "webp": "75",
@@ -144,7 +146,7 @@ def widths_for(asset: dict[str, Any], requested_widths: list[int]) -> list[int]:
     hints = usage_hints(asset)
 
     if hints & ICON_HINTS:
-        widths = sorted(set(icon_widths_for(asset) + logo_widths_for()))
+        widths = icon_widths_for(asset)
         if isinstance(source_width, int) and source_width > 0:
             return [width for width in widths if width <= source_width] or [source_width]
         return widths
@@ -164,7 +166,10 @@ def widths_for(asset: dict[str, Any], requested_widths: list[int]) -> list[int]:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate Sharp CLI command plan from scan-images.py JSON.")
     parser.add_argument("scan_json", help="Path to scan-images.py JSON output")
-    parser.add_argument("--out-dir", help="Optional output directory for generated variants")
+    parser.add_argument(
+        "--out-dir",
+        help="Temporary output directory for experimentation only; move winners to final asset paths and delete this dir before finishing",
+    )
     parser.add_argument("--widths", type=parse_widths, default=parse_widths("320,640,1024,1536"), help="Comma-separated output widths")
     parser.add_argument("--formats", type=parse_formats, default=DEFAULT_FORMATS, help="Comma-separated output formats: avif,webp,jpg,png")
     parser.add_argument("--include-unreferenced", action="store_true", help="Also include unreferenced local raster images")
