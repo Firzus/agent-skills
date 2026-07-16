@@ -42,6 +42,8 @@ hero-mobile-640.avif
 hero-wide-1920.avif
 ```
 
+Logo and brand rasters (filenames containing `logo`, `brand`, or `wordmark`) use small exact widths such as `24`, `48`, `96`, `192` with WebP/PNG — not full photo responsive sets. Favicons and app icons follow manifest sizes (often `192` and `512` PNG).
+
 ## Quality defaults
 
 Start with these values, then visually verify:
@@ -105,14 +107,20 @@ If the local `sharp-cli` version expects a different command order, adapt to its
 
 ## Batch command plan
 
-Use the bundled planner to create a reviewable list of commands from a scanner JSON report:
+Resolve this skill's directory (the folder that contains `SKILL.md`), then:
 
 ```bash
-python skills/image-optimization/scripts/scan-images.py --root . --format json > image-scan.json
-python skills/image-optimization/scripts/generate-sharp-plan.py image-scan.json --widths 320,640,1024,1536
+python <skill-dir>/scripts/scan-images.py --root <app-root> --format json > image-scan.json
+python <skill-dir>/scripts/generate-sharp-plan.py image-scan.json --widths 320,640,1024,1536
 ```
 
-The planner prints commands only. Review them before running, then patch every safe runtime reference from the original image to the generated output paths. If you use `--out-dir` for experimentation, move only the chosen final assets into the app's asset structure and delete the temporary directory before finishing.
+Inside this repository only, `<skill-dir>` is `skills/image-optimization`.
+
+The planner prints commands only. Review them before running, then patch every safe runtime reference from the original image to the generated output paths.
+
+Prefer writing outputs beside the source (default). Avoid `--out-dir` unless experimenting: if you use it, move only the chosen final assets into the app's asset structure and delete the temporary directory before finishing so the result stays **clean**.
+
+Quality defaults for the planner match the table above; change one place and keep the other in sync.
 
 ## Visual QA
 

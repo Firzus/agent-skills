@@ -1,182 +1,144 @@
 ---
 name: image-optimization
 description: >-
-  Analyzes and optimizes images used in web applications for performance, SEO,
-  accessibility, and responsive delivery. Use when auditing app images,
-  reducing image weight, generating AVIF/WebP/JPEG/PNG variants with Sharp CLI,
-  implementing responsive `img`, `picture`, `srcset`, or `sizes`, fixing LCP
-  image delivery, or adapting image markup for Next.js, React, Vite, Astro,
-  SvelteKit, Nuxt, and similar frontend frameworks.
+  Audits and optimizes web-app images for performance, SEO, accessibility, and
+  responsive delivery. Use when auditing image weight, generating Sharp
+  AVIF/WebP/JPEG/PNG variants, implementing responsive `img`/`picture`/`srcset`/
+  `sizes`, fixing LCP image delivery, or adapting image markup for Next.js,
+  React, Vite, Astro, SvelteKit, or Nuxt.
 ---
 
 # Image Optimization
 
-Optimize images that are actually used by a web app. Focus on safe, measurable improvements: smaller files, correct dimensions, modern formats, responsive markup, stable layout, and framework-compatible delivery.
+Optimize images the app actually uses. Prefer safe, measurable wins: smaller files, correct dimensions, modern formats, responsive markup, stable layout, and framework-compatible delivery.
 
-## When to use
+Leading words for this skill:
 
-Use this skill when the user wants to:
-
-- Audit images used by a website or web app.
-- Reduce image weight with `sharp` or `sharp-cli`.
-- Generate AVIF/WebP/JPEG/PNG variants and responsive widths.
-- Add or fix `srcset`, `sizes`, `<picture>`, `loading`, `decoding`, `fetchpriority`, `width`, or `height`.
-- Improve LCP image delivery, hero image loading, mobile image payload, Image SEO, or image accessibility.
-- Adapt image usage in Next.js, React, Vite, Astro, SvelteKit, Nuxt, or similar frameworks.
+- **pipeline** — extend the project's existing image tooling; do not replace a working optimizer.
+- **clean** — write final asset paths only; leave no temp folders, unused variants, or orphaned heavy rasters.
+- **LCP** — treat the first-viewport hero as the highest priority; never lazy-load it.
 
 ## When not to use
 
-- The user wants to generate new images from prompts; use an image generation skill instead.
-- The user wants only a visual redesign with no asset-performance work.
-- The images are controlled entirely by an external CMS/CDN that already performs responsive transformation, unless the task is to fix markup or configuration around that CDN.
-- The source assets are proprietary or destructive edits are requested without backups.
+- The user wants generated artwork from prompts → use an image-generation skill.
+- The ask is a visual redesign with no asset-performance work.
+- Images are already transformed by a CMS/CDN pipeline, unless the task is markup or config around that CDN.
+- Sources are proprietary, or destructive edits are requested without backups.
 
 ## Hard rules
 
-- **Keep the project clean.** Do not leave temporary optimization folders, duplicate `optimized-images/` directories, scratch reports, or unused generated variants in the target app.
-- **Replace unoptimized image files, not just references.** Generate optimized outputs, patch references, then remove old unoptimized raster files once they are no longer referenced and are not required source assets.
-- **Use final asset locations.** Prefer writing optimized files into the same public/assets folder and naming scheme that the app will keep, not a temporary output directory.
-- **Optimize only referenced assets first.** Do not spend effort on unused image archives unless the user asks; if unused non-optimized images are safe to remove, delete them during cleanup.
-- **Detect the framework before patching markup.** Use framework-native image primitives when the project already uses them.
-- **Do not add a package manager or root tooling to this repository just to run the skill.** In target projects, prefer existing package managers and scripts.
-- **Do not blindly convert SVG logos/icons to raster formats.** Keep vectors as SVG unless a specific raster fallback is needed.
-- **Preserve semantics.** Keep meaningful `alt` text; use empty `alt=""` only for decorative images.
+- Stay **clean**: optimized files land in the app's kept public/assets paths; remove old unoptimized rasters once unreferenced; delete unused generated variants and any experimental output dir before finishing.
+- Optimize referenced assets first; unused archives only if the user asks (or delete them when clearly safe).
+- Detect the framework before patching markup; prefer framework-native image primitives when already in use.
+- Do not add a package manager or root tooling to documentation-only repositories just to run this skill. In target apps, prefer existing package managers and scripts.
+- Keep SVG logos/icons as vectors unless a specific raster fallback is required.
+- Preserve semantics: meaningful `alt` for content images; `alt=""` only when decorative.
+
+## Branches
+
+| Ask | Path |
+| --- | --- |
+| Audit only | Steps 1–3, then report (skip Sharp and markup). |
+| Optimize + markup | Full workflow below. |
+| CDN/CMS already transforms | Step 1 + markup/config only; see [frameworks.md](./frameworks.md) CMS section. |
 
 ## Workflow
 
-Track work with this checklist:
+Track with this checklist (one item per step below):
 
 ```text
 - [ ] 1. Detect framework and image pipeline
 - [ ] 2. Inventory referenced images
 - [ ] 3. Prioritize LCP and above-the-fold assets
 - [ ] 4. Choose formats, widths, and quality targets
-- [ ] 5. Generate a Sharp CLI plan for final asset paths
-- [ ] 6. Generate optimized replacement files
-- [ ] 7. Replace all safe references to unoptimized images
-- [ ] 8. Delete old unoptimized images and unused generated variants
-- [ ] 9. Verify no optimized use still points at the original heavy raster
-- [ ] 10. Verify output visually and with performance signals
-- [ ] 11. Report changed assets, markup, deletions, and trade-offs
+- [ ] 5. Plan and generate Sharp variants into final paths
+- [ ] 6. Replace references with optimized markup
+- [ ] 7. Delete old unoptimized rasters and unused variants
+- [ ] 8. Re-scan and verify references stay clean
+- [ ] 9. Verify visuals/build and report
 ```
+
+### Scripts
+
+Resolve this skill's directory (the folder that contains this `SKILL.md`), then run helpers relative to that root. Pass `--root` as the target app path.
+
+```bash
+python <skill-dir>/scripts/scan-images.py --root <app-root> --format markdown
+python <skill-dir>/scripts/scan-images.py --root <app-root> --format json > image-scan.json
+python <skill-dir>/scripts/generate-sharp-plan.py image-scan.json --widths 320,640,1024,1536
+```
+
+Inside this repository only, `<skill-dir>` is `skills/image-optimization`.
 
 ### Step 1 — Detect framework and pipeline
 
-Check project files before making recommendations:
+Check `package.json`, framework configs, image-component imports, and CDN/CMS loaders. If a working **pipeline** exists, extend it.
 
-- Next.js: `next.config.*`, `app/`, `pages/`, `next/image` imports.
-- React/Vite: `vite.config.*`, `src/`, direct `<img>` usage, static imports.
-- Astro: `astro.config.*`, `.astro` files, `astro:assets`.
-- SvelteKit: `svelte.config.*`, `.svelte` files.
-- Nuxt/Vue: `nuxt.config.*`, `.vue` files, Nuxt Image modules.
-- Existing image services: Cloudinary, Imgix, Contentful, Shopify, Sanity, Vercel image optimization, custom CDN loaders.
+Done when: the framework (or plain HTML) and any existing image optimizer/CDN are named, and the patch strategy is chosen (native component vs plain markup).
 
-If the project already has a working image pipeline, extend it instead of replacing it. See [frameworks.md](./frameworks.md) for framework-specific rules.
+See [frameworks.md](./frameworks.md).
 
 ### Step 2 — Inventory referenced images
 
-Prefer the bundled scanner when available:
+Run the scanner. Review path, size, dimensions (JPEG/PNG/WebP/SVG when detectable; AVIF/GIF often report unknown dims), references, and usage hints.
 
-```bash
-python skills/image-optimization/scripts/scan-images.py --root . --format markdown
-```
-
-Use JSON when another script or agent step will consume the result:
-
-```bash
-python skills/image-optimization/scripts/scan-images.py --root . --format json > image-scan.json
-```
-
-Review:
-
-- File path, size, approximate dimensions, and format.
-- References from HTML, JSX/TSX, Vue, Svelte, Astro, MDX, Markdown, JSON manifests, and CSS.
-- Images in `public/`, `src/assets/`, `app/`, `pages/`, `components/`, and content folders.
-- Remote image URLs and whether the framework allows them.
+Done when: every referenced local raster under `--root` is listed; large unreferenced rasters are noted; remote URLs are listed separately.
 
 ### Step 3 — Prioritize
 
-Prioritize in this order:
+Order: **LCP**/first viewport → rasters over 200 KB → displayed much smaller than intrinsic size → repeated cards/thumbs/backgrounds → SEO/social images.
 
-1. LCP/hero images and any image in the first viewport.
-2. Large referenced raster images over 200 KB.
-3. Images displayed much smaller than their intrinsic dimensions.
-4. Repeated thumbnails, cards, avatars, gallery images, and background images.
-5. SEO-critical images: product, article, Open Graph, and structured-data images.
+For LCP: skip `loading="lazy"`; prefer `fetchpriority="high"` or the framework priority/preload API; keep `sizes` truthful.
 
-For LCP images, usually avoid `loading="lazy"`, consider `fetchpriority="high"`, and ensure `sizes` matches the rendered width. In Next.js, use the framework's priority/preload mechanism for the project version.
+Done when: the LCP candidate and the next high-impact assets are ordered for work.
 
 ### Step 4 — Choose formats and sizes
 
-Use this default policy unless project constraints say otherwise:
+Default policy unless the project constrains otherwise:
 
 - Photos: AVIF + WebP + JPEG fallback.
-- Screenshots/UI raster images: WebP and PNG fallback when lossless detail matters.
-- Transparent raster graphics: WebP/AVIF when supported, PNG fallback.
-- Logos/icons/illustrations: SVG if already vector; otherwise optimize carefully and avoid quality loss.
-- Open Graph/social images: keep a reliable JPEG or PNG fallback with the expected platform dimensions.
+- UI screenshots: WebP + PNG when lossless detail matters.
+- Transparent rasters: WebP/AVIF when fine, PNG fallback.
+- Logos/icons: keep SVG; otherwise small WebP/PNG sizes — not full responsive photo sets.
+- Open Graph/social: reliable JPEG or PNG at platform dimensions.
 
-Width candidates should reflect layout, not arbitrary multiples. Common web widths are `320`, `480`, `640`, `768`, `1024`, `1280`, `1536`, and `1920`; remove widths larger than the source image and widths impossible for the layout.
+Widths follow layout (`320`–`1920` common set); drop widths above the source or impossible for the layout. Quality defaults live in [sharp-cli.md](./sharp-cli.md).
 
-### Step 5 — Generate replacement variants with Sharp CLI
+Done when: each prioritized asset has formats, widths, and quality chosen.
 
-Read [sharp-cli.md](./sharp-cli.md) before running conversions. Generate a command plan first, targeting final kept asset paths rather than a temporary directory:
+### Step 5 — Plan and generate Sharp variants
 
-```bash
-python skills/image-optimization/scripts/generate-sharp-plan.py image-scan.json --widths 320,640,1024,1536
-```
+Read [sharp-cli.md](./sharp-cli.md). Generate a command plan targeting **final** kept paths (avoid `--out-dir` unless you will move winners into final paths and delete the temp dir before finishing). Review commands, then run them. Produce only variants the app will reference.
 
-Only run Sharp commands after reviewing output paths. Generate enough optimized variants to replace all runtime uses. Do not leave unused variants in the project.
+Done when: optimized files exist at final asset paths for every prioritized raster that needs conversion, and no experimental output dir remains.
 
-### Step 6 — Replace markup or framework references
+### Step 6 — Replace references
 
-Optimizing files is not enough. Replace every safe reference to the unoptimized raster with the optimized asset or responsive variant set.
+Point every safe runtime reference at the optimized asset or responsive set. Prefer framework-native patterns when the **pipeline** uses them.
 
-Use native framework patterns when possible. For plain HTML/React, prefer:
+Before editing markup, load [responsive-images.md](./responsive-images.md) and apply every Core rule to each replaced reference. Also update manifests, favicons, Open Graph, CSS `url(...)`, MDX/Markdown, and structured data when they point at the old file.
 
-- Replace `src` with the smallest optimized default candidate that works without `srcset`.
-- Add `srcset` with width or density descriptors when multiple candidates exist.
-- Add accurate `sizes` for fluid layouts.
-- Add `width` and `height` attributes or CSS `aspect-ratio` to prevent CLS.
-- Use `<picture>` only when serving multiple formats or art-directed crops.
-- Use `loading="lazy"` for below-the-fold images; `loading="eager"` or omitted lazy loading for LCP.
-- Use `decoding="async"` for non-critical images.
-- Update `manifest.json`, `site.webmanifest`, favicon links, Open Graph tags, CSS `url(...)`, MDX/Markdown, and structured-data image references when they point at generated optimized files.
+Done when: no production/runtime reference still points at an original heavy raster that has an optimized replacement (or each exception is documented).
 
-Do not leave production/runtime references pointing to an original heavy raster after an optimized replacement exists. If a reference cannot be safely replaced, document why.
+### Step 7 — Delete old assets
 
-See [responsive-images.md](./responsive-images.md) for markup patterns.
+Remove unreferenced heavy rasters, unused generated variants, and any temp output directory. Keep SVG sources and any source files the user asked to retain.
 
-### Step 7 — Clean old assets
+Done when: the tree is **clean** — only referenced optimized assets, intentional vectors, and documented kept sources remain.
 
-After patching references, remove old unoptimized raster files when they are no longer referenced. Also remove unused generated variants and any temporary output directory created during experimentation. A clean result should contain only:
+### Step 8 — Re-scan and verify cleanliness
 
-- Optimized assets that are referenced by the app or required by a manifest/social platform.
-- Vector source assets that should remain SVG.
-- Explicitly documented source files the user asked to keep.
+Rerun the scanner. Confirm optimized use cases no longer reference the original heavy raster, and large unreferenced rasters are gone or explicitly documented.
 
-If an old asset must remain as a design source, move it only when the project already has a source-assets convention; otherwise ask before keeping it.
+Done when: the rescan matches the **clean** bar above.
 
-### Step 8 — Verify references and cleanliness
+### Step 9 — Verify and report
 
-After cleanup, rerun the scanner and confirm optimized use cases no longer reference the original heavy raster. The final scan should not list old non-optimized raster images as referenced, and should not list large unreferenced raster files unless each one is documented as intentionally kept.
+Check desktop/mobile render, sensible `srcset` picks, build paths, no CLS from missing dimensions, LCP not lazy-loaded, and no obvious compression artifacts. Compare image bytes / LCP when tooling allows.
 
-### Step 9 — Verify quality and build
-
-Verify at least:
-
-- The page renders the intended image at desktop and mobile breakpoints.
-- Browser chooses an appropriately sized candidate from `srcset`.
-- No broken paths in production build output.
-- No layout shift from missing dimensions.
-- LCP image is not lazy-loaded and is not hidden behind CSS/background indirection unless necessary.
-- Optimized variants do not introduce visible artifacts.
-
-If browser automation or Lighthouse is available, compare network image bytes and LCP before/after. If not, report file-size reductions and markup changes.
+Done when: validation notes are recorded and the report below is filled.
 
 ## Output format
-
-When reporting results, include:
 
 ```markdown
 ## Image optimization summary
@@ -187,22 +149,22 @@ When reporting results, include:
 
 ## Changes made
 
-- <source asset> → <optimized replacement variants generated in final paths>
-- <reference file> → <old image path replaced with optimized path/srcset/picture>
-- Deleted: <old unoptimized files, temporary folders, unused generated variants>
+- <source asset> → <optimized replacement variants in final paths>
+- <reference file> → <old path replaced with optimized path/srcset/picture>
+- Deleted: <old rasters, temp folders, unused variants>
 
 ## Validation
 
-- <commands run or manual checks>
-- Scanner rerun: <confirm original heavy assets are no longer referenced and no large unreferenced raster files remain, or list documented exceptions>
+- <commands or manual checks>
+- Scanner rerun: <clean confirmation or documented exceptions>
 
 ## Notes / follow-ups
 
-- <remaining remote assets, CMS/CDN settings, visual QA needs>
+- <remote assets, CMS/CDN settings, visual QA needs>
 ```
 
 ## Reference files
 
-- [responsive-images.md](./responsive-images.md) — `img`, `picture`, `srcset`, `sizes`, LCP, accessibility, and SEO patterns.
-- [frameworks.md](./frameworks.md) — Next.js, React/Vite, Astro, SvelteKit, Nuxt, and image-CDN constraints.
-- [sharp-cli.md](./sharp-cli.md) — Sharp CLI commands, presets, naming, and safe conversion policy.
+- [responsive-images.md](./responsive-images.md) — `img`, `picture`, `srcset`, `sizes`, LCP, accessibility, SEO.
+- [frameworks.md](./frameworks.md) — Next.js, React/Vite, Astro, SvelteKit, Nuxt, CDN constraints.
+- [sharp-cli.md](./sharp-cli.md) — Sharp CLI commands, quality table, naming, conversion policy.

@@ -170,13 +170,23 @@ def dimensions(path: Path) -> dict[str, int] | None:
     return {"width": dims[0], "height": dims[1]}
 
 
+def _append_hint(asset: dict[str, Any], hint: str) -> None:
+    if hint not in asset["usageHints"]:
+        asset["usageHints"].append(hint)
+
+
+def _looks_like_logo(path: str) -> bool:
+    name = Path(path).stem.lower()
+    return any(token in name for token in ("logo", "brand", "wordmark"))
+
+
 def collect_assets(root: Path) -> dict[str, dict[str, Any]]:
     assets: dict[str, dict[str, Any]] = {}
     for path in iter_files(root):
         if path.suffix.lower() not in IMAGE_EXTENSIONS:
             continue
         relative_path = rel(path, root)
-        assets[relative_path] = {
+        asset: dict[str, Any] = {
             "path": relative_path,
             "extension": path.suffix.lower().lstrip("."),
             "bytes": read_size(path),
@@ -184,6 +194,9 @@ def collect_assets(root: Path) -> dict[str, dict[str, Any]]:
             "references": [],
             "usageHints": [],
         }
+        if _looks_like_logo(relative_path):
+            _append_hint(asset, "logo")
+        assets[relative_path] = asset
     return assets
 
 
@@ -246,17 +259,9 @@ def collect_references(root: Path, assets: dict[str, dict[str, Any]]) -> list[di
                                 reference["sizes"] = size_match.group(1)
                         assets[key]["references"].append(reference)
                         if path.name in MANIFEST_FILENAMES:
-                            hint = "app-icon"
-                            if hint not in assets[key]["usageHints"]:
-                                assets[key]["usageHints"].append(hint)
+                            _append_hint(assets[key], "app-icon")
                         if "rel" in line and "icon" in line:
-                            hint = "favicon"
-                            if hint not in assets[key]["usageHints"]:
-                                assets[key]["usageHints"].append(hint)
-                        if "<img" in line and ("size-" in line or "width={" in line or "width=\"" in line):
-                            hint = "inline-img"
-                            if hint not in assets[key]["usageHints"]:
-                                assets[key]["usageHints"].append(hint)
+                            _append_hint(assets[key], "favicon")
                         break
     return remote_references
 
