@@ -2,7 +2,7 @@
 
 ## Unified `vite.config.ts`
 
-Vite+ consolidates every tool's config into a single `vite.config.ts`. Never create the legacy per-tool files — `vp migrate` exists to remove them.
+Vite+ consolidates every tool's config into a single `vite.config.ts`. Prefer the blocks below over legacy per-tool files — `vp migrate` exists to remove them.
 
 ```ts
 // vite.config.ts
@@ -18,6 +18,7 @@ export default defineConfig({
   test: {},     // Vitest
   lint: {},     // Oxlint
   fmt: {},      // Oxfmt
+  check: {},    // defaults for composite `vp check` (--no-fmt / --no-lint)
   run: {},      // Vite Task
   pack: {},     // tsdown (libraries / CLIs)
   staged: {},   // staged-file checks
@@ -25,7 +26,7 @@ export default defineConfig({
 });
 ```
 
-The import must be from `vite-plus`, not `vite`.
+Config entry files import from `vite-plus`, not `vite` / `vitest/config`.
 
 ### Files Vite+ replaces
 
@@ -39,12 +40,9 @@ The import must be from `vite-plus`, not `vite`.
 
 ### Aliased dependencies
 
-During install, Vite+ rewires npm aliases:
+During install / migrate, Vite+ points `vite` at `@voidzero-dev/vite-plus-core` (same release as the running `vp`). Vitest comes through `vite-plus` (and optional direct pins + package-manager overrides). Legacy `@voidzero-dev/vite-plus-test` is removed by `vp migrate` — use `vite-plus/test*` instead.
 
-- `vite` → `npm:@voidzero-dev/vite-plus-core@latest`
-- `vitest` → `npm:@voidzero-dev/vite-plus-test@latest`
-
-So source code must import from `vite-plus` / `vite-plus/test`, and `vp update vite-plus` does **not** re-resolve these aliases (also run `vp update @voidzero-dev/vite-plus-core @voidzero-dev/vite-plus-test`).
+Upgrade local pins with `vp migrate`. See [setup.md](./setup.md)#upgrading-vite and [monorepo-and-migration.md](./monorepo-and-migration.md)#migration-vp-migrate.
 
 ### Imports cheat sheet
 
@@ -54,6 +52,8 @@ import { describe, expect, it, vi } from 'vite-plus/test';
 const { page } = await import('vite-plus/test/browser/context');
 import type { OxlintOverride } from 'vite-plus/lint';
 ```
+
+Import rewrite nuances (non-config `vite`, Nuxt, pnpm pins): → [monorepo-and-migration.md](./monorepo-and-migration.md). Config entry files use `vite-plus`; `vite-plus` exposes `defineConfig`, `defineProject`, and `lazyPlugins` as its own surface.
 
 ### Editor integration
 
@@ -98,6 +98,21 @@ export default defineConfig({
 
 `vp create`/`vp migrate` enable `typeAware` + `typeCheck` by default — keep both on so `vp check` is the single static-checks command.
 
+### `check` block (composite defaults)
+
+Skip a step for every `vp check` (including hooks that call it) without remembering CLI flags:
+
+```ts
+export default defineConfig({
+  check: {
+    fmt: false,  // vp check lints (+ type-checks) but does not format
+    lint: true,  // default true
+  },
+});
+```
+
+These options only affect `vp check`. Standalone `vp fmt` / `vp lint` still run. There is no flag to re-enable a step disabled here — run the standalone command instead.
+
 ```bash
 vp lint        # Oxlint only (+ --fix, --type-aware)
 vp fmt         # Oxfmt in place (default); --check to verify; . --write explicit
@@ -110,7 +125,7 @@ For incomplete ESLint → Oxlint migrations, use Oxlint's [JS plugin support](ht
 `vp test` runs [Vitest](https://vitest.dev/) through Vite+, reusing the same Vite config and plugins.
 
 ```bash
-vp test                       # single run (NOT watch)
+vp test                       # single run (watch is opt-in via `vp test watch`)
 vp test watch                 # watch mode
 vp test run --coverage        # one-shot with coverage
 vp test --reporter verbose    # extra args forwarded to Vitest
@@ -131,15 +146,14 @@ export default defineConfig({
 });
 ```
 
-Always import from `vite-plus/test`, not `vitest`:
+Import tests from `vite-plus/test`:
 
 ```ts
-// Good
 import { describe, expect, it, vi } from 'vite-plus/test';
 const { page } = await import('vite-plus/test/browser/context');
 ```
 
-`vp migrate` rewrites these automatically (requires **Vitest 4.1+** and **Vite 8+**). Browser Mode is supported via `vite-plus/test/browser/context`.
+`vp migrate` rewrites these automatically (requires **Vitest 4.1+** and **Vite 8+**). Browser Mode: `vite-plus/test/browser/context`. Exceptions (Nuxt, etc.): → [monorepo-and-migration.md](./monorepo-and-migration.md).
 
 ## Building & packaging
 
@@ -187,7 +201,9 @@ Standalone executables (tsdown's experimental [`exe`](https://tsdown.dev/options
 export default defineConfig({ pack: { entry: ['src/cli.ts'], exe: true } });
 ```
 
-**Choosing:** web host/CDN → `vp build`. npm package → `vp pack`. CLI `bin` → `vp pack` with `entry`. Native executable → `vp pack` with `exe: true`. Never use `vp build` for a library.
+`exe: true` requires **Node.js ≥ 25.7.0**.
+
+**Choosing:** web host/CDN → `vp build`. npm package → `vp pack`. CLI `bin` → `vp pack` with `entry`. Native executable → `vp pack` with `exe: true` (and a new enough Node).
 
 ## Commit hooks & staged files
 
@@ -209,4 +225,4 @@ export default defineConfig({
 });
 ```
 
-The `staged` block is the only supported format. `vp check --fix` reuses the same `lint`/`fmt` blocks, so staged behavior never drifts from project rules. When hooks are installed via `vp config`, `vp staged` runs automatically on commit.
+The `staged` block is the only supported format. `vp check --fix` reuses the same `lint`/`fmt` blocks, so staged behavior stays aligned with project rules. When hooks are installed via `vp config`, `vp staged` runs automatically on commit.
