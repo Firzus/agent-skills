@@ -18,7 +18,7 @@ The `vp` CLI has a fixed set of **built-in commands** that always run the bundle
 
 - **Start:** `vp create`, `vp migrate`, `vp config`, `vp install`, `vp env`
 - **Develop:** `vp dev`, `vp check`, `vp lint`, `vp fmt`, `vp test`
-- **Execute:** `vp run <task>` / `vpr`, `vpx <pkg>`, `vp exec`, `vp dlx`, `vp cache clean`
+- **Execute:** `vp run <task>` / `vpr`, `vpx <pkg>`, `vp exec`, `vp dlx`, `vp node`, `vp cache clean`
 - **Build:** `vp build` (apps), `vp pack` (libs/CLIs), `vp preview`
 - **Manage deps:** `vp add`, `vp remove`, `vp update`, `vp dedupe`, `vp outdated`, `vp why`, `vp info`, `vp list`, `vp rebuild`, `vp link`/`vp unlink`, `vp pm <cmd>`
 - **Maintain:** `vp upgrade`, `vp implode`
@@ -39,7 +39,7 @@ Three commands for executing binaries, by where the binary lives:
 |---------|------------|----------|
 | `vpx <pkg>` | Local first, downloads if missing | General-purpose default |
 | `vp exec <cmd>` | **Only** `node_modules/.bin` | Must use the project's pinned version |
-| `vp dlx <pkg>` | Always downloads, never installs | One-off remote tools |
+| `vp dlx <pkg>` | Always downloads (ephemeral) | One-off remote tools |
 
 ```bash
 vpx eslint .                      # resolves locally first
@@ -47,10 +47,11 @@ vpx typescript@5.5.4 tsc --version
 vpx -p cowsay -c 'echo "hi" | cowsay'   # -p extra pkg, -c shell mode
 
 vp exec tsc --noEmit              # fails if not installed locally (CI-safe)
-vp dlx create-vite                # one-off, never added to package.json
+vp dlx create-vite                # one-off (stays out of package.json)
+vp node script.js                 # run with project-resolved Node (vp env exec node)
 ```
 
-`vpx pkg@version`, `vpx -p`, and `vpx -c` all force the `vp dlx` path.
+`vpx pkg@version`, `vpx -p` / `--package`, and `vpx -c` / `--shell-mode` all force the `vp dlx` path.
 
 ## Task runner & caching (`vp run`)
 
@@ -83,7 +84,7 @@ export default defineConfig({
     tasks: {
       build: { command: 'vp build', dependsOn: ['lint'], env: ['NODE_ENV'] },
       deploy: { command: 'deploy-script --prod', cache: false, dependsOn: ['build', 'test'] },
-      dev: { command: 'vp dev', cache: false },   // never cache long-running servers
+      dev: { command: 'vp dev', cache: false },   // long-running servers: leave cache off
     },
   },
 });
@@ -97,9 +98,10 @@ export default defineConfig({
 | `env` | Env vars in the cache fingerprint. Supports `VITE_*` wildcards. |
 | `untrackedEnv` | Passed through but **not** in the cache key. |
 | `input` | Override auto file tracking: `string` glob, `{ auto: true }`, or `{ pattern, base }` (`base`: `"package"`/`"workspace"`). |
+| `output` | Files/dirs restored on a cache hit (default auto-tracking). Use `output: []` to skip restoring artifacts. |
 | `cwd` | Working dir relative to package root. |
 
-> **Outputs are not cached yet.** Only terminal output (stdout/stderr) is replayed on a hit; `dist/` is not. If you deleted build outputs, use `--no-cache`.
+> **Cache hits restore terminal output and archived output files** (e.g. `dist/`) by default. If you deleted build outputs and need a fresh write, use `--no-cache`. Store lives at `node_modules/.vite/task-cache`.
 
 ### Avoiding over-tracking
 
@@ -117,9 +119,9 @@ Use `input: []` to cache only on command/env changes. `&&` and nested `vp run` a
 vp cache clean    # clears node_modules/.vite/task-cache (workspace root)
 ```
 
-## Agent / AI workflow
+For CI, Vite+ also documents a separate [GitHub Actions cache](https://viteplus.dev/guide/github-actions-cache) for Vite Task — wire it when optimizing monorepo pipelines.
 
-Vite+ standardizes tooling for human and AI workflows.
+## Agent workflow
 
 ### Validation loop
 
@@ -127,12 +129,12 @@ Vite+ standardizes tooling for human and AI workflows.
 vp install
 vp check    # format + lint + type-check, single command
 vp test
-vp build
+vp build    # or vp pack for libraries/CLIs
 ```
 
 - Prefer `vp check` over separate `vp lint` / `vp fmt` / `tsc --noEmit` — it dedupes work.
 - Use `vp check --fix` in autofix loops.
-- `vp test` is single-run by default (perfect for CI/agents); `vp test watch` only interactively.
+- `vp test` is single-run by default (CI/agents); `vp test watch` only interactively.
 
 ### Bootstrapping
 
@@ -160,4 +162,4 @@ vp migrate --agent claude --no-interactive
 
 - A failed `vp check` points at the exact file/line — re-run `vp check --fix` first.
 - After switching Node.js versions, `vp rebuild` if native modules fail to load.
-- After `vp migrate`, confirm `vitest` is gone from deps and no source still imports `vitest` / `@vitest/browser*`.
+- After `vp migrate`, verify imports and deps per [monorepo-and-migration.md](./monorepo-and-migration.md) (Nuxt / pnpm `vite` exceptions included).

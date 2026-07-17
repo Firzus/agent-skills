@@ -121,11 +121,27 @@ A root script `"build": "vp run -r build"` would normally recurse — Vite Task 
 
 ## Migration (`vp migrate`)
 
-Consolidates separate Vite, Vitest, Oxlint, Oxfmt, ESLint, Prettier, lint-staged, and tsdown setups into Vite+.
+Consolidates separate Vite, Vitest, Oxlint, Oxfmt, ESLint, Prettier, lint-staged, and tsdown setups into Vite+. On a project that already uses `vite-plus`, the same command is the recommended **local upgrade** path.
+
+### Upgrade re-pin (existing Vite+ projects)
+
+```bash
+vp upgrade    # global CLI first
+vp migrate    # re-pin local toolchain (skip first-time setup); --full also re-runs setup
+```
+
+What migrate re-pins:
+
+- `vite-plus` to the version bundled by the running global `vp`
+- the `vite` → `@voidzero-dev/vite-plus-core` alias to the matching release
+- the workspace **vitest override/resolution pin** to the bundled Vitest version
+
+Imports use `vite-plus/test*`. Migrate removes legacy `@voidzero-dev/vite-plus-test` everywhere. If you bumped `vite-plus` by hand without migrate, re-pin `vitest` in the package-manager override block (or re-run `vp migrate`) so the project and `vp test` share one Vitest copy.
 
 ### Pre-requisites
 
-- Upgrade to **Vite 8+** and **Vitest 4.1+** *before* running `vp migrate`.
+- Run `vp upgrade` so the global CLI has the latest migration rules.
+- Upgrade to **Vite 8+** and **Vitest 4.1+** *before* running `vp migrate` on a non-Vite+ project.
 - Audit any existing lint/format/test setup to preserve.
 
 ```bash
@@ -133,14 +149,16 @@ vp migrate                       # current dir
 vp migrate my-app                # specific dir
 vp migrate --no-interactive      # no prompts (CI / agents)
 vp migrate --agent claude --editor zed
+vp migrate --full                # existing Vite+ project: also re-run setup actions
 ```
 
 ### What it does
 
-- Updates dependencies; rewrites imports (`vite` → `vite-plus`, `vitest` → `vite-plus/test`)
+- Updates dependencies; rewrites imports where needed (`vite` → `vite-plus` in **config entry files**; `vitest` → `vite-plus/test*`)
 - Merges tool-specific configs into `vite.config.ts` blocks
 - Updates `package.json` scripts to the Vite+ command surface
 - Optionally sets up commit hooks and agent/editor config
+- Removes legacy `@voidzero-dev/vite-plus-test` aliases/deps everywhere
 
 Expect manual follow-ups for non-trivial projects.
 
@@ -152,7 +170,7 @@ vp install && vp check && vp test && vp build
 
 ### Tool-specific migrations
 
-**Vitest** — `vite-plus` re-exports upstream `vitest@4.x` under `vite-plus/test*` and ships `vite`/`vitest` as direct deps, so a single `vite-plus` install is enough for node-mode tests. By hand:
+**Vitest** — `vite-plus` re-exports upstream `vitest@4.x` under `vite-plus/test*`, so a single `vite-plus` install is enough for node-mode tests. By hand:
 
 ```ts
 // before
@@ -166,15 +184,21 @@ import { playwright } from 'vite-plus/test/browser-playwright';
 const { page } = await import('vite-plus/test/browser/context');
 ```
 
-> Remove old `vite` / `vitest` / `@vitest/browser*` deps **only after** rewrites are verified.
+> Remove obsolete `vitest` / `@vitest/browser*` deps **only after** rewrites are verified — and only where migrate removed them. Under **pnpm**, migrate often **keeps or adds** a direct `vite` entry aliased to `@voidzero-dev/vite-plus-core` so peers resolve correctly; treat that entry as intentional.
 >
-> **Browser providers stay opt-in.** `vite-plus` bundles `@vitest/browser` + `@vitest/browser-preview`, but Playwright/WebdriverIO providers are not shipped — install the provider and its peer (`playwright` / `webdriverio`) yourself, pinned to the bundled vitest version.
+> **Browser providers stay opt-in.** `vite-plus` bundles `@vitest/browser` + `@vitest/browser-preview`. Playwright/WebdriverIO providers stay separate — install the provider and its peer (`playwright` / `webdriverio`) yourself, pinned to the bundled vitest version.
 >
-> **Do NOT rewrite type augmentations.** Leave `declare module 'vitest'` / `declare module '@vitest/browser*'` pointing at the upstream module — `vite-plus/test*` is a thin re-export.
+> **Leave type augmentations on upstream.** Keep `declare module 'vitest'` / `declare module '@vitest/browser*'` pointing at the upstream module — `vite-plus/test*` is a thin re-export.
+>
+> **Nuxt exception.** Packages that declare `@nuxt/test-utils` keep `vitest` / `vitest/*` import identity package-wide (Nuxt's transform needs the upstream module). Scoped `@vitest/browser*` imports still rewrite.
+
+**vite imports** — only config entry files (`vite.config.*`, `vitest.config.*`, and configs migrate resolved) rewrite `vite` → `vite-plus`. Other files keep `vite` imports (they resolve via the core alias). Prefer `vite` for pass-through Vite APIs outside config — `vite-plus` is not a full Vite API re-export.
 
 **tsdown** — move `tsdown.config.ts` options into the `pack` block, then delete the file.
 
 **lint-staged** — only the `staged` block format is auto-migrated; non-JSON `.lintstagedrc` and `lint-staged.config.*` are not. Move rules into `staged`, remove `lint-staged` from deps.
+
+**Git hook tools** — automatic hook migration targets Husky v9+ and lint-staged-style setups. Older Husky (before 9.0.0) is skipped — upgrade Husky first. `lefthook`, `simple-git-hooks`, and `yorkie` are left alone with a warning — move staged rules into `staged`, run `vp config`, add `.vite-hooks/pre-commit` → `vp staged`, then remove the old tool after verifying.
 
 ### Migration prompt (for coding agents)
 
@@ -188,13 +212,21 @@ before migrating.
 
 After the migration:
 
-- Confirm `vite` imports were rewritten to `vite-plus` where needed
+- Confirm `vite` imports were rewritten to `vite-plus` in config entry files
+  where needed (non-config `vite` imports may remain — they resolve via the
+  core alias)
 - Confirm `vitest` imports were rewritten to `vite-plus/test` (and
-  `@vitest/browser*` to `vite-plus/test/browser*`) where needed
-- Remove old `vite`, `vitest`, and `@vitest/browser*` dependencies only after
-  those rewrites are confirmed — `vite-plus` ships them as direct deps
+  `@vitest/browser*` to `vite-plus/test/browser*`) where needed — except
+  packages using `@nuxt/test-utils`, which keep upstream `vitest` identity
+- Remove obsolete `vitest` and `@vitest/browser*` dependencies only after
+  those rewrites are confirmed and only where migrate removed them. Under
+  pnpm, a direct `vite` entry aliased to `@voidzero-dev/vite-plus-core` may
+  be intentional — leave it when migrate added or kept it
 - Move remaining tool-specific config into the appropriate blocks in
   `vite.config.ts`
+- Prefer `vp migrate` for later local upgrades (re-pins vite-plus, the
+  vite→core alias, and the vitest override). Keep imports on
+  `vite-plus/test*` (legacy `@voidzero-dev/vite-plus-test` stays removed)
 
 Command mapping to keep in mind:
 

@@ -11,7 +11,7 @@ irm https://vite.plus/ps1 | iex          # Windows (PowerShell)
 
 Alternatively download [`vp-setup.exe`](https://setup.viteplus.dev/). Open a **new shell**, then verify with `vp help`.
 
-- **CI:** use the [`setup-vp`](https://github.com/voidzero-dev/setup-vp) GitHub Action — never `curl | bash` in CI.
+- **CI:** use the [`setup-vp`](https://github.com/voidzero-dev/setup-vp) GitHub Action (prefer it over the shell installer in CI).
 - **Uninstall:** `vp implode` removes `vp` and Vite+ data from the machine.
 
 ### Platform support
@@ -35,13 +35,14 @@ Managed runtime lives under `~/.vite-plus` (override with `VP_HOME`).
 
 Resolved in priority order:
 
-1. `VP_NODE_DIST_MIRROR` (custom mirror)
-2. `.node-version` (current or parent directories)
-3. `devEngines.runtime` in `package.json`
-4. `engines.node` in `package.json`
-5. Global default (`vp env default`), then latest LTS
+1. `.node-version` (current or parent directories)
+2. `devEngines.runtime` in `package.json`
+3. `engines.node` in `package.json`
+4. Global default (`vp env default`), then latest LTS
 
-`vp env pin` is source-aware: updates an existing `.node-version` if present, otherwise writes `package.json#devEngines.runtime`; only creates `.node-version` when there is no `package.json`. Force with `--target node-version` / `--target dev-engines`. An existing `engines.node` is never modified.
+`VP_NODE_DIST_MIRROR` is a **download mirror** for Node.js dist archives (version still comes from the list above). Set it when installing behind a corporate proxy.
+
+`vp env pin` is source-aware: updates an existing `.node-version` if present, otherwise writes `package.json#devEngines.runtime`; only creates `.node-version` when there is no `package.json`. Force with `--target node-version` / `--target dev-engines`. Leaves an existing `engines.node` unchanged.
 
 ```bash
 vp env pin lts        # pin project version
@@ -86,7 +87,7 @@ Falls back to **pnpm** if nothing matches; the matching package manager is downl
 { "packageManager": "pnpm@9.12.0" }
 ```
 
-Or a semver range (stays the source of truth, never frozen):
+Or a semver range (stays the source of truth; Vite+ leaves the range unfrozen):
 
 ```json
 { "devEngines": { "packageManager": { "name": "pnpm", "version": "^11.0.0", "onFail": "download" } } }
@@ -119,7 +120,7 @@ vp rebuild                      # rebuild native modules
 vp link / vp unlink             # local dev links
 ```
 
-Global packages: `vp install -g <pkg>`, `vp uninstall -g <pkg>`, `vp update -g`, `vp list -g`.
+Global packages: `vp install -g <pkg>`, `vp uninstall -g <pkg>`, `vp update -g`, `vp list -g`. Globals live under `VP_HOME/packages` (not the package manager's global directory).
 
 ### Escape hatch & native rebuilds
 
@@ -170,16 +171,9 @@ Set a repo default with `create.defaultTemplate: '@your-org'` in `vite.config.ts
 
 ## Upgrading Vite+
 
-Two parts upgrade independently:
-
 ```bash
 vp upgrade                      # the global vp binary
-vp update vite-plus             # the local package
+vp migrate                      # re-pin local vite-plus, vite→core alias, and vitest pin
 ```
 
-> **Aliased packages.** During install, Vite+ rewires `vite` → `@voidzero-dev/vite-plus-core` and `vitest` → `@voidzero-dev/vite-plus-test`. `vp update vite-plus` does **not** re-resolve these aliases — also run:
-
-```bash
-vp update @voidzero-dev/vite-plus-core @voidzero-dev/vite-plus-test
-vp outdated                     # verify nothing is left behind
-```
+For an existing Vite+ project, `vp migrate` is the recommended local re-pin (toolchain upgrade only; `--full` re-runs setup). Details — what gets re-pinned, legacy `-test` removal, hand-upgrade recovery — live in [monorepo-and-migration.md](./monorepo-and-migration.md)#migration-vp-migrate. Confirm with `vp --version` and `vp outdated`.

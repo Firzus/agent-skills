@@ -1,15 +1,23 @@
 ---
 name: vite-plus-best-practices
-description: Provides best practices for Vite+ (vp), the unified web toolchain combining Vite, Vitest, Oxlint, Oxfmt, Rolldown, tsdown, and Vite Task. Covers setup (vp install, env, managed runtime), the vp command surface (dev, build, check, test, run, pack), the single unified vite.config.ts, the do/don't rules that matter most, monorepo overrides, task caching, commit hooks, library packaging, and migrating existing Vite/Vitest/ESLint/Prettier projects. Use when the user mentions Vite+, vite-plus, the `vp` or `vpx` CLI, Oxlint/Oxfmt in a Vite context, tsdown, Vite Task, or asks to set up, configure, migrate, scaffold, or upgrade a Vite+ project.
+description: >-
+  Vite+ (vp) unified toolchain: unified config, built-in ≠ script, vp check,
+  pack vs build, and migrate. Covers setup (vp install, env, managed runtime),
+  the vp command surface (dev, build, check, test, run, pack, node),
+  vite.config.ts blocks (including check), monorepo overrides, task caching,
+  commit hooks, library packaging, and migrating Vite/Vitest/ESLint/Prettier
+  projects. Use when the user mentions Vite+, vite-plus, the `vp` or `vpx` CLI,
+  Oxlint/Oxfmt in a Vite context, tsdown, Vite Task, or asks to set up,
+  configure, migrate, scaffold, review, or upgrade a Vite+ project.
 ---
 
 # Vite+ Best Practices
 
 Apply these rules when setting up, writing, reviewing, or migrating a Vite+ project — configuring `vite.config.ts`, running `vp` commands, or wiring Vite+ into CI / coding agents.
 
-Vite+ is a **unified toolchain**: one CLI and one config file replace the usual split of Vite, Vitest, ESLint/Oxlint, Prettier/Oxfmt, tsdown, lint-staged, and a task runner.
+**Done when:** every touched package uses `vite-plus` / `vite-plus/test` imports where required (exceptions: non-config `vite` imports via the core alias; `@nuxt/test-utils` packages keeping upstream `vitest`; pnpm direct `vite` entries aliased to core — leave those); no legacy per-tool config remains unless a documented exception applies; upgrade/migrate followed the `vp migrate` path; and `vp check && vp test` plus `vp build` (apps) or `vp pack` (libs/CLIs) pass.
 
-It ships in two parts:
+Vite+ is a **unified toolchain**: one CLI and one config file replace the usual split of Vite, Vitest, ESLint/Oxlint, Prettier/Oxfmt, tsdown, lint-staged, and a task runner.
 
 | Part | What it is | Scope |
 |------|-----------|-------|
@@ -18,7 +26,7 @@ It ships in two parts:
 
 ## Setup
 
-The fastest path to a working project. Full details in [setup.md](./setup.md).
+Fastest path to a working project. Full details in [setup.md](./setup.md) (install, env, deps, create, upgrade).
 
 ```bash
 # 1. Install the global vp CLI (once per machine)
@@ -36,53 +44,36 @@ vp install                               # install dependencies
 vp migrate --no-interactive
 ```
 
-Daily loop, identical for humans, CI, and agents:
+Daily loop (humans, CI, agents):
 
 ```bash
 vp dev        # dev server (Vite)
 vp check      # format + lint + type-check, one pass
-vp test       # tests (single run, NOT watch)
+vp test       # tests (single run — watch is opt-in)
 vp build      # production build (apps) — use vp pack for libs/CLIs
 ```
 
-- **CI install:** use the [`setup-vp`](https://github.com/voidzero-dev/setup-vp) GitHub Action — never `curl | bash` in CI.
+- **CI install:** use the [`setup-vp`](https://github.com/voidzero-dev/setup-vp) GitHub Action (prefer it over the shell installer in CI).
 - **Managed runtime:** `vp` manages `node` / package managers by default (`vp env on`). Use `vp env off` for system-first, `vp implode` to fully remove Vite+.
 
 ## Golden Rules
 
-These are the high-leverage rules. Each links to deeper reference material.
+High-leverage rules. Each links to deeper reference.
 
-1. **One config file.** Everything lives in a single `vite.config.ts` using blocks (`server`, `build`, `preview`, `test`, `lint`, `fmt`, `run`, `pack`, `staged`, `create`). Never create `vitest.config.ts`, `tsdown.config.ts`, `oxlint.config.*`, `.oxfmtrc.*`, `.prettierrc`, `eslint.config.*`, or `lint-staged.config.*`. → [config.md](./config.md)
-2. **Import from `vite-plus`, not `vite`/`vitest`.** Config from `vite-plus`, tests from `vite-plus/test`, browser context from `vite-plus/test/browser/context`. → [config.md](./config.md)
-3. **Built-in commands ≠ scripts.** `vp build`/`vp test`/`vp dev` always run the bundled tool. To run a `package.json` script of the same name, use `vp run <name>` (alias `vpr`). → [commands.md](./commands.md)
-4. **`vp check` is the validation command.** It dedupes work across Oxfmt + Oxlint + type-check (`tsgolint`/`tsgo`). Prefer it over standalone `vp lint` / `vp fmt` / `tsc --noEmit`. Keep `lint.options.typeAware` and `typeCheck` on. → [config.md](./config.md)
-5. **`vp build` for apps, `vp pack` for libraries/CLIs.** Never package a library with `vp build`. → [config.md](./config.md)
-6. **Migrate, then verify, then clean up.** Run `vp migrate`, confirm import rewrites, only then remove old `vite`/`vitest` deps, finally run `vp install && vp check && vp test && vp build`. → [monorepo-and-migration.md](./monorepo-and-migration.md)
-
-## Do / Don't
-
-| Do | Don't |
-|----|-------|
-| Keep all tool config in `vite.config.ts` blocks | Create `vitest.config.ts`, `tsdown.config.ts`, `.prettierrc`, `eslint.config.*`, `lint-staged.config.*` |
-| `import { defineConfig } from 'vite-plus'` | `import { defineConfig } from 'vite'` / `'vitest/config'` |
-| `import { it, expect } from 'vite-plus/test'` | `import { it, expect } from 'vitest'` |
-| `vp run build` to run a `package.json` `"build"` script | Expect `vp build` to run your custom `"build"` script |
-| `vp check` (+ `--fix`) as the lint/format/type loop | Chain `vp fmt && vp lint && tsc --noEmit` separately |
-| `vp test` for CI/agents (single run) | Assume `vp test` watches like raw `vitest` |
-| `vp build` for apps, `vp pack` for libs/CLIs | Use `vp build` to publish a library |
-| Upgrade to Vite 8+ / Vitest 4.1+ **before** `vp migrate` | Run `vp migrate` on older Vite/Vitest |
-| Remove `vite`/`vitest` deps **after** rewrites are verified | Delete deps before confirming imports were rewritten |
-| Use `setup-vp` Action in CI | `curl \| bash` the installer in CI |
-| Leave `declare module 'vitest'` augmentations pointing at upstream | Rewrite type augmentations to `vite-plus/test` |
-| Also bump `@voidzero-dev/vite-plus-core` / `-test` when upgrading | Assume `vp update vite-plus` re-resolves the npm aliases |
+1. **Unified config.** Everything lives in a single `vite.config.ts` using blocks (`server`, `build`, `preview`, `test`, `lint`, `fmt`, `check`, `run`, `pack`, `staged`, `create`). Put tool settings in those blocks — not in `vitest.config.ts`, `tsdown.config.ts`, `oxlint.config.*`, `.oxfmtrc.*`, `.prettierrc`, `eslint.config.*`, or `lint-staged.config.*`. → [config.md](./config.md)
+2. **Import from `vite-plus` for config and tests.** Config: `import { defineConfig } from 'vite-plus'`. Tests: `import { … } from 'vite-plus/test'` (browser context: `vite-plus/test/browser/context`). Rewrite nuances, Nuxt, and pnpm `vite` pins: → [monorepo-and-migration.md](./monorepo-and-migration.md)
+3. **Built-in ≠ script.** `vp build` / `vp test` / `vp dev` always run the bundled tool. To run a same-named `package.json` script, use `vp run <name>` (alias `vpr`). → [commands.md](./commands.md)
+4. **`vp check` is the validation command.** It dedupes Oxfmt + Oxlint + type-check (`tsgolint`/`tsgo`). Prefer it over chaining standalone `vp lint` / `vp fmt` / `tsc --noEmit`. Keep `lint.options.typeAware` and `typeCheck` on. Use the `check` block to set default skip flags. → [config.md](./config.md)
+5. **`vp build` for apps, `vp pack` for libraries/CLIs.** Package libraries with `vp pack`. → [config.md](./config.md)
+6. **Migrate, then verify.** Run `vp migrate` (also the recommended local upgrade path), confirm import rewrites, remove obsolete `vitest` / `@vitest/browser*` only where migrate allows (keep intentional pnpm `vite`→core entries), finally `vp install && vp check && vp test` plus `vp build` (apps) or `vp pack` (libs/CLIs). Prefer `vp migrate` over hand-updating aliases. → [monorepo-and-migration.md](./monorepo-and-migration.md)
 
 ## Reference Map
 
-Read the relevant file on demand:
+Load on demand:
 
-| File | Covers |
-|------|--------|
-| [setup.md](./setup.md) | Install, managed runtime (`vp env`), per-project Node.js, dependencies (`vp install`/`add`/`update`, detection order), scaffolding (`vp create`), upgrading |
-| [commands.md](./commands.md) | Command surface (built-in vs scripts), binaries (`vpx`/`vp exec`/`vp dlx`), task runner & caching (`vp run`), agent workflow & command mapping |
-| [config.md](./config.md) | Single `vite.config.ts` & blocks, aliases/imports, `vp check`/`lint`/`fmt`, `vp test`, `vp build` vs `vp pack`, commit hooks & `staged` |
-| [monorepo-and-migration.md](./monorepo-and-migration.md) | Root config, `lint`/`fmt` overrides, workspace filters & concurrency, `vp migrate` flow, tool-specific migrations, agent prompt |
+| When | File |
+|------|------|
+| Installing `vp`, managed Node, deps, scaffolding, upgrading | [setup.md](./setup.md) |
+| Built-in vs scripts, `vpx`/`exec`/`dlx`, task runner & caching, agent loop | [commands.md](./commands.md) |
+| `vite.config.ts` blocks (incl. `check`), imports, check/test/build/pack, hooks | [config.md](./config.md) |
+| Monorepo overrides, workspace filters, `vp migrate` flow & agent prompt | [monorepo-and-migration.md](./monorepo-and-migration.md) |
