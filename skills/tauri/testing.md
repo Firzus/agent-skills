@@ -11,8 +11,7 @@ reason.
 Read lockfiles, `package.json`, `src-tauri/tauri.conf.json`,
 `src-tauri/Cargo.toml`, and local docs before running checks. Use the command
 runner and scripts already present in the project for frontend and Rust layers.
-Playwright CLI for shell CDP is agent-side only — see [debugging.md](debugging.md);
-do not add it to the app.
+For Playwright CLI on shell CDP, see [debugging.md](debugging.md).
 
 Common check categories:
 
