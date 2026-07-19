@@ -70,8 +70,7 @@ need to exclude `DEV_TOOLS` from blocked flags during `debug_assertions`.
 
 Install, sessions, and the command surface belong to the `playwright-cli`
 skill — this file only covers the Tauri seam: exposing CDP and proving the
-attach reached the real shell. Playwright CLI runs on the **agent machine**
-only; never add `@playwright/cli` to the Tauri app's `package.json`.
+attach reached the real shell.
 
 Relaunch the project's existing Tauri command with WebView2 remote debugging:
 
