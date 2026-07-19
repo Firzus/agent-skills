@@ -24,7 +24,7 @@ rung observable.
 
 | Platform | Webview | Best first evidence | Automation notes |
 | --- | --- | --- | --- |
-| Windows | WebView2 | stdout/stderr, WebView DevTools, plugin logs | CDP via `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`, then `playwright-cli attach`. |
+| Windows | WebView2 | stdout/stderr, WebView DevTools, plugin logs | CDP via `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`, then attach with the `playwright-cli` skill. |
 | macOS | WKWebView | stdout/stderr, Safari/WebKit inspection, plugin logs | CDP unreliable. Prefer DevTools and instrumentation. |
 | Linux | WebKitGTK | stdout/stderr, WebKit inspector when enabled, plugin logs | CDP is not a portable path. Use logs and app instrumentation. |
 
@@ -68,12 +68,10 @@ need to exclude `DEV_TOOLS` from blocked flags during `debug_assertions`.
 
 ## Playwright CLI On The Tauri Shell (Windows)
 
-Use Playwright CLI on the **agent machine** only. Never add `@playwright/cli` to
-the Tauri app's `package.json`. Install globally if missing:
-
-```bash
-npm install -g @playwright/cli@latest
-```
+Install, sessions, and the command surface belong to the `playwright-cli`
+skill — this file only covers the Tauri seam: exposing CDP and proving the
+attach reached the real shell. Playwright CLI runs on the **agent machine**
+only; never add `@playwright/cli` to the Tauri app's `package.json`.
 
 Relaunch the project's existing Tauri command with WebView2 remote debugging:
 
@@ -81,37 +79,14 @@ Relaunch the project's existing Tauri command with WebView2 remote debugging:
 WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS="--remote-debugging-port=9222" <existing-launch-command>
 ```
 
-Attach to the shell WebView, then drive it with the session flag Playwright CLI
-prints (`default` unless overridden):
-
-```bash
-playwright-cli attach --cdp=http://127.0.0.1:9222
-playwright-cli -s=default snapshot
-playwright-cli -s=default screenshot --filename=.cursor/tauri-shell.png
-```
-
-Useful commands once attached (always pass `-s=<session>`):
-
-| Command | Use |
-| --- | --- |
-| `snapshot` | Accessibility tree + element refs (`e5`, …) |
-| `screenshot [target]` | Viewport or element PNG (vision) |
-| `console` | Page console messages |
-| `eval <func>` | JS in the page (IPC invoke, DOM probes) |
-| `click` / `dblclick` / `hover` | Pointer on a ref |
-| `fill` / `type` / `press` | Text and keys |
-| `find <text>` | Search the last snapshot |
-| `requests` / `request <n>` | Network traffic since load |
-| `reload` | Reload the webview page |
-| `detach` | Leave the app running; end the CLI session |
-
-For the full surface (`tab-*`, storage, tracing, video, …): `playwright-cli --help`.
+Then attach to the CDP endpoint (`http://127.0.0.1:9222`) and drive the
+session with the `playwright-cli` skill.
 
 Claim shell automation only when attach succeeds and the page URL/title match
 the desktop app (`build.devUrl` and the window title). A Chrome tab opened at
 `build.devUrl` is frontend-only: it has no Tauri IPC bridge.
 
-If `attach` fails, optionally run `scripts/probe-cdp.py` to separate "no CDP
+If attach fails, optionally run `scripts/probe-cdp.py` to separate "no CDP
 endpoint" from "CLI cannot attach". Then fall back to instrumentation below.
 
 ### IPC Proof
@@ -119,7 +94,8 @@ endpoint" from "CLI cannot attach". Then fall back to instrumentation below.
 A DOM change alone is not proof that Rust ran. Prefer, in order:
 
 1. Trigger UI that calls IPC, then correlate stdout / `tauri-plugin-log`.
-2. `eval` a read-only invoke via the public bridge when exposed, e.g.
+2. Evaluate a read-only invoke from the page via the public bridge when
+   exposed, e.g.
    `window.__TAURI__.core.invoke('…')` (or the project's typed bindings if
    reachable from the page).
 3. Only if the public bridge is unavailable, use
@@ -129,25 +105,15 @@ A DOM change alone is not proof that Rust ran. Prefer, in order:
    command.
 
 Assert the returned value is a real Rust-side result (path, list, typed
-payload), not only a changed DOM property.
-
-### Input And Interaction
-
-```bash
-playwright-cli -s=default click e5
-playwright-cli -s=default fill e7 "text"
-playwright-cli -s=default type "text"
-playwright-cli -s=default press Enter
-```
-
-Focus before typing. Verify with visible UI, logs, or an invoke result — not a
-DOM property alone.
+payload), not only a changed DOM property. The same rule binds UI interaction
+through the attached session: verify with visible UI, logs, or an invoke
+result — not a DOM property alone.
 
 ## Frontend-Only Checks
 
-For UI that does not need IPC, reproduce `build.devUrl` in a normal browser with
-Playwright CLI (`open`) or Chrome DevTools, then confirm the same path in the
-Tauri shell with logs or a shell attach session.
+For UI that does not need IPC, reproduce `build.devUrl` in a normal browser
+(the `playwright-cli` skill or Chrome DevTools), then confirm the same path in
+the Tauri shell with logs or a shell attach session.
 
 ## Fallback Instrumentation
 
@@ -214,15 +180,14 @@ fn debug_snapshot(state: tauri::State<'_, AppState>) -> Result<DebugSnapshot, Ap
 1. Treat this as an evidence limitation, not a blocker.
 2. Use stdout/stderr, `tauri-plugin-log`, debug-only commands, screenshots, and
    frontend reproduction at `build.devUrl`.
-3. State that shell CDP was attempted only if `playwright-cli attach` was run
+3. State that shell CDP was attempted only if a Playwright CLI attach was run
    (or `probe-cdp.py` / an HTTP `/json/list` result was observed).
 
 ## Cleanup
 
 Before ending the task:
 
-- `playwright-cli -s=default detach` when a session is attached (leaves the app
-  running).
+- Detach any attached Playwright CLI session — detach leaves the app running.
 - Stop frontend dev servers, `tauri dev`, watchers, and any spawned app
   executable — including orphans after partial launch failures.
 - Remove temporary `.cursor/` screenshots and Playwright CLI session artifacts
