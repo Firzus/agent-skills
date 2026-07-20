@@ -63,6 +63,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`extract-theme`](./skills/extract-theme) — Extracts a website's design tokens into shadcn/ui + Tailwind CSS v4.
 - [`shaders`](./skills/shaders) — GPU-accelerated visual effects in React/Next.js with the `shaders` npm package.
 - [`swr`](./skills/swr) — SWR v2 data fetching for React/Next.js: cache keys, revalidation, mutations, pagination, and subscriptions.
+- [`astryx`](./skills/astryx) — Astryx (`@astryxdesign`), Meta's agent-ready React + StyleX design system: setup, CLI discovery loop, xstyle, tokens, theming, migration.
 
 ### Engine best practices
 
