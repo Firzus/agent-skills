@@ -54,13 +54,24 @@ Missing compiler = the component renders **with no styles and no error/warning**
 
 | Bundler | Plugin |
 |---------|--------|
-| Next.js App Router (SWC) | `@stylexswc/nextjs-plugin` |
+| Next.js 16+ (Turbopack, default) | `@stylexswc/nextjs-plugin/turbopack` + `@stylexswc/postcss-plugin` |
+| Next.js App Router (webpack) | `@stylexswc/nextjs-plugin` |
 | Webpack | `@stylexjs/webpack-plugin` |
-| Vite / Rollup | `@stylexjs/rollup-plugin` |
+| Vite | `@stylexswc/unplugin/vite` (or `@stylexjs/rollup-plugin`) |
 | Babel | `@stylexjs/babel-plugin` + `@stylexjs/postcss-plugin` |
 
 ```js
-// next.config — App Router
+// next.config — Next.js 16+ (Turbopack)
+import stylexPlugin from '@stylexswc/nextjs-plugin/turbopack';
+export default stylexPlugin({
+  rsOptions: { aliases: { '@/*': ['./src/*'] }, unstable_moduleResolution: { type: 'commonJS' } },
+})({ /* existing next config */ });
+```
+
+⚠️ Under Turbopack the loader only **compiles** StyleX — CSS extraction requires `@stylexswc/postcss-plugin` in the PostCSS pipeline. Skipping it reproduces the classic "renders unstyled, no error" failure.
+
+```js
+// next.config — App Router on webpack (`next build --webpack`)
 import stylexPlugin from '@stylexswc/nextjs-plugin';
 export default stylexPlugin({
   rsOptions: { aliases: { '@/*': ['./src/*'] }, unstable_moduleResolution: { type: 'commonJS' } },
