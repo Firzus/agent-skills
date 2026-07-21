@@ -1,6 +1,6 @@
 # Responsive Images Reference
 
-Use responsive image markup to deliver the smallest asset that still looks good at the rendered size. After generating optimized variants, replace the app's runtime references so production pages request those variants instead of the original heavy image, then remove the old unoptimized raster when it is no longer referenced.
+Use responsive image markup to deliver the smallest asset that still looks good at the rendered size. After generating optimized variants, replace the app's runtime references so production pages request those variants instead of the original heavy image, then remove the old unoptimized raster when it is no longer referenced. Loading attributes (`loading`, `fetchpriority`, `decoding`, preload) must follow the per-asset strategy matrix from SKILL.md Step 3, detailed in [delivery-strategy.md](./delivery-strategy.md).
 
 ## Core rules
 
@@ -105,6 +105,8 @@ For the likely LCP image:
 - In frameworks with image components, use their priority/preload API instead of raw `fetchpriority` if that is the established pattern.
 - Ensure `sizes` does not force the browser to download an oversized candidate.
 - Preload only the single critical image; excessive preloads compete with CSS and fonts.
+- When preloading a responsive image, use `imagesrcset` + `imagesizes` on `<link rel="preload" as="image">` so the preload matches the `srcset` pick.
+- Priority, preload, and caching policy: see [delivery-strategy.md](./delivery-strategy.md).
 
 ## Lazy images
 

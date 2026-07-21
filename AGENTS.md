@@ -68,7 +68,7 @@ npx skills add Firzus/agent-skills --skill <skill-name>
 
 ## Conventions & Patterns
 
-- **Filenames:** kebab-case (`vite-plus-best-practices`, `image-optimization`). Skill folder name must match the `name:` field in the SKILL.md frontmatter.
+- **Filenames:** kebab-case (`vite-plus-best-practices`, `web-assets-optimization`). Skill folder name must match the `name:` field in the SKILL.md frontmatter.
 - **SKILL.md frontmatter:** required keys are `name` and `description`. Use a YAML block scalar (`description: >-`) when the description spans multiple lines or contains quotes.
 - **SKILL.md body:** Markdown, second-person voice aimed at the agent ("Use this skill when…"). Keep under ~500 lines; offload detail into sibling `.md` files referenced by relative path.
 - **Reference files:** topical, single-purpose, linked from `SKILL.md` with relative paths (e.g. `[commands.md](./commands.md)`).

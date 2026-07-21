@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate reviewable Sharp CLI commands from scan-images.py JSON output.
+"""Generate reviewable Sharp CLI commands from scan-assets.py JSON output.
 
 The script prints commands only. It does not optimize images or modify files.
 """
@@ -130,6 +130,10 @@ def command_for(source: str, output: str, width: int, fmt: str) -> str:
 
 
 def should_include(asset: dict[str, Any], include_unreferenced: bool) -> bool:
+    # scan-assets.py tags each asset with a type; only raster images belong in a Sharp plan.
+    if "type" in asset and asset.get("type") != "image":
+        return False
+    # Fallback for older scan JSON without a type field: extension-based checks.
     extension = str(asset.get("extension", "")).lower()
     if extension == "svg" or extension == "gif":
         return False
@@ -164,8 +168,8 @@ def widths_for(asset: dict[str, Any], requested_widths: list[int]) -> list[int]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Generate Sharp CLI command plan from scan-images.py JSON.")
-    parser.add_argument("scan_json", help="Path to scan-images.py JSON output")
+    parser = argparse.ArgumentParser(description="Generate Sharp CLI command plan from scan-assets.py JSON.")
+    parser.add_argument("scan_json", help="Path to scan-assets.py JSON output")
     parser.add_argument(
         "--out-dir",
         help="Temporary output directory for experimentation only; move winners to final asset paths and delete this dir before finishing",
