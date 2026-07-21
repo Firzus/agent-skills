@@ -4,12 +4,11 @@ Theming in Astryx is a declarative config over color, typography, radius, motion
 
 ## Applying a theme
 
-Wrap the app **once** in a single `<Theme>` provider near the root. Mind the import split — this is a real trap:
+Wrap the app **once** in a single `<Theme>` provider near the root.
 
 | Import | From |
 |--------|------|
-| `Theme` (provider component) | `@astryxdesign/core` |
-| `useTheme`, `defineTheme` | `@astryxdesign/core/theme` |
+| `Theme`, `useTheme`, `defineTheme` | `@astryxdesign/core` **or** `@astryxdesign/core/theme` — both entry points re-export the full theming API (verified v0.1.7) |
 | `<name>Theme` (theme object) | `@astryxdesign/theme-<name>` (or `/built`) |
 
 ```tsx

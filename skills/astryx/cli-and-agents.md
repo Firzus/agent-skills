@@ -31,13 +31,18 @@ npx astryx swizzle <Component>     # copy component source into your project
 npx astryx discover [<search>]     # find EXTERNAL (third-party) packages/components
 npx astryx upgrade --list          # list codemods; --apply (with --from/--to) to migrate versions
 npx astryx theme build ./theme.ts  # compile a defineTheme file to production CSS/JS + .d.ts
+npx astryx theme list              # list themes available to add
+npx astryx theme add [slug] [path] # scaffold a theme into your project as editable source
+npx astryx layout                  # generate XDS layouts from compressed expressions (XLE/XLO)
+npx astryx build [<query>]         # composition kit for a page idea; no args = workflow playbook
+npx astryx validate-integration [pkg]  # validate an Astryx integration package (manifest + contributions)
 npx astryx doctor                  # diagnose setup; exit 0 = ok (warnings fine), 1 = a check failed
 npx astryx manifest --json         # self-describing capability manifest for agents
 ```
 
 Distinctions worth remembering:
 
-- **No `add` command.** Add UI via `template`, `swizzle`, or plain imports — not `astryx add`.
+- **No `add` command for components.** Add UI via `template`, `swizzle`, or plain imports — not `astryx add`. (`theme add` does exist, but it scaffolds a *theme*, not UI.)
 - **`search` vs `discover`.** `search` covers core Astryx (components/hooks/docs/templates); `discover` searches the *external* ecosystem.
 - **`swizzle` last.** It copies raw StyleX source and requires a build-time StyleX compiler ([setup.md](./setup.md)). Prefer theming/tokens first; swizzle only for deep source-level customization.
 
@@ -47,8 +52,10 @@ Distinctions worth remembering:
 |------|-----|
 | `--json` | Machine-readable typed envelope for scripts, CI, agent pipelines. Response objects carry `type` discriminators (`component.*`, `search.*`, `template.*`, …). |
 | `--dense` | Token-efficient output for context-limited AI tools (web ChatGPT/Claude). |
+| `--lang <en\|zh\|dense>` | Output language/format (`--zh` is shorthand for `--lang zh`; `dense` ≡ `--dense`). |
+| `--detail <full\|compact\|brief>` | Output detail level, default `full`. |
 
-Gate CI with `npx astryx doctor`. The exact `--detail`/`--lang` flag matrix is under-documented — confirm against `npx astryx --help`.
+Gate CI with `npx astryx doctor`.
 
 ## MCP server
 
