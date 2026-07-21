@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan a web project for image assets and references.
+"""Scan a web project for image, video, animated, font, and SVG assets and references.
 
 This script is intentionally stdlib-only so agents can run it in most projects
 without installing dependencies. It does not modify files.
@@ -17,6 +17,10 @@ from pathlib import Path
 from typing import Any
 
 IMAGE_EXTENSIONS = {".avif", ".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"}
+VIDEO_EXTENSIONS = {".mp4", ".webm", ".mov", ".m4v", ".ogv", ".avi"}
+FONT_EXTENSIONS = {".woff2", ".woff", ".ttf", ".otf", ".eot"}
+SCANNED_EXTENSIONS = IMAGE_EXTENSIONS | VIDEO_EXTENSIONS | FONT_EXTENSIONS
+LEGACY_FONT_EXTENSIONS = {".woff", ".ttf", ".otf", ".eot"}
 REFERENCE_EXTENSIONS = {
     ".astro",
     ".css",
@@ -47,8 +51,8 @@ IGNORE_DIRS = {
     "node_modules",
     "out",
 }
-IMAGE_TOKEN_RE = re.compile(
-    r"(?P<path>(?:https?:)?//[^\s'\"()<>]+?\.(?:avif|gif|jpe?g|png|svg|webp)(?:\?[^\s'\"()<>]+)?|[./@A-Za-z0-9_-][^\s'\"()<>]*?\.(?:avif|gif|jpe?g|png|svg|webp)(?:\?[^\s'\"()<>]+)?)",
+ASSET_TOKEN_RE = re.compile(
+    r"(?P<path>(?:https?:)?//[^\s'\"()<>]+?\.(?:avif|gif|jpe?g|png|svg|webp|mp4|webm|mov|m4v|ogv|avi|woff2?|ttf|otf|eot)(?:\?[^\s'\"()<>]+)?|[./@A-Za-z0-9_-][^\s'\"()<>]*?\.(?:avif|gif|jpe?g|png|svg|webp|mp4|webm|mov|m4v|ogv|avi|woff2?|ttf|otf|eot)(?:\?[^\s'\"()<>]+)?)",
     re.IGNORECASE,
 )
 
@@ -137,6 +141,55 @@ def webp_dimensions(data: bytes) -> tuple[int, int] | None:
     return None
 
 
+def gif_dimensions(data: bytes) -> tuple[int, int] | None:
+    if len(data) >= 10 and data[:6] in (b"GIF87a", b"GIF89a"):
+        return struct.unpack("<HH", data[6:10])
+    return None
+
+
+def _gif_skip_sub_blocks(data: bytes, pos: int) -> int:
+    while True:
+        size = data[pos]
+        pos += 1
+        if size == 0:
+            return pos
+        pos += size
+
+
+def gif_is_animated(path: Path) -> bool:
+    """Walk the GIF block structure and report whether it holds more than one image."""
+    try:
+        data = path.read_bytes()
+        if data[:6] not in (b"GIF87a", b"GIF89a"):
+            return False
+        packed = data[10]
+        pos = 13
+        if packed & 0x80:
+            pos += 3 * (2 << (packed & 0x07))
+        image_count = 0
+        while pos < len(data):
+            block = data[pos]
+            pos += 1
+            if block == 0x3B:
+                break
+            if block == 0x21:
+                pos += 1
+                pos = _gif_skip_sub_blocks(data, pos)
+            elif block == 0x2C:
+                image_count += 1
+                local_packed = data[pos + 8]
+                pos += 9
+                if local_packed & 0x80:
+                    pos += 3 * (2 << (local_packed & 0x07))
+                pos += 1
+                pos = _gif_skip_sub_blocks(data, pos)
+            else:
+                return False
+        return image_count > 1
+    except (OSError, IndexError):
+        return False
+
+
 def svg_dimensions(text: str) -> tuple[int, int] | None:
     width_match = re.search(r'\bwidth=["\']([0-9.]+)', text)
     height_match = re.search(r'\bheight=["\']([0-9.]+)', text)
@@ -150,6 +203,8 @@ def svg_dimensions(text: str) -> tuple[int, int] | None:
 
 def dimensions(path: Path) -> dict[str, int] | None:
     suffix = path.suffix.lower()
+    if suffix in VIDEO_EXTENSIONS or suffix in FONT_EXTENSIONS:
+        return None
     try:
         if suffix in {".jpg", ".jpeg"}:
             dims = jpeg_dimensions(path)
@@ -161,6 +216,8 @@ def dimensions(path: Path) -> dict[str, int] | None:
                 dims = png_dimensions(data)
             elif suffix == ".webp":
                 dims = webp_dimensions(data)
+            elif suffix == ".gif":
+                dims = gif_dimensions(data)
             else:
                 dims = None
     except OSError:
@@ -180,15 +237,29 @@ def _looks_like_logo(path: str) -> bool:
     return any(token in name for token in ("logo", "brand", "wordmark"))
 
 
+def asset_type(suffix: str) -> str:
+    if suffix == ".svg":
+        return "svg"
+    if suffix == ".gif":
+        return "gif"
+    if suffix in VIDEO_EXTENSIONS:
+        return "video"
+    if suffix in FONT_EXTENSIONS:
+        return "font"
+    return "image"
+
+
 def collect_assets(root: Path) -> dict[str, dict[str, Any]]:
     assets: dict[str, dict[str, Any]] = {}
     for path in iter_files(root):
-        if path.suffix.lower() not in IMAGE_EXTENSIONS:
+        suffix = path.suffix.lower()
+        if suffix not in SCANNED_EXTENSIONS:
             continue
         relative_path = rel(path, root)
         asset: dict[str, Any] = {
             "path": relative_path,
-            "extension": path.suffix.lower().lstrip("."),
+            "extension": suffix.lstrip("."),
+            "type": asset_type(suffix),
             "bytes": read_size(path),
             "dimensions": dimensions(path),
             "references": [],
@@ -196,6 +267,10 @@ def collect_assets(root: Path) -> dict[str, dict[str, Any]]:
         }
         if _looks_like_logo(relative_path):
             _append_hint(asset, "logo")
+        if suffix == ".gif" and gif_is_animated(path):
+            _append_hint(asset, "animated")
+        if suffix in LEGACY_FONT_EXTENSIONS:
+            _append_hint(asset, "legacy-font-format")
         assets[relative_path] = asset
     return assets
 
@@ -242,7 +317,7 @@ def collect_references(root: Path, assets: dict[str, dict[str, Any]]) -> list[di
         relative_source = rel(path, root)
         text_lines = text.splitlines()
         for line_number, line in enumerate(text_lines, start=1):
-            for match in IMAGE_TOKEN_RE.finditer(line):
+            for match in ASSET_TOKEN_RE.finditer(line):
                 candidate = match.group("path")
                 if candidate.startswith("http://") or candidate.startswith("https://") or candidate.startswith("//"):
                     remote_references.append({"source": relative_source, "line": line_number, "url": candidate})
@@ -262,8 +337,21 @@ def collect_references(root: Path, assets: dict[str, dict[str, Any]]) -> list[di
                             _append_hint(assets[key], "app-icon")
                         if "rel" in line and "icon" in line:
                             _append_hint(assets[key], "favicon")
+                        if "poster=" in line and assets[key]["type"] == "image":
+                            _append_hint(assets[key], "poster")
+                        if 'rel="preload"' in line or "rel='preload'" in line:
+                            _append_hint(assets[key], "preload")
                         break
     return remote_references
+
+
+def summarize_by_type(assets: dict[str, dict[str, Any]]) -> dict[str, dict[str, int]]:
+    by_type: dict[str, dict[str, int]] = {}
+    for asset in assets.values():
+        entry = by_type.setdefault(asset["type"], {"count": 0, "bytes": 0})
+        entry["count"] += 1
+        entry["bytes"] += asset["bytes"]
+    return {key: by_type[key] for key in sorted(by_type)}
 
 
 def build_report(root: Path) -> dict[str, Any]:
@@ -278,6 +366,7 @@ def build_report(root: Path) -> dict[str, Any]:
             "referencedAssets": sum(1 for asset in assets.values() if asset["references"]),
             "remoteReferences": len(remote_references),
             "totalBytes": sum(asset["bytes"] for asset in assets.values()),
+            "byType": summarize_by_type(assets),
         },
     }
 
@@ -292,51 +381,60 @@ def human_bytes(size: int) -> str:
     return f"{size} B"
 
 
-def markdown(report: dict[str, Any]) -> str:
-    lines = ["# Image scan report", ""]
-    summary = report["summary"]
-    lines.extend(
-        [
-            f"- Total image assets: {summary['totalAssets']}",
-            f"- Referenced local assets: {summary['referencedAssets']}",
-            f"- Remote image references: {summary['remoteReferences']}",
-            f"- Total local image bytes: {human_bytes(summary['totalBytes'])}",
-            "",
-            "## Referenced local images",
-            "",
-        ]
-    )
-    referenced = [asset for asset in report["assets"] if asset["references"]]
+def _dim_text(asset: dict[str, Any]) -> str:
+    dims = asset.get("dimensions") or {}
+    return f"{dims.get('width')}x{dims.get('height')}" if dims else "unknown dimensions"
+
+
+def _referenced_section(lines: list[str], title: str, assets: list[dict[str, Any]], asset_type_name: str) -> None:
+    lines.extend(["", f"## {title}", ""])
+    referenced = [asset for asset in assets if asset["references"] and asset["type"] == asset_type_name]
     if not referenced:
-        lines.append("No referenced local images found.")
+        lines.append(f"No referenced local {asset_type_name} assets found.")
     for asset in referenced:
-        dims = asset.get("dimensions") or {}
-        dim_text = f"{dims.get('width')}x{dims.get('height')}" if dims else "unknown dimensions"
         hints = asset.get("usageHints") or []
         hint_text = f", hints: {', '.join(hints)}" if hints else ""
-        lines.append(f"- `{asset['path']}` - {human_bytes(asset['bytes'])}, {dim_text}, {len(asset['references'])} reference(s){hint_text}")
+        lines.append(f"- `{asset['path']}` - {human_bytes(asset['bytes'])}, {_dim_text(asset)}, {len(asset['references'])} reference(s){hint_text}")
         for reference in asset["references"][:5]:
             lines.append(f"  - `{reference['source']}:{reference['line']}`")
         if len(asset["references"]) > 5:
             lines.append(f"  - ... {len(asset['references']) - 5} more")
-    lines.extend(["", "## Large unreferenced local images", ""])
+
+
+def markdown(report: dict[str, Any]) -> str:
+    lines = ["# Asset scan report", ""]
+    summary = report["summary"]
+    lines.extend(
+        [
+            f"- Total assets: {summary['totalAssets']}",
+            f"- Referenced local assets: {summary['referencedAssets']}",
+            f"- Remote asset references: {summary['remoteReferences']}",
+            f"- Total local asset bytes: {human_bytes(summary['totalBytes'])}",
+        ]
+    )
+    for type_name, entry in summary["byType"].items():
+        lines.append(f"- {type_name}: {entry['count']} asset(s), {human_bytes(entry['bytes'])}")
+    _referenced_section(lines, "Referenced images", report["assets"], "image")
+    _referenced_section(lines, "Videos", report["assets"], "video")
+    _referenced_section(lines, "Animated media (GIF)", report["assets"], "gif")
+    _referenced_section(lines, "Fonts", report["assets"], "font")
+    _referenced_section(lines, "SVG assets", report["assets"], "svg")
+    lines.extend(["", "## Large unreferenced local assets", ""])
     unreferenced = [asset for asset in report["assets"] if not asset["references"] and asset["bytes"] >= 200_000]
     if not unreferenced:
-        lines.append("No large unreferenced local images found.")
+        lines.append("No large unreferenced local assets found.")
     for asset in sorted(unreferenced, key=lambda item: -item["bytes"])[:30]:
-        dims = asset.get("dimensions") or {}
-        dim_text = f"{dims.get('width')}x{dims.get('height')}" if dims else "unknown dimensions"
-        lines.append(f"- `{asset['path']}` - {human_bytes(asset['bytes'])}, {dim_text}")
-    lines.extend(["", "## Remote image references", ""])
+        lines.append(f"- `{asset['path']}` - {human_bytes(asset['bytes'])}, {_dim_text(asset)}")
+    lines.extend(["", "## Remote asset references", ""])
     if not report["remoteReferences"]:
-        lines.append("No remote image references found.")
+        lines.append("No remote asset references found.")
     for reference in report["remoteReferences"][:50]:
         lines.append(f"- `{reference['source']}:{reference['line']}` — {reference['url']}")
     return "\n".join(lines) + "\n"
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Scan a web project for image assets and references.")
+    parser = argparse.ArgumentParser(description="Scan a web project for image, video, animated, font, and SVG assets and references.")
     parser.add_argument("--root", default=".", help="Project root to scan")
     parser.add_argument("--format", choices={"json", "markdown"}, default="markdown", help="Output format")
     args = parser.parse_args()

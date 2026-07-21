@@ -59,7 +59,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`vite-plus-best-practices`](./skills/vite-plus-best-practices) — Best practices for Vite+ (`vp`): config, migrations, testing, monorepos.
 - [`tauri`](./skills/tauri) — Tauri v2+: owned IPC, capabilities-first permissions, Playwright CLI shell debugging, mobile-safe structure.
 - [`dokploy-best-practices`](./skills/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
-- [`image-optimization`](./skills/image-optimization) — Audits and optimizes web images for performance, SEO, and accessibility.
+- [`web-assets-optimization`](./skills/web-assets-optimization) — Optimizes all web assets: images, video, GIF replacement, fonts, SVG, plus per-asset delivery strategy (LCP, lazy loading).
 - [`extract-theme`](./skills/extract-theme) — Extracts a website's design tokens into shadcn/ui + Tailwind CSS v4.
 - [`shaders`](./skills/shaders) — GPU-accelerated visual effects in React/Next.js with the `shaders` npm package.
 - [`swr`](./skills/swr) — SWR v2 data fetching for React/Next.js: cache keys, revalidation, mutations, pagination, and subscriptions.
