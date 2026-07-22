@@ -11,7 +11,7 @@ reason.
 Read lockfiles, `package.json`, `src-tauri/tauri.conf.json`,
 `src-tauri/Cargo.toml`, and local docs before running checks. Use the command
 runner and scripts already present in the project for frontend and Rust layers.
-For Playwright CLI on shell CDP, see [debugging.md](debugging.md).
+For CDP attach on the shell, see [debugging.md](debugging.md).
 
 Common check categories:
 
@@ -35,7 +35,7 @@ Use normal web tooling for frontend-only bugs:
 
 - Run the configured frontend dev server or test command.
 - Open `build.devUrl` in a normal browser for fast console/network inspection.
-- Use Playwright, Chrome DevTools, or framework tests for DOM and routing issues.
+- Use the `agent-browser` skill, Chrome DevTools, or framework tests for DOM and routing issues.
 - Only blame Tauri after the same path works in a browser and fails in the shell.
 
 ## Rust Layer
@@ -89,7 +89,7 @@ For shell checks:
 
 1. Capture stdout/stderr.
 2. Verify frontend logs or DevTools when available.
-3. Use Playwright CLI on shell CDP only when configured; see
+3. Attach to shell CDP (`agent-browser` skill) only when configured; see
    [debugging.md](debugging.md).
 4. Confirm plugin permissions with [permissions.md](permissions.md).
 5. Stop any dev server or spawned app process before ending the task.
@@ -111,7 +111,7 @@ State checks by layer:
 
 - Frontend: command or browser evidence.
 - Rust: `cargo check` or Rust test evidence.
-- Shell: Tauri run/build evidence, logs, DevTools, Playwright CLI attach, or
+- Shell: Tauri run/build evidence, logs, DevTools, CDP attach, or
   fallback instrumentation.
 
 If a layer was not run, say why.

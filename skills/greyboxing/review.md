@@ -34,16 +34,17 @@ Countable, binary:
 - [ ] Every style and motion value traces to a token of the theme source.
 - [ ] Every state declared in `PAGES.md` (empty, error, loading) is reachable via its query param.
 
-## Visual protocol — playwright-cli
+## Visual protocol — agent-browser
 
-The checklist's responsive, contrast, theme, and state items are verified **on screenshots, not by reading code**. Per page:
+The checklist's responsive, contrast, theme, and state items are verified **on the running page, not by reading code**. Per page, with the `agent-browser` skill (`playwright-cli` works too):
 
-- Capture at **375 px, 768 px, and 1440 px**.
-- One pass with **`prefers-reduced-motion` emulated**.
+- Capture at **375 px, 768 px, and 1440 px** (`set viewport`).
+- One pass with **`prefers-reduced-motion` emulated** (`set media light reduced-motion`).
 - One capture per declared state (the page's query params in `PAGES.md`).
 - **Look at every capture** — read them as images and judge them; producing files is not verifying.
+- Mechanical checks through the same session: `snapshot` for landmarks and heading hierarchy, `get box` for touch targets, `errors` for a broken script, `vitals` when the page carries 3D/video/scroll effects ([3d-vfx.md](./3d-vfx.md) budgets).
 
-When `playwright-cli` is unavailable, verify the same items by code reading and state that degradation in the review report.
+When no browser CLI is available, verify the same items by code reading and state that degradation in the review report.
 
 ## Site pass — once every page has passed
 

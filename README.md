@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 45 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 46 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -57,7 +57,8 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`babysitting-pr`](./skills/babysitting-pr) — Monitors an open GitHub PR, fixes branch-related CI and review blockers, and keeps it merge-ready.
 - [`software-architecture`](./skills/software-architecture) — Stack-agnostic architecture for any software (game, desktop, web, service): macro structures, runtime patterns, boundaries, state, cross-cutting concerns.
 - [`vite-plus-best-practices`](./skills/vite-plus-best-practices) — Best practices for Vite+ (`vp`): config, migrations, testing, monorepos.
-- [`tauri`](./skills/tauri) — Tauri v2+: owned IPC, capabilities-first permissions, Playwright CLI shell debugging, mobile-safe structure.
+- [`tauri`](./skills/tauri) — Tauri v2+: owned IPC, capabilities-first permissions, CDP shell debugging, mobile-safe structure.
+- [`agent-browser`](./skills/agent-browser) — Drives a real browser from the CLI (CDP, a11y snapshots + refs): interaction, screenshots, emulation, vitals, and CDP attach to Tauri/Electron shells.
 - [`dokploy-best-practices`](./skills/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
 - [`web-assets-optimization`](./skills/web-assets-optimization) — Optimizes all web assets: images, video, GIF replacement, fonts, SVG, plus per-asset delivery strategy (LCP, lazy loading).
 - [`artefact`](./skills/artefact) — Visualizes a concept as a self-contained HTML document, written to the OS temp dir and opened in the browser.

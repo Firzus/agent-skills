@@ -20,7 +20,7 @@ Everything is **responsive, designed mobile-first**: build the narrow layout fir
 | Tool / skill     | For                                                                    |
 | ---------------- | ---------------------------------------------------------------------- |
 | `prototype`      | switchable UI variants of signature-tier pages                         |
-| `playwright-cli` | the visual protocol in [review.md](./review.md); when missing, the review degrades to code-level checks and the review report must say so |
+| `agent-browser` (or `playwright-cli`) | the visual protocol in [review.md](./review.md); when neither is available, the review degrades to code-level checks and the review report must say so |
 | `grilling`       | the site-pass grill                                                    |
 
 ## Per-page loop
