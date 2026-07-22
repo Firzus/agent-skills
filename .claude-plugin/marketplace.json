@@ -1,0 +1,77 @@
+{
+  "name": "firzus-agent-skills",
+  "owner": {
+    "name": "Firzus",
+    "url": "https://github.com/Firzus"
+  },
+  "description": "Firzus' agent skills: web & app development, game development, and cross-cutting engineering.",
+  "plugins": [
+    {
+      "name": "web",
+      "source": "./",
+      "description": "Web & app development skills \u2014 frontend-design pipeline, frameworks, assets, deployment.",
+      "skills": [
+        "./skills/web/astryx",
+        "./skills/web/design-system",
+        "./skills/web/dokploy-best-practices",
+        "./skills/web/extract-theme",
+        "./skills/web/frontend-design",
+        "./skills/web/greyboxing",
+        "./skills/web/real-content",
+        "./skills/web/shaders",
+        "./skills/web/swr",
+        "./skills/web/tauri",
+        "./skills/web/vite-plus-best-practices",
+        "./skills/web/web-assets-optimization"
+      ]
+    },
+    {
+      "name": "game",
+      "source": "./",
+      "description": "Game development skills \u2014 Unity 6 / UE5 systems, from combat and AI to HUD and audio.",
+      "skills": [
+        "./skills/game/adaptive-audio",
+        "./skills/game/camera-system",
+        "./skills/game/character-controller",
+        "./skills/game/cinematic-system",
+        "./skills/game/combat-system",
+        "./skills/game/coop-session",
+        "./skills/game/dialogue-system",
+        "./skills/game/enemy-ai-framework",
+        "./skills/game/figma-to-unity",
+        "./skills/game/hud-system",
+        "./skills/game/inventory-equipment",
+        "./skills/game/loot-drop-system",
+        "./skills/game/magica-cloth-2",
+        "./skills/game/menu-ui-manager",
+        "./skills/game/minimap-worldmap",
+        "./skills/game/mount-system",
+        "./skills/game/open-world-streaming",
+        "./skills/game/progression-economy",
+        "./skills/game/quest-system",
+        "./skills/game/save-persistence",
+        "./skills/game/scene-flow-manager",
+        "./skills/game/stylized-rendering",
+        "./skills/game/teleport-map-unlock",
+        "./skills/game/traversal-system",
+        "./skills/game/ue5-aaa-best-practices",
+        "./skills/game/unity6-aaa-best-practices",
+        "./skills/game/world-time-weather"
+      ]
+    },
+    {
+      "name": "engineering",
+      "source": "./",
+      "description": "Cross-cutting engineering skills \u2014 browser automation, code health, PR care, visualization.",
+      "skills": [
+        "./skills/engineering/agent-browser",
+        "./skills/engineering/artefact",
+        "./skills/engineering/babysitting-pr",
+        "./skills/engineering/describe-app",
+        "./skills/engineering/imagegen",
+        "./skills/engineering/simplify",
+        "./skills/engineering/software-architecture"
+      ]
+    }
+  ]
+}

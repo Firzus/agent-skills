@@ -83,7 +83,7 @@ python3 <skill-dir>/scripts/generate-sharp-plan.py asset-scan.json --widths 320,
 python3 <skill-dir>/scripts/generate-ffmpeg-plan.py asset-scan.json
 ```
 
-Inside this repository only, `<skill-dir>` is `skills/web-assets-optimization`.
+Inside this repository only, `<skill-dir>` is `skills/web/web-assets-optimization`.
 
 ### Step 1 — Detect framework and pipeline
 

@@ -116,7 +116,7 @@ python3 <skill-dir>/scripts/scan-assets.py --root <app-root> --format json > ass
 python3 <skill-dir>/scripts/generate-sharp-plan.py asset-scan.json --widths 320,640,1024,1536
 ```
 
-Inside this repository only, `<skill-dir>` is `skills/web-assets-optimization`.
+Inside this repository only, `<skill-dir>` is `skills/web/web-assets-optimization`.
 
 The planner prints commands only. Review them before running, then patch every safe runtime reference from the original image to the generated output paths.
 

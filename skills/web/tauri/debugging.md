@@ -41,7 +41,7 @@ rung observable.
 3. Check whether `build.devUrl` is already occupied before launching:
 
 ```bash
-python skills/tauri/scripts/check-dev-url.py http://localhost:3000
+python skills/web/tauri/scripts/check-dev-url.py http://localhost:3000
 ```
 
 From another repository, run the script by absolute path and replace the URL with

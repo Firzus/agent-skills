@@ -28,7 +28,7 @@ Pick a key color absent from the subject. Never use white, black, or gray — th
 Run the bundled script (requires Pillow):
 
 ```bash
-python3 skills/imagegen/scripts/make_transparent.py input.png output/cutout.png
+python3 skills/engineering/imagegen/scripts/make_transparent.py input.png output/cutout.png
 ```
 
 - The key color is auto-sampled from the 4 corners; override with `--color FF00FF`. Prefer auto-sampling: `gpt-image-2` renders the requested key color only approximately (e.g. `rgb(239, 20, 233)` for a requested `#FF00FF`), so a hardcoded `--color` can miss the actual background.
