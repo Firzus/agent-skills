@@ -52,7 +52,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 ### Web & app development
 
-- [`describe-app`](./skills/engineering/describe-app) — Investigates an application from source code, first-party web research, and observed installed behavior.
+- [`reverse-engineer`](./skills/engineering/reverse-engineer) — Reverse engineers how an app implements a mechanism (from source, installed build, and external sources) and writes design notes to replicate it.
 - [`simplify`](./skills/engineering/simplify) — Simplifies recently modified code for clarity and consistency without changing behavior.
 - [`babysitting-pr`](./skills/engineering/babysitting-pr) — Monitors an open GitHub PR, fixes branch-related CI and review blockers, and keeps it merge-ready.
 - [`software-architecture`](./skills/engineering/software-architecture) — Stack-agnostic architecture for any software (game, desktop, web, service): macro structures, runtime patterns, boundaries, state, cross-cutting concerns.
