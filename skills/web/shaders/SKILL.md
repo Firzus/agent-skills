@@ -15,24 +15,13 @@ description: >-
 
 # Shaders (shaders.com) for React / Next.js
 
-Build GPU-accelerated visual effects with the [`shaders` npm package](https://shaders.com/docs/guide) using the same component-tree mental model as JSX. No GLSL, no render loop, no manual GPU plumbing — just stack `<Shader>` children, pass props, and treat the canvas like any other CSS-sized block.
+Build GPU-accelerated visual effects with the [`shaders` npm package](https://shaders.com/docs/guide) using the same component-tree mental model as JSX. No GLSL, no render loop, no manual GPU plumbing — stack `<Shader>` children, pass props, and treat the canvas like any other CSS-sized block.
 
 This skill teaches the **mental model, composition patterns, gotchas, and aesthetic discipline** for the library. It does **not** mirror the component reference — for the full prop list of each component, defer to [shaders.com/docs/components](https://shaders.com/docs/components).
 
-## When to use this skill
+Out of scope: custom GLSL/WebGPU code, Three.js / react-three-fiber scenes, and DOM post-processing (use CSS `filter` / `backdrop-filter` first). Shaders needs a real GPU and a real `<canvas>` — it cannot run in pure SSR, Node, or Workers.
 
-- The user asks for a "shader background", "WebGPU hero", "aurora / plasma / swirl / cursor-trail / glass" effect, or any animated GPU-rendered visual in a React or Next.js app.
-- The user mentions **shaders.com**, the **`shaders`** package, the **`<Shader>`** component, or `shaders/react`.
-- The user wants to combine multiple effects (blend modes, masks, nested filters) inside a React tree.
-
-## When NOT to use this skill
-
-- The user wants raw **GLSL / WebGL2 / WebGPU** code, or a custom fragment shader → that is a different domain entirely.
-- The user wants **Three.js**, **react-three-fiber**, or any 3D scene with cameras, meshes, lights → wrong tool.
-- The user wants a **post-processing pass over their own React tree** (DOM blur, CSS backdrop-filter) → CSS / `filter` properties first.
-- The project is a non-browser environment (pure SSR, Node, Workers) — Shaders needs a real GPU and a real `<canvas>`.
-
-## Mental model (the only model you need)
+## Mental model
 
 1. **One `<Shader>` = one `<canvas>` element.** No matter how many children you nest, the output is always a single DOM canvas you size with normal CSS.
 2. **Children are visual layers, evaluated top-to-bottom**, blended on the GPU. Same intuition as stacking divs with `z-index`.
@@ -51,7 +40,7 @@ This skill teaches the **mental model, composition patterns, gotchas, and aesthe
 ```
 
 5. **Props are reactive and cheap.** Changing a prop writes a GPU uniform — no recompile, no flicker. Bind them to `useState`, scroll position, motion values, anything.
-6. **WebGPU first, WebGL2 fallback.** No setup required from you. The browser handles it.
+6. **WebGPU first, WebGL2 fallback.** The browser handles it; no setup required from you.
 
 ## Install & import (React)
 
@@ -67,7 +56,7 @@ All component names are PascalCase, all props are camelCase, and `<Shader>` is a
 
 ## Sizing & positioning
 
-The `<canvas>` has **no intrinsic size**. Apply width/height via `className` or `style` on the `<Shader>` component itself — never target the inner canvas. The internal DOM structure may change.
+The `<canvas>` has **no intrinsic size**. Apply width/height via `className` or `style` on the `<Shader>` component itself — never target the inner canvas (the internal DOM structure may change).
 
 ```jsx
 <Shader className="w-full h-64" />            {/* explicit height */}
@@ -78,7 +67,7 @@ The `<canvas>` has **no intrinsic size**. Apply width/height via `className` or 
 
 For shader-as-background patterns (full page, section, card), see [react-recipes.md](./react-recipes.md).
 
-## Composition — three primitives
+## Composition primitives
 
 ### 1. Stacking (siblings)
 
@@ -107,7 +96,7 @@ Wrap a filter around the children you want it to affect; siblings before/after a
 
 ### 3. Blend, opacity, visibility (per-component props)
 
-- `blendMode` (string, default `"normal"`) — 20 modes: `multiply`, `screen`, `overlay`, `difference`, `softLight`, `hardLight`, `colorDodge`, `colorBurn`, `linearBurn`, `linearDodge`, `darken`, `lighten`, `hue`, `saturation`, `color`, `luminosity`, `exclusion`, `normal-oklab`, `normal-oklch`.
+- `blendMode` (string, default `"normal"`) — 20 modes: the CSS-familiar set (`multiply`, `screen`, `overlay`, `difference`, …) plus `normal-oklab` / `normal-oklch`. Full list in the [components reference](https://shaders.com/docs/components).
 - `opacity` (0–1) — multiplies alpha before blending. **Still renders the layer.**
 - `visible={false}` — fully excludes from composition. **Zero GPU cost.** Use this (not `opacity={0}`) when a layer exists only as a mask source.
 
@@ -162,7 +151,7 @@ Instead of `useState` + `requestAnimationFrame`, pass a **driver config object**
 </Shader>
 ```
 
-Prefer dynamic props over manual `requestAnimationFrame` loops — fewer React re-renders, less code, the library handles cleanup.
+Prefer dynamic prop drivers over manual `requestAnimationFrame` loops — fewer React re-renders, less code, the library handles cleanup.
 
 ## Transforms (UV-space, not CSS)
 
@@ -189,7 +178,7 @@ Built-in `type` values: `circleSDF`, `ellipseSDF`, `polygonSDF`, `starSDF`, `flo
 <Emboss shape={{ type: 'roundedRectSDF', width: 0.4, height: 0.25, rounding: 0.06 }} />
 ```
 
-**Custom logo / SVG shape:** requires a pre-generated SDF `.bin` file passed via `shapeSdfUrl`. The conversion currently lives inside the Shaders editor (Pro) or the Shaders MCP. Do not attempt to generate the `.bin` by hand — point the user at the editor or MCP and link [Shape Effects](https://shaders.com/docs/guide/shape-effects).
+**Custom logo / SVG shape:** requires a pre-generated SDF `.bin` file passed via `shapeSdfUrl`. The conversion lives inside the Shaders editor (Pro) or the Shaders MCP. Do not attempt to generate the `.bin` by hand — point the user at the editor or MCP and link [Shape Effects](https://shaders.com/docs/guide/shape-effects).
 
 ## Color space (Figma parity)
 
@@ -258,18 +247,16 @@ return (
 )
 ```
 
-## Performance budget — the only rules you need
+## Performance budget
 
-The GPU has ~16.67 ms / frame at 60 fps. Most simple shaders render in well under 1 ms. Cost comes from **render-to-texture (RTT) passes** — every nesting boundary where a filter wraps children adds one.
+Generators are essentially free; cost comes from **render-to-texture (RTT) passes** — every nesting boundary where a filter wraps children adds one. Relative cost tiers:
 
-Order of magnitude (modern GPU, mid-size canvas):
-
-| Category | Examples | Cost |
-| --- | --- | --- |
-| Very light | `SolidColor`, `LinearGradient`, `RadialGradient` | ~0–0.1 ms |
-| Light | `Swirl`, `Circle`, `Plasma`, simplex noise, most generators | ~0.1–0.5 ms |
-| Medium | `Blur`, `Glow`, `Dither`, `Halftone`, `Pixelate`, `CursorTrail` | ~0.5–2 ms |
-| Heavy | `Glass`, `GlassTiles`, multiple nested RTT effects | ~1–2 ms+ |
+| Tier | Examples |
+| --- | --- |
+| Very light | `SolidColor`, `LinearGradient`, `RadialGradient` |
+| Light | `Swirl`, `Circle`, `Plasma`, simplex noise, most generators |
+| Medium | `Blur`, `Glow`, `Dither`, `Halftone`, `Pixelate`, `CursorTrail` |
+| Heavy | `Glass`, `GlassTiles`, multiple nested RTT effects |
 
 What triggers RTT (one extra pass each):
 
@@ -298,10 +285,10 @@ Canvases capture all pointer events by default. For a decorative background, add
 
 ## Aesthetic discipline (avoid generic GPU slop)
 
-Shaders is a creative tool, not a default ornament. The same `<Plasma />` with default props ships on every "AI hero" landing page on the internet right now. Before reaching for a component, commit to a direction:
+The same `<Plasma />` with default props ships on every "AI hero" landing page. Before reaching for a component, commit to a direction:
 
-- **Pick one extreme**, then execute it precisely: brutally minimal, maximalist saturation chaos, retro-futuristic CRT, organic / aurora-like, vaporwave, editorial / monochrome with one accent. Don't average.
-- **Choose colors deliberately.** Default Plasma purple-on-black is the GPU equivalent of `Inter` on `#fafafa`. Sample from the user's brand palette or a hand-picked combo. Set `colorSpace="srgb"` if matching Figma hex.
+- **Pick one extreme**, then execute it precisely: brutally minimal, maximalist saturation chaos, retro-futuristic CRT, organic / aurora-like, editorial monochrome with one accent. Don't average.
+- **Choose colors deliberately.** Sample from the user's brand palette or a hand-picked combo — never ship default Plasma purple-on-black. Set `colorSpace="srgb"` if matching Figma hex.
 - **One signature motion.** A breathing intensity, a slow rotation, a cursor-following accent — pick one and tune it slowly. Layering five auto-animations cancels into mush.
 - **Restraint reads as premium.** A 1-component shader (single `Aurora` with a brand-tinted palette) usually beats a 5-layer composition. Add layers only when each one earns its presence.
 - **Respect motion preferences.** Wrap shader-heavy hero sections in a `prefers-reduced-motion` check and drop to a static gradient if the user opted out.
@@ -315,15 +302,14 @@ return reduced
 
 ## Workflow when adding a shader to a React/Next project
 
-1. **Confirm the framework**: Next.js App Router, Pages Router, Vite + React, or plain CRA-style. If Next.js, lock in the SSR pattern (`'use client'` or `dynamic({ ssr: false })`) before writing the component.
-2. **Confirm the install path**: `npm install shaders`. Confirm the project uses Tailwind or plain CSS so sizing examples match.
-3. **Commit to one aesthetic direction** (see "Aesthetic discipline"). Ask the user for brand colors and the role of the shader (background, hero, decorative accent, interactive surface).
-4. **Pick one or two components** from [shaders.com/docs/components](https://shaders.com/docs/components). Start with a generator as the base. Add filters / masks only if the design requires them.
-5. **Wire sizing on the `<Shader>` element** with Tailwind classes (or `style`). Confirm `pointer-events-none` if decorative.
-6. **Bind one prop to state or a dynamic-prop driver** if interactivity is required. Prefer dynamic-prop drivers over manual `requestAnimationFrame`.
-7. **Test in the browser**: WebGPU should kick in on Chrome / Edge / Safari; WebGL2 fallback on Firefox until it ships WebGPU stable. Watch the console for compile warnings on the first frame.
-8. **Audit performance**: count RTT-causing layers (filters, masks, transforms, `map` drivers). If you have 3+, see if a flat composition gives the same look.
-9. **Respect `prefers-reduced-motion`** with a static fallback before shipping.
+1. **Confirm the framework and styling** (Next.js App/Pages Router, Vite, plain React; Tailwind or plain CSS). If Next.js, lock in the SSR pattern before writing the component.
+2. **Commit to one aesthetic direction.** Ask for brand colors and the shader's role (background, hero, decorative accent, interactive surface).
+3. **Pick one or two components** from the [components reference](https://shaders.com/docs/components). Start with a generator as the base; add filters / masks only if the design requires them.
+4. **Wire sizing on `<Shader>`**; add `pointer-events-none` if decorative.
+5. **Bind one prop** to state or a dynamic prop driver if interactivity is required.
+6. **Test in the browser** and watch the console for compile warnings on the first frame.
+7. **Audit performance**: count RTT-causing layers (filters, masks, transforms, `map` drivers). If you have 3+, see if a flat composition gives the same look.
+8. **Respect `prefers-reduced-motion`** with a static fallback before shipping.
 
 For copy-pasteable React/Next.js patterns (full-page background, section background, card fill, mask reveal, scroll-linked, cursor-driven, SSR-safe loader), see [react-recipes.md](./react-recipes.md).
 

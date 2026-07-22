@@ -4,6 +4,21 @@ Copy-pasteable patterns for the `shaders` npm package in a React (Vite, CRA) or 
 
 All component files shown should be **client components** in Next.js. For App Router, either put `'use client'` at the top or import them via `dynamic(..., { ssr: false })`. See [SKILL.md → SSR / Next.js](./SKILL.md#ssr--nextjs-mandatory-pattern).
 
+## Contents
+
+1. [Full-page background (Next.js App Router)](#1-full-page-background-nextjs-app-router)
+2. [Hero section background (scoped to one section)](#2-hero-section-background-scoped-to-one-section)
+3. [Card with shader fill](#3-card-with-shader-fill)
+4. [Inline content block (flows with text)](#4-inline-content-block-flows-with-text)
+5. [Mask reveal (text shape masks a moving gradient)](#5-mask-reveal-text-shape-masks-a-moving-gradient)
+6. [Cursor-following accent with `mouse-position` driver](#6-cursor-following-accent-with-mouse-position-driver)
+7. [Scroll-linked prop (Framer Motion)](#7-scroll-linked-prop-framer-motion)
+8. [Auto-animated breathing intensity (no state)](#8-auto-animated-breathing-intensity-no-state)
+9. [Glass over an image (SDF effect on top of a generator)](#9-glass-over-an-image-sdf-effect-on-top-of-a-generator)
+10. [SSR-safe loader with fade-in (`onReady`)](#10-ssr-safe-loader-with-fade-in-onready)
+11. [`prefers-reduced-motion` fallback](#11-prefers-reduced-motion-fallback)
+12. [Next.js — `dynamic` import with `ssr: false`](#12-nextjs--dynamic-import-with-ssr-false)
+
 ## 1. Full-page background (Next.js App Router)
 
 Lives in the root layout, sits behind every page, ignores pointer events, scales to the dynamic viewport.
