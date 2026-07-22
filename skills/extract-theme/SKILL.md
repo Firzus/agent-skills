@@ -4,8 +4,8 @@ description: >-
   Extracts the visual theme (colors, typography, radius, spacing, shadows) of a
   public website provided by the user and produces a shadcn/ui + Tailwind CSS
   v4 compatible token block, ready to paste into the project's `globals.css`
-  (or `app.css`) inside `@theme` and `.dark`. Uses the chrome-devtools MCP
-  server to drive a real Chromium instance (no Playwright). Use when the user
+  (or `app.css`) inside `@theme` and `.dark`. Uses the `agent-browser` CLI to
+  drive a real Chromium instance. Use when the user
   asks to "extract the theme of <url>", "reverse-engineer the design tokens of
   <site>", "copy the look of <site> into shadcn", "build a tailwind v4 theme
   from <url>", or mentions extract-theme / theme extraction / design tokens
@@ -30,10 +30,10 @@ Reverse-engineer the **visual theme** of a public website into a token block tha
 
 ## Hard prerequisites
 
-1. **chrome-devtools MCP server connected.** Verify with the `<available_skills>` block or by calling any `chrome-devtools` tool. If it is missing, stop and tell the user to add it:
+1. **`agent-browser` CLI installed** (see the `agent-browser` skill). Verify with `agent-browser --version`; if missing, stop and tell the user:
 
    ```bash
-   claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest
+   npm i -g agent-browser && agent-browser install
    ```
 
    Do **not** fall back to `WebFetch` of raw HTML for color extraction — computed styles require a real browser. `WebFetch` is acceptable only as a last-resort sanity check on declared CSS variables.
@@ -62,15 +62,15 @@ Set expectations explicitly:
 Track progress with this checklist:
 
 ```
-- [ ] 1. Confirm prerequisites (MCP, Tailwind v4, shadcn)
-- [ ] 2. Open the URL in chrome-devtools and wait for first paint
+- [ ] 1. Confirm prerequisites (agent-browser, Tailwind v4, shadcn)
+- [ ] 2. Open the URL in agent-browser and wait for first paint
 - [ ] 3. Extract raw computed styles (light + dark)
 - [ ] 4. Normalize into shadcn token names
 - [ ] 5. Convert colors to OKLCH
 - [ ] 6. Render the @theme + .dark blocks
 - [ ] 7. Patch the target CSS file (with confirmation)
 - [ ] 8. Summarize findings and known gaps
-- [ ] 9. Clean up the chrome-devtools session
+- [ ] 9. Close the agent-browser session
 ```
 
 ### Step 1 — Confirm prerequisites
@@ -79,17 +79,16 @@ Run the three checks above. If any fails, stop and surface the gap. Do not fabri
 
 ### Step 2 — Open the URL
 
-```text
-new_page → navigate_page → wait_for { text: ["<landmark from hero or nav>"] }
+```bash
+agent-browser open <url>
+agent-browser wait --text "<landmark from hero or nav>"
 ```
 
-Prefer `wait_for` with a literal string from the hero / nav. Avoid arbitrary sleeps.
-
-`wait_for` expects `text` as an **array of strings** (`{ text: ["Cursor"] }`), not a bare string — passing a string returns a Zod validation error. Pass one or more candidate landmarks; matching any one of them succeeds.
+Prefer `wait --text` with a literal string from the hero / nav (or `wait --load networkidle` for SPA shells). Avoid arbitrary sleeps.
 
 ### Step 3 — Extract raw computed styles
 
-Use `evaluate_script` to run the extraction snippets in [`extraction-recipes.md`](./extraction-recipes.md). Run them **in this order**:
+Use `agent-browser eval --stdin` (heredoc — the snippets are large) to run the extraction snippets in [`extraction-recipes.md`](./extraction-recipes.md). Run them **in this order**:
 
 1. `extractCssVariables()` — declared CSS custom properties on `:root` and `.dark` / `[data-theme]`.
 2. `extractComputedTokens()` — actual `getComputedStyle` of `body`, primary buttons, cards, inputs, headings, muted text.
@@ -98,18 +97,18 @@ Use `evaluate_script` to run the extraction snippets in [`extraction-recipes.md`
 
 If the site exposes a dark variant, try these strategies **in order** and stop at the first one that flips `getComputedStyle(document.body).color`:
 
-1. **Visible theme toggle.** Take a snapshot, look for a button labeled `Dark`, `Light`, `Theme`, `Sombre`, `Clair`, `Thème`, or an icon button under a navbar/footer toggle group. Click it via `uid`. This is the most reliable strategy — sites that ship a toggle have already wired all their token cascades to it (this is what worked on `cursor.com` in the reference test).
+1. **Visible theme toggle.** Run `agent-browser snapshot -i`, look for a button labeled `Dark`, `Light`, `Theme`, `Sombre`, `Clair`, `Thème`, or an icon button under a navbar/footer toggle group. Click it via its `@eN` ref (or `find text "Dark" click`). This is the most reliable strategy — sites that ship a toggle have already wired all their token cascades to it.
 2. **Class / data-attribute toggle.** Use the snippet in [`extraction-recipes.md` §6b](./extraction-recipes.md#6b-class--data-attribute-toggle-fallback) to try `classList.add('dark')`, `data-theme="dark"`, `data-mode="dark"` on `<html>` and `<body>`.
-3. **OS-level emulation.** Some chrome-devtools MCP builds expose `emulate` with a color-scheme parameter — use it when available, then reload and re-extract.
+3. **Color-scheme emulation.** `agent-browser set media dark`, then re-extract (reload first if the site reads the preference only at boot). Catches sites keyed on `prefers-color-scheme` with no toggle.
 4. **Give up gracefully.** If nothing works, document the gap and ship light-only.
 
 **As soon as the dark extractors finish running, revert immediately** (don't wait for Step 9):
 
 - If you used strategy 1, click the "Light" button now.
 - If you used strategy 2, run the cleanup snippet from [`extraction-recipes.md` §7](./extraction-recipes.md#7-cleanup) now.
-- If you used strategy 3, the page reload at the next emulation call (or at Step 9) handles it.
+- If you used strategy 3, run `agent-browser set media light` now.
 
-This guarantees that any subsequent `take_screenshot` (Step 8 visual comparison, or anything the user does after) reflects the site's default state, not your mutated one.
+This guarantees that any subsequent `agent-browser screenshot` (Step 8 visual comparison) reflects the site's default state, not your mutated one.
 
 Save the raw output (don't paste it into the conversation if it's huge — keep it in scratch state for normalization).
 
@@ -150,7 +149,7 @@ If a slot has no good candidate, **leave it as the shadcn default** (do not inve
 
 ### Step 5 — Convert colors to OKLCH
 
-shadcn's `new-york` style and `tailwind-design-system` both use OKLCH. Convert every extracted color to OKLCH with 3-decimal precision. Use `evaluate_script` with the conversion helper in [`extraction-recipes.md`](./extraction-recipes.md) (CSS Color 4 native support in Chrome — no library needed).
+shadcn's `new-york` style and `tailwind-design-system` both use OKLCH. Convert every extracted color to OKLCH with 3-decimal precision. Use `agent-browser eval --stdin` with the conversion helper in [`extraction-recipes.md`](./extraction-recipes.md) (CSS Color 4 native support in Chrome — no library needed).
 
 For radius: pick the modal radius (or the most frequent non-zero `border-radius` on buttons/cards), round to the nearest `0.125rem`, and emit it as `--radius`. Let `--radius-sm/md/lg/xl` derive via `calc()` per the shadcn convention.
 
@@ -183,44 +182,28 @@ Report, in this order:
 3. Light/dark coverage (e.g. "light + dark" or "light only — site has no dark variant").
 4. Token slots filled vs. left as shadcn defaults (call out omissions explicitly).
 5. Known gaps: dynamic colors, gradients, brand-specific tokens that didn't fit shadcn slots.
-6. Next-step suggestion: run the dev server and `take_screenshot` of the project beside the source URL for a visual comparison.
+6. Next-step suggestion: run the dev server and `agent-browser screenshot` the project beside the source URL for a visual comparison.
 
-### Step 9 — Clean up the chrome-devtools session (always, even on failure)
+### Step 9 — Close the agent-browser session (always, even on failure)
 
-This step is a **`finally` block**, not a happy-path step. Run it whether the extraction succeeded, partially failed, or crashed at any earlier step. Skipping it leaks browser state into the next task.
+This step is a **`finally` block**, not a happy-path step. Run it whether the extraction succeeded, partially failed, or crashed at any earlier step:
 
-What to clean up, in order:
-
-1. **Restore in-page DOM mutations.** If you toggled dark mode via `classList.add('dark')` / `setAttribute('data-theme', 'dark')` (recipe §6b), revert it now via the cleanup snippet in [`extraction-recipes.md` §7](./extraction-recipes.md#7-cleanup) — even if the extraction never reached the dark phase. The snippet is a no-op when nothing was set, so it is always safe.
-2. **Restore visible-toggle state.** If you used recipe §6a (clicked a "Dark" button on the page), click the corresponding "Light" button so the user's next visit to the site (the toggle persists in `localStorage`) starts in their original mode.
-3. **Close the tabs you opened.** `list_pages` → `close_page { pageId }` for each non-blank tab opened during this run.
-
-```text
-list_pages → close_page { pageId: <id of the extracted URL> } for each non-blank tab
+```bash
+agent-browser close
 ```
 
-Important MCP behavior: `close_page` refuses to close the **last** open tab (returns `"The last open page cannot be closed. It is fine to keep it open."`). The intended pattern is:
+agent-browser drives its own **isolated, throwaway Chromium instance** — `close` destroys its tabs and any storage the run created (never pass `--restore` in this skill). The user's own browser is never touched.
 
-1. `list_pages` to get the list of open tabs and their IDs.
-2. If there is more than one tab, `close_page` each tab that you opened during this run.
-3. If your extraction tab is the last one, leave it. Do **not** call `new_page about:blank` first to "free" the close — that just spawns another tab to keep alive.
-
-Skip Step 9 only if the user explicitly asks to keep the page open for follow-up inspection (e.g. "leave it open, I want to look at the hero" or running `extract-theme` back-to-back on multiple URLs in the same session). In that case, **still** run sub-step 1 (DOM revert) — keeping the tab open is not a license to leave it in a mutated state.
+Skip the `close` only if the user explicitly asks to keep the page open for follow-up inspection, or when running `extract-theme` back-to-back on multiple URLs. In that case, revert the in-page state instead before continuing: recipe §7's cleanup snippet (no-op if nothing was set), `set media light` if you emulated, and click the site's "Light" toggle back if you clicked "Dark".
 
 ## Cleanup discipline
 
-Cleanup is **not optional** and **not deferred to Step 9 alone**. The skill drives a real Chromium instance and mutates the live DOM. Leaks compound across tasks: a left-over `data-theme="dark"` poisons the next agent's snapshot; an open autoplaying-video tab burns CPU and bandwidth indefinitely; a localStorage-persisted dark toggle changes the user's next manual visit.
+The live DOM is mutated during extraction, and a leftover mutation poisons the run itself: a `data-theme="dark"` that survives Step 3 corrupts every later light-mode read and screenshot. Two rules:
 
-Three layers, all required:
+1. **Per-mutation reversal (immediate).** Anything you set inside the page during a step, you revert at the end of that same step — toggle clicked back, recipe §7 snippet run, `set media light` restored — not deferred to Step 9.
+2. **`finally`-block at the end (Step 9).** `agent-browser close` always runs, even when an earlier step threw — run it before surfacing the error.
 
-1. **Per-mutation reversal (immediate).** Anything you set inside the page during a step, you revert at the end of that same step — not at Step 9. Specifically:
-   - Recipe §6a clicked a visible toggle → click it back before moving on.
-   - Recipe §6b set a class / data-attribute → call recipe §7's snippet before moving on.
-   - This holds even if the extraction succeeds. State must be restored as soon as you no longer need it.
-2. **`finally`-block at the end (Step 9).** Always runs, even on failure. Re-applies the §7 snippet (no-op if nothing was set) and closes the tabs. If an earlier step threw, run Step 9 anyway before surfacing the error to the user.
-3. **No persistent side effects.** Do not write to the page's `localStorage`, `sessionStorage`, `cookie`, or `indexedDB`. The only persistent artifacts this skill produces are the CSS file patch on disk and (optionally) screenshots. If you discover the site itself wrote to `localStorage` because of your toggle (recipe §6a), revert it as part of layer 1.
-
-If a cleanup operation itself fails (e.g. `close_page` errors), surface the failure in the summary — do not swallow it silently.
+If a cleanup operation itself fails, surface the failure in the summary — do not swallow it silently.
 
 ## Safety boundaries
 
@@ -243,11 +226,9 @@ When you finish, the project AND the browser session must be in this state:
 - `@custom-variant dark (&:where(.dark, .dark *));` is present.
 - No other file was modified.
 
-**Browser session (chrome-devtools MCP):**
+**Browser session (agent-browser):**
 
-- Every tab opened during this run is closed (except the last one, which the MCP refuses to close — that one is left as-is).
-- The page DOM is back to its initial state — no leftover `.dark` class, no `data-theme="dark"` attribute, no clicked-but-not-restored toggle.
-- No `localStorage` / `sessionStorage` / `cookie` / `indexedDB` writes from this skill survive.
+- The session is closed (`agent-browser close`) — its isolated browser and all its state destroyed — unless the user asked to keep it open, in which case the page DOM is back to its initial state: no leftover `.dark` class, no `data-theme` attribute, no un-restored toggle, no emulated color scheme.
 
 **Conversation:**
 
@@ -255,6 +236,6 @@ When you finish, the project AND the browser session must be in this state:
 
 ## Reference map
 
-- For the `evaluate_script` snippets that run inside the page (CSS variable extraction, computed-style sampling, OKLCH conversion), see [extraction-recipes.md](./extraction-recipes.md).
+- For the `eval` snippets that run inside the page (CSS variable extraction, computed-style sampling, OKLCH conversion), see [extraction-recipes.md](./extraction-recipes.md).
 - For the exact `@theme` / `.dark` template and the full shadcn token vocabulary, see [output-format.md](./output-format.md).
 - For broader shadcn / Tailwind v4 conventions, defer to the `shadcn` and `tailwind-design-system` skills if installed.

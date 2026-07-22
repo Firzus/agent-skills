@@ -1,11 +1,11 @@
 # Extraction Recipes
 
-`evaluate_script` snippets to run inside the target page through the `chrome-devtools` MCP server. Each function is self-contained and returns a JSON-serializable object.
+Snippets to run inside the target page via `agent-browser eval --stdin` (heredoc). Each function is self-contained and returns a JSON-serializable object.
 
 ## Conventions
 
 - All snippets are pure: no DOM mutation, no network, no `console.log` left over.
-- Always wrap calls so the return value is the last expression — `chrome-devtools-mcp`'s `evaluate_script` returns it to the agent.
+- Always wrap calls so the return value is the last expression — `agent-browser eval` prints it to stdout.
 - Run `extractCssVariables` and `extractComputedTokens` **both** — declared variables and resolved styles disagree often (CSS-in-JS, runtime themes).
 - For dark-mode capture, set `document.documentElement.classList.add('dark')` (or `setAttribute('data-theme','dark')`) **before** re-running the extractors. Restore by removing the class after.
 
@@ -233,7 +233,7 @@ Chrome supports CSS Color 4 natively — let the browser do the math.
 })('__COLOR_INPUT__');
 ```
 
-Replace `__COLOR_INPUT__` per call, or wrap the body in a function and call it for each token in a single `evaluate_script` round-trip:
+Replace `__COLOR_INPUT__` per call, or wrap the body in a function and call it for each token in a single `eval --stdin` round-trip:
 
 ```js
 (() => {
@@ -316,7 +316,7 @@ Try, in order, until one changes the body's computed `color`:
 
 If `applied` is `null`, the site does not expose a class-based dark mode. At that point either:
 
-- Use the MCP server's color-scheme emulation if available (`emulate_color_scheme: 'dark'`), reload, and re-extract.
+- Emulate the color scheme: `agent-browser set media dark`, reload, and re-extract (restore with `set media light` afterwards).
 - Or skip dark and ship light-only — note the gap in the summary.
 
 ---
