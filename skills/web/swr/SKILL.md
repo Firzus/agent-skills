@@ -1,36 +1,67 @@
 ---
 name: swr
 description: >-
-  SWR v2 data fetching guidance for React and Next.js applications. Use when
-  implementing or reviewing client-side data fetching, cache keys, revalidation,
-  mutations, optimistic UI, pagination, infinite loading, subscriptions, global
-  SWRConfig, fallback data, or TypeScript patterns with the `swr` package.
+  SWR v2 (stale-while-revalidate) data fetching for React and Next.js. Use when
+  implementing or reviewing code that uses the `swr` package — useSWR hooks,
+  cache keys, revalidation, mutations, pagination, or SWRConfig.
 ---
 
 # SWR
 
-Use this skill when working with SWR v2, the React Hooks library for
-stale-while-revalidate data fetching. Prefer the project's existing data layer
-and component conventions, then apply these rules to keep cache identity,
-revalidation, mutation, and loading states predictable.
+Reference for SWR v2, the React Hooks library for stale-while-revalidate data
+fetching. Prefer the project's existing data layer, fetchers, and hook
+conventions; apply these rules on top so cache identity, revalidation, and
+mutation behavior stay predictable.
+
+Branch-specific references, loaded on demand:
+
+- [pagination.md](./pagination.md) — `useSWRInfinite` for paginated and
+  cursor-based lists.
+- [subscriptions.md](./subscriptions.md) — `useSWRSubscription` for WebSocket
+  and realtime sources.
+- [nextjs.md](./nextjs.md) — App Router boundaries, server prefetch, and
+  `fallback` hydration.
 
 ## First Checks
 
-1. Inspect `package.json` and lockfiles to confirm `swr` is installed and which
-   package manager the project uses. Do not add or upgrade dependencies unless
-   the task requires it.
-2. Identify the framework boundary. In Next.js App Router, SWR hooks must run in
-   Client Components; Server Components may use `SWRConfig` and serialization
-   helpers, but not `useSWR`, `useSWRInfinite`, or `useSWRMutation`.
-3. Find existing fetchers, API clients, auth token handling, error types, and
+1. Confirm `swr` is installed (`package.json`, lockfile) and which package
+   manager the project uses.
+2. Find existing fetchers, API clients, auth token handling, error types, and
    reusable data hooks before introducing new patterns.
-4. Treat the SWR `key` as the cache identity. Include every input that changes
-   the response: URL, query params, user scope, locale, tenant, auth token, and
-   filters.
+3. In Next.js App Router, identify the client/server boundary first — see
+   [nextjs.md](./nextjs.md).
+
+## Keys: The Key Is The Cache Identity
+
+The SWR `key` is the sole identity of a cached resource. Every input that
+changes the response belongs in the key: URL, query params, user scope, locale,
+tenant, auth token, filters. A value read inside the fetcher but absent from
+the key returns data under the wrong identity.
+
+| Case | Pattern | Why |
+|------|---------|-----|
+| Simple resource | `useSWR('/api/user', fetcher)` | String key is passed to `fetcher`. |
+| Conditional fetch | `useSWR(userId ? ['/api/user', userId] : null, fetcher)` | `null` disables the request while the hook call stays unconditional. |
+| Dependent fetch | `useSWR(() => user.id ? ['/api/projects', user.id] : null, fetcher)` | Function keys wait for required data. |
+| Auth or scope | `useSWR(['/api/user', token], ([url, token]) => fetchWithToken(url, token))` | Scope-changing inputs are part of the identity. |
+| Object filters | `useSWR({ url: '/api/search', filters }, fetcher)` | Object-like keys are serialized by SWR. |
+
+Rules:
+
+- Call SWR hooks unconditionally; put the condition in the key (`null` or a
+  function key that returns `null`).
+- For array keys in SWR v2, the fetcher receives the full array, not spread
+  arguments.
+- Keep keys stable, serializable, and specific: when filters change the
+  result, the key changes with them.
+- Use a shared fetcher through `SWRConfig` when most hooks use the same
+  transport; use local fetchers for special auth, GraphQL, or non-JSON
+  responses.
 
 ## Core Pattern
 
-Prefer small reusable hooks that hide SWR details from presentation components:
+Prefer small reusable hooks that hide SWR details from presentation
+components:
 
 ```tsx
 import useSWR from 'swr'
@@ -70,33 +101,14 @@ export function useUser(userId: string | null) {
 }
 ```
 
-Use `isLoading` for first-load UI when no loaded data exists. Use
-`isValidating` for background refresh indicators when stale data may already be
-rendered. Remember that `data` and `error` can both exist after a failed
-revalidation, so do not always replace useful stale data with an error screen.
-
-## Keys And Fetchers
-
-| Case | Pattern | Why |
-|------|---------|-----|
-| Simple resource | `useSWR('/api/user', fetcher)` | String key is passed to `fetcher`. |
-| Conditional fetch | `useSWR(userId ? ['/api/user', userId] : null, fetcher)` | `null` disables the request without calling hooks conditionally. |
-| Dependent fetch | `useSWR(() => user.id ? ['/api/projects', user.id] : null, fetcher)` | Function keys can wait for required data. |
-| Auth or scope | `useSWR(['/api/user', token], ([url, token]) => fetchWithToken(url, token))` | Scope-changing inputs must be part of the key. |
-| Object filters | `useSWR({ url: '/api/search', filters }, fetcher)` | Object-like keys are serialized by SWR. |
-
-Rules:
-
-- Never call SWR hooks conditionally. Keep the hook call stable and make the key
-  conditional.
-- For array keys in SWR v2, the fetcher receives the full array, not spread
-  arguments.
-- Do not close over dynamic values in a fetcher unless those values are also in
-  the key; otherwise SWR can return data for the wrong identity.
-- Keep keys stable, serializable, and specific. Avoid broad keys such as
-  `'/api/list'` when query filters change the result.
-- Use a shared fetcher through `SWRConfig` when most hooks use the same transport,
-  but allow local fetchers for special auth, GraphQL, or non-JSON responses.
+- Fetchers throw on failed responses and preserve status/error details.
+- Use `isLoading` for first-load UI, `isValidating` for background-refresh
+  indicators over already-rendered stale data.
+- `data` and `error` can coexist after a failed revalidation: keep useful
+  stale data visible rather than replacing it with an error screen.
+- Return domain names (`user`, `todos`) from reusable hooks instead of leaking
+  raw SWR property names; annotate `useSWR<Data, ErrorType>` when the fetcher
+  cannot infer the response type.
 
 ## Global Configuration
 
@@ -124,14 +136,14 @@ export function Providers({ children }: { children: React.ReactNode }) {
 }
 ```
 
-- Use `fallback` for a map of prefetched values keyed by SWR cache keys.
-- Use `fallbackData` for one hook's local initial value.
-- Avoid disabling `revalidateOnFocus` globally unless stale data is acceptable
-  across the product.
+- `fallback` takes a map of prefetched values keyed by SWR cache keys;
+  `fallbackData` is one hook's local initial value.
+- Keep `revalidateOnFocus` on globally unless stale data is acceptable across
+  the product.
 - Tune `dedupingInterval`, `refreshInterval`, retry behavior, and focus
-  throttling based on endpoint cost and freshness needs.
-- If custom cache providers are used, remember that global `mutate` broadcasts
-  within the provider scope.
+  throttling per endpoint cost and freshness needs.
+- With custom cache providers, global `mutate` broadcasts within the provider
+  scope.
 
 ## Mutations
 
@@ -142,7 +154,7 @@ Choose mutation APIs by intent:
 | Revalidate an existing resource | `mutate(key)` or bound `mutate()` | Marks the resource stale and refetches. |
 | Update local cache after a known change | bound `mutate(nextData)` | Works well after an already-completed request. |
 | Optimistic UI | `mutate(asyncUpdate, { optimisticData, rollbackOnError })` | Use rollback for failed remote writes. |
-| User-triggered remote write | `useSWRMutation(key, mutationFetcher)` | Does not run automatically; call `trigger(arg)`. |
+| User-triggered remote write | `useSWRMutation(key, mutationFetcher)` | Runs only on `trigger(arg)`. |
 
 Optimistic update pattern:
 
@@ -164,107 +176,7 @@ await mutate(
 )
 ```
 
-Guidelines:
-
-- Prefer bound `mutate` from the related `useSWR` hook when changing the same
-  resource.
-- Use `useSWRConfig().mutate` for cross-component invalidation, such as after
-  logout or a global settings change.
-- After create/delete operations, invalidate all affected list/detail keys. A
-  filter function key can target multiple cached resources when needed.
-- Keep optimistic data shape identical to the resolved data shape to avoid UI
-  branches that only exist during mutation.
-- Surface `isMutating` from `useSWRMutation` to disable duplicate submits.
-
-## Pagination And Infinite Loading
-
-For page-indexed or cursor-based lists, use `useSWRInfinite` from
-`swr/infinite`:
-
-```tsx
-import useSWRInfinite from 'swr/infinite'
-
-type Page = {
-  items: Todo[]
-  nextCursor?: string
-}
-
-const getKey = (pageIndex: number, previousPageData: Page | null) => {
-  if (previousPageData && !previousPageData.nextCursor) return null
-  if (pageIndex === 0) return '/api/todos'
-  return `/api/todos?cursor=${previousPageData?.nextCursor}`
-}
-
-const { data, error, size, setSize, isLoading, isValidating } =
-  useSWRInfinite<Page>(getKey, fetcher)
-
-const todos = data?.flatMap(page => page.items) ?? []
-const isLoadingMore = isLoading || (size > 0 && data?.[size - 1] == null)
-```
-
-- Return `null` from `getKey` when there are no more pages.
-- Include filter/search inputs in the key so changing filters resets cache
-  identity.
-- Use `keepPreviousData` for smoother key changes when the old data should stay
-  visible during the next fetch.
-- Validate list mutation behavior: updating a detail cache may not update every
-  paginated list that includes that item.
-
-## Subscriptions
-
-Use `useSWRSubscription` from `swr/subscription` for realtime sources such as
-WebSocket, Firebase, or event streams:
-
-```tsx
-import useSWRSubscription from 'swr/subscription'
-
-export function useLivePrice(symbol: string) {
-  return useSWRSubscription(['price', symbol], ([, currentSymbol], { next }) => {
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const socket = new WebSocket(
-      `${protocol}//${window.location.host}/api/prices?symbol=${encodeURIComponent(currentSymbol)}`,
-    )
-
-    socket.addEventListener('message', event => {
-      next(null, JSON.parse(event.data))
-    })
-
-    socket.addEventListener('error', event => {
-      next(event instanceof ErrorEvent ? event.error : new Error('Socket error'))
-    })
-
-    return () => socket.close()
-  })
-}
-```
-
-The subscribe function must return cleanup. Multiple mounted hooks with the same
-key share one subscription, and the subscription closes after the last consumer
-unmounts.
-
-## Next.js App Router
-
-- Add `'use client'` to files that call SWR hooks.
-- Do not import `useSWR`, `useSWRInfinite`, or `useSWRMutation` in Server
-  Components.
-- Server Components may import `SWRConfig` and key serialization helpers such as
-  `unstable_serialize` for prefetched fallback data.
-- Pass prefetched data through `SWRConfig` `fallback` when a Client Component
-  should hydrate from server-fetched data and then keep itself fresh.
-- For array or complex keys in `fallback`, serialize with `unstable_serialize`
-  so the fallback key matches the hook key.
-- Prefer Next.js server data fetching for SEO-critical, static, or
-  request-rendered content. Use SWR for client-owned freshness, user-specific
-  dashboards, interactive filters, polling, and realtime views.
-
-## TypeScript
-
-- Prefer typed fetchers so `data` is inferred from the fetcher return type.
-- Specify `useSWR<Data, ErrorType>(key, fetcher)` when the fetcher cannot infer
-  the response or the project has a custom error type.
-- Type reusable hooks by returning domain names (`user`, `todos`) rather than
-  leaking raw SWR property names everywhere.
-- For mutation fetchers, type the `arg` payload:
+Mutation fetchers receive their payload as `arg` — type it:
 
 ```tsx
 import useSWRMutation from 'swr/mutation'
@@ -287,16 +199,28 @@ async function updateUser(
 const { trigger, isMutating } = useSWRMutation('/api/user', updateUser)
 ```
 
+Guidelines:
+
+- Prefer bound `mutate` from the related `useSWR` hook when changing the same
+  resource; use `useSWRConfig().mutate` for cross-component invalidation, such
+  as after logout or a global settings change.
+- After create/delete operations, invalidate every affected list and detail
+  key — a filter function key can target multiple cached resources at once.
+- Keep optimistic data shape identical to the resolved data shape so no UI
+  branch exists only during mutation.
+- Surface `isMutating` to disable duplicate submits.
+
 ## Review Checklist
 
 - Every SWR hook has a key that includes all data-shaping inputs.
-- Conditional behavior uses `null` or function keys, not conditional hook calls.
+- Conditional behavior lives in the key (`null` or function keys); every hook
+  call is unconditional.
 - Fetchers throw on failed responses and preserve useful status/error details.
 - First-load, background-refresh, empty, stale-with-error, and mutation states
   have coherent UI behavior.
 - Mutations update or invalidate all affected cache keys and handle rollback.
-- App Router hook usage is isolated to Client Components.
-- `fallback` keys match hook keys, including serialized complex keys.
+- App Router hook usage is isolated to Client Components; `fallback` keys
+  match hook keys, including serialized complex keys ([nextjs.md](./nextjs.md)).
 - Pagination handles end-of-list, filter changes, loading-more state, and list
-  item updates.
+  item updates ([pagination.md](./pagination.md)).
 - Revalidation and retry settings match endpoint freshness and cost.
