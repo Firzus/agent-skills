@@ -11,6 +11,7 @@
       "source": "./",
       "description": "Web & app development skills \u2014 frontend-design pipeline, frameworks, assets, deployment.",
       "skills": [
+        "./skills/web/adsense",
         "./skills/web/astryx",
         "./skills/web/design-system",
         "./skills/web/dokploy-best-practices",
