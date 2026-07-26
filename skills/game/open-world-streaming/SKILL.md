@@ -18,7 +18,7 @@ it, and the procedural-generation/living-world layers around it. This skill
 is the engine-agnostic architecture blueprint: components, data flow,
 budgets, build order, and failure modes. Engine tooling specifics live in
 the engine mapping section and the dedicated engine skills
-(`unity6-aaa-best-practices`, `ue5-aaa-best-practices`).
+(`unity`, `ue5-aaa-best-practices`).
 
 ## The core invariant
 

@@ -56,7 +56,7 @@
         "./skills/game/teleport-map-unlock",
         "./skills/game/traversal-system",
         "./skills/game/ue5-aaa-best-practices",
-        "./skills/game/unity6-aaa-best-practices",
+        "./skills/game/unity",
         "./skills/game/world-time-weather"
       ]
     },

@@ -1,5 +1,5 @@
 ---
-name: unity6-aaa-best-practices
+name: unity
 description: >-
   Senior Unity 6 developer guidance: DO/DON'T best practices for building
   production-quality (AAA-level) games with Unity 6 (6000.x line). Covers UI
