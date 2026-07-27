@@ -3,12 +3,13 @@ name: unity
 description: >-
   Picks the Unity tool for the job and applies it. Routes each need to one
   chosen default — UI Toolkit, Awaitable, Addressables, Input System, URP,
-  Netcode for GameObjects, Multiplayer Services, Dedicated Server — and keeps
-  the project CoreCLR-ready for the Mono removal in 6.8. Use when writing,
-  reviewing, or architecting Unity code, when choosing between two Unity tools
-  that do the same job, or when the user mentions Unity, UI Toolkit, UGUI,
-  Addressables, URP, HDRP, DOTS, ECS, netcode, CoreCLR, IL2CPP, or Unity build
-  and performance questions.
+  Netcode for GameObjects, Multiplayer Services, Dedicated Server, Unity CLI —
+  and keeps the project CoreCLR-ready for the Mono removal in 6.8. Use when
+  writing, reviewing, or architecting Unity code, when driving the Unity Editor
+  from an agent, when choosing between two Unity tools that do the same job, or
+  when the user mentions Unity, UI Toolkit, UGUI, Addressables, URP, HDRP, DOTS,
+  ECS, netcode, CoreCLR, IL2CPP, Unity CLI, Unity MCP, or Unity build and
+  performance questions.
 ---
 
 # Unity
@@ -47,6 +48,7 @@ discipline in [runtime.md](./runtime.md) buys.
 | Per-platform build config | **Build Profiles** | hand-edited global Build Settings |
 | Tests | **Unity Test Framework**, edit-mode first | play-mode by default |
 | Release builds | **IL2CPP** | Mono in shipping builds |
+| Driving the Editor from an agent | **Unity CLI** — [cli.md](./cli.md) | asking the user to click through the Editor |
 
 Leave a default only where the linked reference gives that row an escape hatch.
 Say which row you left and what made it worth leaving.
@@ -56,6 +58,7 @@ Say which row you left and what made it worth leaving.
 | Topic | File |
 | --- | --- |
 | CoreCLR readiness, static state, serialization, `EntityId` | [runtime.md](./runtime.md) |
+| Unity CLI, MCP mode, driving the Editor from an agent | [cli.md](./cli.md) |
 | UI Toolkit, design tokens, data binding, MVP | [ui.md](./ui.md) |
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS | [architecture.md](./architecture.md) |
 | Folder layout, naming, GUID-safe renames | [project-structure.md](./project-structure.md) |
