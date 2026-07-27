@@ -67,11 +67,10 @@ Say which row you left and what made it worth leaving.
 | Unity CLI, MCP mode, driving the Editor from an agent | [cli.md](./cli.md) |
 | UI Toolkit, design tokens, data binding, MVP | [ui.md](./ui.md) |
 | Custom Editor tools, inspectors, `[SerializeReference]` | [editor-tools.md](./editor-tools.md) |
-| Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS | [architecture.md](./architecture.md) |
+| Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS, profiling, allocations | [architecture.md](./architecture.md) |
 | Folder layout, naming, GUID-safe renames | [project-structure.md](./project-structure.md) |
 | Addressables, import presets, scenes, prefabs | [assets.md](./assets.md) |
 | Pipeline, lighting, GPU-driven rendering | [rendering.md](./rendering.md) |
-| Profiling and allocation discipline | [performance.md](./performance.md) |
 | Input, audio, version control, CI, builds, testing | [workflow.md](./workflow.md) |
 | Netcode, authority, sessions, dedicated server | [multiplayer.md](./multiplayer.md) |
 
@@ -94,6 +93,9 @@ line below — name the file and line where it holds, or fix it:
 - [ ] Logic sits in plain C# in its own asmdef, covered by edit-mode tests
 - [ ] Renamed assets moved with their .meta, via git mv
 - [ ] Networked state gated on HasAuthority
+- [ ] Editor code under an Editor asmdef, runtime types in runtime assemblies
+- [ ] [SerializeReference] types carry [MovedFrom] before any rename or move
+- [ ] Custom inspectors built on UI Toolkit, with IMGUIContainer only where named
 ```
 
 When the user asks for something off the default stack, name the row, state what

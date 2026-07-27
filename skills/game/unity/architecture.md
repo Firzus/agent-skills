@@ -1,4 +1,4 @@
-# Architecture — composition, asmdefs, async, jobs
+# Architecture — composition, asmdefs, async, jobs, performance
 
 ## Code structure
 
@@ -30,3 +30,22 @@ decouple systems without singletons. They are assets: see
 - Size `IJobParallelFor` batches to the work per item: large batches for cheap items, small for expensive ones.
 - Entities, Collections, Mathematics, and Entities Graphics ship with the Editor as core packages since 6.4 (`Unity.Mathematics` is a built-in module in 6.5) and track Editor releases. Jobs, Burst, and Mathematics are therefore a default tool for hot paths, not an opt-in dependency.
 - Reserve **full ECS** for genuine scale — RTS hordes, large simulations, thousands of active entities — used hybrid alongside GameObjects. It costs iteration speed and ecosystem compatibility, which is the trade the scale has to justify.
+
+## Profiling
+
+Measure on target hardware before changing anything: the Editor adds overhead
+and hides device-specific bottlenecks, so Editor numbers point at the wrong
+problem.
+
+- Compare captures with **Profile Analyzer**; chase memory with **Memory Profiler** snapshots.
+- For rendering-side instrumentation — Render Graph Viewer, Rendering Statistics — see [rendering.md](./rendering.md).
+
+## Allocations
+
+Hold steady-state gameplay at zero per-frame managed allocations — GC spikes are
+frame hitches, and incremental GC moves the cost rather than removing it.
+
+- Cache component references at init; reuse collections and `StringBuilder`s.
+- Use the non-alloc physics query overloads.
+- Keep `Update()` clear of string concatenation, list allocation, LINQ, closures, boxing, and `GetComponent`.
+- Pool runtime spawns with `UnityEngine.Pool` — `ObjectPool<T>`, `CollectionPool` — with collection checks on in dev builds. Projectiles and VFX churning through `Instantiate`/`Destroy` are the usual source of hitches.
