@@ -76,7 +76,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 ### Engine best practices
 
-- [`unity6-aaa-best-practices`](./skills/game/unity6-aaa-best-practices) — Senior Unity 6 DO/DON'T practices across UI, async, rendering, and CI.
+- [`unity`](./skills/game/unity) — Routes each Unity need to one chosen tool, and keeps projects CoreCLR-ready.
 - [`ue5-aaa-best-practices`](./skills/game/ue5-aaa-best-practices) — Senior UE5 DO/DON'T practices: GAS, Subsystems, CommonUI, World Partition.
 - [`figma-to-unity`](./skills/game/figma-to-unity) — Implements Figma designs as Unity UI Toolkit via the Figma MCP.
 

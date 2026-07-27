@@ -112,4 +112,4 @@ If the user can run the Editor, ask them to confirm visually; otherwise list any
 ## Additional resources
 
 - Property-by-property translation tables and USS limitations: [figma-to-uss-mapping.md](./figma-to-uss-mapping.md)
-- For broader Unity UI Toolkit architecture guidance (design systems, MVP/MVVM, data binding), use the `unity6-aaa-best-practices` skill if available.
+- For broader Unity UI Toolkit architecture guidance (design systems, MVP/MVVM, data binding), use the `unity` skill if available.
