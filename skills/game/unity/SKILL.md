@@ -34,8 +34,10 @@ discipline in [runtime.md](./runtime.md) buys.
 | Runtime loading | **Addressables** + `AssetReference` | `Resources/` |
 | Input | **Input System** action maps | legacy Input Manager |
 | Audio | **built-in AudioMixer** — [workflow.md](./workflow.md) | FMOD/Wwise |
-| Render pipeline | **URP** | Built-In, HDRP |
+| Render pipeline | **URP** — [rendering.md](./rendering.md) | Built-In, HDRP |
 | Custom render passes | **Render Graph** | `ScriptableRenderPass.Execute` |
+| Lighting, static scenes | **Adaptive Probe Volumes** + baked lightmaps | Light Probe Groups |
+| Lighting, dynamic scenes | **Surface Cache GI** (6.7) | baking a scene that moves |
 | Draw-call reduction | **GPU Resident Drawer** + GPU occlusion | static and dynamic batching |
 | Pooling | **`UnityEngine.Pool`** | hand-rolled pools |
 | Object identity | **`EntityId`** (64-bit) | `GetInstanceID()`, `int` ids |
@@ -63,7 +65,8 @@ Say which row you left and what made it worth leaving.
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS | [architecture.md](./architecture.md) |
 | Folder layout, naming, GUID-safe renames | [project-structure.md](./project-structure.md) |
 | Addressables, import presets, scenes, prefabs | [assets.md](./assets.md) |
-| Profiling, allocations, URP, GPU-driven rendering | [performance.md](./performance.md) |
+| Pipeline, lighting, GPU-driven rendering | [rendering.md](./rendering.md) |
+| Profiling and allocation discipline | [performance.md](./performance.md) |
 | Input, audio, version control, CI, builds, testing | [workflow.md](./workflow.md) |
 | Netcode, authority, sessions, dedicated server | [multiplayer.md](./multiplayer.md) |
 
