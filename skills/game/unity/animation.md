@@ -104,3 +104,7 @@ which is what keeps the system correct once domain reload is gone — see
 [runtime.md](./runtime.md).
 
 Reach for the built-in clip `AnimationEvent` only for one-off cosmetic hooks.
+
+For the authoring UI that makes such a system usable — master-detail
+inspectors, polymorphic event lists, timeline strips — see
+[editor-tools.md](./editor-tools.md).
