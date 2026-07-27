@@ -1,15 +1,20 @@
 # UI — UI Toolkit, design tokens, data binding, MVP
 
-UI Toolkit is the default for all new UI: menus, HUD, data-heavy screens, and
-world-space. It is retained-mode, renders textureless through a dynamic atlas,
-and receives Unity's UI investment.
+UI Toolkit is the UI system: menus, HUD, data-heavy screens, and world-space.
+It is retained-mode, renders textureless through a dynamic atlas, and receives
+Unity's UI investment.
 
-UGUI is supported, not deprecated — only the standalone `com.unity.textmeshpro`
-package is (TextMeshPro merged into UGUI). From 6.5 a project must declare
-`com.unity.ugui` explicitly rather than inheriting it. Keep UGUI on screens that
-already ship it, and on UI driven by Animator or Timeline keyframes, which is
-its one remaining capability gap. Mixing both per-view is supported; migrating
-working UGUI screens mid-project buys nothing.
+## Animated UI
+
+Animate with **USS transitions** for state changes, and drive anything more
+elaborate from C# against the visual tree.
+
+Native keyframe animation for UI Toolkit — authored in the standard Animation
+window, with clips playing on a `VisualElement` without an Animator component —
+targets **6.7 LTS**, and is experimental behind a feature flag in 6.6. Treat 6.6
+as evaluation only. Animator Controller parity (parameters, transitions, blend
+trees) and Timeline track integration are not committed, so design animated UI
+around clips and USS transitions rather than a state machine.
 
 ## Panel Renderer
 
