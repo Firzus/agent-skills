@@ -35,6 +35,7 @@ discipline in [runtime.md](./runtime.md) buys.
 | Cutscenes and scripted sequences | **Timeline** | hand-coded sequence coroutines |
 | Camera behaviour | **Cinemachine** | positioning a camera in `LateUpdate` |
 | Runtime IK, aim, foot placement | **Animation Rigging** | procedurally rebuilding authored motion |
+| Frame-accurate gameplay events from animation | **State-scoped animation events** — [animation.md](./animation.md) | clip `AnimationEvent` string calls |
 | Async | **`Awaitable`** + `CancellationToken` | coroutines, raw `Task` |
 | Runtime loading | **Addressables** + `AssetReference` | `Resources/` |
 | Input | **Input System** action maps | legacy Input Manager |

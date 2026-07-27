@@ -71,3 +71,36 @@ Animator plays.
 A cutscene reads: Timeline drives the Animator and the Cinemachine cameras,
 Animation Rigging keeps the aim and gaze on their targets, and Signals hand
 control back to gameplay at the end.
+
+## Where Unity leaves a gap
+
+Unity's animation stack is thinner than Unreal's, and the difference is
+concentrated in one place: **frame-accurate gameplay events fired from
+animation**. Unreal ships Anim Notifies and Notify States as first-class
+authoring objects on a notify track, with Montages to sequence them. Unity's
+equivalent is the clip-level `AnimationEvent`, which calls a method **by string
+name** on a component of the same GameObject, takes a single parameter, and is
+stored on the clip — so it carries no compile-time safety and is fragile across
+reimports of authored clips.
+
+For an action game, that gap sits on the critical path: hitbox open and close,
+i-frame windows, footsteps, VFX and SFX spawn points, and cancel windows are all
+frame-accurate events driven by animation.
+
+**Build a state-scoped animation event system.** The pattern, proven in a
+shipping action RPG (`Firzus/lysandra`):
+
+- Carry the events on a `StateMachineBehaviour` attached to the Animator state, not on the clip. The events survive clip reimport and live where the state does.
+- Serialize each event as a name plus a **normalized trigger time** (`0..1`), so it stays correct when clip length changes.
+- Fire from `OnStateUpdate` by testing whether the trigger time was **crossed** between the previous and current normalized time, rather than comparing for equality — a frame step jumps over any exact value.
+- Handle the two time models separately. A looping state wraps, so test the crossing across the wrap and clamp a trigger time of `1` just below it, since `Mathf.Repeat` never returns exactly `1`. A non-looping state must **not** wrap its time, or a trigger time of `1` is never reached.
+- Fire a trigger time of `0` from `OnStateEnter`: the crossing test cannot catch frame zero.
+- Publish onto the project's event bus rather than calling a method by name, so events are typed and gameplay subscribes without coupling to the Animator.
+- Give the behaviour a custom editor with a **preview scrubber** — sample the clip through `AnimationMode`, and blend trees through a `PlayableGraph`, so trigger times are placed against the pose on screen instead of guessed numerically.
+
+Reset any reflection or type caches from
+`[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]`,
+which is what keeps the system correct once domain reload is gone — see
+[runtime.md](./runtime.md).
+
+Reach for the built-in clip `AnimationEvent` only for one-off cosmetic hooks.
