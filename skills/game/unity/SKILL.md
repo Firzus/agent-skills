@@ -39,6 +39,7 @@ discipline in [runtime.md](./runtime.md) buys.
 | Frame-accurate gameplay events from animation | **State-scoped animation events** — [animation.md](./animation.md) | clip `AnimationEvent` string calls |
 | Authoring UI for a custom tool | **UI Toolkit** — [editor-tools.md](./editor-tools.md) | Odin, IMGUI, a node canvas |
 | Heterogeneous items in one authored list | **`[SerializeReference]`** + `AdvancedDropdown` | one list per type |
+| Tool icons | **Built-in Editor icons**, then `painter2D` | shipping PNG variants per state |
 | Async | **`Awaitable`** + `CancellationToken` | coroutines, raw `Task` |
 | Runtime loading | **Addressables** + `AssetReference` | `Resources/` |
 | Input | **Input System** action maps | legacy Input Manager |

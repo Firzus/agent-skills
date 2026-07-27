@@ -63,6 +63,40 @@ strokes, fills, and Bézier curves, no IMGUI needed.
 - Call `MarkDirtyRepaint()` when the data changes; the callback runs only when the element is dirty.
 - Read layout and data inside the callback and draw from it. The element is read-only there, so resolve geometry before drawing.
 
+## Icons
+
+Reach for icons in this order, so a redistributable tool carries no binary
+assets it does not need:
+
+| Icon | Reach for |
+| --- | --- |
+| Generic UI — play, warning, settings, folder | Built-in Editor icons |
+| Domain state — hitbox open, i-frame, cancel window | `painter2D` |
+| Artwork a path cannot express | An imported PNG sprite |
+
+Built-in icons come from `EditorGUIUtility.IconContent("name")` in C#, or a
+USS `background-image`. They already follow the Light and Dark skins through
+the `d_` prefix convention, so they stay legible in both without a second asset.
+
+`painter2D` draws domain markers — a diamond, a ring, a bar — from
+`MoveTo`/`LineTo`/`Arc`/`BezierCurveTo` inside `generateVisualContent`. It
+**produces no file**: the paths are tessellated into UI Toolkit's render command
+stream and the generated geometry is not exposed, so nothing is stored or
+retrievable. That is what makes it resolution-independent and free of DPI
+variants, and it puts colour under code control — tint by state and call
+`MarkDirtyRepaint()`.
+
+Separate the icon's shape from its colour, so one drawn shape covers many
+states through tinting rather than shipping a file per variant.
+
+For an imported PNG: Sprite (2D and UI), Single mode, Alpha Is Transparency on,
+Full Rect, mipmaps off, square at 64, 128, or 256. SVG is a core module from
+6.3, so vector files are an option without adding a package dependency.
+
+`[Icon("path")]` on a `MonoBehaviour` or `ScriptableObject` sets the script's
+icon in the Project window and Inspector, which is what gives authored assets a
+recognisable badge in a list.
+
 ## Node graphs
 
 Author on lists, trees, and timelines rather than a node canvas: Unity has no
