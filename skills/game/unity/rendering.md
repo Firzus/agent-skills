@@ -1,14 +1,15 @@
 # Rendering — pipeline, lighting, GPU-driven drawing
 
-URP is the pipeline. HDRP is the supported step off that row, for high-fidelity
-PC and console work — decide before production, since pipelines are not
-interchangeable mid-project. The Built-In pipeline is deprecated as of 6.5 and
-maintained only through the 6.7 LTS lifecycle, and Unity 6 rendering features
-are SRP-based, so new work starts on URP.
+URP is the pipeline, on every target from mobile to high-end PC and console.
+Unity's rendering work now lands there: Surface Cache GI, Screen Space
+Reflections, and GTAO are URP features. The Built-In pipeline is deprecated as
+of 6.5 and maintained only through the 6.7 LTS lifecycle, and Unity 6 rendering
+features are SRP-based.
 
-Unity's rendering investment now lands in URP first: Surface Cache GI, Screen
-Space Reflections, and GTAO are URP features with no announced HDRP
-integration.
+Set the pipeline at project start. Pipelines are not interchangeable
+mid-project: materials, shaders, lighting setup, and custom passes are all
+pipeline-specific, so a switch is a re-authoring pass across the project's
+entire visual content.
 
 ## Render Graph
 
