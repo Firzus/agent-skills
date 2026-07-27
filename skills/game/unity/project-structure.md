@@ -1,29 +1,22 @@
-# Project structure — folders, file & naming conventions
+# Project structure — folders, naming, safe renames
 
-A consistent, machine-checkable convention for where assets and code live and
-how they are named. This is the layer that keeps a growing AAA project
-navigable, reviewable, and refactor-safe. Commit it as a style guide
-(`docs/asset-and-code-conventions.md`) referenced from `AGENTS.md` so it is the
-single source of truth in review.
+A machine-checkable convention for where assets and code live. Commit it as
+`docs/asset-and-code-conventions.md` and reference it from `AGENTS.md`, so
+review has one source of truth to point at.
 
-## Naming rules (all assets & folders)
+## Naming
 
-- **DO** name everything in **PascalCase**, English, ASCII only — no spaces, no
-  accents, no special characters. Spaces and casing drift break tooling, CLI
-  globbing, and cross-platform (case-insensitive) filesystems.
-- **DO** zero-pad numbered variants: `_01`, `_02`, … (never `Rock 1`,
-  `Plan04-5-6`). Padding keeps sort order stable.
-- **DON'T** ship typos or doubled separators (e.g. `Collumn`, `M_Wall__Base`) —
-  they fragment search and invite duplicates.
-- **DO** make the filename equal to the concept it holds (`filename == type`
-  for code, `filename == asset` for content).
+- PascalCase, English, ASCII only. Spaces, accents, and casing drift break tooling, CLI globbing, and case-insensitive filesystems.
+- Zero-pad numbered variants — `_01`, `_02` — so sort order stays stable.
+- Spell names exactly and use single separators: `M_Wall_Base`, not `M_Wall__Base`. Typos fragment search and breed duplicates.
+- Name a file after the thing it holds: `filename == type` for code, `filename == asset` for content.
 
-## Asset type prefixes
+## Asset prefixes
 
-Prefix every asset by its **type** so kind is obvious in any flat list, search,
-or reference picker. The prefix replaces the need for a per-type folder.
+Prefix by type, so kind is visible in any flat list, search, or reference
+picker. The prefix is what removes the need for per-type folders.
 
-| Prefix | Asset type | Prefix | Asset type |
+| Prefix | Type | Prefix | Type |
 | --- | --- | --- | --- |
 | `SM_` | Static mesh | `AC_` | Animator controller |
 | `SK_` | Skeletal mesh | `A_` | Animation clip |
@@ -35,95 +28,64 @@ or reference picker. The prefix replaces the need for a per-type folder.
 
 ## Texture suffixes
 
-Suffix textures by the channel/map they carry so packing intent is explicit and
-import rules can key off the suffix:
+Suffix by the map carried, so packing intent is explicit and import rules can
+key off it.
 
 | Suffix | Map | Suffix | Map |
 | --- | --- | --- | --- |
-| `_BC` | Base color / albedo (not `_Diffuse`) | `_MS` | Metallic + smoothness |
+| `_BC` | Base colour / albedo | `_MS` | Metallic + smoothness |
 | `_N` | Normal | `_R` | Roughness |
 | `_AO` | Ambient occlusion | `_E` | Emissive |
 | `_M` | Mask | `_ORM` | Packed occlusion/roughness/metallic |
 
-Example set: `T_Cliff_BC`, `T_Cliff_N`, `T_Cliff_ORM`.
+A full set reads `T_Cliff_BC`, `T_Cliff_N`, `T_Cliff_ORM`.
 
-## Organize by feature, not by type
+## Organise by feature
 
-- **DO** group assets by **feature/domain** (`Player/`, `Boss/`, `MainMenu/`),
-  keeping each feature's meshes, materials, textures, and shaders side by side.
-- **DON'T** create per-type subfolders (`Material/`, `Mesh/`, `Texture/`,
-  `ShaderGraphs/`) inside a feature — they are **redundant with the type
-  prefix**. Flatten them and let `SM_`/`M_`/`T_` carry the kind.
-- **DO** tolerate type grouping only for very large shared source sets under a
-  `Sources/` root (raw authoring assets), not for game-ready content.
+- Group assets by feature or domain — `Player/`, `Boss/`, `MainMenu/` — keeping each feature's meshes, materials, textures, and shaders side by side.
+- Let the type prefix carry the kind, and keep feature folders flat. Per-type subfolders inside a feature (`Material/`, `Mesh/`, `Texture/`) restate what `SM_`, `M_`, and `T_` already say.
+- Type grouping earns its place only under a `Sources/` root for large shared authoring sets, not for game-ready content.
 
-## Scene naming
+## Scenes
 
-- **DO** name scenes `<Context>_<Layer>` in PascalCase, matching the additive
-  layering model (`Forest_Environment`, `MainMenu_UserInterface`,
-  `Boss_Gameplay`). The layer suffix maps to the bootstrap / persistent /
-  content split (see [assets.md](./assets.md)).
-- **DON'T** ship ambiguous scene names (`Boss`, `Map`, `World_Rework`) — the
-  layer suffix tells reviewers and tooling what the scene loads as.
+Name scenes `<Context>_<Layer>` in PascalCase, matching the additive layering
+model: `Forest_Environment`, `MainMenu_UserInterface`, `Boss_Gameplay`. The
+layer suffix maps to the bootstrap / persistent / content split in
+[assets.md](./assets.md), and tells a reviewer how the scene loads.
 
-## Placeholders & throwaway
+## Keep the tree shippable
 
-- **DON'T** leave placeholder names in the tree: `Test`, `Demo`, `Sandbox`,
-  `Tmp`, `Fake`, `New`, `delete`, `_output`, `_rework`.
-- **DO** quarantine genuine throwaway work under a single `Assets/_Sandbox/`
-  root (or delete it) — never scattered through feature folders. Promote it to
-  a real, prefixed name when it ships.
+- Give every asset its real, prefixed name when it lands. Names like `Test`, `Demo`, `Tmp`, `New`, or `_rework` say nothing about content and outlive their author's memory of them.
+- Quarantine genuine throwaway work under a single `Assets/_Sandbox/` root, and promote it to a real name when it ships.
+- Match third-party and vendor folders to their upstream layout, so updates stay clean.
+- Leave generated artifacts under their tool-owned names — lightmaps, NavMesh, APV data, TMP `… SDF.asset`, and anything under `Generated/`. Their tooling reproduces those names.
 
-## Don't touch vendor & generated assets
+## C# conventions
 
-- **DON'T** rename or reorganize **third-party/vendor** folders (asset-store
-  packs, plugins) — match their upstream layout so updates stay clean.
-- **DON'T** rename **generated** artifacts (lightmaps, NavMesh, APV data, TMP
-  `… SDF.asset`, baked/`Generated/` output) — they are reproduced by their
-  tooling and carry tool-owned names.
+- One public type per file, `filename == type name`. Satellite enums, structs, and DTOs get their own files.
+- Mirror the folder path in the namespace: `Code/Combat/Weapons/` → `Project.Combat.Weapons`.
+- Name each `.asmdef` file after its internal `name` field, and a test assembly after the assembly it targets — `Project.Combat.Weapons.Tests`.
+- Pick one namespace depth per subsystem and apply it uniformly. Acronyms stay uppercase: `HUD`, `VFX`, `HSM`.
+- Keep Editor-only code under `Editor/` folders or Editor asmdefs; runtime code reaches `UnityEditor` only inside `#if UNITY_EDITOR`.
 
-## C# code conventions
+## Renames and GUIDs
 
-- **DO** keep **one public type per file**, with `filename == type name`. Move
-  satellite enums/structs/DTOs into their own files.
-- **DO** make the **namespace mirror the folder path** (`Code/Combat/Weapons/`
-  → `Project.Combat.Weapons`). Folder and namespace must not drift.
-- **DO** name each `.asmdef` **file** after its internal `name` field, and name
-  a test assembly after the runtime assembly it targets
-  (`Project.Combat.Weapons` → `Project.Combat.Weapons.Tests`).
-- **DON'T** mix flattened and nested namespaces within one subsystem — pick
-  niche-by-subfolder and apply it uniformly. Acronyms may stay uppercase
-  (`HUD`, `VFX`, `HSM`).
-- **DO** keep **Editor-only code** under `Editor/` folders or Editor asmdefs;
-  runtime code touches `UnityEditor` only inside `#if UNITY_EDITOR`. No
-  placeholder/`Fake`/`Demo` types in runtime assemblies.
+Unity references assets by the GUID stored in the `.meta` file, not by path, so
+renaming is safe exactly as long as the pair travels together.
 
-## Move/rename safety (GUID discipline)
+- Move or rename an asset **with its `.meta`**, and a folder with its `Folder.meta`.
+- Use `git mv`, so history is preserved, LFS tracking stays intact, and the diff reads as a rename rather than delete-plus-add.
+- After each batch, refresh Unity and clear the console to zero new errors and warnings before the next one. C# renames need a green compile before moving on.
 
-Renaming is a frequent, high-risk operation; do it mechanically so references
-survive.
-
-- **DO** move/rename an asset **together with its `.meta` file** — Unity
-  references by **GUID stored in the `.meta`**, not by path, so the pair must
-  travel together. Same rule for a folder and its `Folder.meta`.
-- **DO** use `git mv` so history is preserved and LFS tracking
-  (`.gitattributes` for `png`/`fbx`/`wav`/`tif`…) stays intact; renames then
-  show as renames in the diff, not delete+add.
-- **DO** after each batch: refresh Unity, read the console (errors + warnings),
-  and iterate to zero new issues before the next batch. For C# renames/splits,
-  require a green compile before moving on.
-
-## Apply this in order (least → most risky)
-
-References are GUID-based, so content moves are low-risk; code moves can break
-compilation. Sequence accordingly, one checkpoint commit + console check per
-step:
+Sequence a large restructure from least to most risky, one checkpoint commit and
+console check per step — content moves are GUID-safe, code moves break
+compilation:
 
 ```
 1. Art assets   — flatten by feature, apply prefixes + texture suffixes
 2. Audio/Data/Prefabs/Scenes — prefix, depluralize, sandbox placeholders
-3. C# low-risk  — asmdef file/test names, runtime placeholders
-4. Folder↔namespace alignment
+3. C# low-risk  — asmdef file/test names
+4. Folder <-> namespace alignment
 5. Subsystem namespace homogenization
 6. One-type-per-file splits (highest volume/risk)
 7. Final pass   — clean console, reviewed rename diff, EditMode tests

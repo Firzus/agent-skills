@@ -1,91 +1,32 @@
-# Gameplay architecture — composition, asmdefs, async, DOTS
+# Architecture — composition, asmdefs, async, jobs
 
 ## Code structure
 
-- **DO** prefer composition + plain C# services over `MonoBehaviour`
-  inheritance trees; keep MonoBehaviours as thin adapters over testable plain
-  C# logic.
-- **DON'T** use `GameObject.Find` / `FindObjectOfType` in runtime gameplay
-  code (`FindAnyObjectByType` only at init if unavoidable) — slow and fragile.
-- **DO** split code into **assembly definitions** along architectural seams
-  (Core, Gameplay, UI, Infrastructure, one per major system) with one-way
-  dependencies. asmdefs enforce module boundaries and cut incremental compile
-  scope.
-- **DON'T** create dozens of micro-asmdefs per feature, and don't leave
-  everything in `Assembly-CSharp` — both extremes hurt (domain reload time vs
-  no boundaries, and test assemblies can't reference `Assembly-CSharp`).
+- Build gameplay from plain C# services, with MonoBehaviours as thin adapters over them. Logic that never touches `UnityEngine` types is logic you can test in edit mode.
+- Resolve references through serialized fields, dependency injection, or a registry populated at init. `FindAnyObjectByType` belongs to initialization at most; per-frame `Find*` calls scan the scene.
+- Split code into **assembly definitions** along architectural seams — Core, Gameplay, UI, Infrastructure, one per major system — with one-way dependencies. Asmdefs enforce module boundaries and shrink incremental compile scope.
+- Aim for one asmdef per major system. Dozens of micro-asmdefs slow reload; leaving everything in `Assembly-CSharp` removes boundaries and blocks tests, since test assemblies cannot reference it.
 
-## ScriptableObject architecture
+## ScriptableObjects
 
-- **DO** use ScriptableObjects for shared config/data, event channels, and
-  runtime "variable" assets — they decouple systems and enable designer-driven
-  data without singletons.
-- **DON'T** store mutable per-run state in SOs expecting it to reset: SO data
-  persists across play sessions in-editor and is shared between consumers.
-  SOs are assets, not save-game state.
+Use them for shared config, event channels, and designer-authored data — they
+decouple systems without singletons. They are assets: see
+[runtime.md](./runtime.md) for why per-run state belongs elsewhere.
 
-## Async: Awaitable first
+## Async
 
-- **DO** use Unity 6 **`Awaitable`** as the default async tool:
-  `Awaitable.NextFrameAsync`, `WaitForSecondsAsync`, `BackgroundThreadAsync` /
-  `MainThreadAsync`, always with a `CancellationToken` (use
-  `destroyCancellationToken` for component-scoped work). Pooled, near-zero
-  alloc, PlayerLoop-aware.
-- **DON'T** await the same `Awaitable` instance twice or store it for reuse —
-  instances are pooled and recycled.
-- **DO** adopt **UniTask** when you need `WhenAll`/`WhenAny`, PlayerLoopTiming
-  control, async LINQ, or leak tracking; keep `Awaitable` for dependency-free
-  code.
-- **DON'T** build complex async flows on coroutines (fine only for trivial
-  fire-and-forget sequencing), and don't use raw .NET `Task` for engine work
-  (thread-pool continuations, no PlayerLoop awareness).
+`Awaitable` is the default: pooled, near zero-allocation, and PlayerLoop-aware.
 
-## DOTS, Jobs, Burst
+- Reach for `Awaitable.NextFrameAsync`, `WaitForSecondsAsync`, `BackgroundThreadAsync`, and `MainThreadAsync`.
+- Pass a `CancellationToken` on every call — `destroyCancellationToken` scopes the work to its component, so a destroyed object cancels its own pending work.
+- Await each `Awaitable` instance once. Instances return to a pool after awaiting, so a stored one is a use-after-free.
+- Adopt **UniTask** where you need `WhenAll`/`WhenAny`, PlayerLoopTiming control, async LINQ, or leak tracking. It is the one supported step off this row.
+- Keep coroutines for trivial fire-and-forget sequencing. Raw .NET `Task` continues on the thread pool with no PlayerLoop awareness, which is why engine work stays on `Awaitable`.
 
-- **DO** use **Jobs + Burst** for measured hot paths (pathfinding, procedural
-  generation, mass transform updates) even without full ECS — Burst alone
-  often yields 5–10x on hot loops.
-- **DO** reserve **full DOTS/ECS** for genuine massive scale (RTS hordes, big
-  simulations, thousands of active entities), used hybrid with GameObjects.
-- **DON'T** rewrite a normal game in ECS for ideology — it costs iteration
-  speed and ecosystem compatibility. AAA teams apply DOTS selectively.
-- **DON'T** call `.Complete()` immediately after scheduling a job — schedule
-  early, complete late (`JobHandle` chaining), or you discard the parallelism.
-- **DON'T** install **Entities / Collections / Mathematics / Entities Graphics**
-  as manual packages on 6.4+ — they ship as **built-in Core packages** with the
-  Editor (`Unity.Mathematics` is a built-in module in 6.5). Lower friction means
-  Jobs+Burst+Mathematics is a reasonable default for hot paths, not an opt-in.
+## Jobs, Burst, ECS
 
-## Object identity: EntityId, not InstanceID
-
-- **DO** treat **`EntityId`** as the object-identity type going forward (6.4
-  deprecates `InstanceID`; 6.5 unifies GameObject + entity identity on a 64-bit
-  `EntityId`). It is the bridge type between GameObjects and ECS.
-- **DON'T** call the integer `InstanceID` APIs — `Object.GetInstanceID()`,
-  `Resources.InstanceIDToObject`, `Selection.instanceIDs` — or cast ids to/from
-  `int` or rely on their sign, bit layout, or sort order. These obsolete int
-  APIs become **compile errors in 6.5** (the genuinely new break this release).
-- **DON'T** use the legacy quick accessors `GameObject.rigidbody` / `.camera` /
-  `Component.renderer` or `AddComponent("TypeName")` — long deprecated (gone
-  since the Unity 5.x era), with any remaining `[Obsolete]` warnings promoted to
-  errors in 6.5; use `GetComponent<T>()` / `AddComponent<T>()`.
-- **DO** budget an explicit **`InstanceID` → `EntityId` migration** when moving a
-  project to 6.4/6.5; upgrades have surfaced lost component references when this
-  identity change is ignored.
-
-## Serialization & domain reload
-
-- **DO** apply `[SerializeField]` to **fields only** — on properties, methods,
-  or types it is a **compile error since 6.3**; use `[field: SerializeField]`
-  for auto-properties.
-- **DO** let the **serialization Roslyn analyzer** (6.5) gate builds: it turns
-  silent runtime data loss (missing `[Serializable]`, bad `[SerializeReference]`,
-  unsupported collections) into compile-time errors — keep it on as
-  build-breaking.
-- **DO** design for **disabled domain reload**: prefer the **Editor Lifecycle
-  API** (`OnCodeLoaded`/`OnCodeInitializing`) and `[AutoStaticsCleanup]` /
-  `OnEnteringPlayMode` attributes (6.5) over event-based `playModeStateChanged`
-  and manual static resets — this is the foundation for the reload-free CoreCLR
-  Editor and keeps enter-play-mode fast.
-- **DON'T** hold un-reset `static` mutable state expecting a domain reload to
-  clear it when fast enter-play-mode / reload-free mode is on.
+- Move measured hot paths — pathfinding, procedural generation, mass transform updates — into Burst-compiled jobs over `NativeArray` and `Unity.Mathematics`. Burst alone often pays 5–10x on a hot loop.
+- Schedule early and complete late, chaining `JobHandle`s. Calling `.Complete()` straight after scheduling runs the job synchronously and discards the parallelism.
+- Size `IJobParallelFor` batches to the work per item: large batches for cheap items, small for expensive ones.
+- Entities, Collections, Mathematics, and Entities Graphics ship with the Editor as core packages since 6.4 (`Unity.Mathematics` is a built-in module in 6.5) and track Editor releases. Jobs, Burst, and Mathematics are therefore a default tool for hot paths, not an opt-in dependency.
+- Reserve **full ECS** for genuine scale — RTS hordes, large simulations, thousands of active entities — used hybrid alongside GameObjects. It costs iteration speed and ecosystem compatibility, which is the trade the scale has to justify.
