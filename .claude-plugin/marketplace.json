@@ -23,7 +23,8 @@
         "./skills/web/swr",
         "./skills/web/tauri",
         "./skills/web/vite-plus-best-practices",
-        "./skills/web/web-assets-optimization"
+        "./skills/web/web-assets-optimization",
+        "./skills/web/web-extension"
       ]
     },
     {

@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 47 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 49 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -62,6 +62,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`agent-browser`](./skills/engineering/agent-browser) — Drives a real browser from the CLI (CDP, a11y snapshots + refs): interaction, screenshots, emulation, vitals, and CDP attach to Tauri/Electron shells.
 - [`dokploy-best-practices`](./skills/web/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
 - [`web-assets-optimization`](./skills/web/web-assets-optimization) — Optimizes all web assets: images, video, GIF replacement, fonts, SVG, plus per-asset delivery strategy (LCP, lazy loading).
+- [`web-extension`](./skills/web/web-extension) — Builds, ports, tests, and packages WebExtensions for Chromium, Firefox, and Safari with explicit compatibility, permission, lifecycle, and store gates.
 - [`artefact`](./skills/engineering/artefact) — Visualizes a concept as a self-contained HTML document, written to the OS temp dir and opened in the browser.
 - [`imagegen`](./skills/engineering/imagegen) — Generates and edits images with `gpt-image-2` via Codex CLI (ChatGPT subscription), with a chroma-key pipeline for transparent cutouts.
 - [`extract-theme`](./skills/web/extract-theme) — Extracts a website's design tokens into shadcn/ui + Tailwind CSS v4.
