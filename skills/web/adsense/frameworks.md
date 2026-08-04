@@ -18,7 +18,7 @@ Sort each condition by the question it asks. *"May this page carry an ad?"* is e
 | Consent state | May it | Keep, and outside the rule below |
 | Real content on the screen (not loading, error, or empty) | May it | Keep — withholding here is required |
 | Development/preview placeholder branch | May it | Keep |
-| Ad-blocker probe or detection result | Will it | **Remove** |
+| Ad-blocker probe or detection result | Will it | **Remove from the render path** — it may drive a message, never a slot |
 | "Loader ready" / "script loaded" / availability flag | Will it | **Remove** |
 | Feature flag defaulting to off on error | Will it | **Remove or invert** |
 | `null` initial state that renders nothing until resolved | Will it | **Remove** — a guess wearing a lifecycle's clothes |
@@ -43,9 +43,24 @@ Two categories sit outside it, and neither is an inconsistency:
 
 Two custom gates recur in real codebases, and both invert the correct failure direction.
 
-**Ad-blocker probes.** A local file named to look like ad infrastructure (`ads.js`, `sidead1.js`, `advert.js`) is fetched; failure is read as "ad blocker present" and slots are suppressed. The probe cannot distinguish an ad blocker from a 404 after a `public/` refactor, a CSP rule, a service worker intercepting the request, an offline PWA visit, or plain network latency. All of them produce the same outcome: no ads, for everyone affected, indefinitely.
+**Ad-blocker probes used as a gate.** A local file named to look like ad infrastructure (`ads.js`, `sidead1.js`, `advert.js`) is fetched; failure is read as "ad blocker present" and slots are suppressed. The probe cannot distinguish an ad blocker from a 404 after a `public/` refactor, a CSP rule, a service worker intercepting the request, an offline PWA visit, or plain network latency. All of them produce the same outcome: no ads, for everyone affected, indefinitely.
 
-It is also redundant. Ad-blocker handling belongs to Google Ad Blocking Recovery, which is the supported mechanism and the only one that can actually recover revenue. ([Ad blocking recovery](https://support.google.com/adsense/answer/11576085))
+The problem is the *gate*, not the detection. A probe whose only effect is to show your own message — while the `<ins>` still renders — is fine. A probe that decides whether a slot exists is a guess that fails closed.
+
+### Prefer a custom recovery over Google Ad Blocking Recovery
+
+Google's Ad Blocking Recovery injects a Google-controlled interstitial and error-message flow into your pages. It takes over the moment, the wording, and the dismissal behavior, it is tied to the Privacy & messaging tooling, and it is frequently the most intrusive thing on the screen. Build the recovery yourself instead:
+
+| Rule | Why |
+| --- | --- |
+| Detect out-of-band, never in the render path | Detection informs a message; it must not decide whether the `<ins>` mounts |
+| Fail open on every unknown | A missing or unresolved probe result means "assume no blocker" |
+| Own the surface | An inline, dismissible, non-blocking notice — no full-page interstitial, no content lock |
+| Ask once, remember the answer | Persist the dismissal; re-prompting each navigation is what makes recovery flows hated |
+| Keep it out of ad policy scope | Your message is publisher content: it must not imitate an ad, sit next to a slot, or ask anyone to click ads ([Publisher Policies](https://support.google.com/publisherpolicies/answer/10502938?hl=en)) |
+| Measure it as a funnel | Blocked sessions, notices shown, dismissals, allowlist conversions — otherwise you cannot tell whether it earns its intrusion |
+
+Accept the ceiling: a custom notice recovers goodwill and some allowlisting, not the served impressions themselves. That is the trade you make for keeping control of the page. If you ever need Google's mechanism for comparison, it is documented here. ([Ad blocking recovery](https://support.google.com/adsense/answer/11576085))
 
 **Loader-ready flags.** The account script's `onLoad` sets a state flag, and slots render only once the flag flips. Any missed callback — a race, a strategy change, an error handler that never fires, a hydration mismatch — permanently pins the flag at "not ready" and suppresses every slot on the site.
 

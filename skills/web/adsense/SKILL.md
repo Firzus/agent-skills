@@ -41,7 +41,7 @@ These are account-survival rules. Treat a request to break one as a request to e
 - Serve ads only on real content pages. Empty, under-construction, alert/navigation-only, error, login, and replicated-without-added-value screens stay unmonetized.
 - Keep ads visually and physically separate from navigation, buttons, pagination, form controls, and game/tool inputs.
 - Ship the generated ad code with only Google-permitted modifications; leave the ad iframe, creative, and "Ads by Google" disclosure intact.
-- Sort every render-path condition with the **fail-open** audit in [frameworks.md](./frameworks.md), and leave ad-blocker handling to Google Ad Blocking Recovery.
+- Sort every render-path condition with the **fail-open** audit in [frameworks.md](./frameworks.md); ad-blocker detection may drive your own dismissible notice, never whether a slot renders.
 - Standard AdSense units refresh only on a user-requested refresh — honor **provenance** and keep GPT `refresh()` patterns out of AdSense pages.
 - Reserve space for every slot so ads cannot shift content into a user's tap.
 - Serving personalized ads to EEA/UK/Swiss users requires a Google-certified CMP; consent is never inferred from silence or inactivity.
