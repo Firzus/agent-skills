@@ -35,7 +35,7 @@ flowchart TD
 9. **Look for layout regressions.** Moved slots, hidden containers, zero-width responsive parents, late rendering, new overlays, sticky or navigation conflicts. ([Responsive behavior](https://support.google.com/adsense/answer/9183460))
 10. **Check viewability and loading.** Compare Active View and impression counts: a new lazy-load threshold reduces requests, while a new eager load inflates unseen impressions. ([Active View](https://support.google.com/adsense/answer/3481946?hl=en))
 11. **Audit traffic quality.** Sudden CTR, geography, referrer, user-agent, engagement, or paid-campaign changes can trigger filtering or limits. ([Traffic quality](https://support.google.com/adsense/answer/1112983))
-12. **Estimate ad blocking separately.** Client-side blockers cut requests before AdSense reports them. Measure with privacy-respecting first-party methods, and route any recovery attempt through Google Ad Blocking Recovery, which is the supported path. ([IAB detection guidance](https://iabtechlab.com/standards/ad-block-detection/), [Ad blocking recovery](https://support.google.com/adsense/answer/11576085))
+12. **Estimate ad blocking separately.** Client-side blockers cut requests before AdSense reports them. Measure with privacy-respecting first-party methods, keep the measurement out of the render path, and prefer a self-built, dismissible recovery notice over Google Ad Blocking Recovery, whose interstitial you do not control — see [frameworks.md](./frameworks.md). ([IAB detection guidance](https://iabtechlab.com/standards/ad-block-detection/))
 
 ## Diagnose before adding inventory
 
