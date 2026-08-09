@@ -27,7 +27,6 @@ Read the target repository before asking anything. Ask only what exploration can
 - `AGENTS.md` and `CLAUDE.md` at the root — does either exist? Does it already carry a `<!-- setup-project -->` block?
 - Stack signals: `package.json`, `*.csproj` plus `ProjectSettings/` (Unity), `*.uproject` (Unreal), `Cargo.toml`, `pyproject.toml`, `astro.config.*`, `src-tauri/`
 - Test signals: an existing test directory, a `test` script, `#[cfg(test)]` modules
-- `CONTEXT.md` — if present, domain vocabulary is already owned there; leave it alone
 - `.editorconfig`, `eslint.config.*`, `clippy.toml` — rules already enforced here are excluded from the fragment
 
 ### 2. Present findings and ask
