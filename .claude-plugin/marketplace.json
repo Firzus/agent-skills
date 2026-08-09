@@ -67,7 +67,6 @@
       "description": "Cross-cutting engineering skills \u2014 browser automation, code health, PR care, visualization.",
       "skills": [
         "./skills/engineering/agent-browser",
-        "./skills/engineering/artefact",
         "./skills/engineering/babysitting-pr",
         "./skills/engineering/gamification",
         "./skills/engineering/reverse-engineer",

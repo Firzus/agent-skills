@@ -18,7 +18,7 @@ Stack-agnostic: express the tokens through the project's own theming mechanism (
 | Skill           | For                                                    |
 | --------------- | ------------------------------------------------------ |
 | `grilling`      | the mandatory grill gate before validation             |
-| `artefact`      | rendering the token showcase                           |
+| `prototype`     | rendering the token showcase                           |
 | `extract-theme` | replicating a reference site's tokens (that branch only) |
 
 When one is missing, tell the user before the step that needs it.
@@ -113,7 +113,7 @@ Invoke the `grilling` skill on the decisions so far: design read, dials, foundat
 
 ## 8 — Showcase & validation
 
-Invoke the `artefact` skill to render a **token showcase** — swatches, type scale, spacing/sizing/radius/elevation scales, motion demos playing their real durations and easings — one per surface where surfaces diverge.
+Invoke the `prototype` skill (UI branch) to render a **token showcase** — swatches, type scale, spacing/sizing/radius/elevation scales, motion demos playing their real durations and easings — one per surface where surfaces diverge.
 
 **Done when:** the grill is done, the user has validated the showcase, and `DESIGN.md` plus the `PAGES.md` skeleton are written.
 
