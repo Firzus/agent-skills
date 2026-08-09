@@ -66,7 +66,7 @@ layer suffix maps to the bootstrap / persistent / content split in
 - Mirror the folder path in the namespace: `Code/Combat/Weapons/` → `Project.Combat.Weapons`.
 - Name each `.asmdef` file after its internal `name` field, and a test assembly after the assembly it targets — `Project.Combat.Weapons.Tests`.
 - Pick one namespace depth per subsystem and apply it uniformly. Acronyms stay uppercase: `HUD`, `VFX`, `HSM`.
-- Keep Editor-only code under `Editor/` folders or Editor asmdefs; runtime code reaches `UnityEditor` only inside `#if UNITY_EDITOR`.
+- Give every `Editor/` folder its own Editor-type asmdef. Assembly definitions take priority over Unity's special folder names, so inside an asmdef folder an `Editor/` subfolder is an ordinary folder and its scripts compile into the runtime assembly — silently, all the way into the player build. On a project without asmdefs, the bare `Editor/` folder still works. Runtime code reaches `UnityEditor` only inside `#if UNITY_EDITOR`.
 
 ## Renames and GUIDs
 

@@ -5,7 +5,7 @@
 [![skills.sh](https://skills.sh/b/Firzus/agent-skills)](https://skills.sh/Firzus/agent-skills)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 
-[Install](#install) • [Browse skills](#browse-skills) • [Manual install](#manual-install) • [Skill structure](#skill-structure)
+[Global instructions](#global-instructions) • [Install](#install) • [Browse skills](#browse-skills) • [Manual install](#manual-install) • [Skill structure](#skill-structure)
 
 ## Overview
 
@@ -13,6 +13,30 @@
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
+
+## Global instructions
+
+How the agent talks to you, rather than what it knows. Copy the block into your harness's top-level instruction file — `~/.codex/AGENTS.md` for Codex, `~/.claude/CLAUDE.md` for Claude Code, or the equivalent for your tool.
+
+Keep it to communication style. Anything project-specific — git workflow, guardrails, testing policy, code standards — belongs in the project's own `AGENTS.md`; the [`setup-project`](./skills/engineering/setup-project) skill composes it for you.
+
+```markdown
+## Communication
+
+Talk to me in French. Everything that outlives the conversation is English — code, comments, commits, branches, PRs, issues, docs.
+
+Each message stands on its own. I read them between several parallel sessions, knowing nothing about the domain, the repo, or the file you just opened. Every proper noun, identifier, abbreviation, file name and document reference gets a gloss in the same sentence — what it is, and why it matters here. Write "ADR-0001 (the decision to keep the domain free of engine types)", never "ADR-0001".
+
+Be concise and concrete. Lead with what is at risk and what changes for me, and add the mechanism only where it helps me decide.
+
+Make a question answerable in one reply with nothing open in front of me: what you found, what is blocking you, the concrete choices.
+
+When a decision is mine, put the options as a practical trade-off — what each one gives up — then your recommendation and the reason behind it.
+
+Mermaid diagrams render on my side. Reach for one, or a table, wherever the shape of the idea carries better than prose.
+```
+
+Swap the first line for your own language pairing. The rest is language-agnostic.
 
 ## Install
 
@@ -55,7 +79,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`reverse-engineer`](./skills/engineering/reverse-engineer) — Reverse engineers how an app implements a mechanism (from source, installed build, and external sources) and writes design notes to replicate it.
 - [`simplify`](./skills/engineering/simplify) — Simplifies recently modified code for clarity and consistency without changing behavior.
 - [`babysitting-pr`](./skills/engineering/babysitting-pr) — Monitors an open GitHub PR, fixes branch-related CI and review blockers, and keeps it merge-ready.
-- [`software-architecture`](./skills/engineering/software-architecture) — Stack-agnostic architecture for any software (game, desktop, web, service): macro structures, runtime patterns, boundaries, state, cross-cutting concerns.
+- [`setup-project`](./skills/engineering/setup-project) — Composes a project's `AGENTS.md` from reusable fragments (git workflow, guardrails, testing, architecture, code standards), configures the repository, and proposes the relevant skills.
 - [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
 - [`vite-plus-best-practices`](./skills/web/vite-plus-best-practices) — Best practices for Vite+ (`vp`): config, migrations, testing, monorepos.
 - [`tauri`](./skills/web/tauri) — Tauri v2+: owned IPC, capabilities-first permissions, CDP shell debugging, mobile-safe structure.

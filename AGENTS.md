@@ -74,26 +74,6 @@ npx skills add Firzus/agent-skills
 npx skills add Firzus/agent-skills --skill <skill-name>
 ```
 
-## Conventions & Patterns
-
-- **Filenames:** kebab-case (`vite-plus-best-practices`, `web-assets-optimization`). Skill folder name must match the `name:` field in the SKILL.md frontmatter.
-- **SKILL.md frontmatter:** required keys are `name` and `description`. Use a YAML block scalar (`description: >-`) when the description spans multiple lines or contains quotes.
-- **SKILL.md body:** Markdown, second-person voice aimed at the agent ("Use this skill when…"). Keep under ~500 lines; offload detail into sibling `.md` files referenced by relative path.
-- **Reference files:** topical, single-purpose, linked from `SKILL.md` with relative paths (e.g. `[commands.md](./commands.md)`).
-- **Scripts:** only under `skills/<section>/<name>/scripts/`.
-- **README.md:** keep the "Available skills" table in sync with the contents of `skills/`.
-- **No secrets, no API keys, no internal URLs** anywhere in the repo.
-
-## Dos and Don'ts
-
-- Do: keep each SKILL.md focused, short, and discoverable via its `description` field — agents match on it.
-- Do: link to existing reference files instead of duplicating prose.
-- Do: update `README.md`'s skill table when adding, renaming, or removing a skill.
-- Do: use Conventional Commits (see Git rules below).
-- Don't: add a `package.json`, lockfile, build, lint, or test tooling at the repo root.
-- Don't: invent CLI commands, flags, or skill capabilities that aren't in the source docs of the tool the skill covers.
-- Don't: include time-sensitive notes ("as of 2026…") in skill bodies.
-
 ## Safety & Guardrails
 
 - Off-limits: secrets, credentials, license keys, internal-only URLs, end-user data.
@@ -104,14 +84,3 @@ npx skills add Firzus/agent-skills --skill <skill-name>
   - `npx skills add …` / `npx skills update` from inside this repo
   - Image generation / `codex` / network installs as part of a normal edit task
 - Safe to automate: Markdown edits, frontmatter fixes, README table updates, link checks, line-count audits.
-
-## Git & PR Rules
-
-- Default branch: `main`.
-- Commit format: Conventional Commits — observed in history: `feat(skills): …`, `fix(<skill>): …`, `refactor(<skill>): …`, `docs: …`, `security: …`.
-- One logical change per commit; group skill + README updates together when they ship as a pair.
-- PR expectations:
-  - Describe the skill change and the motivating use case.
-  - List the affected `skills/<section>/<name>/` paths.
-  - Confirm `README.md`'s skill table is up to date.
-  - Confirm no secrets, no large binary assets, no new build tooling.
