@@ -1,80 +1,85 @@
-# Fragment: guardrails
+# Finding this repository's guardrails
 
-A guardrail is a trap no config file confesses: something an agent cannot deduce by reading the repo, and that costs a session when violated. A rule a linter already enforces is noise, not a guardrail.
+A guardrail is a trap no config file confesses: something an agent cannot deduce
+by reading the repo, and that costs a session when violated. What a linter
+already enforces is noise; what a skill already carries belongs to that skill.
 
-Take only the rows matching the detected stack. Four or five rows beat fifteen.
+This is the one section written into the project's `AGENTS.md` in full rather
+than left to an installed skill, because a guardrail protects against a loss no
+later reading repairs. It has to be loaded before the first action.
 
-## Phrasing
+That makes this file a detection method rather than a catalogue. Stack standards
+— committing `Cargo.lock`, `.meta` sidecars, asmdef boundaries — live in the
+stack skills. What follows finds what only *this* repository knows.
 
-State the target rather than the ban, and give the reason. Keep an outright prohibition only where the loss is irreversible, and always name the legal path beside it.
+## The test a candidate must pass
 
-Both Codex and Claude Code keep hard floors even in their full-bypass modes — Codex protects `.git` recursively under `workspace-write`, Claude Code still prompts on `rm -rf /` and `rm -rf ~`. Neither treats "the user asked for no prompts" as permission to destroy version control. A project's own guardrails should not be weaker than that.
+Three questions, in order. A row that fails any of them stays out.
 
-## Git — applies everywhere
+1. **Can the agent deduce it by reading the repo?** If a config file, a script or a directory layout states it, the environment is already the source of truth.
+2. **Does a linter or an installed skill already carry it?** Then it is enforced or documented elsewhere, and a second copy drifts.
+3. **Is the damage recoverable by reading the rule afterwards?** A rebuild fixes stale output; a dropped GUID or an overwritten migration does not. Only the unrecoverable earns permanent context.
 
-```markdown
-## Guardrails
+## Where to look
 
-Preserve uncommitted work: run `git stash push -u` before any operation that rewrites the working tree. `git reset --hard` is one of the very few commands that genuinely destroys data — the reflog tracks reference updates only, so it can recover a commit but never an uncommitted edit.
+### Generated files
 
-Clean with `git clean -nd` first to see what would go, then `git clean -fdX` to remove ignored files only. The lowercase `-x` also deletes `.env`, local credentials and editor settings — files that are gitignored precisely because they are local and irreplaceable.
+The agent cannot tell a generated file from a written one — they are ordinary
+source in the same directories. Name each one, with the command that produces
+it, or the agent hand-edits it and its next regeneration silently reverts the work.
 
-Force-push with `--force-with-lease --force-if-includes`. Passed alone, `--force-if-includes` is a silent no-op: it looks careful and protects nothing.
-```
+Signals: a header comment saying the file is generated, a `*.generated.*` name,
+a path under `src/migrations/` or `Generated/`, a type file matching a schema, a
+lockfile, an import map. Cross-check against the scripts in `package.json`, the
+build files, and `.gitattributes` marking paths as generated.
 
-## Unity
+### Registration points
 
-```markdown
-Move, rename, duplicate and delete assets inside the Unity Editor. The Editor maintains the `.meta` sidecar that carries each asset's GUID; a filesystem move leaves it stale, and copying an asset with its `.meta` creates a duplicate GUID that Unity resolves by regenerating one — that asset loses every inbound reference.
+A file that must be listed somewhere else to exist at all. The failure is
+invisible from inside the file itself: the code compiles, and nothing runs.
 
-Commit an asset and its `.meta` together. The `.meta` alone carries the GUID every referencing scene and prefab stores, so shipping one without the other silently breaks references in every other clone.
+Signals: a manifest, an index, a glob in a config, a generated map. Ask what
+happens when the entry is missing — a silent no-op is the shape that costs a
+session.
 
-Keep Asset Serialization on Force Text and merge scenes and prefabs with UnityYAMLMerge. A line-based merge produces a file that parses but is structurally corrupt, and it fails at runtime rather than at merge time.
+Examples across stacks: a Unity assembly listing its references in an `.asmdef`;
+a Django app in `INSTALLED_APPS`; a Payload admin component in the import map; a
+monorepo package matching the root `workspaces` glob. In this library, a skill
+folder listed in `.claude-plugin/marketplace.json`.
 
-Commit `Assets/` and `ProjectSettings/`. `Library/`, `Temp/`, `obj/`, `Build/` and `Logs/` are regenerated.
-```
+### Reachable destructive commands
 
-## Unreal
+A command the repo makes available whose damage is irreversible: a script that
+drops a database, a deploy that overwrites production, a migration with no down
+step. Read the scripts the project defines rather than assuming the usual set.
 
-```markdown
-Commit `Config/`, `Content/`, `Source/` and `Plugins/`. `Intermediate/`, `Saved/` and `DerivedDataCache/` are generated and can be deleted and rebuilt.
+### Local-only files
 
-Keep `Build/` in version control. It holds files needed *for* building, including platform-specific build inputs — an ignore rule on it breaks packaging only on a clean clone, which is the worst failure shape.
+Files that exist on the machine and nowhere else — `.env`, a token cache, local
+credentials. They are gitignored precisely because they are irreplaceable, which
+also means no clone can restore them. Name them when a routine command can
+remove them.
 
-Rename and move assets inside the Editor, which leaves a redirector so unloaded packages still resolve the asset. Clean them up with right-click > Fixup, which deletes the redirector only once every referencer has been resaved.
+## Phrasing a row
 
-Fix reflection errors in the `UCLASS` and `UPROPERTY` macros, not in `*.generated.h`. Unreal Header Tool regenerates that file before the compiler ever sees it.
+State the target and give the reason: a rule with a rationale covers the case it
+did not anticipate. Reserve an outright prohibition for the irreversible, and
+name the legal path beside it — a ban drags the forbidden behaviour into context
+and half-reads as an instruction to do it.
 
-`.uasset` and `.umap` are binary and cannot be text-merged; the Editor locks a file while it is being worked on for exactly that reason.
-```
+Write "Change a generated file at its source and regenerate it: `src/payload-types.ts`
+comes from the dev server", rather than a bare interdiction to edit it.
 
-## Rust
+Both Codex and Claude Code keep hard floors even in their full-bypass modes —
+Codex protects `.git` recursively under `workspace-write`, Claude Code still
+prompts on `rm -rf /` and `rm -rf ~`. A project's own guardrails should hold at
+least that line.
 
-```markdown
-Keep `Cargo.lock` in version control, for libraries as well as binaries. The old "libraries don't commit it" rule was retired in August 2023, and a library's lockfile is excluded from published packages anyway, so it affects only your own contributors and CI.
-```
+## What lives elsewhere
 
-This one is worth its line because a model trained on the older guidance will confidently delete a lockfile the team committed on purpose.
-
-## JavaScript / TypeScript
-
-```markdown
-Change dependencies through the package manager, then commit the lockfile. `npm ci` installs from the lockfile alone, deletes `node_modules` first, and fails outright when the lockfile is out of sync with `package.json` — so a hand-patched lockfile passes locally and fails CI.
-
-Edit source, not `dist/`, `.next/` or other build output: a fix applied to output disappears at the next build while the agent verifies against a stale artifact.
-```
-
-## Registration traps
-
-Worth a row whenever the project has one — a file that must be listed somewhere else to exist at all. The failure is invisible from inside the file itself.
-
-Examples: a Unity assembly must list every assembly it references in its `.asmdef`; a Django app must appear in `INSTALLED_APPS` or its migrations are never seen; a monorepo package must match the root `workspaces` glob or the resolver ignores it. In this library, a skill folder must be listed in `.claude-plugin/marketplace.json` or the installer skips it.
+- **Git** — `git stash push -u` before rewriting the tree, `git clean -fdX` over `-fdx`, `--force-with-lease --force-if-includes`. These sit in the machine-level `AGENTS.md`, documented in this repository's `README.md` under Global instructions.
+- **Stack standards** — Unity `.meta` GUIDs, binary merges and asmdef boundaries in the `unity` skill; `Cargo.lock` and Rust discipline in `tauri`. A project repeats none of them.
 
 ## Sources
 
-- <https://git-scm.com/docs/git-clean>, <https://git-scm.com/docs/git-push>, <https://git-scm.com/book/en/v2/Git-Tools-Reset-Demystified>
-- <https://docs.unity3d.com/6000.0/Documentation/Manual/AssetMetadata.html>, <https://docs.unity3d.com/Manual/SmartMerge.html>
-- <https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-engine-directory-structure>, <https://dev.epicgames.com/documentation/en-us/unreal-engine/asset-redirectors-in-unreal-engine>
-- <https://blog.rust-lang.org/2023/08/29/committing-lockfiles/>
-- <https://docs.npmjs.com/cli/commands/npm-ci>
 - <https://developers.openai.com/codex/sandbox>, <https://docs.claude.com/en/docs/claude-code/permissions>

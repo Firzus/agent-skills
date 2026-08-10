@@ -9,16 +9,18 @@
 
 ## Overview
 
-`agent-skills` is a registry of 49 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 48 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
 
 ## Global instructions
 
-How the agent talks to you, rather than what it knows. Copy the block into your harness's top-level instruction file — `~/.codex/AGENTS.md` for Codex, `~/.claude/CLAUDE.md` for Claude Code, or the equivalent for your tool.
+How the agent talks to you, and how it handles version control — the two things that stay the same in every repository. Copy the block into your harness's top-level instruction file — `~/.codex/AGENTS.md` for Codex, `~/.claude/CLAUDE.md` for Claude Code, or the equivalent for your tool.
 
-Keep it to communication style. Anything project-specific — git workflow, guardrails, testing policy, code standards — belongs in the project's own `AGENTS.md`; the [`setup-project`](./skills/engineering/setup-project) skill composes it for you.
+Git lives here rather than per project for two reasons: the workflow is identical everywhere, and the guardrails protect against irreversible loss, so they must be loaded before any task rather than fetched on demand.
+
+Anything genuinely project-specific — the stack's testing policy, architecture and code standards — belongs to the project; the [`setup-project`](./skills/engineering/setup-project) skill sets that up for you.
 
 ```markdown
 ## Communication
@@ -34,9 +36,59 @@ Make a question answerable in one reply with nothing open in front of me: what y
 When a decision is mine, put the options as a practical trade-off — what each one gives up — then your recommendation and the reason behind it.
 
 Mermaid diagrams render on my side. Reach for one, or a table, wherever the shape of the idea carries better than prose.
+
+## Git workflow
+
+Branch from an up-to-date default branch: `git switch --no-track -c <type>/<subject> origin/main`.
+
+Name branches `<type>/<subject>` — a [Conventional Branch](https://conventional-branch.github.io/) type, then a lowercase ASCII kebab-case subject. Types: `feature`, `bugfix`, `hotfix`, `release`, `chore`.
+
+This list is deliberately narrower than the commit type list: a commit describes one change, a branch describes a delivered unit of work. Keep it as is.
+
+Name the branch after the change, not the tool that produced it — `feature/token-refresh`, never `codex/...` or `claude/...`.
+
+Write commits to [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[optional scope]: <description>`.
+
+Types: `feat`, `fix`, `build`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`, `revert`, `chore`. Reach for `chore` only when nothing more specific fits.
+
+Mark a breaking change with `!` before the colon (`feat(api)!: ...`) or a `BREAKING CHANGE:` footer. That footer is the one token that must be uppercase.
+
+Open the pull request as a draft when starting: `gh pr create --draft`. Mark it ready when the work is complete: `gh pr ready`.
+
+For an issue-related PR, put `Closes #<issue-number>` in the PR body. Repeat the keyword before each reference — `Closes #10, closes #12` closes both, `Closes #10, #12` closes only the first.
+
+Closing keywords take effect only when the PR targets the default branch. Against any other base they are silently ignored: nothing links, nothing closes, no warning.
+
+## Git guardrails
+
+Preserve uncommitted work: run `git stash push -u` before any operation that rewrites the working tree. `git reset --hard` is one of the very few commands that genuinely destroys data — the reflog tracks reference updates only, so it can recover a commit but never an uncommitted edit.
+
+Clean with `git clean -nd` first to see what would go, then `git clean -fdX` to remove ignored files only. The lowercase `-x` also deletes `.env`, local credentials and editor settings — files that are gitignored precisely because they are local and irreplaceable.
+
+Force-push with `--force-with-lease --force-if-includes`. Passed alone, `--force-if-includes` is a silent no-op: it looks careful and protects nothing.
+
+## Comments
+
+No inline commentary; a module header where the file carries a decision.
+
+Write every comment in English, including in a file whose existing comments are in another language. A file that switches language mid-way is the residue of translating only the line being touched.
+
+Open a file with a module header when it carries a decision a reader cannot recover from the code: a constraint, a rejected alternative, a trap that is still reachable. State it in the present tense, as the current state of the world.
+
+Inside the body, fix the code rather than explain it — a clearer name, a named constant, a narrower type. Reach for a comment only where no amount of naming would carry the reason.
+
+Document what a signature cannot say: what a function panics or throws on, and which edge cases it deliberately does not handle.
+
+Write the comment as the current state. "Now returns null" and "previously fell back to an empty list" force the reader to know a version of the code they have never seen.
+
+Define the vocabulary you use, or drop it. A reference to "finding C" or "ticket T2" that resolves nowhere is noise to every reader who was not in the room.
+
+Update the comment in the same change as the code. When you rename or change a function, search for comments elsewhere that name it — a comment rots without its own file ever being touched.
+
+One carve-out on the current-state rule: a comment describing a past bug stays when the reader can still fall into that hole, however historical it sounds. It is a live warning about a trap the code still permits. Once the trap is gone, it belongs to the commit history.
 ```
 
-Swap the first line for your own language pairing. The rest is language-agnostic.
+Swap the first line for your own language pairing, and `origin/main` for your default branch name. The rest is language-agnostic.
 
 ## Install
 
@@ -77,9 +129,9 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 ### Web & app development
 
 - [`reverse-engineer`](./skills/engineering/reverse-engineer) — Reverse engineers how an app implements a mechanism (from source, installed build, and external sources) and writes design notes to replicate it.
-- [`simplify`](./skills/engineering/simplify) — Simplifies recently modified code for clarity and consistency without changing behavior.
 - [`babysitting-pr`](./skills/engineering/babysitting-pr) — Monitors an open GitHub PR, fixes branch-related CI and review blockers, and keeps it merge-ready.
-- [`setup-project`](./skills/engineering/setup-project) — Composes a project's `AGENTS.md` from reusable fragments (git workflow, guardrails, testing, architecture, code standards), configures the repository, and proposes the relevant skills.
+- [`setup-project`](./skills/engineering/setup-project) — Writes a project's `AGENTS.md` (overview, guardrails, project decisions), configures the repository, and installs the skills matching the stack.
+- [`skills`](./skills/engineering/skills) — Installs, updates, and authors Agent Skills with the `skills` CLI (`skills.sh`): sources, project vs global scope, symlink vs copy, discovery rules, debugging.
 - [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
 - [`vite-plus-best-practices`](./skills/web/vite-plus-best-practices) — Best practices for Vite+ (`vp`): config, migrations, testing, monorepos.
 - [`tauri`](./skills/web/tauri) — Tauri v2+: owned IPC, capabilities-first permissions, CDP shell debugging, mobile-safe structure.

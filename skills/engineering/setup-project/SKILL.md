@@ -1,110 +1,162 @@
 ---
 name: setup-project
-description: Configure a project's AGENTS.md and install the relevant skills from this library. Run once when starting work in a new repository.
+description: Configure a project's AGENTS.md and install the skills it needs. Run once when starting work in a new repository.
 disable-model-invocation: true
 ---
 
 # Set up a project for agents
 
-Compose the target repository's `AGENTS.md` from the fragments in this skill folder, then propose the skills worth installing.
+Give the target repository an `AGENTS.md` holding what only that repo knows, and a list of the skills its agents must read before acting.
 
-Two mechanisms, one rule each:
+Every step below ends on a stated completion criterion. Reach it before moving on.
 
-- **`AGENTS.md`** holds what must be true at all times. It is the only file an agent is guaranteed to load.
-- **Skills** hold what fires at a moment. A skill's description is always visible, so the agent reaches it on its own.
+## What earns a place in the file
 
-A pointer to some other file is neither. Codex reads `AGENTS.md` on the path from the repository root to the working directory and nothing else automatically, so anything non-negotiable belongs inline.
+`AGENTS.md` holds what only this repository knows. Everything else already has a home that this skill leaves alone: the user's own global instructions, and the installed skills.
 
-This is a prompt-driven skill. Explore, present what you found, confirm with the user, then write.
+So a line earns its place only when it survives two questions:
 
-## Process
+- **Does something else already carry it?** A standard restated here becomes a second copy that drifts, and the copy is where qualifying clauses get dropped — turning a rule into a suggestion. Name the skill instead of quoting it. Testing is the clearest case: each framework has its own runner, layering and definition of a unit, so the stack skill owns that workflow.
+- **Is it recoverable once violated?** A guardrail is the exception to the rule above. It protects against a loss no later reading repairs, so its text goes in full rather than behind a pointer.
 
-### 1. Explore
+## 1. Explore
 
-Read the target repository before asking anything. Ask only what exploration cannot settle.
+Read the repository before asking anything. Ask only what reading cannot settle.
 
-- `git remote -v` — is this GitHub? Which repo? What is the default branch (`git symbolic-ref refs/remotes/origin/HEAD`)?
-- `AGENTS.md` and `CLAUDE.md` at the root — does either exist? Does it already carry a `<!-- setup-project -->` block?
-- Stack signals: `package.json`, `*.csproj` plus `ProjectSettings/` (Unity), `*.uproject` (Unreal), `Cargo.toml`, `pyproject.toml`, `astro.config.*`, `src-tauri/`
-- Test signals: an existing test directory, a `test` script, `#[cfg(test)]` modules
-- `.editorconfig`, `eslint.config.*`, `clippy.toml` — rules already enforced here are excluded from the fragment
+- `git remote -v`, and `git symbolic-ref refs/remotes/origin/HEAD` for the default branch.
+- `AGENTS.md` and `CLAUDE.md` at the root — which exists, and does either already carry a `<!-- setup-project -->` block? A block sitting in `CLAUDE.md` is a copy from an earlier run, and step 4 replaces it with a pointer.
+- Stack signals: `package.json`, `*.csproj` plus `ProjectSettings/`, `*.uproject`, `Cargo.toml`, `pyproject.toml`, `astro.config.*`, `src-tauri/`.
+- Test signals: a test directory, a `test` script, `#[cfg(test)]` modules.
+- `.editorconfig`, `eslint.config.*`, `clippy.toml` — what the tooling already enforces gets written nowhere else.
+- Generated files, and registration points: the file that must list a thing for that thing to exist.
+- `.agents/skills/` and `skills-lock.json` — the installed skills, each with the repository it came from. This is the catalogue step 2 works from.
 
-### 2. Present findings and ask
+**Done when:** every bullet is answered from the repository or explicitly marked absent, and the stack is named.
 
-Summarise what you found and what is missing. Then take the sections in order, one section and one answer at a time.
+## 2. Propose, one decision at a time
 
-Lead each section with the recommended answer so the user can accept it in a word. Skip a section outright when exploration already settled it, and say you skipped it.
+Summarise what you found, then take the three decisions below in order. Lead each with your recommendation so the user can accept it in a word.
 
-**Section A — Git workflow.** Read [git-workflow.md](./git-workflow.md). Confirm the branch type list and whether the draft-PR lifecycle applies. Skip the PR half entirely when there is no remote.
+### The rules list
 
-Ask here whether the repository itself still needs configuring — squash-only merges and a protected default branch. This is a one-time action rather than a rule, so it is carried out in step 5 and never written into `AGENTS.md`. Skip it when there is no GitHub remote, or when `gh ruleset list` already returns a ruleset.
+A rule is a skill the agent must open before acting. The list holds the skills carrying standards for code this repo writes; a skill that is a tool reached on demand — `agent-browser`, `imagegen` — gets installed without being listed, since mixing the two turns an obligation into a catalogue.
 
-**Section B — Guardrails.** Read [guardrails.md](./guardrails.md). Propose the rows matching the detected stack. A guardrail earns its place only when the repo does not already confess it.
+Build the list from what step 1 found in the target repository: `skills-lock.json` names every installed skill and the repository it came from, and each `.agents/skills/<name>/SKILL.md` carries the `description` stating when it fires. Skills arrive from many sources — `payloadcms/payload`, `shadcn/ui`, `vercel-labs/agent-skills` — so the project's own lockfile is the catalogue, not any single library's manifest.
 
-**Section C — Testing.** Read [testing.md](./testing.md). This section is decisions, not commands. Skip it when the repo has no tests and the user does not want a policy yet.
+Take each entry's trigger from that skill's `description`, condensed to the moment it applies here:
 
-**Section D — Architecture.** Read the matching file in [architecture/](./architecture/). Skip when the project is small enough to have no placement rules worth stating.
+```
+- `unity` — before writing C#, adding a script, folder or assembly
+- `payload` — before touching a collection, hook or migration
+```
 
-**Section E — Code standards.** Read the matching file in [code-standards/](./code-standards/). Cut every rule already enforced by the tooling found in step 1.
+When the stack needs a skill nothing has installed yet, propose it too and mark it as pending installation in step 6.
 
-**Section F — Comments.** Read [comments.md](./comments.md). The default is a module header where a file carries a decision, and no inline commentary. Skip the doc-comment rows when the project has no exported API surface.
+Read the list back entry by entry and take the user's answer on each: kept, dropped, or a different trigger wording.
 
-### 3. Confirm
+**Done when:** the user has ruled on every entry.
 
-Show the user the drafted block before writing it. Let them edit.
+### The guardrails
 
-### 4. Write
+A guardrail is what only this repository knows — a stack standard belongs to its skill, and a linted rule to the linter. Read [guardrails.md](./guardrails.md): it carries the three-question test a candidate must pass, where to look for each kind, and how to phrase a row.
 
-Pick the file:
+Work through its four hunting grounds against what step 1 found: generated files, registration points, reachable destructive commands, local-only files. Propose each row with its reason attached.
 
-- If `CLAUDE.md` exists, edit it.
-- Else if `AGENTS.md` exists, edit it.
-- If neither exists, ask which to create.
+**Done when:** every candidate has passed the three-question test, the user has ruled on each surviving row, and each kept row still carries its reason.
 
-Edit the file that is already there. Creating the second one splits the source of truth.
+### The testing decisions
 
-Write between markers so a re-run updates in place:
+These are invisible from the code and no skill can supply them: what "unit" means here, which layer a new test defaults to, what is deliberately not tested, whether existing tests may be modified, whether a test ships with every change.
+
+Ask for the deliberate exclusions explicitly — generated code, thin adapters and third-party wrappers are usually excluded on purpose, and an untested module otherwise reads as an oversight to fix. Skip the section when the repo has no tests and the user wants no policy yet.
+
+**Done when:** each question has an answer or an explicit skip.
+
+Ask here whether the repository itself needs configuring — squash-only merges and a protected default branch. That is a one-time action carried out in step 5, and it never enters `AGENTS.md`. Skip it with no GitHub remote, or when `gh ruleset list` already returns a ruleset.
+
+## 3. Confirm
+
+Show the assembled block in full — the rules list and the guardrail text, every row spelled out. A summary such as "four rules, plus guardrails" hides what the user is agreeing to.
+
+When the user wants a shared standard worded differently, change it at its source: their global instructions, or the library that owns that skill. Then every project inherits it, instead of one repository drifting.
+
+**Done when:** the user has accepted the exact text about to be written.
+
+## 4. Write
+
+The block always goes in `AGENTS.md`, which every agent reads. Create it when it is missing.
+
+`CLAUDE.md` holds a pointer to it, never a copy:
 
 ```markdown
-<!-- setup-project:start source=agent-skills@<commit-sha> -->
-...composed sections...
+See the instructions in AGENTS.md.
+```
+
+Write that line when `CLAUDE.md` already exists, and leave the rest of the file alone. Skip the file entirely when it is absent — Claude Code reads `AGENTS.md` on its own, so an empty pointer file earns nothing.
+
+Two copies of the same standard drift the moment one is edited, and the reader has no way to tell which one is current.
+
+Write between markers so a re-run updates in place, leaving every surrounding section untouched:
+
+```markdown
+<!-- setup-project:start written=<YYYY-MM-DD> -->
+## Rules
+
+Read the ones that apply to what you are about to touch, before you touch it.
+
+- `unity` — before writing C#, adding a script, folder or assembly
+- `payload` — before touching a collection, hook or migration
+
+## Guardrails
+
+Change a generated file at its source and regenerate it: `src/payload-types.ts` comes from the dev server, files in `src/migrations/` from `pnpm payload migrate:create`.
+
+A new Payload admin component only exists once it is in the import map: run `pnpm generate:importmap` after adding one, or the admin panel silently renders nothing.
+
+Restore `.env` and `.adsense-token.json` from the password manager when they go missing: they are gitignored, so no clone brings them back.
+
+## Testing decisions
+
+A unit test may use real collaborators when they are pure. A new test defaults to a unit test beside the code it covers. Payload collections and React components are verified against the dev server rather than unit-tested. Existing tests may be corrected, never weakened.
 <!-- setup-project:end -->
 ```
 
-Record the short SHA of this repository's `HEAD` in the marker. It is what makes a later re-sync possible.
+The rules list goes in exactly as validated in step 2 — same entries, same triggers. The guardrails go in as real text: this block is the whole guardrail section, which is the point.
 
-When a block already exists, replace its contents and leave every surrounding section untouched.
+Date the marker. This skill runs from its installed copy with the target repository as the working directory, so no skill library's commit SHA is in reach — a date is what the agent can actually record, and it tells a later run how stale the block is. `skills-lock.json` already pins the version of every installed skill.
 
-Apply `writing-for-agents` discipline to everything you write — read that skill first if it is installed:
+Write in the `writing-for-agents` register — read that skill first when it is installed:
 
-- **State the target, not the ban.** `Use rg` beats `Don't use grep`. Models process negation unreliably and are drawn toward whatever is named, so a prohibition is a weak instruction.
-- **Keep an outright prohibition only where the downside is irreversible** — secrets, history rewriting — and pair it with the legal alternative.
-- **Give the reason.** A rule with a rationale covers cases the rule did not anticipate.
-- **Leave out what the environment already says.** The test command is in `package.json`; restating it is a copy that goes stale.
-- **One meaning, one place.** Say it in the fragment or in a skill, never both.
+- **State the target.** `Use rg` beats `Don't use grep`: a prohibition drags the forbidden behaviour into context and half-reads as an instruction to do it. Keep an outright ban only where the loss is irreversible, and name the legal path beside it.
+- **Give the reason.** A rule with a rationale covers the case it did not anticipate.
+- **Leave out what the environment already says.** The test command is in `package.json`; a copy of it goes stale.
+- **One meaning, one place.** What the user's global instructions or an installed skill already carry never gets restated here.
 
-Aim for 30–150 lines total. Past that, the rules that matter get diluted by the ones that do not.
+**Done when:** the block sits between its markers, the surrounding file is untouched, and every line traces to something the user accepted.
 
-### 5. Configure the repository, if asked
+## 5. Configure the repository, if asked
 
-If the user accepted in section A, follow [repo-setup.md](./repo-setup.md): set squash-only merges, then create the ruleset protecting the default branch.
+Follow [repo-setup.md](./repo-setup.md): squash-only merges, then the ruleset protecting the default branch.
 
-Show each command and its effect before running it. These settings change how everyone merges, and a ruleset can lock the author out of their own repository when the review count is set above zero on a solo project.
+Show each command and its effect before running it. These settings change how everyone merges, and a ruleset locks the author out of a solo repository when the review count goes above zero.
 
-Verify with `gh ruleset check --default` and report what applied.
+**Done when:** `gh ruleset check --default` confirms what applied, and you have reported it.
 
-### 6. Propose skills
+## 6. Install what is missing
 
-Read `.claude-plugin/marketplace.json` in this repository and propose the skills matching the detected stack. Present the list and let the user cut it.
-
-Then print the install command for the user to run **in the target project**:
+Only the skills the stack needs that no source has installed yet. Print one command per source repository, taking each source from where the skill actually lives:
 
 ```bash
-npx skills add Firzus/agent-skills --skill <name>
+npx skills add Firzus/agent-skills --skill unity
+npx skills add payloadcms/payload --skill payload
 ```
 
-Print it; the user runs it. Running it from inside this repository would overwrite the sources being developed here.
+Print them; the user runs them **in the target project**. An install run from a skill library overwrites the sources being developed there.
 
-### 7. Done
+**Done when:** every skill in the rules list is either installed already or covered by a printed command.
 
-Tell the user which sections were written, which were skipped and why, what was configured on the repository, and which skills were proposed. Mention that editing the block by hand is fine — re-running this skill is only needed to resync with an updated library.
+## 7. Report
+
+Name what was installed, which of those the rules list obliges reading, which guardrails were written, what was configured on the repository, and what was skipped and why.
+
+Close with where a standard changes: a shared one in the user's global instructions, a stack one in the library that owns that skill — edited at the source, then `npx skills update` in the projects. Editing an installed skill inside one repository drifts that project until the next update overwrites it.

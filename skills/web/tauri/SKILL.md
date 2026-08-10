@@ -42,6 +42,9 @@ Before editing `#[tauri::command]` handlers or frontend `invoke` calls, read
 [best-practices.md](best-practices.md) and apply its async, error, and state
 rules.
 
+For the surrounding Rust discipline — naming semantics, when to panic, error
+type choice, visibility, unsafe — read [code-standards.md](code-standards.md).
+
 Done when: every new or changed command is registered through the project's
 handler, IPC types are owned and serializable at the boundary, frontend invoke
 name/casing match, and `cargo check --manifest-path src-tauri/Cargo.toml`
