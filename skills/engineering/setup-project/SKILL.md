@@ -25,7 +25,7 @@ Read the repository before asking anything. Ask only what reading cannot settle.
 
 - `git remote -v`, and `git symbolic-ref refs/remotes/origin/HEAD` for the default branch.
 - `AGENTS.md` and `CLAUDE.md` at the root — which exists, and does either already carry a `<!-- setup-project -->` block? A block sitting in `CLAUDE.md` is a copy from an earlier run, and step 4 replaces it with a pointer.
-- Stack signals: `package.json`, `*.csproj` plus `ProjectSettings/`, `Cargo.toml`, `pyproject.toml`, `astro.config.*`, `src-tauri/`.
+- Stack signals: `package.json`, `*.csproj` plus `ProjectSettings/`, `*.uproject`, `Cargo.toml`, `pyproject.toml`, `astro.config.*`, `src-tauri/`.
 - Test signals: a test directory, a `test` script, `#[cfg(test)]` modules.
 - `.editorconfig`, `eslint.config.*`, `clippy.toml` — what the tooling already enforces gets written nowhere else.
 - Generated files, and registration points: the file that must list a thing for that thing to exist.

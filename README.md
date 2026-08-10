@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 45 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 48 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -153,11 +153,12 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 ### Engine best practices
 
 - [`unity`](./skills/game/unity) — Routes each Unity need to one chosen tool, and keeps projects CoreCLR-ready.
+- [`ue5-aaa-best-practices`](./skills/game/ue5-aaa-best-practices) — Senior UE5 DO/DON'T practices: GAS, Subsystems, CommonUI, World Partition.
 - [`figma-to-unity`](./skills/game/figma-to-unity) — Implements Figma designs as Unity UI Toolkit via the Figma MCP.
 
 ### Graphics & rendering
 
-- [`stylized-rendering`](./skills/game/stylized-rendering) — Stylized / NPR cel-shaded rendering for Unity.
+- [`stylized-rendering`](./skills/game/stylized-rendering) — Stylized / NPR cel-shaded rendering with Unity/UE5 mappings.
 - [`magica-cloth-2`](./skills/game/magica-cloth-2) — Code-first cloth/jiggle physics with Magica Cloth 2 in Unity via the Unity MCP.
 
 ### Game architecture & foundation
@@ -169,6 +170,8 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 ### Gameplay & control
 
 - [`combat-system`](./skills/game/combat-system) — Action and RPG combat: attack graphs, hit detection, damage pipeline.
+- [`character-controller`](./skills/game/character-controller) — Unreal Mover controllers: action-RPG locomotion, rollback, traversal, and combat movement.
+- [`mount-system`](./skills/game/mount-system) — Unreal creature mounts: lifecycle, Mover locomotion, safe dismount, co-op replication, and persistence.
 - [`traversal-system`](./skills/game/traversal-system) — Traversal verbs (climb/glide/swim/grapple), parkour, mantle/vault, and world affordances.
 - [`camera-system`](./skills/game/camera-system) — Game cameras: virtual-camera stack, orbit rigs, collision, screen shake.
 - [`enemy-ai-framework`](./skills/game/enemy-ai-framework) — Game AI: FSM/BT/GOAP/utility, perception, navmesh, genre AI.
