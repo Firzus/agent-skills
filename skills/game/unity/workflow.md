@@ -31,6 +31,10 @@ ducking, exposed parameters — covers most game mixing.
 - Git with **Git LFS** tracking textures, models, audio, and video; commit `.meta` files.
 - Set Visible Meta Files and Force Text serialization, and configure UnityYAMLMerge for scenes and prefabs.
 - Use the standard Unity `.gitignore`, excluding `Library/`, `Temp/`, `Logs/`, and `obj/`.
+- Commit an asset and its `.meta` together. The `.meta` alone carries the GUID every referencing scene and prefab stores, so shipping one without the other silently breaks references in every other clone.
+- Duplicate and delete assets inside the Editor. Copying an asset with its `.meta` creates a duplicate GUID that Unity resolves by regenerating one — that asset loses every inbound reference.
+- A line-based merge of a scene or prefab produces a file that parses but is structurally corrupt, and it fails at runtime rather than at merge time. That is what UnityYAMLMerge is for.
+- Commit `Assets/` and `ProjectSettings/`. `Library/`, `Temp/`, `obj/`, `Build/` and `Logs/` are regenerated.
 
 ## CI and builds
 

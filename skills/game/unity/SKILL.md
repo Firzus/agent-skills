@@ -68,6 +68,7 @@ Say which row you left and what made it worth leaving.
 | UI Toolkit, design tokens, data binding, MVP | [ui.md](./ui.md) |
 | Custom Editor tools, inspectors, `[SerializeReference]` | [editor-tools.md](./editor-tools.md) |
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS, profiling, allocations | [architecture.md](./architecture.md) |
+| Exceptions, nullability, `async void`, the `UnityEngine.Object` null trap | [code-standards.md](./code-standards.md) |
 | Folder layout, naming, GUID-safe renames | [project-structure.md](./project-structure.md) |
 | Addressables, import presets, scenes, prefabs | [assets.md](./assets.md) |
 | Pipeline, lighting, GPU-driven rendering | [rendering.md](./rendering.md) |

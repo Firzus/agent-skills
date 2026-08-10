@@ -34,7 +34,6 @@
       "skills": [
         "./skills/game/adaptive-audio",
         "./skills/game/camera-system",
-        "./skills/game/character-controller",
         "./skills/game/cinematic-system",
         "./skills/game/combat-system",
         "./skills/game/coop-session",
@@ -47,7 +46,6 @@
         "./skills/game/magica-cloth-2",
         "./skills/game/menu-ui-manager",
         "./skills/game/minimap-worldmap",
-        "./skills/game/mount-system",
         "./skills/game/open-world-streaming",
         "./skills/game/progression-economy",
         "./skills/game/quest-system",
@@ -56,7 +54,6 @@
         "./skills/game/stylized-rendering",
         "./skills/game/teleport-map-unlock",
         "./skills/game/traversal-system",
-        "./skills/game/ue5-aaa-best-practices",
         "./skills/game/unity",
         "./skills/game/world-time-weather"
       ]
@@ -72,7 +69,7 @@
         "./skills/engineering/reverse-engineer",
         "./skills/engineering/imagegen",
         "./skills/engineering/setup-project",
-        "./skills/engineering/simplify"
+        "./skills/engineering/skills"
       ]
     }
   ]

@@ -6,6 +6,11 @@
 - Resolve references through serialized fields, dependency injection, or a registry populated at init. `FindAnyObjectByType` belongs to initialization at most; per-frame `Find*` calls scan the scene.
 - Split code into **assembly definitions** along architectural seams — Core, Gameplay, UI, Infrastructure, one per major system — with one-way dependencies. Asmdefs enforce module boundaries and shrink incremental compile scope.
 - Aim for one asmdef per major system. Dozens of micro-asmdefs slow reload; leaving everything in `Assembly-CSharp` removes boundaries and blocks tests, since test assemblies cannot reference it.
+- An asmdef reference list is a whitelist, so a forbidden dependency is a compile error rather than a review comment. Adding a reference means editing the `.asmdef` — `.csproj` and `.sln` are regenerated from it and hand edits are wiped.
+- Dependencies point one way: features depend on shared foundations, never on each other, never back upward.
+- Set `noEngineReferences: true` on domain logic to make an assembly pure C#, with the compiler forbidding any `UnityEngine` access. It is the cleanest way to keep that logic testable outside the Editor.
+- Set `autoReferenced: false` to stop leftover code in `Assembly-CSharp` from reaching into a module without declaring it.
+- Code under `Packages/` is ignored entirely unless it carries an asmdef.
 
 ## ScriptableObjects
 
