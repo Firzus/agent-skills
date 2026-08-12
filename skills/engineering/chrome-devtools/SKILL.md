@@ -1,11 +1,10 @@
 ---
 name: chrome-devtools
 description: >-
-  Drive and inspect a live Chrome browser through the chrome-devtools-mcp
-  server — navigate, snapshot, click, fill, screenshot, emulate, trace
-  performance, inspect network and console. Use when the user wants to debug
-  a web page in a real browser, measure Core Web Vitals, inspect requests or
-  console errors, automate page interaction, or connect to a running Chrome.
+  Drive a live Chrome browser through the chrome-devtools-mcp server. Use
+  to debug or automate a web page in a real browser, measure Core Web
+  Vitals, attach to a running Chrome, or debug a Tauri app's WebView2 on
+  Windows.
 ---
 
 # chrome-devtools
@@ -41,6 +40,8 @@ startup_timeout_ms = 20_000
 ```
 
 Full tool list and CLI flags: [`tool-reference.md`](tool-reference.md).
+
+Debugging a Tauri app's WebView2 on Windows: [`tauri.md`](tauri.md).
 
 ## The core loop
 
