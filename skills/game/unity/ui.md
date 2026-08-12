@@ -43,6 +43,9 @@ elements and subscribes to model changes, and models are plain C# or
 ScriptableObjects holding no UI references.
 
 - Bind through runtime data binding — `DataBinding`, `[CreateProperty]` on model properties, binding paths set in UI Builder, `ListView` item binding for collections. Bindings sync both ways and replace per-frame assignment in `Update()`.
+- Set `dataSource` once on the root element; it propagates to every child, and a child overrides it locally where a subtree binds to different data. Screens that reuse one model type declare the data source *type* and paths in UXML, leaving code a single job: assigning the instance when it changes.
+- Pick the narrowest binding mode per control: `ToTarget` for display, `TwoWay` only where the UI writes back, `ToTargetOnce` for set-and-forget values. Reference properties with `nameof(...)` so renames refactor the path.
+- Implement `IDataSourceViewHashProvider` and `INotifyBindablePropertyChanged` on every bound model — setters guard on change, bump a version, and raise `propertyChanged`. Without them the binding system re-syncs every frame and boxes every value-type property it copies.
 - Keep game logic out of `VisualElement` subclasses, and let gameplay talk to the model rather than querying the visual tree.
 
 ## Text
