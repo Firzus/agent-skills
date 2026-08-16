@@ -83,6 +83,12 @@ engine-agnostic replication theory, use `coop-session`.
 Read changed code against every row of the default stack, then account for each
 line below — name the file and line where it holds, or fix it:
 
+Several rows are conditional: they bind only when the change performs the
+operation they describe. "Not applicable, this change does not do that" is a
+complete answer, and the right one. Test the condition, never the presence of a
+token — and never infer the rule from how many neighbouring files show the same
+pattern, since copy-paste propagates a mistake as reliably as a convention.
+
 ```
 - [ ] Statics reset explicitly, so entering Play Mode twice behaves identically
 - [ ] Every Awaitable carries a CancellationToken scoped to its component
@@ -95,7 +101,7 @@ line below — name the file and line where it holds, or fix it:
 - [ ] Renamed assets moved with their .meta, via git mv
 - [ ] Networked state gated on HasAuthority
 - [ ] Editor code under an Editor asmdef, runtime types in runtime assemblies
-- [ ] [SerializeReference] types carry [MovedFrom] before any rename or move
+- [ ] Any rename or move of a [SerializeReference] type in this change lands with [MovedFrom] naming its real former address (no former address, no attribute)
 - [ ] Custom inspectors built on UI Toolkit, with IMGUIContainer only where named
 ```
 
