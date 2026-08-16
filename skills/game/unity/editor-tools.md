@@ -50,6 +50,8 @@ class name — inside the asset. Renaming a type, changing its namespace, or
 moving it between assemblies breaks every asset referencing it.
 
 - Apply `[MovedFrom]` **before** the refactor that renames or moves a type. Applied afterwards, the assets are already broken.
+- The attribute is an obligation on the author who renames, not a state every type maintains. A type that never lived at another address has nothing to redirect: absence of `[MovedFrom]` is the normal case, and adding one that names an address the type never had is a false claim in the asset format.
+- Reviewing it means checking a condition, not a presence. Ask whether *this change* renames or moves the type, and whether the declared former address really existed — `git log` on the type and its asmdef answers both. A count of how many neighbouring types carry the attribute answers neither; copy-paste spreads it just as fast as intent.
 - Audit with `SerializationUtility.HasManagedReferencesWithMissingTypes`.
 - Leave a missing reference in place while diagnosing: `ClearManagedReferenceWithMissingType` discards the serialized payload Unity was holding for recovery.
 - Fix compile errors before opening affected assets, since a type that fails to compile reads as a missing type.
