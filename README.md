@@ -69,23 +69,34 @@ Force-push with `--force-with-lease --force-if-includes`. Passed alone, `--force
 
 ## Comments
 
-No inline commentary; a module header where the file carries a decision.
+Default to zero new code comments. Make code explain itself through naming,
+structure, types, assertions, errors, and tests.
 
-Write every comment in English, including in a file whose existing comments are in another language. A file that switches language mid-way is the residue of translating only the line being touched.
+Keep or add a comment only when removing it would hide information the code
+cannot express:
 
-Open a file with a module header when it carries a decision a reader cannot recover from the code: a constraint, a rejected alternative, a trap that is still reachable. State it in the present tense, as the current state of the world.
+- a non-obvious rationale whose omission could cause the wrong implementation;
+- a business, security, concurrency, compatibility, or performance constraint;
+- an external contract, workaround, or live trap, linked to its issue or
+  specification when one exists;
+- public API behavior the signature cannot express, such as thrown errors or
+  deliberately unsupported edge cases.
 
-Inside the body, fix the code rather than explain it — a clearer name, a named constant, a narrower type. Reach for a comment only where no amount of naming would carry the reason.
+Place the comment immediately above the narrowest code it governs. Use a module
+header only when the constraint governs the entire file. State the current truth
+in concise English.
 
-Document what a signature cannot say: what a function panics or throws on, and which edge cases it deliberately does not handle.
+Delete comments that narrate code, label sections, repeat names, types or
+signatures, preserve implementation history or commented-out code, speculate,
+or contain an untracked TODO/FIXME. A TODO must link to a tracked issue and
+state its removal condition.
 
-Write the comment as the current state. "Now returns null" and "previously fell back to an empty list" force the reader to know a version of the code they have never seen.
+When changing behavior, update or delete affected comments in the same change,
+including references in other files. Preserve required licenses, generated-file
+markers, documentation directives, and narrowly scoped tool suppressions.
 
-Define the vocabulary you use, or drop it. A reference to "finding C" or "ticket T2" that resolves nowhere is noise to every reader who was not in the room.
-
-Update the comment in the same change as the code. When you rename or change a function, search for comments elsewhere that name it — a comment rots without its own file ever being touched.
-
-One carve-out on the current-state rule: a comment describing a past bug stays when the reader can still fall into that hole, however historical it sounds. It is a live warning about a trap the code still permits. Once the trap is gone, it belongs to the commit history.
+Before finishing, review every comment added or changed. If code, types,
+assertions or tests can carry the information, remove the comment.
 ```
 
 Swap the first line for your own language pairing, and `origin/main` for your default branch name. The rest is language-agnostic.
