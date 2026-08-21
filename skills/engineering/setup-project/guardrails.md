@@ -18,7 +18,7 @@ Three questions, in order. A row that fails any of them stays out.
 
 1. **Can the agent deduce it by reading the repo?** If a config file, a script or a directory layout states it, the environment is already the source of truth.
 2. **Does a linter or an installed skill already carry it?** Then it is enforced or documented elsewhere, and a second copy drifts.
-3. **Is the damage recoverable by reading the rule afterwards?** A rebuild fixes stale output; a dropped GUID or an overwritten migration does not. Only the unrecoverable earns permanent context.
+3. **Is the damage recoverable by reading the instruction afterwards?** A rebuild fixes stale output; a dropped GUID or an overwritten migration does not. Only the unrecoverable earns permanent context.
 
 ## Where to look
 
@@ -62,7 +62,7 @@ remove them.
 
 ## Phrasing a row
 
-State the target and give the reason: a rule with a rationale covers the case it
+State the target and give the reason: an instruction with a rationale covers the case it
 did not anticipate. Reserve an outright prohibition for the irreversible, and
 name the legal path beside it — a ban drags the forbidden behaviour into context
 and half-reads as an instruction to do it.
