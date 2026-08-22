@@ -45,8 +45,9 @@ is missing.
    styling system, component library) and its conventions for assets and
    tokens before writing anything — or, when the user wants a throwaway
    artifact to evaluate the design, **standalone mode**: a self-contained
-   HTML + CSS page with its assets in a scratch folder (OS temp directory),
-   no framework.
+   HTML + CSS page, no framework, in a **fresh, uniquely named scratch
+   folder** created for this run — a reused folder silently mixes this
+   run's assets with a previous run's under different names.
 
 ## Required workflow
 
@@ -58,13 +59,15 @@ Extract the file key (segment after `/design/`) and node id (`node-id` query
 parameter) from the URL, then:
 
 - Call `get_design_context(fileKey, nodeId)`. It returns reference code,
-  layout, typography, colors, component structure, asset URLs — and the
-  **reference screenshot**, embedded in the response. The screenshot cannot
-  be saved to disk from there: keep it in context as the visual reference
-  for Step 5, and re-fetch the context if it scrolls out of reach.
-- Call `get_metadata(fileKey, nodeId)`. It returns x/y/width/height for the
-  node and its children — the **numeric ground truth** the Step 5 diff is
-  measured against.
+  layout, typography, colors, component structure, asset URLs, and an
+  embedded screenshot for orientation. The downloadable reference image for
+  the Step 5 diff comes from `get_screenshot` there, not from this response.
+- Build the geometry table with `get_metadata(fileKey, nodeId)`: x/y/width/
+  height per node, the **numeric ground truth** the Step 5 diff is measured
+  against. `get_metadata` expands only the levels it chooses: on a root
+  frame it can return a single childless tag. A childless response means
+  **descend** — re-call it on each inner container, node by node, until
+  every leaf you will render has coordinates.
 
 If the design context is truncated or times out: use the `get_metadata` node
 map to fetch each child individually with `get_design_context`. Implement
@@ -80,6 +83,11 @@ so a comparison loop running on a substitute font measures the wrong thing.
 Resolve missing fonts now — load them, or record the substitution as an
 accepted deviation before the first render.
 
+To self-host a missing Google font: query the Google Fonts CSS API with a
+**desktop browser user-agent** and extract the latin `@font-face` block —
+the default user-agent gets TTF without `unicode-range`. Download the woff2
+files next to the other assets.
+
 **Then tokens.** Call `get_variable_defs(fileKey, nodeId)` for the variables
 the design binds. Expect a partial answer: designs often bind only some
 values (e.g. spacing units), leaving colors and type as raw values in the
@@ -87,6 +95,11 @@ design context. Build the full token list from both sources — named
 variables as-is, and raw values grouped by recurrence and role (the hex used
 by every border is one token). Then map that list onto the target:
 
+- **Typography arrives as a composite string** — e.g. `Font(family:
+  "Outfit", style: SemiBold, size: 18, weight: 600, lineHeight: 100,
+  letterSpacing: 0)`. Split it into `font-family`, `font-weight`,
+  `font-size`, `line-height`, `letter-spacing`. `lineHeight` there is a
+  **percentage of the font size**, not pixels.
 - **Reuse an existing project token** when one matches or is close; prefer the
   project value on conflict.
 - **Add a token** to the project's token source only when nothing close
@@ -99,9 +112,11 @@ resolves to a named token, whether Figma named it or you did.
 
 ### Step 3: Export assets
 
-Download every image and icon the design context references (SVG for vectors,
-PNG at 2x for bitmaps) into the target's asset folder, following its existing
-layout and naming. Rules:
+Download every image and icon the design references (SVG for vectors, PNG at
+2x for bitmaps) into the target's asset folder, following its existing
+layout and naming. Use the `download_assets` MCP tool — one call returns the
+node's export, source bitmaps, and SVG layers; collect asset URLs by hand
+from the reference code only when the tool is unavailable. Rules:
 
 - **Render every icon and image from its exported asset.** The MCP asset URLs
   expire (~7 days), so commit the downloaded bytes — never leave a hotlinked
@@ -125,10 +140,12 @@ Implement the node in the target's stack:
   `<button>`, `<input>`, `<a>` (or the stack's equivalents).
 - Style through the tokens mapped in Step 2; size every image container
   explicitly (width and height) so assets render at design size.
+- Tag each rendered block with its Figma node id — `data-node-id="693:1500"`
+  (or the stack's equivalent) — so the Step 5 geometry diff can resolve
+  rendered elements against the `get_metadata` table.
 - Implement the interactive states the design defines (hover, active,
-  disabled, focus). Discover them through the component set's variants,
-  `get_code_connect_suggestions`, or designer annotations; a design with
-  none defined needs none built.
+  disabled, focus). Discover them through the component set's variants and
+  designer annotations; a design with none defined needs none built.
 
 **Figma-specific CSS in the MCP output** — properties that change metrics
 when dropped or copied blindly:
@@ -137,9 +154,16 @@ when dropped or copied blindly:
   block heights assume the trim. Keep the properties where the render target
   supports them; otherwise compensate the line-box difference explicitly —
   silently dropping them shifts every text block by several pixels.
+- `leading-[normal]` in the reference code: never ship `line-height:
+  normal`. Resolve the real value — the `lineHeight` percentage from the
+  font token, cross-checked against the text node's height in
+  `get_metadata`. `normal` rounds per font and, inside a `space-between`
+  parent, a sub-pixel drift moves every sibling below it.
 - Percentage `inset` on icon wrappers (e.g. `inset: 0 0 -10% 0`): encodes
-  the icon's live area inside its bounding box. Preserve the wrapper
-  geometry; replacing it with a plain flex-centered box misplaces the glyph.
+  the icon's live area inside its bounding box. Keep the two-element
+  pattern: a positioned wrapper carrying the insets, and the `<img>` at
+  `width/height: 100%` inside it. Merging the two applies the insets to the
+  bitmap itself and distorts the glyph.
 - Absolute x/y positioning: often a decorator deliberately overflowing its
   parent. Check the node's geometry in `get_metadata` before "fixing" an
   overflow that is the design.
@@ -151,16 +175,23 @@ Storybook, or the project's preview; in standalone mode a `file://` URL
 works, with a cache-busting query parameter (`?v=2`) bumped on every reload,
 since plain reloads serve stale copies. Then run both checks:
 
-1. **Numeric diff** — measure the rendered boxes (browser tooling,
-   `getBoundingClientRect`) and compare each block's x/y/width/height
-   against the Step 1 `get_metadata` geometry. A deviation above 1 px is a
-   bug to fix, and a passing diff is proof the layout matches — the
+1. **Numeric diff** — run [scripts/verify-geometry.js](./scripts/verify-geometry.js)
+   in the rendered page (browser console or MCP evaluate), feeding it the
+   Step 1 `get_metadata` table. It waits for `document.fonts.ready`,
+   resolves elements by `data-node-id`, flags any x/y/width/height deviation
+   above 1 px, and reports unloaded fonts and broken images. It measures in
+   CSS pixels (`getBoundingClientRect`), so device pixel ratio cannot skew
+   it — which is why a passing diff is proof the layout matches, where a
    screenshot comparison alone is an opinion.
-2. **Visual sweep** against the Step 1 reference screenshot, for what
-   geometry misses: typography (family, size, weight, line height, letter
-   spacing), color (fills, borders, shadows, gradients — through tokens),
-   assets (correct glyph, no stretching, no missing image), interactive
-   states.
+2. **Visual sweep** — download the reference with `get_screenshot(fileKey,
+   nodeId)`, `maxDimension` set to the frame width, and compare it against
+   the browser capture, programmatically where image tooling is available.
+   **Normalize first**: a browser screenshot is scaled by the device pixel
+   ratio (a 125% display captures 1280×720 as 1600×902) — resize the
+   capture to the frame dimensions before any pixel diff, and expect
+   resampling noise on edges. The sweep covers what geometry misses:
+   typography, color (fills, borders, shadows, gradients — through tokens),
+   assets (correct glyph, no stretching), interactive states.
 
 Fix every deviation found, re-render, and compare again. The loop exits only
 in one of two states:
