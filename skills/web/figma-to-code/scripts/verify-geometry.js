@@ -7,15 +7,18 @@
 //   }, { threshold: 1 });
 //
 // Keys are Figma node ids from get_metadata; each rendered block must carry
-// a matching data-node-id attribute. Coordinates are relative to the root
-// frame (the first entry, or pass { rootId }). Measures in CSS pixels via
-// getBoundingClientRect, so device pixel ratio cannot skew the result.
-// Waits for document.fonts.ready before measuring, then reports geometry
-// deviations above the threshold, unloaded fonts, and broken images.
+// a matching data-node-id attribute. Coordinates may sit in any space (page
+// absolute or root-relative) as long as every entry shares it; the first
+// entry — or options.rootId — anchors the origin. Returns { pass, measured,
+// deviations, missing, unloadedFonts, brokenImages }.
 
 async function verifyGeometry(expected, options = {}) {
   const threshold = options.threshold ?? 1;
   const rootId = options.rootId ?? Object.keys(expected)[0];
+  const originExpected = expected[rootId];
+  if (!originExpected) {
+    return { pass: false, error: `rootId ${rootId} has no entry in the expected table` };
+  }
 
   await document.fonts.ready;
 
@@ -24,10 +27,10 @@ async function verifyGeometry(expected, options = {}) {
     return { pass: false, error: `root node ${rootId} not found in DOM` };
   }
   const origin = rootEl.getBoundingClientRect();
-  const originExpected = expected[rootId];
 
   const deviations = [];
   const missing = [];
+  const measuredElements = [];
 
   for (const [nodeId, exp] of Object.entries(expected)) {
     const el = document.querySelector(`[data-node-id="${nodeId}"]`);
@@ -35,6 +38,7 @@ async function verifyGeometry(expected, options = {}) {
       missing.push(nodeId);
       continue;
     }
+    measuredElements.push(el);
     const r = el.getBoundingClientRect();
     const actual = {
       x: r.left - origin.left + originExpected.x,
@@ -56,15 +60,33 @@ async function verifyGeometry(expected, options = {}) {
     }
   }
 
+  const usedFamilies = new Set();
+  for (const el of measuredElements) {
+    for (const family of getComputedStyle(el).fontFamily.split(",")) {
+      usedFamilies.add(family.trim().replace(/^["']|["']$/g, "").toLowerCase());
+    }
+  }
   const unloadedFonts = [];
   for (const font of document.fonts) {
-    if (font.status !== "loaded") {
+    if (font.status !== "loaded" && usedFamilies.has(font.family.replace(/^["']|["']$/g, "").toLowerCase())) {
       unloadedFonts.push(`${font.family} ${font.weight} (${font.status})`);
     }
   }
 
-  const brokenImages = [...document.images]
-    .filter((img) => img.complete && img.naturalWidth === 0)
+  const images = [...document.images];
+  await Promise.all(
+    images.map((img) =>
+      img.complete
+        ? null
+        : new Promise((resolve) => {
+            img.addEventListener("load", resolve, { once: true });
+            img.addEventListener("error", resolve, { once: true });
+            setTimeout(resolve, options.imageTimeoutMs ?? 5000);
+          }),
+    ),
+  );
+  const brokenImages = images
+    .filter((img) => img.naturalWidth === 0)
     .map((img) => img.currentSrc || img.src);
 
   const measured = Object.keys(expected).length - missing.length;
@@ -75,8 +97,4 @@ async function verifyGeometry(expected, options = {}) {
     brokenImages.length === 0;
 
   return { pass, threshold, measured, deviations, missing, unloadedFonts, brokenImages };
-}
-
-if (typeof module !== "undefined") {
-  module.exports = { verifyGeometry };
 }

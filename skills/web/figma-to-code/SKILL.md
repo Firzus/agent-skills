@@ -5,10 +5,10 @@ description: >-
   extracts design context, tokens (colors, typography, spacing), and assets
   (SVG, PNG), builds the UI in the project's stack — or as a standalone page
   for design review — then iterates until the render matches the node
-  geometry Figma reports, to the pixel. Use when the user provides a Figma
-  link and wants it implemented, asks to "implement this Figma design",
-  "build this screen from Figma", "make it match the Figma", or mentions
-  figma-to-code.
+  geometry Figma reports, to the pixel, and the reference screenshot. Use
+  when the user provides a Figma link and wants it implemented, asks to
+  "implement this Figma design", "build this screen from Figma", "make it
+  match the Figma", or mentions figma-to-code.
 ---
 
 # Figma to Code (Figma MCP → project stack)
@@ -60,8 +60,9 @@ parameter) from the URL, then:
 
 - Call `get_design_context(fileKey, nodeId)`. It returns reference code,
   layout, typography, colors, component structure, asset URLs, and an
-  embedded screenshot for orientation. The downloadable reference image for
-  the Step 5 diff comes from `get_screenshot` there, not from this response.
+  embedded screenshot. Use that screenshot for orientation only — the
+  downloadable reference image comes from a separate `get_screenshot` call
+  in Step 5.
 - Build the geometry table with `get_metadata(fileKey, nodeId)`: x/y/width/
   height per node, the **numeric ground truth** the Step 5 diff is measured
   against. `get_metadata` expands only the levels it chooses: on a root
@@ -173,16 +174,21 @@ when dropped or copied blindly:
 Render the implementation at the Figma frame's dimensions — dev server,
 Storybook, or the project's preview; in standalone mode a `file://` URL
 works, with a cache-busting query parameter (`?v=2`) bumped on every reload,
-since plain reloads serve stale copies. Then run both checks:
+since plain reloads serve stale copies. Viewport-resize tools land a pixel
+or two off the requested size (e.g. `resize_page` to 720 yields an
+`innerHeight` of 722) — read the actual `innerWidth`/`innerHeight` back and
+account for the difference before trusting a full-width or full-height
+measurement. Then run both checks:
 
 1. **Numeric diff** — run [scripts/verify-geometry.js](./scripts/verify-geometry.js)
    in the rendered page (browser console or MCP evaluate), feeding it the
    Step 1 `get_metadata` table. It waits for `document.fonts.ready`,
    resolves elements by `data-node-id`, flags any x/y/width/height deviation
-   above 1 px, and reports unloaded fonts and broken images. It measures in
-   CSS pixels (`getBoundingClientRect`), so device pixel ratio cannot skew
-   it — which is why a passing diff is proof the layout matches, where a
-   screenshot comparison alone is an opinion.
+   above 1 px, and reports unloaded fonts among the families the rendered
+   nodes use, plus broken images. It measures in CSS pixels
+   (`getBoundingClientRect`), so device pixel ratio cannot skew it — which
+   is why a passing diff is proof the layout matches, where a screenshot
+   comparison alone is an opinion.
 2. **Visual sweep** — download the reference with `get_screenshot(fileKey,
    nodeId)`, `maxDimension` set to the frame width, and compare it against
    the browser capture, programmatically where image tooling is available.
