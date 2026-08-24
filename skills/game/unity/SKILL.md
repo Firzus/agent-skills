@@ -48,7 +48,7 @@ discipline in [runtime.md](./runtime.md) buys.
 | Hot paths | **Jobs + Burst** | a full ECS rewrite |
 | Netcode | **Netcode for GameObjects** 2.13.1 | Netcode for Entities |
 | Authority | **client-server** | distributed authority |
-| Sessions, matchmaking, relay | **Multiplayer Services** 2.1.1 | Lobby + Matchmaker + Relay separately |
+| Sessions, matchmaking, relay | **Multiplayer Services** 2.3.0 | Lobby + Matchmaker + Relay separately |
 | Server builds | **Dedicated Server** 3.0.0 + Multiplayer Roles | a hand-stripped client build |
 | Testing multiple peers | **Multiplayer Play Mode** 2.0.2 | several Editor installs |
 | Per-platform build config | **Build Profiles** | hand-edited global Build Settings |
@@ -64,7 +64,7 @@ Say which row you left and what made it worth leaving.
 | Topic | File |
 | --- | --- |
 | CoreCLR readiness, static state, serialization, `EntityId` | [runtime.md](./runtime.md) |
-| Unity CLI, MCP mode, driving the Editor from an agent | [cli.md](./cli.md) |
+| Unity CLI, driving the Editor from an agent, why not MCP | [cli.md](./cli.md) |
 | UI Toolkit, design tokens, data binding, MVP | [ui.md](./ui.md) |
 | Custom Editor tools, inspectors, `[SerializeReference]` | [editor-tools.md](./editor-tools.md) |
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS, profiling, allocations | [architecture.md](./architecture.md) |

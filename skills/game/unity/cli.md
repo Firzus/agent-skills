@@ -11,46 +11,26 @@ It is **experimental / beta**, and its command surface moves between builds.
 building a command line from this file, and prefer what it reports over what is
 written here.
 
-Both the CLI and Unity MCP are **free**: no subscription, no MCP concurrency
-limit. The paid product is the in-Editor AI Assistant, which is separate.
+The CLI is free and independent of Unity AI — no subscription, and it drives a
+local Editor offline. The paid in-Editor AI Assistant is a separate product.
 
 ## Install
 
-```bash
-curl -fsSL https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.sh \
-  | UNITY_CLI_CHANNEL=beta bash
+Take the install line from the [CLI docs](https://docs.unity.com/en-us/hub/unity-cli),
+and on Windows the native PowerShell installer rather than WSL. It manages
+Editors without Unity Hub, so `unity install`, `unity editors`, `unity auth` and
+`unity doctor` replace the Hub for an agent.
 
-unity --version
-```
+Three things the install leaves behind that no `--help` confesses:
 
-On Windows, use the native PowerShell installer rather than WSL:
-
-```powershell
-irm https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.ps1 | iex
-```
-
-It installs to `%LOCALAPPDATA%\Unity\bin` and appends that directory to the user
-PATH, so `unity` resolves only in shells started afterwards. Already-open
-terminals report "command not found" until restarted — `unity doctor` flags this
-as `check.binary-on-path`.
-
-It manages Editors without Unity Hub:
-
-```bash
-unity install lts                    # or a pinned version: 6000.2.10f1
-unity install lts -m android ios webgl
-unity editors list                   # Editors, installed and available
-unity open /path/to/project
-unity auth login
-unity doctor                         # diagnose configuration issues
-```
-
-`unity editors list` reports downloadable versions alongside installed ones.
-Only rows carrying a path in the `Installed` column exist on disk.
-
-Reach for `unity doctor` first when a command fails to connect — it reports the
-configuration problem directly, which is faster than inferring it from a failed
-call.
+- The binary lands in `%LOCALAPPDATA%\Unity\bin`, appended to the user PATH, so
+  `unity` resolves only in shells started afterwards. Already-open terminals
+  report "command not found" until restarted — `unity doctor` flags this as
+  `check.binary-on-path`.
+- `unity editors list` mixes downloadable versions into the installed ones. Only
+  rows carrying a path in the `Installed` column exist on disk.
+- `unity doctor` comes first when anything fails to connect: it names the
+  configuration problem directly, which beats inferring it from a failed call.
 
 ## Build and test
 
@@ -77,9 +57,6 @@ supported on Unity 6.0 LTS and newer:
 unity pipeline install               # add the package to the project
 unity pipeline list                  # projects using it
 ```
-
-`pipeline install` rewrites `Packages/manifest.json` rather than merging into it,
-so re-check the dependency list afterwards for entries it dropped.
 
 An Editor already running picks the package up without a restart. Start it with
 `-automated`, or the Pipeline server warns that a modal popup can stall a
@@ -149,43 +126,30 @@ validation pass, rebake, reimport a folder. A registered command is discoverable
 through `unity command`, carries its own argument validation, and survives
 refactors that would break an `eval` snippet.
 
-## MCP mode
+## Leave MCP out
 
-The CLI ships its own MCP server, so an MCP-capable agent connects without the
-separate Unity MCP setup:
+Reach the Editor through `unity command` and `unity command eval`. An agent that
+runs shell commands has no use for MCP here: `unity mcp` wraps the same command
+surface as `unity list` behind a protocol layer, so it costs a configuration
+step, permanently loaded tool definitions, and a silent failure mode, and buys
+back nothing the direct call does not already do in 200–600 ms.
 
-```bash
-unity mcp                            # start the server
-unity mcp configure --list           # supported clients
-unity mcp configure claude-code
-unity mcp configure cursor --local
-unity mcp configure codex --local    # writes .codex/config.toml in the project
-unity mcp --project-path /path/to/MyProject
-```
+Two setups still reach for it, and both are somebody else's harness: an agent
+that cannot spawn a shell, and a model that composes command lines unreliably.
+Build the command line from `unity mcp configure --help` when you meet one,
+rather than from a recipe cached here that the next beta moves.
 
-Verify what `configure` wrote before restarting the client — the generated
-schema does not always match what the client parses. Codex reads a named table,
-and ignores the array-of-tables form without reporting an error:
+Unity deprecated a second MCP server on 24 August 2026 — the one inside
+`com.unity.ai.assistant` (the in-Editor AI Assistant package), superseded by the
+CLI. Support runs at least to the end of 2026, with no removal date published.
+That deprecation is narrow, so read a project's setup before calling it
+affected: a third-party MCP package installed from GitHub is untouched, and so
+is the CLI itself.
 
-```toml
-[mcp_servers.unity]
-command = "unity"
-args = ["mcp", "--project-path", "."]
-startup_timeout_sec = 120
-```
-
-`configure` writes an absolute, machine-specific binary path when `unity` is not
-yet on the PATH. Replace it with the bare command to keep a committed config
-portable.
-
-The server exposes the same command surface as `unity list`, over a persistent
-connection instead of a process per call — worth the setup for editor work done
-in bulk. It serves no tools without a live Editor, so start the Editor and wait
-for `unity status` to report `ready` **before** starting the MCP client.
-`codex mcp list` confirms the server is loaded when its tools appear missing.
-
-Unity MCP remains supported. Unity recommends the CLI for new terminal-native
-integrations, which is why new work starts here.
+A project keeping the AI Assistant package alongside the CLI needs it at
+**2.13 or later** — earlier versions conflict with the CLI. Check the version in
+`Packages/manifest.json` before diagnosing anything else about a broken
+connection.
 
 ## Working against a project
 

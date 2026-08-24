@@ -13,7 +13,7 @@ For engine-agnostic replication theory and drop-in co-op session design, use the
 | Concern | Package | Version |
 | --- | --- | --- |
 | Netcode | `com.unity.netcode.gameobjects` | 2.13.1 |
-| Sessions, Lobby, Relay, Matchmaker | `com.unity.services.multiplayer` | 2.1.1 |
+| Sessions, Lobby, Relay, Matchmaker | `com.unity.services.multiplayer` | 2.3.0 |
 | Server builds | `com.unity.dedicated-server` | 3.0.0 |
 | Multi-peer testing | `com.unity.multiplayer.playmode` | 2.0.2 |
 
