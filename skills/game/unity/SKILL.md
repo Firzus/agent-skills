@@ -64,7 +64,7 @@ Say which row you left and what made it worth leaving.
 | Topic | File |
 | --- | --- |
 | CoreCLR readiness, static state, serialization, `EntityId` | [runtime.md](./runtime.md) |
-| Unity CLI, driving the Editor from an agent, why not MCP | [cli.md](./cli.md) |
+| Unity CLI, driving the Editor from an agent, screen captures, why not MCP | [cli.md](./cli.md) |
 | UI Toolkit, design tokens, data binding, MVP | [ui.md](./ui.md) |
 | Custom Editor tools, inspectors, `[SerializeReference]` | [editor-tools.md](./editor-tools.md) |
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS, profiling, allocations | [architecture.md](./architecture.md) |
