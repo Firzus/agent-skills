@@ -11,8 +11,8 @@ It is **experimental / beta**, and its command surface moves between builds.
 building a command line from this file, and prefer what it reports over what is
 written here.
 
-Both the CLI and Unity MCP are **free**: no subscription, no MCP concurrency
-limit. The paid product is the in-Editor AI Assistant, which is separate.
+The CLI is free and independent of Unity AI — no subscription, and it drives a
+local Editor offline. The paid in-Editor AI Assistant is a separate product.
 
 ## Install
 
@@ -51,6 +51,29 @@ Only rows carrying a path in the `Installed` column exist on disk.
 Reach for `unity doctor` first when a command fails to connect — it reports the
 configuration problem directly, which is faster than inferring it from a failed
 call.
+
+## Unity's own agent skills
+
+Unity maintains [Unity-Technologies/skills](https://github.com/Unity-Technologies/skills):
+skills for its own surfaces — the CLI itself, UGS (Unity Gaming Services: auth,
+cloud save, economy), IAP, LevelPlay ad mediation, UI Toolkit / UGUI / IMGUI,
+URP post-processing and Render Graph validation, Shader Graph custom nodes,
+package management. Their value is coverage this skill does not carry: the
+per-service API surfaces that change too fast to cache here.
+
+The CLI embeds that tree at build time and installs it locally, which beats
+cloning the repo — no network, and the docs always match the installed binary:
+
+```bash
+unity skill install --list           # clients, install paths, current status
+unity skill install codex            # writes ~/.agents/skills/unity-cli
+unity skill install codex --local    # project-local instead of user-global
+unity skill refresh                  # re-render every tracked install
+```
+
+Run `unity skill refresh` after every `unity upgrade` — an upgraded binary
+leaves previously installed copies stale, silently serving the old command
+surface.
 
 ## Build and test
 
@@ -149,43 +172,30 @@ validation pass, rebake, reimport a folder. A registered command is discoverable
 through `unity command`, carries its own argument validation, and survives
 refactors that would break an `eval` snippet.
 
-## MCP mode
+## Leave MCP out
 
-The CLI ships its own MCP server, so an MCP-capable agent connects without the
-separate Unity MCP setup:
+Reach the Editor through `unity command` and `unity command eval`. An agent that
+runs shell commands has no use for MCP here: `unity mcp` wraps the same command
+surface as `unity list` behind a protocol layer, so it costs a configuration
+step, permanently loaded tool definitions, and a silent failure mode, and buys
+back nothing the direct call does not already do in 200–600 ms.
 
-```bash
-unity mcp                            # start the server
-unity mcp configure --list           # supported clients
-unity mcp configure claude-code
-unity mcp configure cursor --local
-unity mcp configure codex --local    # writes .codex/config.toml in the project
-unity mcp --project-path /path/to/MyProject
-```
+Two setups still reach for it, and both are somebody else's harness: an agent
+that cannot spawn a shell, and a model that composes command lines unreliably.
+Build the command line from `unity mcp configure --help` when you meet one,
+rather than from a recipe cached here that the next beta moves.
 
-Verify what `configure` wrote before restarting the client — the generated
-schema does not always match what the client parses. Codex reads a named table,
-and ignores the array-of-tables form without reporting an error:
+Unity deprecated a second MCP server on 24 August 2026 — the one inside
+`com.unity.ai.assistant` (the in-Editor AI Assistant package), superseded by the
+CLI. Support runs at least to the end of 2026, with no removal date published.
+That deprecation is narrow, so read a project's setup before calling it
+affected: a third-party MCP package installed from GitHub is untouched, and so
+is the CLI itself.
 
-```toml
-[mcp_servers.unity]
-command = "unity"
-args = ["mcp", "--project-path", "."]
-startup_timeout_sec = 120
-```
-
-`configure` writes an absolute, machine-specific binary path when `unity` is not
-yet on the PATH. Replace it with the bare command to keep a committed config
-portable.
-
-The server exposes the same command surface as `unity list`, over a persistent
-connection instead of a process per call — worth the setup for editor work done
-in bulk. It serves no tools without a live Editor, so start the Editor and wait
-for `unity status` to report `ready` **before** starting the MCP client.
-`codex mcp list` confirms the server is loaded when its tools appear missing.
-
-Unity MCP remains supported. Unity recommends the CLI for new terminal-native
-integrations, which is why new work starts here.
+A project keeping the AI Assistant package alongside the CLI needs it at
+**2.13 or later** — earlier versions conflict with the CLI. Check the version in
+`Packages/manifest.json` before diagnosing anything else about a broken
+connection.
 
 ## Working against a project
 
