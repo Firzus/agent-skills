@@ -103,6 +103,30 @@ Use it to answer questions about the real project — which scene is open, wheth
 Play Mode is running, what a serialized field actually holds — so an edit lands
 against observed state.
 
+## Capture the screen
+
+| What the shot must show | Reach for |
+| --- | --- |
+| The 3D scene | `screenshot`, `capture_game_view`, `capture_scene_view` |
+| The screen, overlay UI included | `eval` + `ScreenCapture.CaptureScreenshot` |
+| An `EditorWindow` element | `capture_editor_element` |
+
+```bash
+unity command eval 'UnityEngine.ScreenCapture.CaptureScreenshot("C:/abs/shot.png"); return "queued";'
+```
+
+The first row renders **a camera**, and a UI Toolkit or UGUI overlay belongs to
+none — it is composited over the finished image, so only the buffer capture
+proves it reached the screen. World-space UI and the Panel Renderer live in the
+scene, and every command sees them. Trust a camera shot as a verdict on overlay
+UI and you chase a bug that is not there: it reports `success` and omits the UI
+in silence.
+
+Two edges make a result unreadable. `CaptureScreenshot` writes a frame or two
+after it returns, so poll the path. `save_path` resolves against the authoring
+root — `Temp/shot.png` lands in `Assets/Temp/` and gets imported — where
+`screenshot --output` resolves against the project root.
+
 ## Expose project commands
 
 Register static C# methods so an agent gets a named, typed entry point instead of
