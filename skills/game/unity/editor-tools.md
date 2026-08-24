@@ -104,9 +104,11 @@ recognisable badge in a list.
 Author on lists, trees, and timelines rather than a node canvas: Unity has no
 production-ready graph foundation to build on. `UnityEditor.Experimental.GraphView`
 is still experimental and carries the warning that it may change or be removed,
-and its successor **Graph Toolkit** (`com.unity.graphtoolkit`) is `0.1.0-exp.1`,
-explicitly not for production, and Editor-time authoring only with no execution
-backend.
+and its successor **Graph Toolkit** is Editor-time authoring only, with no
+execution backend — the graph runs nothing on its own. Since 6.4 it ships as an
+Editor module rather than a package: a leftover `com.unity.graphtoolkit` entry in
+`Packages/manifest.json` collides with the built-in namespace, so remove it when
+upgrading.
 
 Keep the data model independent of the authoring UI — serialized types that know
 nothing about `VisualElement`. A graph front-end then becomes a second view over

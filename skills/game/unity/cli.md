@@ -16,64 +16,21 @@ local Editor offline. The paid in-Editor AI Assistant is a separate product.
 
 ## Install
 
-```bash
-curl -fsSL https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.sh \
-  | UNITY_CLI_CHANNEL=beta bash
+Take the install line from the [CLI docs](https://docs.unity.com/en-us/hub/unity-cli),
+and on Windows the native PowerShell installer rather than WSL. It manages
+Editors without Unity Hub, so `unity install`, `unity editors`, `unity auth` and
+`unity doctor` replace the Hub for an agent.
 
-unity --version
-```
+Three things the install leaves behind that no `--help` confesses:
 
-On Windows, use the native PowerShell installer rather than WSL:
-
-```powershell
-irm https://public-cdn.cloud.unity3d.com/hub/prod/cli/install.ps1 | iex
-```
-
-It installs to `%LOCALAPPDATA%\Unity\bin` and appends that directory to the user
-PATH, so `unity` resolves only in shells started afterwards. Already-open
-terminals report "command not found" until restarted — `unity doctor` flags this
-as `check.binary-on-path`.
-
-It manages Editors without Unity Hub:
-
-```bash
-unity install lts                    # or a pinned version: 6000.2.10f1
-unity install lts -m android ios webgl
-unity editors list                   # Editors, installed and available
-unity open /path/to/project
-unity auth login
-unity doctor                         # diagnose configuration issues
-```
-
-`unity editors list` reports downloadable versions alongside installed ones.
-Only rows carrying a path in the `Installed` column exist on disk.
-
-Reach for `unity doctor` first when a command fails to connect — it reports the
-configuration problem directly, which is faster than inferring it from a failed
-call.
-
-## Unity's own agent skills
-
-Unity maintains [Unity-Technologies/skills](https://github.com/Unity-Technologies/skills):
-skills for its own surfaces — the CLI itself, UGS (Unity Gaming Services: auth,
-cloud save, economy), IAP, LevelPlay ad mediation, UI Toolkit / UGUI / IMGUI,
-URP post-processing and Render Graph validation, Shader Graph custom nodes,
-package management. Their value is coverage this skill does not carry: the
-per-service API surfaces that change too fast to cache here.
-
-The CLI embeds that tree at build time and installs it locally, which beats
-cloning the repo — no network, and the docs always match the installed binary:
-
-```bash
-unity skill install --list           # clients, install paths, current status
-unity skill install codex            # writes ~/.agents/skills/unity-cli
-unity skill install codex --local    # project-local instead of user-global
-unity skill refresh                  # re-render every tracked install
-```
-
-Run `unity skill refresh` after every `unity upgrade` — an upgraded binary
-leaves previously installed copies stale, silently serving the old command
-surface.
+- The binary lands in `%LOCALAPPDATA%\Unity\bin`, appended to the user PATH, so
+  `unity` resolves only in shells started afterwards. Already-open terminals
+  report "command not found" until restarted — `unity doctor` flags this as
+  `check.binary-on-path`.
+- `unity editors list` mixes downloadable versions into the installed ones. Only
+  rows carrying a path in the `Installed` column exist on disk.
+- `unity doctor` comes first when anything fails to connect: it names the
+  configuration problem directly, which beats inferring it from a failed call.
 
 ## Build and test
 
@@ -100,9 +57,6 @@ supported on Unity 6.0 LTS and newer:
 unity pipeline install               # add the package to the project
 unity pipeline list                  # projects using it
 ```
-
-`pipeline install` rewrites `Packages/manifest.json` rather than merging into it,
-so re-check the dependency list afterwards for entries it dropped.
 
 An Editor already running picks the package up without a restart. Start it with
 `-automated`, or the Pipeline server warns that a modal popup can stall a
