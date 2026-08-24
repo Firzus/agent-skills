@@ -105,42 +105,27 @@ against observed state.
 
 ## Capture the screen
 
-Two families of capture, and the choice is decided by one question: does the
-shot need the runtime UI?
+| What the shot must show | Reach for |
+| --- | --- |
+| The 3D scene | `screenshot`, `capture_game_view`, `capture_scene_view` |
+| The screen, overlay UI included | `eval` + `ScreenCapture.CaptureScreenshot` |
+| An `EditorWindow` element | `capture_editor_element` |
 
 ```bash
-unity command screenshot --view game --output Temp/shot.png   # renders a camera
 unity command eval 'UnityEngine.ScreenCapture.CaptureScreenshot("C:/abs/shot.png"); return "queued";'
 ```
 
-`screenshot`, `capture_game_view` and `capture_scene_view` all render **a
-camera**, so a UI Toolkit or UGUI overlay is missing from the result — an
-overlay belongs to no camera, and is composited over the finished image.
-`ScreenCapture.CaptureScreenshot` grabs that composited buffer instead, and is
-the only one of the four that proves an overlay reached the screen. World-space
-UI and the Panel Renderer sit in the 3D scene, so every capture sees them.
+The first row renders **a camera**, and a UI Toolkit or UGUI overlay belongs to
+none — it is composited over the finished image, so only the buffer capture
+proves it reached the screen. World-space UI and the Panel Renderer live in the
+scene, and every command sees them. Trust a camera shot as a verdict on overlay
+UI and you chase a bug that is not there: it reports `success` and omits the UI
+in silence.
 
-The trap is that a camera capture reports `success`, writes a plausible PNG, and
-omits the UI in silence — read it as a verdict on the UI and you will chase a
-bug that does not exist. Confirm the element before capturing anything:
-
-```bash
-unity command eval 'var d = UnityEngine.Object.FindAnyObjectByType<UnityEngine.UIElements.UIDocument>(); var e = d.rootVisualElement; return e.resolvedStyle.display + " " + (e.panel != null);'
-```
-
-Two more edges worth knowing before reading a result:
-
-- `CaptureScreenshot` returns nothing and writes a frame or two later. Poll the
-  path until the file exists rather than treating the immediate return as a
-  failure.
-- `save_path` on `capture_game_view` / `capture_scene_view` resolves against the
-  **authoring root**, so `Temp/shot.png` lands in `Assets/Temp/` and is imported
-  as an asset. `--output` on `screenshot` resolves against the project root.
-  Write throwaway captures outside `Assets/`.
-
-A custom Editor tool is the third case, and neither family reaches it:
-`capture_editor_element` shoots a `VisualElement` out of an `EditorWindow` by
-selector, which is how an inspector or a tool window gets a visual check.
+Two edges make a result unreadable. `CaptureScreenshot` writes a frame or two
+after it returns, so poll the path. `save_path` resolves against the authoring
+root — `Temp/shot.png` lands in `Assets/Temp/` and gets imported — where
+`screenshot --output` resolves against the project root.
 
 ## Expose project commands
 
