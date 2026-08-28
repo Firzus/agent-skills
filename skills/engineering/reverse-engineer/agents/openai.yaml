@@ -1,4 +1,0 @@
-interface:
-  display_name: "Reverse Engineer"
-  short_description: "Reverse engineer how an app implements a mechanism, for replication"
-  default_prompt: "Use $reverse-engineer to work out how this application implements the mechanism I care about, from its repository, installed build, and external sources, and write design notes I can reimplement from."
