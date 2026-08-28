@@ -140,7 +140,6 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 ### Web & app development
 
 - [`reverse-engineer`](./skills/engineering/reverse-engineer) — Reverse engineers how an app implements a mechanism (from source, installed build, and external sources) and writes design notes to replicate it.
-- [`babysitting-pr`](./skills/engineering/babysitting-pr) — Monitors an open GitHub PR, fixes branch-related CI and review blockers, and keeps it merge-ready.
 - [`setup-project`](./skills/engineering/setup-project) — Writes a project's `AGENTS.md` (overview, guardrails, project decisions), configures the repository, and installs the skills matching the stack.
 - [`skills`](./skills/engineering/skills) — Installs, updates, and authors Agent Skills with the `skills` CLI (`skills.sh`): sources, project vs global scope, symlink vs copy, discovery rules, debugging.
 - [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
