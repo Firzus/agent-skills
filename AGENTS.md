@@ -2,13 +2,13 @@
 
 ## Overview & Scope
 
-`agent-skills`: community-maintained Agent Skills (Markdown + a few helper scripts) for AI coding assistants (Claude Code, Cursor, Codex, generic agents). Distributed via the [`skills` CLI](https://skills.sh) at `Firzus/agent-skills`. Pure documentation repo — no app, no build system, no package manager.
+`agent-skills`: community-maintained Agent Skills and documentary game-system corpora for AI coding assistants (Claude Code, Cursor, Codex, generic agents). Skills are distributed via the [`skills` CLI](https://skills.sh) at `Firzus/agent-skills`; corpora under `doc/` are source material and are not installable skills. Pure documentation repo — no app, no build system, no package manager.
 
 Applies to the entire repository. No nested `AGENTS.md` exist; if one is added later, the closest `AGENTS.md` to the edited file wins.
 
 ## Agent Role
 
-Technical writer + skill author for AI coding agents. Treat each `skills/<section>/<name>/SKILL.md` as the public contract consumed by agents.
+Technical writer + skill author for AI coding agents. Treat each `skills/<section>/<name>/SKILL.md` as the public contract consumed by agents and each `doc/<subject>/` directory as a standalone documentary source.
 
 - Allowed: edit/add Markdown skill files, add reference docs, update `README.md`, fix typos, restructure skills, propose new skills.
 - Not allowed: introduce a build system or package manager, add runtime code outside `skills/<section>/<name>/scripts/`, commit secrets, change the `LICENSE`, or invent install commands the user did not request.
@@ -23,13 +23,18 @@ Technical writer + skill author for AI coding agents. Treat each `skills/<sectio
 ├── .cursor/                   # Cursor workspace metadata (kept empty in VCS)
 ├── .claude-plugin/
 │   └── marketplace.json       # One plugin per section — drives the skills-CLI install groups
+├── doc/                        # Game-system documentary corpora, not installable skills
 └── skills/
     ├── web/                   # Web & app development (frontend-design pipeline, frameworks, assets)
-    ├── game/                  # Game development (Unity 6 / UE5 systems)
+    ├── game/                  # Unity development skills
     └── engineering/           # Cross-cutting engineering (browser automation, code health, PR care)
 ```
 
-Skills live one level below their section (`skills/web/tauri/`, `skills/game/combat-system/`). A new skill goes into the section it belongs to, **and** into that section's `skills` list in `.claude-plugin/marketplace.json` — the installer's grouping reads that list, not the directory tree.
+Skills live one level below their section (`skills/web/tauri/`, `skills/game/unity/`). A new skill goes into the section it belongs to, **and** into that section's `skills` list in `.claude-plugin/marketplace.json` — the installer's grouping reads that list, not the directory tree.
+
+Documentary corpora live at `doc/<subject>/`. Each corpus starts with
+`overview.md` and may contain narrower topic records. These directories have no
+`SKILL.md` and never appear in `.claude-plugin/marketplace.json`.
 
 Each skill folder follows the [progressive disclosure](https://skills.sh/docs) layout:
 
@@ -58,6 +63,9 @@ head -n 5 skills/*/*/SKILL.md
 
 # Line-count guard (SKILL.md should stay under ~500 lines)
 wc -l skills/*/*/SKILL.md
+
+# Every documentary corpus must have an overview
+ls doc/*/overview.md
 
 # Every skill folder must be listed in the marketplace manifest
 python3 -c "import json,glob; listed={s for p in json.load(open('.claude-plugin/marketplace.json'))['plugins'] for s in p['skills']}; found={'./'+d.rstrip('/') for d in glob.glob('skills/*/*/')}; print('missing from manifest:', sorted(found-listed)); print('stale in manifest:', sorted(listed-found))"

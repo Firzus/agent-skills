@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 54 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure.
+`agent-skills` is a registry of 28 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 24 game-system documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -133,7 +133,7 @@ npx skills add Firzus/agent-skills --all -y
 
 ## Browse skills
 
-Jump to a category: [Web & app development](#web--app-development) · [Engine best practices](#engine-best-practices) · [Graphics & rendering](#graphics--rendering) · [Game architecture & foundation](#game-architecture--foundation) · [Gameplay & control](#gameplay--control) · [Progression, economy & items](#progression-economy--items) · [World & navigation](#world--navigation) · [Narrative & cinematics](#narrative--cinematics) · [UI, HUD & audio](#ui-hud--audio) · [Multiplayer](#multiplayer)
+Jump to a category: [Web & app development](#web--app-development) · [Game development](#game-development)
 
 Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
@@ -162,59 +162,15 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`astryx`](./skills/web/astryx) — Astryx (`@astryxdesign`), Meta's agent-ready React + StyleX design system: setup, CLI discovery loop, xstyle, tokens, theming, migration.
 - [`adsense`](./skills/web/adsense) — AdSense publisher monetization: policy gate, RPM/coverage metrics, placement and Auto ads, revenue levers, ad-caused CWV damage, revenue-drop diagnostics.
 
-### Engine best practices
+### Game development
 
 - [`unity`](./skills/game/unity) — Routes each Unity need to one chosen tool, and keeps projects CoreCLR-ready.
-- [`ue5-aaa-best-practices`](./skills/game/ue5-aaa-best-practices) — Senior UE5 DO/DON'T practices: GAS, Subsystems, CommonUI, World Partition.
 - [`figma-to-unity`](./skills/game/figma-to-unity) — Implements Figma designs as Unity UI Toolkit via the Figma MCP.
-
-### Graphics & rendering
-
-- [`stylized-rendering`](./skills/game/stylized-rendering) — Stylized / NPR cel-shaded rendering with Unity/UE5 mappings.
 - [`magica-cloth-2`](./skills/game/magica-cloth-2) — Code-first cloth/jiggle physics with Magica Cloth 2 in Unity via the Unity MCP.
 
-### Game architecture & foundation
+## Documentary knowledge base
 
-- [`save-persistence`](./skills/game/save-persistence) — Save systems for single-player and online, with versioning and storage.
-- [`scene-flow-manager`](./skills/game/scene-flow-manager) — Game application flow: state machine, scene composition, gated transitions.
-- [`open-world-streaming`](./skills/game/open-world-streaming) — Open-world streaming: partitioning, async load/unload, HLOD, budgets.
-
-### Gameplay & control
-
-- [`combat-system`](./skills/game/combat-system) — Action and RPG combat: attack graphs, hit detection, damage pipeline.
-- [`character-controller`](./skills/game/character-controller) — Unreal Mover controllers: action-RPG locomotion, rollback, traversal, and combat movement.
-- [`mount-system`](./skills/game/mount-system) — Unreal creature mounts: lifecycle, Mover locomotion, safe dismount, co-op replication, and persistence.
-- [`traversal-system`](./skills/game/traversal-system) — Traversal verbs (climb/glide/swim/grapple), parkour, mantle/vault, and world affordances.
-- [`camera-system`](./skills/game/camera-system) — Game cameras: virtual-camera stack, orbit rigs, collision, screen shake.
-- [`enemy-ai-framework`](./skills/game/enemy-ai-framework) — Game AI: FSM/BT/GOAP/utility, perception, navmesh, genre AI.
-
-### Progression, economy & items
-
-- [`inventory-equipment`](./skills/game/inventory-equipment) — Inventory and equipment with gear RNG and server-authoritative persistence.
-- [`loot-drop-system`](./skills/game/loot-drop-system) — Loot tables, drops, claims, and loot-box compliance.
-- [`progression-economy`](./skills/game/progression-economy) — Progression and economy: stat curves, skill trees, currencies, battle pass.
-
-### World & navigation
-
-- [`world-time-weather`](./skills/game/world-time-weather) — Time-of-day, weather, and seasons: game clock, weather-as-data, TOD lighting.
-- [`teleport-map-unlock`](./skills/game/teleport-map-unlock) — Fast travel, waypoint networks, map unlocking, and fog of war.
-- [`minimap-worldmap`](./skills/game/minimap-worldmap) — Minimap and world map: bake pipeline, markers, fog of war, multi-layer.
-- [`quest-system`](./skills/game/quest-system) — Quest systems: data model, event-driven runtime, objective tracking.
-
-### Narrative & cinematics
-
-- [`dialogue-system`](./skills/game/dialogue-system) — Dialogue systems: graph model, runtime sessions, barks, VO/localization.
-- [`cinematic-system`](./skills/game/cinematic-system) — Cutscene systems: timeline model, skip guarantees, cinematography craft.
-
-### UI, HUD & audio
-
-- [`menu-ui-manager`](./skills/game/menu-ui-manager) — Menu frameworks: router with screen stacks, focus, pause, settings.
-- [`hud-system`](./skills/game/hud-system) — In-game HUDs: event-driven UI, bars/gauges, damage numbers, accessibility.
-- [`adaptive-audio`](./skills/game/adaptive-audio) — Game audio: adaptive music, mix architecture, spatial audio, middleware.
-
-### Multiplayer
-
-- [`coop-session`](./skills/game/coop-session) — Drop-in co-op (2-4): host's-world session, authority, replication, netcode.
+The 24 game-system corpora in [`doc/`](./doc/README.md) are Markdown source material for future documentation and skills. They are deliberately absent from the skills marketplace and have no `SKILL.md` entry point.
 
 ## Manual install
 
