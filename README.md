@@ -18,88 +18,33 @@
 
 How the agent talks to you, and how it handles version control — the two things that stay the same in every repository. Copy the block into your harness's top-level instruction file — `~/.codex/AGENTS.md` for Codex, `~/.claude/CLAUDE.md` for Claude Code, or the equivalent for your tool.
 
-Git lives here rather than per project for two reasons: the workflow is identical everywhere, and the guardrails protect against irreversible loss, so they must be loaded before any task rather than fetched on demand.
+Keep global instructions small and non-redundant. Git conventions live here because they apply across repositories, while project-specific architecture, commands, and validation belong in the project.
 
 Anything genuinely project-specific — the stack's testing policy, architecture and code standards — belongs to the project; the [`setup-project`](./skills/engineering/setup-project) skill sets that up for you.
 
 ```markdown
+# Global working agreements
+
 ## Communication
 
-Talk to me in French. Everything that outlives the conversation is English — code, comments, commits, branches, PRs, issues, docs.
+- Reply in French. Write code, comments, commits, branches, pull requests, issues, and documentation in English.
+- Use a table or Mermaid diagram when it communicates structure more clearly than prose.
 
-Each message stands on its own. I read them between several parallel sessions, knowing nothing about the domain, the repo, or the file you just opened. Every proper noun, identifier, abbreviation, file name and document reference gets a gloss in the same sentence — what it is, and why it matters here. Write "ADR-0001 (the decision to keep the domain free of engine types)", never "ADR-0001".
+## Git delivery
 
-Be concise and concrete. Lead with what is at risk and what changes for me, and add the mechanism only where it helps me decide.
+- Keep the branch or worktree prepared by the task environment. When a user-facing branch must be created, name it `<type>/<kebab-case-subject>`, where `<type>` is `feature`, `bugfix`, `hotfix`, `release`, or `chore`.
+- Use Conventional Commits. Mark breaking changes with `!` or a `BREAKING CHANGE:` footer.
+- Open pull requests as drafts and mark them ready only after the requested work and focused validation are complete.
+- In pull requests targeting the default branch, repeat `Closes #<number>` for every issue that should close.
 
-Make a question answerable in one reply with nothing open in front of me: what you found, what is blocking you, the concrete choices.
+## Git safety
 
-When a decision is mine, put the options as a practical trade-off — what each one gives up — then your recommendation and the reason behind it.
-
-Mermaid diagrams render on my side. Reach for one, or a table, wherever the shape of the idea carries better than prose.
-
-## Git workflow
-
-Branch from an up-to-date default branch: `git switch --no-track -c <type>/<subject> origin/main`.
-
-Name branches `<type>/<subject>` — a [Conventional Branch](https://conventional-branch.github.io/) type, then a lowercase ASCII kebab-case subject. Types: `feature`, `bugfix`, `hotfix`, `release`, `chore`.
-
-This list is deliberately narrower than the commit type list: a commit describes one change, a branch describes a delivered unit of work. Keep it as is.
-
-Name the branch after the change, not the tool that produced it — `feature/token-refresh`, never `codex/...` or `claude/...`.
-
-Write commits to [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `<type>[optional scope]: <description>`.
-
-Types: `feat`, `fix`, `build`, `ci`, `docs`, `style`, `refactor`, `perf`, `test`, `revert`, `chore`. Reach for `chore` only when nothing more specific fits.
-
-Mark a breaking change with `!` before the colon (`feat(api)!: ...`) or a `BREAKING CHANGE:` footer. That footer is the one token that must be uppercase.
-
-Open the pull request as a draft when starting: `gh pr create --draft`. Mark it ready when the work is complete: `gh pr ready`.
-
-For an issue-related PR, put `Closes #<issue-number>` in the PR body. Repeat the keyword before each reference — `Closes #10, closes #12` closes both, `Closes #10, #12` closes only the first.
-
-Closing keywords take effect only when the PR targets the default branch. Against any other base they are silently ignored: nothing links, nothing closes, no warning.
-
-## Git guardrails
-
-Preserve uncommitted work: run `git stash push -u` before any operation that rewrites the working tree. `git reset --hard` is one of the very few commands that genuinely destroys data — the reflog tracks reference updates only, so it can recover a commit but never an uncommitted edit.
-
-Clean with `git clean -nd` first to see what would go, then `git clean -fdX` to remove ignored files only. The lowercase `-x` also deletes `.env`, local credentials and editor settings — files that are gitignored precisely because they are local and irreplaceable.
-
-Force-push with `--force-with-lease --force-if-includes`. Passed alone, `--force-if-includes` is a silent no-op: it looks careful and protects nothing.
-
-## Comments
-
-Default to zero new code comments. Make code explain itself through naming,
-structure, types, assertions, errors, and tests.
-
-Keep or add a comment only when removing it would hide information the code
-cannot express:
-
-- a non-obvious rationale whose omission could cause the wrong implementation;
-- a business, security, concurrency, compatibility, or performance constraint;
-- an external contract, workaround, or live trap, linked to its issue or
-  specification when one exists;
-- public API behavior the signature cannot express, such as thrown errors or
-  deliberately unsupported edge cases.
-
-Place the comment immediately above the narrowest code it governs. Use a module
-header only when the constraint governs the entire file. State the current truth
-in concise English.
-
-Delete comments that narrate code, label sections, repeat names, types or
-signatures, preserve implementation history or commented-out code, speculate,
-or contain an untracked TODO/FIXME. A TODO must link to a tracked issue and
-state its removal condition.
-
-When changing behavior, update or delete affected comments in the same change,
-including references in other files. Preserve required licenses, generated-file
-markers, documentation directives, and narrowly scoped tool suppressions.
-
-Before finishing, review every comment added or changed. If code, types,
-assertions or tests can carry the information, remove the comment.
+- Preserve uncommitted work before any operation that rewrites the working tree. Never discard it without explicit approval.
+- Preview file cleanup before deletion. Do not delete ignored local settings, credentials, or environment files.
+- Force-push only with `--force-with-lease --force-if-includes`.
 ```
 
-Swap the first line for your own language pairing, and `origin/main` for your default branch name. The rest is language-agnostic.
+Adapt the language pairing and Git conventions to your workflow. Keep model behavior, project commands, architecture, and validation rules in their respective instruction layers rather than duplicating them here.
 
 ## Install
 
