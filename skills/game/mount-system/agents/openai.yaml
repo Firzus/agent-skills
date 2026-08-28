@@ -1,4 +1,0 @@
-interface:
-  display_name: "Mount System"
-  short_description: "Design robust networked creature-mount systems"
-  default_prompt: "Use $mount-system to design and validate a networked ground-mount system."

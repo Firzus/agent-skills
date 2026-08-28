@@ -36,35 +36,11 @@
     {
       "name": "game",
       "source": "./",
-      "description": "Game development skills \u2014 Unity 6 / UE5 systems, from combat and AI to HUD and audio.",
+      "description": "Unity development skills \u2014 engine workflow, Figma UI, and Magica Cloth 2.",
       "skills": [
-        "./skills/game/adaptive-audio",
-        "./skills/game/camera-system",
-        "./skills/game/character-controller",
-        "./skills/game/cinematic-system",
-        "./skills/game/combat-system",
-        "./skills/game/coop-session",
-        "./skills/game/dialogue-system",
-        "./skills/game/enemy-ai-framework",
         "./skills/game/figma-to-unity",
-        "./skills/game/hud-system",
-        "./skills/game/inventory-equipment",
-        "./skills/game/loot-drop-system",
         "./skills/game/magica-cloth-2",
-        "./skills/game/menu-ui-manager",
-        "./skills/game/minimap-worldmap",
-        "./skills/game/mount-system",
-        "./skills/game/open-world-streaming",
-        "./skills/game/progression-economy",
-        "./skills/game/quest-system",
-        "./skills/game/save-persistence",
-        "./skills/game/scene-flow-manager",
-        "./skills/game/stylized-rendering",
-        "./skills/game/teleport-map-unlock",
-        "./skills/game/traversal-system",
-        "./skills/game/ue5-aaa-best-practices",
-        "./skills/game/unity",
-        "./skills/game/world-time-weather"
+        "./skills/game/unity"
       ]
     },
     {

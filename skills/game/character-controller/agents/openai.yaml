@@ -1,4 +1,0 @@
-interface:
-  display_name: "Character Controller"
-  short_description: "Design robust Unreal Mover character controllers"
-  default_prompt: "Use $character-controller to design and validate an Unreal Mover character controller."
