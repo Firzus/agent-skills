@@ -51,6 +51,7 @@
         "./skills/engineering/chrome-devtools",
         "./skills/engineering/gamification",
         "./skills/engineering/imagegen",
+        "./skills/engineering/setup-codex",
         "./skills/engineering/setup-project",
         "./skills/engineering/skills"
       ]
