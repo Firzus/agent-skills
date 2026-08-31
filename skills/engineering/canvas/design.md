@@ -1,9 +1,14 @@
-# Canvas scaffold and patterns
+# Design canvas — composition rules and scaffold
+
+The layout carries meaning here, so you compose it. Be creative, but flat,
+minimal, and purposeful. Visual hierarchy first: primary content gets space,
+larger headings, and the one accent color; supporting content stays compact
+and neutral. Squint test: can you tell what matters?
 
 ## Base scaffold
 
-Every canvas starts from this shell. Mermaid and Chart.js script tags are
-included only when the canvas actually uses them.
+Start here and diverge deliberately. Mermaid and Chart.js tags are included
+only when the canvas uses them.
 
 ```html
 <!doctype html>
@@ -11,7 +16,7 @@ included only when the canvas actually uses them.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><!-- Specific title: "Architecture review — payment module" --></title>
+  <title><!-- Specific title: "Framework comparison — state management" --></title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Only if the canvas has graph-shaped diagrams: -->
   <script type="module">
@@ -129,3 +134,21 @@ While the canvas is being updated during ongoing work:
 ```
 
 Remove the tag in the final update so the finished artifact sits still.
+
+## Slop patterns — forbidden
+
+If two or more are present, redesign:
+
+- Gradients (`linear-gradient`, `radial-gradient`, `background-clip: text`).
+- Emojis as icons, bullets, status indicators, or section markers.
+- Box shadows: flat surfaces only.
+- A wall of identical cards: mix open sections with cards.
+- Rainbow coloring: most elements neutral, color spent sparingly with purpose.
+- Giant text above 24px, or bold text stuffed into card headers.
+- Decorative borders: borders are structural, subtle, and rare.
+
+## Pre-delivery self-check
+
+Before opening the canvas, verify: one thing stands out; the composition has
+variety, not a single column of uniform blocks; no slop pattern survives;
+every plot is fully labeled.
