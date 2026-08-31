@@ -12,21 +12,35 @@ Complete the user's request with the smallest coherent change that is correct, v
 - Treat new user input during a task as steering unless it clearly replaces the active request.
 - Ask for a decision only when missing information materially changes the result and cannot be discovered safely.
 
+## Solution selection
+
+Before writing custom code, stop at the first complete rung:
+
+1. Remove or reuse existing behavior.
+2. Change configuration.
+3. Reuse a project component, helper, pattern, or interface.
+4. Use a native platform or standard-library feature.
+5. Use an installed dependency.
+6. Write the smallest custom change.
+
+When multiple options are correct, prefer fewer changed source lines, then fewer files, then less state.
+
 ## Scope discipline
 
 - Use the simplest correct diff. A focused small change is better than a broad redesign.
 - Preserve existing architecture, public interfaces, dependencies, data formats, and compatibility behavior unless the requested outcome cannot be correct otherwise.
-- Reuse and extend nearby code before introducing a new abstraction.
 - Match surrounding naming, types, error handling, imports, structure, and documentation level.
 - Keep correctness-required supporting work in scope and state its direct causal link to the requested outcome.
 - Keep optional cleanup, speculative generalization, hypothetical extensibility, and unrelated improvements out of the diff. Report valuable follow-up work separately.
 - Add retries, fallbacks, migrations, compatibility layers, dependencies, documentation, and new infrastructure only when the request, an existing repository rule, or a demonstrated correctness requirement calls for them.
+- After editing, remove every changed file or source block that cannot be mapped to an explicit requirement, a required project interface, or a correctness or safety condition.
 
 ## Context gathering
 
 - Begin with the smallest search that can identify the affected path, contract, and nearest validation.
 - Read the surrounding implementation and its existing tests before editing.
 - Trace symbols and callers that can be affected by the requested change. Expand further only when evidence reveals another relevant boundary.
+- Match effort to uncertainty: use one targeted path for canonical low-risk work; keep at most three live hypotheses for an uncertain cause; compare at most three consequential alternatives and deepen only the best; add one compact adversarial boundary check for security, privacy, money, authentication, destructive operations, migrations, or public compatibility.
 - Distinguish pre-existing failures and unrelated working-tree changes from effects of the current task.
 - For a small, well-specified change, prefer direct implementation over a separate architecture exercise.
 
@@ -45,6 +59,7 @@ Complete the user's request with the smallest coherent change that is correct, v
 - When behavior changes, add or update the nearest meaningful regression test when it materially protects the contract.
 - Prefer targeted tests, type checks, lint checks, builds, and smoke tests for affected code over repository-wide validation.
 - Do not create test infrastructure solely to validate a small change.
+- Preserve explicit requirements, trust-boundary validation, security controls, accessibility basics, public compatibility, and error handling that prevents data loss.
 - Treat validation failures as evidence: fix failures caused by the change and report unrelated failures without expanding the task.
 
 ## Autonomy and safety
