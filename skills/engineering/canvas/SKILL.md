@@ -24,7 +24,23 @@ tables past a handful of rows. Skip it when the output is a means to an end —
 a drafted message, a code fix, a deliverable in another tool — or when the
 user is working inside an existing artifact or doing targeted debugging.
 
-## 2. Write the canvas
+## 2. Route to a presentation type
+
+Two kinds of canvas, one reference file each. Read exactly the one you route
+to: it carries the scaffold, the patterns, and the visual rules for that
+branch.
+
+| Branch | The canvas is | Read |
+| --- | --- | --- |
+| **Technical** | documentation of engineering work — audit, architecture review, code health report, benchmark, migration plan, progress dashboard. The content carries everything; the visual only has to stay out of the way. | [technical.md](technical.md) — a fixed Geist dark design system, applied as-is |
+| **Design** | an artifact whose layout carries meaning — editorial report, visual comparison, anything the user asked to look a certain way. | [design.md](design.md) — compose freely inside the anti-slop rules |
+
+Route to **technical** whenever the subject is engineering work: a standard
+visual costs no design decisions and no design context. Route to **design**
+when the user asks for a visual treatment, or when the composition itself
+does the explaining.
+
+## 3. Write the canvas
 
 **Location.** Write to `<tmpdir>/canvases/<kebab-name>.html`. Resolve the temp
 directory from `$TMPDIR`, falling back to `/tmp` on Unix or `%TEMP%` on
@@ -35,9 +51,9 @@ descriptive kebab-case filename; nothing lands in the repository.
 
 - Exactly one `.html` file per canvas. No helper files, no supporting modules.
 - Self-contained: all data inlined at write time. No `fetch()`, no reads of
-  local files. The only external references allowed are CDN `<script>` tags:
-  Tailwind for styling, Mermaid for graph-shaped diagrams, Chart.js when a
-  real chart beats a hand-built SVG.
+  local files. External references are limited to the CDN tags listed in your
+  branch file: Tailwind for styling, Mermaid for graph-shaped diagrams,
+  Chart.js when a real chart beats a hand-built SVG, a webfont stylesheet.
 - Interactivity through inline vanilla JS only (tabs, filters, collapsibles).
 
 **Never render empty states.** A canvas exists to show real content. A
@@ -51,9 +67,7 @@ legend when more than one series is shown, and a small caption carrying the
 source and time range. Name any transformation (mean, p95, normalized) in the
 label.
 
-Start from the scaffold and patterns in [template.md](template.md).
-
-## 3. Open and link it
+## 4. Open and link it
 
 Open the file for the user: `start <path>` on Windows, `open <path>` on
 macOS, `xdg-open <path>` on Linux. If the environment offers an in-app
@@ -62,7 +76,7 @@ response, always link the canvas by its absolute path with a short
 descriptive label. On the first canvas of a session, add one sentence saying
 it opened beside the chat and can be refreshed after updates.
 
-## 4. Update in place
+## 5. Update in place
 
 A canvas that tracks ongoing work (a progress dashboard, a review being
 worked through) is a **living artifact**: keep the same file path for its
@@ -70,24 +84,3 @@ whole lifetime and edit the file in place, so a browser refresh shows the
 new state. For a canvas expected to change while the user watches, add
 `<meta http-equiv="refresh" content="15">` so it reloads itself; remove the
 tag in the final update.
-
-## Design guidance
-
-Be creative with layout, but flat, minimal, and purposeful. Visual
-hierarchy first: primary content gets space, larger headings, and the one
-accent color; supporting content stays compact and neutral. Squint test:
-can you tell what matters?
-
-**Slop patterns — forbidden.** If two or more are present, redesign:
-
-- Gradients (`linear-gradient`, `radial-gradient`, `background-clip: text`).
-- Emojis as icons, bullets, status indicators, or section markers.
-- Box shadows: flat surfaces only.
-- A wall of identical cards: mix open sections with cards.
-- Rainbow coloring: most elements neutral, color spent sparingly with purpose.
-- Giant text above 24px, or bold text stuffed into card headers.
-- Decorative borders: borders are structural, subtle, and rare.
-
-**Pre-delivery self-check.** Before opening the canvas, verify: one thing
-stands out; the composition has variety, not a single column of uniform
-blocks; no slop pattern survives; every plot is fully labeled.
