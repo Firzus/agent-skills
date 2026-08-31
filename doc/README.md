@@ -1,6 +1,6 @@
-# Game systems documentary knowledge base
+# Documentary knowledge base
 
-This directory contains reference corpora for game-system topics. Each subject is
+This directory contains reference corpora. Each subject is
 plain Markdown source material: it is not an Agent Skill, has no `SKILL.md`, and
 is not distributed through the skills marketplace. Start with the subject's
 `overview.md`, then open the narrower records needed for the question.
@@ -52,3 +52,8 @@ is not distributed through the skills marketplace. Start with the subject's
 ## Multiplayer
 
 - [Co-op sessions](./coop-session/overview.md)
+
+## Engineering practice
+
+- [AI coding-agent efficiency tools](./ai-agent-efficiency-tools/overview.md)
+- [Dead code and AI slop](./dead-code-and-slop/overview.md)
