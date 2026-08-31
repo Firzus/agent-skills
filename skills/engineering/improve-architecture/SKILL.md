@@ -17,19 +17,14 @@ canvas current.
 
 ## Vocabulary
 
-If a `codebase-design` skill is installed, invoke it and use its vocabulary
-exactly. Otherwise these definitions apply:
-
-- A **module** is any unit with an inside and an outside; its **interface** is
-  everything a caller must know. A module is **deep** when its interface is
-  much simpler than what it hides, **shallow** when the interface is nearly as
-  complex as the implementation.
-- A **seam** is a place where behavior can be swapped without editing callers.
-- **Locality**: a behavior is understood by reading one place. **Leverage**:
-  one change propagates through one point.
-- The **deletion test** probes suspected shallowness: would deleting the
-  module concentrate complexity behind a real interface, or just relocate it?
-  "Concentrates" marks a deepening opportunity.
+Invoke the `codebase-design` skill before scanning; it is required. It
+supplies the architecture vocabulary (**module**, **interface**, **depth**,
+**seam**, **adapter**, **leverage**, **locality**) and its principles (the
+deletion test, "the interface is the test surface", "one adapter =
+hypothetical seam, two = real"). Use these terms exactly in every candidate
+and every work order; do not drift into "component", "service", "API", or
+"boundary". If the skill is not installed, stop and tell the user to install
+it first.
 
 ## 1. Explore
 
