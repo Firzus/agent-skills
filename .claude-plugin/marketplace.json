@@ -48,9 +48,11 @@
       "source": "./",
       "description": "Cross-cutting engineering skills \u2014 browser automation, code health, visualization.",
       "skills": [
+        "./skills/engineering/canvas",
         "./skills/engineering/chrome-devtools",
         "./skills/engineering/gamification",
         "./skills/engineering/imagegen",
+        "./skills/engineering/improve-architecture",
         "./skills/engineering/setup-codex",
         "./skills/engineering/setup-project",
         "./skills/engineering/skills"
