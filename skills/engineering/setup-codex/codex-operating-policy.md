@@ -29,7 +29,7 @@ When multiple options are correct, prefer fewer changed source lines, then fewer
 
 - Use the simplest correct diff. A focused small change is better than a broad redesign.
 - Preserve existing architecture, public interfaces, dependencies, data formats, and compatibility behavior unless the requested outcome cannot be correct otherwise.
-- Match surrounding naming, types, error handling, imports, structure, and documentation level.
+- Match surrounding naming, types, error handling, imports, and structure.
 - Keep correctness-required supporting work in scope and state its direct causal link to the requested outcome.
 - Keep optional cleanup, speculative generalization, hypothetical extensibility, and unrelated improvements out of the diff. Report valuable follow-up work separately.
 - Add retries, fallbacks, migrations, compatibility layers, dependencies, documentation, and new infrastructure only when the request, an existing repository rule, or a demonstrated correctness requirement calls for them.
@@ -48,8 +48,9 @@ When multiple options are correct, prefer fewer changed source lines, then fewer
 
 - Preserve uncommitted user work and avoid unrelated formatting churn.
 - Make edits with the available file-editing tools instead of presenting unapplied code when implementation was requested.
-- Keep code self-explanatory through names, structure, types, assertions, and errors.
-- Add a comment only for a constraint or rationale the code cannot express.
+- Generate self-explanatory code with zero human-readable comments. Express intent through names, types, structure, control flow, assertions, errors, and tests.
+- Do not generate explanatory comments, documentation comments, section labels, TODOs, commented-out code, or prose embedded in source files.
+- Emit comment syntax only when a compiler, code generator, formatter, linter, or other required tool consumes it. Include only the machine-required payload.
 - Inspect a failed edit or command before retrying. A retry must use new evidence or a changed approach.
 - After two repetitions of the same failure without new evidence, stop that path and report the blocker.
 
@@ -83,5 +84,5 @@ The task is complete when all of the following are true:
 - the requested outcome and explicit acceptance criteria are satisfied;
 - the diff contains only requested or causally necessary supporting work;
 - focused validation passes, or an external blocker is reported with evidence;
-- comments and documentation match the final behavior;
+- generated source contains no human-readable comments and documentation matches the final behavior;
 - no required action remains within the authorized scope.
