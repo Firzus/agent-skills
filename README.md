@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 31 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 24 game-system documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
+`agent-skills` is a registry of 32 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -90,6 +90,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
 - [`canvas`](./skills/engineering/canvas) — Renders standalone analytical artifacts (reviews, audits, reports, dashboards) as self-contained HTML canvases opened beside the chat, in any agent environment.
 - [`improve-architecture`](./skills/engineering/improve-architecture) — Scans a codebase for deepening opportunities, presents them on a live canvas, then delegates each approved refactor to a bounded sub-agent with verified, tracked progress.
+- [`slop-audit`](./skills/engineering/slop-audit) — Audits a codebase for dead code and AI slop, clears every suspect against the legitimate reason it exists, and removes only what a verification ladder supports.
 - [`vite-plus-best-practices`](./skills/web/vite-plus-best-practices) — Best practices for Vite+ (`vp`): config, migrations, testing, monorepos.
 - [`tauri`](./skills/web/tauri) — Tauri v2+: owned IPC, capabilities-first permissions, CDP shell debugging, mobile-safe structure.
 - [`chrome-devtools`](./skills/engineering/chrome-devtools) — Drives and inspects Chrome via the official chrome-devtools-mcp server: uid-snapshot interaction, performance traces with insights, network/console debugging, emulation.
@@ -118,7 +119,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 ## Documentary knowledge base
 
-The 24 game-system corpora in [`doc/`](./doc/README.md) are Markdown source material for future documentation and skills. They are deliberately absent from the skills marketplace and have no `SKILL.md` entry point.
+The 26 corpora in [`doc/`](./doc/README.md) — 24 game systems plus an agent-tooling review and a dead-code and AI-slop evidence base — are Markdown source material for future documentation and skills. They are deliberately absent from the skills marketplace and have no `SKILL.md` entry point.
 
 ## Manual install
 
