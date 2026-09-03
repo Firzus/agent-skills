@@ -64,8 +64,14 @@ track.
 - Measure temporal noise, light-response latency, artifacts, and memory on target hardware before committing a production scene to it, while it is still experimental.
 - SCGI is what replaced the abandoned Dynamic APV direction. Standard APV is unaffected.
 
+## Light baking
+
+The only light-baking backend in this stack is **Unity Compute Light Baker**.
+Use it for every SRP lightmap, Light Probe, and Adaptive Probe Volume bake.
+
 ## GPU-driven drawing
 
+- Dynamic batching is obsolete. Reduce draw calls through the SRP Batcher, GPU Resident Drawer, and GPU instancing.
 - Enable **GPU Resident Drawer** (Instanced Drawing) with GPU occlusion culling on large scenes: SRP Batcher on, BatchRendererGroup variants "Keep All", Forward+, static batching off. It auto-instances through BatchRendererGroup and cuts draw calls and CPU time.
 - Re-profile after enabling it. It shifts load to the GPU, so GPU-bound low-end mobile can lose from it — that measurement decides, not the default.
 - Keep shaders and materials SRP Batcher-compatible (per-material CBUFFER layout), and use GPU instancing for repeated meshes GRD does not cover.
@@ -76,6 +82,5 @@ track.
 
 - **Mesh LOD** (6.2) generates LODs at import into a single mesh — less memory than external LOD tools, and compatible with Entities Graphics in 6.5.
 - **On-tile post-processing** with Tile-Only Mode (6.5) runs HDR, tone mapping, colour grading, and vignette in one GPU-tile pass with no system-memory readback. Large bandwidth and thermal wins on Vulkan and Metal.
-- The **GPU Lightmapper** with xAtlas packing is the baking default for new scenes from 6.3 — faster bakes, less VRAM and disk.
 - **DirectStorage** (6.4, PC and Xbox) cuts load times for textures, meshes, and ECS data on NVMe. The Windows `AsyncReadManager` rewrite (6.5) extends that to custom reads.
 - Target **ASTC** on mobile and **BC** on desktop and console. PVRTC was removed in 6.4.

@@ -7,7 +7,14 @@ fields in place of string addresses so renames survive and the Editor can
 validate the link.
 
 - Release every handle you load (`Addressables.Release`). Reference counting only frees memory when loads and releases pair up.
-- Plan group and bundle granularity around what loads and unloads together.
+
+| Content | Build system |
+| --- | --- |
+| Installed with the player | **Content Directory** — asset-level dependencies, automatic de-duplication, granular unloads |
+| Remote catalog, DLC, post-install download | **AssetBundles** — groups sized around what loads and unloads together |
+
+Keep the two dependency sets disjoint. An asset referenced by both is built twice.
+
 - Keep an asset in one place: referencing it from both built-in scene data and an Addressables group duplicates it on disk and in memory.
 - Enable **Extract TypeTree Data** (6.5) on new projects to shrink AssetBundles. It rewrites every bundle, so it is a project-start decision.
 
@@ -19,7 +26,7 @@ covers the bootstrap case too.
 
 - Enforce imports with **Presets plus folder-based preset rules** (or an `AssetPostprocessor`), committed to version control, so texture, audio, and mesh settings are deterministic across the team rather than drifting per developer.
 - Set platform-correct texture compression — ASTC on mobile, BC on desktop and console.
-- Leave Read/Write off on meshes and textures unless the CPU genuinely reads them. Enable it explicitly where needed: from 6.5 it is no longer auto-enabled at build time, and a build fails when a CPU-read texture lacks the flag.
+- Leave Read/Write off on meshes and textures unless the CPU genuinely reads them. Enable it on meshes used by a Particle System Shape, Terrain Detail Mesh, or Mesh Collider; Unity no longer enables it during the build, and a missing required flag fails the build.
 - Match audio load types to use: streaming for music and long ambiences, compressed-in-memory for mid-length clips, decompress-on-load for short frequent SFX. Force mono where stereo adds nothing.
 - Expect far fewer redundant reimports on 6.4, where a dependent reimports only when its dependency's *result* changes. In custom importers, declare `DependsOnSourceAsset` and `DependsOnArtifact` so the reimports you do need still fire.
 

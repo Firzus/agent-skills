@@ -42,17 +42,18 @@ validate desktop builds against the experimental CoreCLR player in 6.7.
 
 - `[SerializeField]` applies to fields only; auto-properties take `[field: SerializeField]`. Anything else is a compile error from 6.3.
 - Keep the serialization Roslyn analyzer (6.5) build-breaking — it turns silent runtime data loss (missing `[Serializable]`, malformed `[SerializeReference]`, unsupported collections) into compile errors.
+- Serialize dictionaries directly as `[SerializeField] Dictionary<TKey, TValue>`; both types follow Unity's serialization rules.
+- Collections are valid dictionary values, not keys. Wrap a dictionary nested directly inside a list or array in a serializable type.
 - Treat ScriptableObjects as assets: config and shared data, not per-run state. Their values persist across Play Mode sessions in the Editor and are shared by every consumer.
 
 ## Object identity: `EntityId`
 
 `EntityId` is the 64-bit identity type unifying GameObjects and entities, and
-the foundation of Unity's "ECS for All" direction. The obsolete `int`
-`InstanceID` APIs are compile errors in 6.5.
+the foundation of Unity's "ECS for All" direction. The `int` InstanceID APIs
+are obsolete.
 
 - Store and pass identity as `EntityId`.
 - Treat it as opaque: no casting to `int`, no reliance on its sign, bit layout, or sort order.
-- Budget an explicit migration pass when moving a project onto 6.5 — upgrades that skip it surface as lost component references.
 
 `EntityId` is **not** the ECS `Entity` struct. It is the engine-wide object
 identity type; `Entity` remains the ECS handle. The changelog wording invites
