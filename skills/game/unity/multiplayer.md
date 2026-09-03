@@ -10,22 +10,19 @@ For engine-agnostic replication theory and drop-in co-op session design, use the
 
 ## The stack
 
-| Concern | Package | Version |
-| --- | --- | --- |
-| Netcode | `com.unity.netcode.gameobjects` | 2.13.1 |
-| Sessions, Lobby, Relay, Matchmaker | `com.unity.services.multiplayer` | 2.3.0 |
-| Server builds | `com.unity.dedicated-server` | 3.0.0 |
-| Multi-peer testing | `com.unity.multiplayer.playmode` | 2.0.2 |
+| Concern | Package |
+| --- | --- |
+| Netcode | `com.unity.netcode.gameobjects` |
+| Sessions, Lobby, Relay, Matchmaker | `com.unity.services.multiplayer` |
+| Server builds | `com.unity.dedicated-server` |
+| Multi-peer testing | `com.unity.multiplayer.playmode` |
 
 **Netcode for GameObjects** is the default: `NetworkBehaviour`, `NetworkVariable`,
-and RPCs over GameObjects. **Netcode for Entities** (`com.unity.netcode`, 6.6.0)
+and RPCs over GameObjects. **Netcode for Entities** (`com.unity.netcode`)
 is the supported step off that row, for DOTS-scale simulation — many networked
 entities with prediction at scale. It pairs with the ECS core packages, and a
 project takes it only when already built on ECS. The two stacks do not
 interoperate, so this is a per-project choice.
-
-Start new work on NGO 2.x. The 1.x line was deprecated in 6.3
-(`NetworkTransform.Update` became `OnUpdate`).
 
 ## Authority
 
@@ -39,7 +36,7 @@ distributed authority, so one property covers both topologies and the code
 survives a topology change. `IsServer` answers a different question and silently
 does the wrong thing under distributed authority.
 
-**Distributed authority** (stable since NGO 2.0.0) spreads `NetworkObject`
+**Distributed authority** spreads `NetworkObject`
 ownership across clients through a relay: owners simulate their own objects,
 ownership transfers or redistributes automatically, and object state survives a
 client leaving. One client is the session owner, handling global operations such
@@ -50,7 +47,8 @@ centralised anti-cheat, server-authoritative physics, and rollback live.
 Validate client input and rate-limit state changes under either model — a client
 owning an object still means a client controls what it reports.
 
-Setup for distributed authority: Unity 6, NGO 2.x, `com.unity.services.multiplayer`,
+Setup for distributed authority: Netcode for GameObjects,
+`com.unity.services.multiplayer`,
 a Unity Cloud project, and a session created `WithDistributedAuthorityNetwork()`.
 
 ## Sessions and services
@@ -84,7 +82,7 @@ scripting defines, and run them in CI like any other target — see
 
 ## Testing
 
-**Multiplayer Play Mode** (2.0.2, Unity 6.3+) runs multiple virtual players in
+**Multiplayer Play Mode** runs multiple virtual players in
 one Editor, so host-and-client behaviour is testable without several Editor
 installs or standalone builds. Its capabilities now live largely in the Play Mode
 Framework and the engine's Multiplayer modules.

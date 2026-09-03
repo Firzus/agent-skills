@@ -105,10 +105,10 @@ Author on lists, trees, and timelines rather than a node canvas: Unity has no
 production-ready graph foundation to build on. `UnityEditor.Experimental.GraphView`
 is still experimental and carries the warning that it may change or be removed,
 and its successor **Graph Toolkit** is Editor-time authoring only, with no
-execution backend — the graph runs nothing on its own. Since 6.4 it ships as an
-Editor module rather than a package: a leftover `com.unity.graphtoolkit` entry in
-`Packages/manifest.json` collides with the built-in namespace, so remove it when
-upgrading.
+execution backend — the graph runs nothing on its own. It ships as an Editor
+module, so use the built-in namespace directly. Model a port without data as
+`typeof(Untyped)`, set its capacity with `IPortBuilder.WithCapacity`, and define
+valid connections in `Graph.IsConnectionAllowed`.
 
 Keep the data model independent of the authoring UI — serialized types that know
 nothing about `VisualElement`. A graph front-end then becomes a second view over

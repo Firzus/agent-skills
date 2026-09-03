@@ -41,16 +41,17 @@ discipline in [runtime.md](./runtime.md) buys.
 | Render pipeline | **URP** — [rendering.md](./rendering.md) | Built-In, HDRP |
 | Custom render passes | **Render Graph** | `ScriptableRenderPass.Execute` |
 | Lighting, static scenes | **Adaptive Probe Volumes** + baked lightmaps | Light Probe Groups |
+| Light baking | **Unity Compute Light Baker** | every other light-baking backend |
 | Lighting, dynamic scenes | **Surface Cache GI** (6.7) | baking a scene that moves |
 | Draw-call reduction | **GPU Resident Drawer** + GPU occlusion | static and dynamic batching |
 | Pooling | **`UnityEngine.Pool`** | hand-rolled pools |
 | Object identity | **`EntityId`** (64-bit) | `GetInstanceID()`, `int` ids |
 | Hot paths | **Jobs + Burst** | a full ECS rewrite |
-| Netcode | **Netcode for GameObjects** 2.13.1 | Netcode for Entities |
+| Netcode | **Netcode for GameObjects** | Netcode for Entities |
 | Authority | **client-server** | distributed authority |
-| Sessions, matchmaking, relay | **Multiplayer Services** 2.3.0 | Lobby + Matchmaker + Relay separately |
-| Server builds | **Dedicated Server** 3.0.0 + Multiplayer Roles | a hand-stripped client build |
-| Testing multiple peers | **Multiplayer Play Mode** 2.0.2 | several Editor installs |
+| Sessions, matchmaking, relay | **Multiplayer Services** | Lobby + Matchmaker + Relay separately |
+| Server builds | **Dedicated Server** + Multiplayer Roles | a hand-stripped client build |
+| Testing multiple peers | **Multiplayer Play Mode** | several Editor installs |
 | Per-platform build config | **Build Profiles** | hand-edited global Build Settings |
 | Tests | **Unity Test Framework**, edit-mode first | play-mode by default |
 | Release builds | **IL2CPP** | Mono in shipping builds |
