@@ -97,7 +97,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`dokploy-best-practices`](./skills/web/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
 - [`web-assets-optimization`](./skills/web/web-assets-optimization) — Optimizes all web assets: images, video, GIF replacement, fonts, SVG, plus per-asset delivery strategy (LCP, lazy loading).
 - [`web-extension`](./skills/web/web-extension) — Builds, ports, tests, and packages WebExtensions for Chromium, Firefox, and Safari with explicit compatibility, permission, lifecycle, and store gates.
-- [`imagegen`](./skills/engineering/imagegen) — Generates and edits images with `gpt-image-2` via Codex CLI (ChatGPT subscription), with a chroma-key pipeline for transparent cutouts.
+- [`imagegen`](./skills/engineering/imagegen) — Generates and edits images via Codex CLI (ChatGPT account), targeting Images 2.5 with native transparency only.
 - [`extract-theme`](./skills/web/extract-theme) — Extracts a website's design tokens into shadcn/ui + Tailwind CSS v4.
 - [`figma-to-code`](./skills/web/figma-to-code) — Implements a Figma design in the project's stack (or as a standalone review page) via the Figma MCP: tokens, committed assets, and a geometry-diff + screenshot loop until pixel-accurate.
 - [`frontend-design`](./skills/web/frontend-design) — Router over the frontend-design pipeline: design-system → greyboxing → real-content, handing off through `DESIGN.md` and `PAGES.md`.

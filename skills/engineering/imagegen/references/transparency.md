@@ -1,56 +1,17 @@
-# Transparent backgrounds with gpt-image-2
+# Transparent backgrounds with Images 2.5
 
-`gpt-image-2` cannot output transparency: the Image API `background: transparent` option fails on this model, and Codex's built-in `image_gen` produces opaque images with it. The workaround is a two-step chroma-key pipeline.
-
-## Step 1 — generate on a flat chroma background
-
-Prompt for a solid, uniform key color behind the subject. Add these lines to the prompt spec:
+Request a transparent PNG through Codex's built-in `image_gen` tool:
 
 ```text
-Scene/backdrop: solid uniform magenta background, exact color #FF00FF, completely flat
-Lighting/mood: even studio lighting on the subject only
-Constraints: no shadows cast on the background, no gradients, no vignetting,
-  no reflections of the background color on the subject, crisp subject edges
+Scene/backdrop: transparent background
+Constraints: isolated subject, preserve fine edges and semi-transparent details,
+  output PNG with actual alpha transparency, no painted checkerboard
 ```
 
-Key color choice:
-
-| Key color | Use when |
-| --------- | -------- |
-| Magenta `#FF00FF` (default) | Almost always — rare in real subjects |
-| Green `#00FF00` | Subject contains magenta/pink tones |
-| Blue `#0000FF` | Subject contains both magenta and green |
-
-Pick a key color absent from the subject. Never use white, black, or gray — they appear in most subjects and in anti-aliased edges.
-
-## Step 2 — key it out locally
-
-Run the bundled script (requires Pillow):
+Verify that the saved file contains transparent pixels, not just a checkerboard or a fully opaque alpha channel. With Pillow installed (replace `python3` with the available Python 3 executable):
 
 ```bash
-python3 skills/engineering/imagegen/scripts/make_transparent.py input.png output/cutout.png
+python3 -c "from PIL import Image; im = Image.open('output/cutout.png'); assert im.format == 'PNG'; lo, hi = im.convert('RGBA').getchannel('A').getextrema(); assert lo < 255 and hi > 0, 'Expected transparent pixels and a visible subject'"
 ```
 
-- The key color is auto-sampled from the 4 corners; override with `--color FF00FF`. Prefer auto-sampling: `gpt-image-2` renders the requested key color only approximately (e.g. `rgb(239, 20, 233)` for a requested `#FF00FF`), so a hardcoded `--color` can miss the actual background.
-- `--threshold` (default 60): raise it if background remnants survive, lower it if subject pixels disappear.
-- `--soft` (default 40): width of the alpha ramp for smoother edges.
-- Output must be `.png` (alpha channel).
-
-## Validation
-
-Read the output PNG and check:
-
-- No leftover key-color halo around the subject edges — raise `--threshold` slightly or regenerate with "crisp subject edges" reinforced.
-- No holes inside the subject where its colors resembled the key — switch key color and regenerate.
-- Edge quality on hair/fur/glass — chroma keying struggles there; see the alternative below.
-
-## Alternative: AI background removal
-
-For complex edges (hair, fur, semi-transparency) or when the image was not generated on a chroma background, suggest `rembg` (U2-Net based, local):
-
-```bash
-python3 -m pip install "rembg[cli]"
-rembg i input.png output/cutout.png
-```
-
-Prefer the chroma-key pipeline when you control the generation prompt — it is deterministic and dependency-light. Reach for `rembg` when keying fails or the source image already exists.
+Inspect the image over light and dark backgrounds: the subject must remain visible, with preserved fine edges, no halos, and no unintended holes. If the output is opaque, fails these checks, or the tool cannot produce transparency, stop and report the unmet requirement. Do not remove the background locally or switch generation providers.

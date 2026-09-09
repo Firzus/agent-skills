@@ -1,48 +1,24 @@
-# Prompting gpt-image-2
+# Prompting Images 2.5
 
-Shared prompt guidance for both `generate` and `edit`. `gpt-image-2` follows instructions closely — a structured, explicit spec outperforms a vague sentence.
+## Write the prompt
 
-## Prompt schema
+Start with one to three clear sentences when sufficient. Preserve a specific user prompt; add only details needed to make a vague request actionable, without inventing brands, characters, or requirements. Use labeled sections only when they make a complex request easier to follow.
 
-Reformat the user's request into a labeled spec. Use only the lines that help; skip empty ones.
+Describe the intended use, subject and action, setting, composition, and style. Include lighting, materials, colors, or framing only when they affect success. Prefer visible details such as light from a left-hand window over vague praise such as beautiful lighting.
 
-```text
-Use case: <taxonomy slug>
-Asset type: <where the asset will be used>
-Primary request: <user's main prompt>
-Input images: <Image 1: role; Image 2: role> (edits only)
-Scene/backdrop: <environment>
-Subject: <main subject>
-Style/medium: <photo / illustration / 3D / etc>
-Composition/framing: <wide / close / top-down; placement>
-Lighting/mood: <lighting + mood>
-Color palette: <palette notes>
-Text (verbatim): "<exact text>"
-Constraints: <must keep / must avoid>
-Avoid: <negative constraints>
-```
+For people, specify the pose or action when important. Camera terminology describes a desired appearance, not a guaranteed physical simulation.
 
-`Scene/backdrop` is the visual setting inside the prompt. For transparent cutouts, set it to a solid chroma color per [transparency.md](./transparency.md).
+## Text and references
 
-## Specificity policy
+- Put exact text in quotation marks, preserving capitalization. Specify placement and typography; spell uncommon names letter by letter when useful. Review every word in the output, especially in dense layouts.
+- Identify reference images by order and role: edit target, style, layout, or inserted content. Explain spatial relationships when compositing.
+- State what must change and what must remain fixed. Reuse the previous output for a targeted edit, repeat invariants, and inspect each result; prompting does not guarantee pixel-identical preservation.
+- For transparent cutouts, follow [transparency.md](./transparency.md).
 
-- If the user's prompt is already specific, normalize it into the schema without adding creative requirements.
-- If it is generic, add only tasteful augmentation that materially improves the result: composition hints, polish level, intended use, reasonable scene concreteness.
-- Never add: extra characters or objects not implied by the request, brand names, slogans, palettes, or narrative beats the user did not ask for.
+## Examples
 
-## Use-case taxonomy
+Generate: "Create a wide 16:9 product photograph of a ceramic coffee mug for a landing-page hero. Use soft studio light from the left and a minimal background, with no text or logos."
 
-Generate: `photorealistic-natural`, `product-mockup`, `ui-mockup`, `infographic-diagram`, `logo-brand`, `illustration-story`, `stylized-concept`, `historical-scene`.
+Edit: "Replace only the background of Image 1 with a warm sunset gradient. Keep the product, its edges, position, and crop unchanged."
 
-Edit: `text-localization`, `identity-preserve`, `precise-object-edit`, `lighting-weather`, `style-transfer`, `compositing`, `sketch-to-render`, `background-extraction` (via the chroma-key pipeline in [transparency.md](./transparency.md)).
-
-## Best practices
-
-- Structure the prompt scene/backdrop → subject → details → constraints.
-- State the intended use (ad, UI mock, infographic, game asset) to set polish level.
-- Use camera and composition language for photorealism (lens, angle, depth of field).
-- Quote exact text verbatim and specify typography and placement; `gpt-image-2` renders text well when told precisely what to write. For tricky words, spell them letter by letter.
-- For multi-image edits, reference inputs by index ("Image 1 is the edit target; Image 2 provides the style").
-- For edits, list invariants explicitly (`change only X; keep Y unchanged`).
-
-Filled-in examples of the schema live in the "Driving Codex" section of [SKILL.md](../SKILL.md).
+Sources: [Codex image prompting](https://learn.chatgpt.com/docs/image-generation#write-effective-image-prompts), [Images 2.5 prompting](https://developers.openai.com/api/docs/guides/image-prompting?model=gpt-image-2.5#prompting-fundamentals).
