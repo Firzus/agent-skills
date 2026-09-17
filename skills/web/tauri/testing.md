@@ -1,117 +1,80 @@
-# Testing Tauri Apps
+# Validate Tauri Changes
 
-Use **layered checks**. A passing frontend test does not prove the Tauri shell
-works, and a compiling Rust backend does not prove the webview can invoke it.
+Read after implementation or when asked to test an application. Select checks
+by the changed boundary; use existing project scripts, target selection, and
+Cargo features instead of imposing a new test setup.
 
-Read this file when validating a fix; report each layer with a command-or-skip
-reason.
+## Select the layers
 
-## Pick Commands From The Project
+| Changed behavior | Focused validation |
+| --- | --- |
+| Frontend rendering or state | Existing frontend tests/build; actual WebView check for platform-sensitive behavior. |
+| Rust logic or IPC contract | Cargo check, nearest logic tests, caller/error-shape checks, real IPC exercise when available. |
+| Plugin, capability, or window behavior | Effective permission review and the affected action in the actual application. |
+| Mobile or platform-gated code | Existing checks for the affected target; desktop success is not mobile evidence. |
+| Assets, sidecars, updater, or packaging | Existing bundle/release checks and packaged behavior where available. |
+| Documentation only | Links, examples, and consistency; no app launch required. |
 
-Read lockfiles, `package.json`, `src-tauri/tauri.conf.json`,
-`src-tauri/Cargo.toml`, and local docs before running checks. Use the command
-runner and scripts already present in the project for frontend and Rust layers.
-For CDP attach on the shell, see [debugging.md](debugging.md).
+For conventional layouts, a narrow Rust compile check is:
 
-Common check categories:
-
-```bash
+```sh
 cargo check --manifest-path src-tauri/Cargo.toml
-cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets --all-features --locked -- -D warnings
-<existing-frontend-test-command>
-<existing-frontend-build-command>
-<existing-tauri-dev-command>
-<existing-tauri-build-command>
 ```
 
-Replace every placeholder with the actual project command, or skip that category
-with a note when the project has no matching command. If the project cannot use
-`--locked` or `--all-features`, adapt to the existing Cargo workflow and report
-the exact command that was run.
+Adapt the manifest path to the workspace. Run the project's required lint and
+test commands; preserve its lockfile and feature policy. Avoid enabling all
+features by default when they represent incompatible configurations.
 
-## Frontend Layer
+## Frontend and Rust
 
-Use normal web tooling for frontend-only bugs:
+Use frontend tests for UI logic and error handling. Mocked invokes can verify
+caller expectations, but cannot establish that registration or capabilities
+work in Tauri.
 
-- Run the configured frontend dev server or test command.
-- Open `build.devUrl` in a normal browser for fast console/network inspection.
-- Use the `agent-browser` skill, Chrome DevTools, or framework tests for DOM and routing issues.
-- Only blame Tauri after the same path works in a browser and fails in the shell.
+Test pure Rust logic without a WebView where the existing structure permits.
+For a changed command, cover the intended result and a meaningful failure,
+and check serialization against the existing frontend contract. Keep the
+command wrapper responsible for IPC and state access rather than moving
+business logic into an untestable runtime boundary.
 
-## Rust Layer
+Done when relevant local checks pass, or failures are separated into
+change-caused failures and pre-existing or environment blockers.
 
-Use Rust checks for backend and command logic:
+## Actual application
 
-- Run `cargo check --manifest-path src-tauri/Cargo.toml` after command, state, or
-  plugin changes.
-- Run `cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets
-  --all-features --locked -- -D warnings` when compatible with the project.
-  Pay attention to Tauri-relevant lints such as `redundant_clone`,
-  `clone_on_copy`, `needless_collect`, and `large_enum_variant`.
-- Add Rust unit tests for pure logic that does not require a webview.
-- Keep command arguments and return types serializable so compile checks catch
-  IPC boundary mistakes early.
-- Exercise command error paths. A command returning `Result<T, AppError>` should
-  have tests for expected failures in the pure helper layer, and the error text
-  or tagged shape should be stable enough for the frontend to handle.
-- Keep production command paths on `Result`. In tests, prefer assertions that
-  show the unexpected error, such as
-  `assert!(result.is_ok(), "unexpected error: {result:?}")`.
+Use [Diagnosis](debugging.md) for session preparation, tool selection,
+observation/action verification, and cleanup.
 
-Keep tests close to the code they explain. Use descriptive names for backend
-logic under `src-tauri`, and split independent behaviors into separate tests:
+Exercise the affected path in the intended instance and WebView. Check its
+expected application result, not just the presence of a screenshot or an IPC
+record. For a changed permission boundary, also exercise a representative
+denied operation or target without broadening access to make the test pass.
 
-```rust
-#[cfg(test)]
-mod parse_settings {
-    use super::*;
+If agent-kit is missing, use the available runtime evidence and report the
+remaining gap. Do not require MCP installation to complete frontend or Rust
+checks, or count those checks as runtime verification.
 
-    #[test]
-    fn returns_error_when_json_is_invalid() {
-        let error = parse_settings("{").unwrap_err();
+Done when the changed runtime behavior is observed, or explicitly unverified
+with the missing evidence identified.
 
-        assert_eq!(error.to_string(), "invalid settings JSON");
-    }
-}
-```
+## Bundles and release behavior
 
-For command functions, prefer extracting pure helpers that accept borrowed
-inputs (`&str`, `&[T]`, `&Path`) and can be tested without a webview. Leave the
-`#[tauri::command]` wrapper focused on deserializing owned IPC inputs, retrieving
-state, and converting errors into the serialized IPC shape.
+When packaging changes, verify the configured frontend build output matches
+`build.frontendDist`, and that required assets and target-specific sidecars
+are included. Use the project's existing bundle command and signing process.
+[Sidecars](https://v2.tauri.app/develop/sidecar/)
 
-## Tauri Shell Layer
+For updater changes, check HTTPS production endpoints and signed artifacts
+through the existing release workflow. Keep credentials outside the repository.
+[Updater](https://v2.tauri.app/plugin/updater/)
 
-Use `tauri dev` or the project's wrapper when behavior depends on the webview,
-capabilities, plugins, windows, sidecars, or updater setup.
+A working development instance does not establish packaged behavior.
+Agent-kit diagnostics are not a release-build test mechanism. Report a
+packaged launch or update check as untested when it was not performed.
 
-For shell checks:
+## Report
 
-1. Capture stdout/stderr.
-2. Verify frontend logs or DevTools when available.
-3. Attach to shell CDP (`agent-browser` skill) only when configured; see
-   [debugging.md](debugging.md).
-4. Confirm plugin permissions with [permissions.md](permissions.md).
-5. Stop any dev server or spawned app process before ending the task.
-
-## Release And Bundle Checks
-
-When changes affect packaging, updater, icons, sidecars, or `frontendDist`, run a
-bundle-oriented check if the project supports it. Verify:
-
-- The frontend build output matches `build.frontendDist`.
-- `bundle.externalBin` includes required sidecars for each target.
-- Updater endpoints are HTTPS for production.
-- Signing keys and generated artifacts are handled by the project's existing
-  release process, not committed into the repo.
-
-## Reporting
-
-State checks by layer:
-
-- Frontend: command or browser evidence.
-- Rust: `cargo check` or Rust test evidence.
-- Shell: Tauri run/build evidence, logs, DevTools, CDP attach, or
-  fallback instrumentation.
-
-If a layer was not run, say why.
+For each relevant layer, record the command or runtime observation, result,
+and target. Mark skipped layers with a reason. Name any unsupported platform,
+unavailable instance, missing instrumentation, or untested bundle behavior
+that limits the conclusion.

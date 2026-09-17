@@ -1,204 +1,122 @@
-# Automated Tauri Debugging
+# Diagnose a Tauri Application
 
-Climb the **evidence ladder** for repeatable desktop investigation: process and
-dev-server logs first, then WebView DevTools, then a CDP attach on the shell
-(Windows/WebView2), then fallback instrumentation. Tauri has no
-portable CDP guarantee across platforms.
+Read before launching or interacting with a runtime session. Prefer
+tauri-agent-kit for supported Windows development builds; distinguish
+frontend behavior, Rust behavior, and native window behavior.
 
-Read this file before launching a debug session.
+## Prepare the session
 
-## Debug Strategy
+1. Identify the normal launch command, active configuration, expected app
+   process, and the symptom to reproduce. Record existing app and dev-server
+   processes before starting anything.
+2. If a frontend dev URL is configured, check whether it is occupied. The
+   [dev URL helper](scripts/check-dev-url.py) accepts that URL as its argument;
+   run it by absolute path from another repository. An occupied port alone
+   does not establish process ownership or a stale server.
+3. Reuse a suitable existing session. If launch or restart is needed, preserve
+   the project's launch and elevation rules, capture stdout/stderr, and track
+   only the processes started for this task.
+4. Discover available MCP tools. For missing tools, compatibility questions,
+   or connection failures, read [Agent kit integration](agent-kit.md). If
+   unavailable, continue with the fallback below.
 
-Start every Tauri desktop investigation on the lowest rung that already exposes
-evidence, then climb only when the platform and launch command make the next
-rung observable.
+Done when the intended process and reproduction are identified and new
+processes can be distinguished from pre-existing ones.
 
-1. Capture the Tauri process stdout/stderr and frontend dev server output.
-2. Open WebView DevTools when the debug build exposes them.
-3. On Windows, when automated webview inspection is useful, relaunch with CDP
-   and attach a CDP client — the `agent-browser` skill (or `playwright-cli`) —
-   to the Tauri WebView (not a separate Chrome tab).
-4. If attach fails, continue with logs, debug-only commands, OS/DevTools
-   screenshots, and event traces.
+## Observe, act, verify
 
-## Platform Matrix
+Read the available tool schemas for exact arguments and modes. The
+[upstream workflow](https://github.com/Firzus/tauri-agent-kit#workflow) is the
+baseline, not a substitute for the installed version's contract.
 
-| Platform | Webview | Best first evidence | Automation notes |
-| --- | --- | --- | --- |
-| Windows | WebView2 | stdout/stderr, WebView DevTools, plugin logs | CDP via `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`, then attach with the `agent-browser` skill (or `playwright-cli`). |
-| macOS | WKWebView | stdout/stderr, Safari/WebKit inspection, plugin logs | CDP unreliable. Prefer DevTools and instrumentation. |
-| Linux | WebKitGTK | stdout/stderr, WebKit inspector when enabled, plugin logs | CDP is not a portable path. Use logs and app instrumentation. |
+1. Use `list_instances` to select the process and instance UUID. If several
+   candidates remain plausible, resolve their identity before acting.
+2. Use `list_targets` to select the required `webviewId` or `windowId`.
+   Bind actions to returned identifiers, not titles. Rediscover targets after
+   closing or opening windows; a restarted process needs a new instance.
+3. Use `diagnose` to distinguish native visibility and Rust responsiveness
+   from JavaScript readiness. Partial readiness is evidence, not permission
+   to blindly dispatch actions.
+4. Take a `snapshot` and choose a current element reference. Define the expected
+   result before performing one relevant action.
+5. Take a fresh observation and compare it with that expected result. Use a
+   `screenshot` when pixels matter and the existing application state or
+   logs when the expected result is not visual.
 
-## Baseline Capture
+Done when the reproduction has a recorded before/after result on the intended
+target, or a specific inspection limitation is recorded.
 
-1. Read `src-tauri/tauri.conf.json`:
-   - `build.beforeDevCommand`
-   - `build.devUrl`
-   - `app.windows[*].label`
-   - `app.security.capabilities`
-2. Read lockfiles, `package.json`, `src-tauri/tauri.conf.json`, and local docs
-   to identify the launch command the project already uses.
-3. Check whether `build.devUrl` is already occupied before launching:
+### Reference and action failures
 
-```bash
-python skills/web/tauri/scripts/check-dev-url.py http://localhost:3000
-```
+- A new snapshot invalidates older references. Reobserve after navigation or
+  relevant element changes; a stale reference is a request for new evidence,
+  not a reason to guess coordinates.
+- After timeout or cancellation, an action may already have executed. Observe
+  the resulting state before deciding the next step; never automatically
+  repeat an uncertain write.
+- Text entry and submission are separate actions. Read the tool's text and key
+  semantics rather than assuming typing submits a form.
+- Use the tool's WebView mode for document interactions. When testing Windows
+  input behavior, explicitly select native mode where supported, reserve the
+  desktop, and confirm the intended foreground window. On occlusion, focus,
+  or integrity rejection, inspect the cause; do not bypass checks or elevate
+  automatically. A WebView-mode success does not validate click-through.
+  [Native input boundaries](https://github.com/Firzus/tauri-agent-kit/blob/main/docs/security.md)
 
-From another repository, run the script by absolute path and replace the URL with
-the project's configured `build.devUrl`.
+## Choose evidence that proves the claim
 
-4. Start the app through that existing launch command.
-5. Capture stdout/stderr from the Tauri process. In dev, this usually includes
-   Rust `println!`, `log` output, plugin logs, frontend build output, and panic
-   messages.
-6. If `tauri-plugin-log` is installed, inspect its targets in `lib.rs`. Common
-   targets are stdout, webview, and a folder under the app data directory.
+| Evidence | What it establishes | Limit |
+| --- | --- | --- |
+| Snapshot | Exposed document controls and text | Top-level document coverage; not a complete view of frames or shadow trees. |
+| Screenshot | WebView viewport pixels | Not native decorations or final desktop composition. |
+| Diagnose | Native and bounded document readiness | Not completion of an application operation. |
+| Logs and IPC history | Reported activity and outcomes | Bounded, instrumented metadata; not a full payload trace or command registry. |
+| Application result | The requested state transition | Check the actual result, not only that an action was dispatched. |
 
-## DevTools
+Use `get_logs` and `get_ipc_calls` to correlate the target and reproduction.
+Follow `nextCursor` for further pages, not `latestCursor`. Missing console
+values or IPC payloads are intentional; inspect existing redacted app logs
+when details are necessary. Read [integration](agent-kit.md) before adding
+instrumentation or considering advanced tools.
+[Diagnostic limits](https://github.com/Firzus/tauri-agent-kit/blob/main/docs/security.md)
 
-In development builds, first try normal WebView DevTools:
+## Without agent-kit
 
-- Windows/Linux: `Ctrl+Shift+I` or context menu when enabled.
-- macOS: `Cmd+Option+I` when the webview allows inspection.
-- Code path: check for `window.open_devtools()` or `WebviewWindow::open_devtools`
-  in debug-only setup if the project already uses it.
+Offer integration once, then use the evidence already available. On macOS,
+Linux, mobile, or release builds, use the project's supported platform tools
+rather than claiming MCP support.
 
-If the app disables browser accelerator keys, check whether debug builds keep
-DevTools allowed. For example, apps using `tauri-plugin-prevent-default` may
-need to exclude `DEV_TOOLS` from blocked flags during `debug_assertions`.
+- Capture Rust process and frontend server output, plus configured plugin logs.
+- Use the platform WebView inspector or existing app instrumentation.
+- Reproduce frontend-only behavior in a normal browser if useful. That browser
+  lacks the real Tauri IPC environment; keep its conclusions frontend-only.
+- For native composition or input behavior, use approved OS inspection or
+  request a manual check when the available tools cannot observe it.
 
-## CDP Attach On The Tauri Shell (Windows)
+Add debug-only instrumentation only when necessary and authorized. Keep it
+scoped to the question, redact sensitive values, and do not expose production
+diagnostic commands just to work around missing tools.
 
-Install, sessions, and the command surface belong to the CDP client's own
-skill — `agent-browser` (preferred) or `playwright-cli` — this file only
-covers the Tauri seam: exposing CDP and proving the attach reached the real
-shell.
+## Symptom routing
 
-Relaunch the project's existing Tauri command with WebView2 remote debugging:
-
-```bash
-WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS="--remote-debugging-port=9222" <existing-launch-command>
-```
-
-Then attach to the CDP endpoint and drive the session, e.g.:
-
-```bash
-agent-browser --cdp 9222 get url        # must match build.devUrl
-agent-browser --cdp 9222 snapshot -i
-```
-
-On WSL the endpoint lives on the Windows loopback — run the CDP client
-Windows-side.
-
-Claim shell automation only when attach succeeds and the page URL/title match
-the desktop app (`build.devUrl` and the window title). A Chrome tab opened at
-`build.devUrl` is frontend-only: it has no Tauri IPC bridge.
-
-If attach fails, optionally run `scripts/probe-cdp.py` to separate "no CDP
-endpoint" from "CLI cannot attach". Then fall back to instrumentation below.
-
-### IPC Proof
-
-A DOM change alone is not proof that Rust ran. Prefer, in order:
-
-1. Trigger UI that calls IPC, then correlate stdout / `tauri-plugin-log`.
-2. Evaluate a read-only invoke from the page via the public bridge when
-   exposed, e.g.
-   `window.__TAURI__.core.invoke('…')` (or the project's typed bindings if
-   reachable from the page).
-3. Only if the public bridge is unavailable, use
-   `window.__TAURI_INTERNALS__.invoke('…')` for a safe read-only command from
-   the project, and treat that as an agent probe — not app code to ship.
-4. If invoke from the page is blocked, add a `#[cfg(debug_assertions)]` debug
-   command.
-
-Assert the returned value is a real Rust-side result (path, list, typed
-payload), not only a changed DOM property. The same rule binds UI interaction
-through the attached session: verify with visible UI, logs, or an invoke
-result — not a DOM property alone.
-
-## Frontend-Only Checks
-
-For UI that does not need IPC, reproduce `build.devUrl` in a normal browser
-(the `agent-browser` skill or Chrome DevTools), then confirm the same path in
-the Tauri shell with logs or a shell attach session.
-
-## Fallback Instrumentation
-
-When CDP attach is unavailable:
-
-- Use `tauri-plugin-log` targets (stdout, webview, file). Keep ad hoc agent logs
-  under `.cursor/`.
-- Forward critical frontend events through a debug-only command or the logging
-  plugin.
-- Add debug-only commands behind `#[cfg(debug_assertions)]` for state, routes,
-  feature flags, and paths; register them in the same gated handler context.
-- Emit structured events for long-running work.
-- Prefer OS or DevTools screenshots when visual state matters but shell CDP is
-  down.
-
-Example debug-only command:
-
-```rust
-#[cfg(debug_assertions)]
-#[tauri::command]
-fn debug_snapshot(state: tauri::State<'_, AppState>) -> Result<DebugSnapshot, AppError> {
-    Ok(state.snapshot())
-}
-```
-
-## Failure Playbooks
-
-### White Screen
-
-1. Confirm `build.beforeDevCommand` actually starts the frontend server.
-2. Confirm `build.devUrl` matches the server port and protocol.
-3. Open the same URL in a normal browser and inspect console/network errors.
-4. Check Tauri stdout/stderr for CSP, asset, panic, or plugin permission errors.
-5. For production builds, confirm `build.frontendDist` exists after the frontend
-   build.
-
-### Dev Server Already Running
-
-1. Treat an occupied `build.devUrl` as a stale-process check, not an app defect.
-2. Identify the owning process and command line before killing anything.
-3. Stop only processes that clearly belong to the current app or a stale debug
-   session.
-4. Retry the normal launch command and confirm the frontend server and Tauri
-   process both start.
-5. Watch for partial launches: some failures in `beforeDevCommand` can still
-   leave the desktop executable running and must be cleaned up.
-
-### Command Not Found
-
-1. Confirm the frontend invoke name matches the Rust command name.
-2. Confirm the command is included in `tauri::generate_handler![...]`.
-3. If the project uses `tauri-specta` or another wrapper, verify the wrapper
-   generated and installed the invoke handler.
-
-### Permission Denied
-
-1. Confirm the Rust plugin is registered in `lib.rs`.
-2. Confirm the capability contains the exact plugin permission.
-3. Confirm the capability identifier is listed in `tauri.conf.json`.
-4. Confirm the capability `windows` list includes the active window label.
-
-### DevTools Or CDP Unavailable
-
-1. Treat this as an evidence limitation, not a blocker.
-2. Use stdout/stderr, `tauri-plugin-log`, debug-only commands, screenshots, and
-   frontend reproduction at `build.devUrl`.
-3. State that shell CDP was attempted only if a CDP attach was run
-   (or `probe-cdp.py` / an HTTP `/json/list` result was observed).
+| Symptom | Next evidence |
+| --- | --- |
+| Blank screen | Frontend server output, configured dev URL or built assets, CSP errors, then document readiness. |
+| Command not found | Frontend name and casing, generated bindings, existing invoke handler registration. |
+| Permission denied | [Effective capability and operation scope](permissions.md). |
+| Rust responds but JavaScript does not | Partial readiness, frontend errors, blocked work; no repeated writes. |
+| No MCP instance | [Connection prerequisites](agent-kit.md#establish-a-connection). |
+| Launch fails on an occupied port | Owning process and command line; do not stop a process based only on the port. |
 
 ## Cleanup
 
-Before ending the task:
+Stop only app processes, dev servers, and watchers created for this session,
+including identified children left by partial launches. Preserve pre-existing
+sessions and restore any temporary environment changes made for this task.
 
-- Detach any attached CDP session — detach leaves the app running.
-- Stop frontend dev servers, `tauri dev`, watchers, and any spawned app
-  executable — including orphans after partial launch failures.
-- Remove temporary `.cursor/` screenshots and browser-CLI session artifacts
-  when they are no longer useful.
-- State which evidence source was used: Tauri stdout, frontend logs, plugin log
-  files, DevTools, CDP attach on the shell, or fallback instrumentation.
+Preview removal of temporary artifacts; remove only task-owned files that are
+no longer needed. Retain useful evidence without secrets. Leave stale
+manifests belonging to other sessions alone.
+
+Done when task-owned resources are accounted for and the report names the
+target, observed result, evidence source, and any remaining uncertainty.

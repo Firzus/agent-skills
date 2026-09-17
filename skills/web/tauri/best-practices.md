@@ -1,232 +1,87 @@
-# Tauri v2 Best Practices
+# Tauri Development
 
-Patterns for **owned IPC**, state, events, channels, windows, and long work.
-Read this file when adding or changing commands, invoke calls, or shared state.
+Read when changing the Rust/frontend boundary, shared state, events, windows,
+or platform entry points.
 
-## Async Commands
+## Commands and IPC
 
-Use owned parameters in async commands:
+Trace the frontend caller through its existing bindings to the Rust handler.
+Keep typed wrappers and generated bindings rather than introducing a second
+invoke path.
 
-```rust
-#[tauri::command]
-async fn load_profile(user_id: String) -> Result<Profile, AppError> {
-    profile_service::load(user_id).await
-}
-```
+- Import v2 invoke from `@tauri-apps/api/core`. Match the registered command
+  name and argument casing; camelCase is the default unless the command
+  explicitly changes it.
+- Deserialize command inputs and serialize successful results and errors.
+  Prefer owned input values for async commands, then borrow inside helpers.
+  Borrowed async inputs are not universally invalid; preserve working
+  signatures supported by the project's Tauri version.
+- Keep errors in the application's existing IPC shape. Return recoverable
+  failures through `Result`, not panics or raw internal diagnostics.
+- Extend the existing invoke handler; a second `invoke_handler` registration
+  replaces the first. Commands in separate modules need appropriate visibility;
+  commands at the library root should not be made public automatically.
 
-Borrowed command inputs fail in async handlers (`user_id: &str` is invalid).
-At the IPC boundary, owned values are required because Tauri deserializes
-arguments and async commands may outlive the original call frame. After the
-boundary, borrow in plain Rust helpers:
+Verify exact signatures against
+[Calling Rust](https://v2.tauri.app/develop/calling-rust/) when changing a
+command or migrating its bindings.
 
-```rust
-#[tauri::command]
-async fn load_profile(user_id: String) -> Result<Profile, AppError> {
-    profile_service::load_profile(&user_id).await
-}
+Done when the caller, registered handler, argument names, serialized result,
+and failure handling agree.
 
-mod profile_service {
-    pub async fn load_profile(user_id: &str) -> Result<Profile, AppError> {
-        repository::load_profile(user_id).await.map_err(AppError::from)
-    }
-}
-```
+## State and long-running work
 
-If a helper only reads a list or string, accept `&[T]` or `&str`; if it must
-keep data after the command returns or move it into a task, make ownership
-explicit in that helper.
+Match the managed type exactly: managing `Mutex<AppState>` and requesting
+`State<AppState>` are different contracts. Type mismatches can fail at runtime.
+Reuse the existing managed service rather than creating a duplicate singleton.
 
-## Frontend Invoke
+For short updates, use the project's synchronous lock and release its guard
+before awaiting. Clone or copy the needed data under the lock, then perform
+I/O outside it. Use an async mutex only when the access pattern requires
+holding a lock across an await. See
+[State Management](https://v2.tauri.app/develop/state-management/).
 
-Import from the v2 package path:
+Move blocking I/O or CPU-heavy work to a blocking worker such as
+`tauri::async_runtime::spawn_blocking`; wrapping blocking code in an async
+task does not make it nonblocking. Use async I/O for asynchronous work.
+When returning before work finishes, make completion, errors, progress, and
+cancellation observable through the existing application contract.
+[Runtime API](https://docs.rs/tauri/latest/tauri/async_runtime/index.html)
 
-```ts
-import { invoke } from '@tauri-apps/api/core';
+## Events and channels
 
-const profile = await invoke<Profile>('load_profile', { userId });
-```
+Use events for notifications and channels for ordered streaming to a caller.
+Target the intended window or WebView for local notifications instead of
+broadcasting private data. Release frontend event listeners when their owner
+unmounts. Event payloads and listeners need their own contract; events do not
+replace validated command inputs.
+[Calling the Frontend](https://v2.tauri.app/develop/calling-frontend/)
 
-The v1 path `@tauri-apps/api/tauri` is removed in v2. Frontend argument names
-are camelCase; Rust struct fields are usually snake_case.
+Done when the consumer receives the intended payload, subscriptions are
+released, and long-running failures cannot disappear after command success.
 
-## Serializable Errors
+## Windows and platform structure
 
-IPC errors must serialize. A common pattern is `thiserror` plus a custom
-`Serialize` implementation:
+Keep the desktop entry point thin and reuse the library's builder setup.
+Organize commands and services in existing modules rather than concentrating
+all runtime logic in `lib.rs`.
 
-```rust
-#[derive(Debug, thiserror::Error)]
-enum AppError {
-    #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
-    #[error("Not found: {0}")]
-    NotFound(String),
-}
+For mobile targets, preserve the library crate types and
+`#[cfg_attr(mobile, tauri::mobile_entry_point)]` entry point. Gate desktop-only
+dependencies, plugin registration, and calls together; gating only an import
+does not make a desktop feature mobile-compatible.
+[Project Structure](https://v2.tauri.app/start/project-structure/)
 
-impl serde::Serialize for AppError {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::ser::Serializer,
-    {
-        serializer.serialize_str(self.to_string().as_ref())
-    }
-}
-```
+Distinguish a native window from its WebViews. When retrieving a combined
+WebView window, use `Manager::get_webview_window` and handle a missing label.
+Select labels from project configuration or runtime creation code, not a
+display title. Propagate failed native operations when the task depends on
+them succeeding.
+[Manager API](https://docs.rs/tauri/latest/tauri/trait.Manager.html)
 
-For richer frontend handling, serialize a tagged shape instead of a string.
-Keep command errors typed internally, then convert them at the IPC boundary. Use
-`?`, `map_err`, and `ok_or_else` to preserve context without panicking:
+Use Tauri path resolvers for application directories rather than constructing
+OS-specific paths. Before exposing a plugin operation to the frontend, read
+[Permissions](permissions.md).
 
-```rust
-#[tauri::command]
-async fn read_config(app: tauri::AppHandle) -> Result<AppConfig, AppError> {
-    let path = app.path().app_config_dir()?;
-    let text = tokio::fs::read_to_string(path.join("config.json")).await?;
-    serde_json::from_str(&text).map_err(AppError::from)
-}
-```
-
-Return `Result` for missing files, invalid frontend input, plugin failures,
-poisoned locks, or unavailable windows — runtime failures the frontend can
-usually display or recover from.
-
-## State
-
-The type passed to `.manage(...)` must exactly match the type requested from
-`State<T>`:
-
-```rust
-struct AppState {
-    counter: u32,
-}
-
-#[tauri::command]
-fn increment(state: tauri::State<'_, std::sync::Mutex<AppState>>) -> Result<u32, String> {
-    let mut state = state.lock().map_err(|_| "state poisoned".to_string())?;
-    state.counter += 1;
-    Ok(state.counter)
-}
-
-tauri::Builder::default()
-    .manage(std::sync::Mutex::new(AppState { counter: 0 }));
-```
-
-Use async-aware locks for async-heavy state, and avoid holding a lock across
-slow I/O.
-
-State used from commands can be accessed concurrently. Prefer thread-safe
-primitives that match the access pattern:
-
-- `Mutex<T>` for short exclusive updates.
-- `RwLock<T>` for many reads and rare writes.
-- async-aware locks when the lock is used inside async-heavy code.
-- `Arc<T>` when long-running tasks need shared ownership.
-- `OnceLock<T>` or `LazyLock<T>` for process-wide immutable initialization.
-
-Use thread-safe types in managed Tauri state and spawned work (`Rc`/`RefCell`
-fight Tauri's async bounds). Copy or clone what you need under the lock, then
-release it before filesystem, network, compression, or child-process work:
-
-```rust
-#[tauri::command]
-async fn save_settings(
-    state: tauri::State<'_, std::sync::Mutex<AppState>>,
-) -> Result<(), AppError> {
-    let settings = {
-        let state = state.lock().map_err(|_| AppError::StatePoisoned)?;
-        state.settings.clone()
-    };
-
-    settings_store::save(&settings).await
-}
-```
-
-## Events And Channels
-
-Use events for notifications:
-
-```rust
-use tauri::Emitter;
-
-#[tauri::command]
-fn start_task(app: tauri::AppHandle) -> Result<(), String> {
-    app.emit("task-progress", 50).map_err(|error| error.to_string())
-}
-```
-
-Use channels for typed, high-frequency streams:
-
-```rust
-#[derive(Clone, serde::Serialize)]
-#[serde(tag = "event", content = "data")]
-enum DownloadEvent {
-    Progress { percent: u32 },
-    Complete { path: String },
-}
-
-#[tauri::command]
-async fn download(url: String, on_event: tauri::ipc::Channel<DownloadEvent>) -> Result<(), AppError> {
-    on_event.send(DownloadEvent::Progress { percent: 1 })?;
-    Ok(())
-}
-```
-
-## Windows And App Handles
-
-Use v2 window APIs:
-
-```rust
-use tauri::Manager;
-
-fn focus_main(app: &tauri::AppHandle) {
-    if let Some(window) = app.get_webview_window("main") {
-        let _ = window.unminimize();
-        let _ = window.show();
-        let _ = window.set_focus();
-    }
-}
-```
-
-Import `tauri::Manager` and use `get_webview_window` (the v1 `get_window` API
-is removed).
-
-## Paths
-
-Use Tauri path APIs and scoped filesystem permissions:
-
-```rust
-let data_dir = app.path().app_local_data_dir()?;
-```
-
-When the frontend accesses files, grant the smallest matching fs scope in
-capabilities rather than widening access globally.
-
-## Long Work
-
-Run slow filesystem, network, compression, or child-process work with async I/O
-or `tauri::async_runtime::spawn`, then report progress through events or
-channels.
-
-When spawning work, move only the data the task needs. Values captured by the
-task generally need to be owned and satisfy `Send + 'static`; shared services
-should usually be `Arc<T>` or managed Tauri state cloned through a handle:
-
-```rust
-use tauri::Emitter;
-
-#[tauri::command]
-fn start_indexing(app: tauri::AppHandle, root: String) -> Result<(), AppError> {
-    tauri::async_runtime::spawn(async move {
-        if let Err(error) = indexer::run(&root).await {
-            let _ = app.emit("indexer-error", error.to_string());
-        }
-    });
-
-    Ok(())
-}
-```
-
-Only add `#[expect(clippy::...)]` for Tauri-specific tradeoffs you understand,
-and include the reason. Prefer fixing lints such as `redundant_clone`,
-`clone_on_copy`, `needless_collect`, and `large_enum_variant` in command,
-event, and IPC payload code.
+Done when the affected targets retain their entry points and platform guards,
+and window operations account for missing or closed targets.
