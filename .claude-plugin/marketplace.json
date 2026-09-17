@@ -58,7 +58,8 @@
         "./skills/engineering/setup-codex",
         "./skills/engineering/setup-project",
         "./skills/engineering/slop-audit",
-        "./skills/engineering/skills"
+        "./skills/engineering/skills",
+        "./skills/engineering/youtube-transcript"
       ]
     }
   ]
