@@ -1,112 +1,56 @@
 ---
 name: tauri
 description: >-
-  Tauri v2+ Rust-backed desktop/mobile apps. Use when working in src-tauri,
-  tauri.conf.json, commands/IPC, capabilities, plugins, WebviewWindow,
-  updater/sidecars, mobile entry points, or evidence-first desktop debugging.
+  Tauri 2 development and validation. Use for src-tauri, Rust/frontend IPC,
+  capabilities and plugins, windows, mobile entry points, packaging,
+  or inspecting a running Tauri app with tauri-agent-kit.
 ---
 
 # Tauri
 
-Use this skill for Tauri v2+ apps with a web frontend and Rust backend. Prefer
-the project's existing conventions, then steer with four leading words:
-**owned IPC**, **capabilities-first**, **evidence ladder**, and **layered checks**.
+Work at the boundary between the web frontend, Rust, and the native application.
+Use the project's architecture and commands; load only the references needed
+for the task.
 
-## First Checks
+## 1. Identify the project
 
-1. Inspect `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`,
-   `src-tauri/src/lib.rs`, `src-tauri/src/main.rs`, and
-   `src-tauri/capabilities/*.json`.
-2. Identify the project's existing command runner and dev/build commands from
-   lockfiles, `package.json`, scripts, and `build.beforeDevCommand`.
-3. Note whether the app targets desktop only or mobile too. Mobile-compatible
-   apps need the `lib.rs` entry point shape and platform guards.
-4. If debugging a running app, read [debugging.md](debugging.md) before
-   launching anything.
+Inspect the Tauri configuration, Cargo manifest and lockfile, builder entry
+point, and frontend scripts. Account for workspace paths and platform-specific
+configuration instead of assuming every app has the default layout.
 
-Done when: every path in step 1 is accounted for, launch/test commands are
-identified (or stated absent from the project), and desktop-vs-mobile scope is
-stated.
+Identify the Tauri version, target platforms, existing invoke wrapper, and
+commands for the relevant development and validation work. Distinguish the
+host OS from the platforms the application ships on.
 
-## Choose The Workflow
+Done when the affected boundary, target platform, and existing commands are
+known, or their absence is explicit.
 
-Pick one branch. Complete its criterion before claiming the task done.
+## 2. Choose the work
 
-### Adding a Rust command
+| Task | Read before acting | Completion criterion |
+| --- | --- | --- |
+| Commands, state, events, windows, or mobile structure | [Development](best-practices.md) | Changed IPC contracts agree on both sides; platform-specific code remains scoped. |
+| Plugin integration or permission failures | [Permissions](permissions.md) | Registration, effective capability, target, and operation scope are accounted for. |
+| Inspecting or reproducing behavior in the application | [Diagnosis](debugging.md) | The intended instance is identified and evidence distinguishes observations from hypotheses. |
+| Installing, configuring, or troubleshooting the MCP connection | [Agent kit integration](agent-kit.md) | Compatibility and connection are verified, or the missing prerequisite is reported. |
+| Validating a change, including bundles | [Testing](testing.md) | Relevant layers have results; skipped layers have reasons. |
 
-Apply **owned IPC**: owned serializable command inputs/outputs, register the
-command in `generate_handler![...]` or the project's invoke wrapper, match
-frontend invoke names and argument casing.
+Tasks may cross boundaries: a plugin fix needs both permissions and validation.
+For an authorized v1 migration, consult the
+[official migration guide](https://v2.tauri.app/start/migrate/from-tauri-1/)
+and the development and permissions references. Account for changed imports,
+window APIs, and plugin permissions within the requested migration scope.
 
-Before editing `#[tauri::command]` handlers or frontend `invoke` calls, read
-[best-practices.md](best-practices.md) and apply its async, error, and state
-rules.
+Prefer tauri-agent-kit for supported Windows development sessions. Its
+availability is separate from Tauri's desktop/mobile support. If unavailable,
+offer integration and continue with existing evidence; do not install packages
+or migrate the application just to obtain diagnostics.
 
-For the surrounding Rust discipline — naming semantics, when to panic, error
-type choice, visibility, unsafe — read [code-standards.md](code-standards.md).
+## 3. Verify and report
 
-Done when: every new or changed command is registered through the project's
-handler, IPC types are owned and serializable at the boundary, frontend invoke
-name/casing match, and `cargo check --manifest-path src-tauri/Cargo.toml`
-succeeded — or the concrete blocker preventing that check is stated.
+For implementation work, apply [Testing](testing.md) to the changed boundary.
+For runtime sessions, complete [Diagnosis cleanup](debugging.md#cleanup).
 
-### Adding a plugin
-
-Apply **capabilities-first**: install and register both frontend and Rust
-packages, then grant the matching capability permission to the window that
-needs it, scoped narrowly.
-
-Before adding or calling a plugin API, read [permissions.md](permissions.md)
-and complete its diagnosis checklist.
-
-Done when: that checklist's six confirmation steps all pass (or the failing
-step is named with log evidence).
-
-### Debugging desktop behavior
-
-Apply the **evidence ladder** in [debugging.md](debugging.md) end to end,
-including cleanup.
-
-Done when: [debugging.md](debugging.md) Cleanup is complete and the evidence
-source used is named in the reply.
-
-### Testing or validating a fix
-
-Apply **layered checks** in [testing.md](testing.md).
-
-Done when: each layer (frontend, Rust, shell) has either a recorded
-command+result or a stated blocker for skipping it.
-
-### Migrating older code
-
-Before changing app behavior, account for v1 API imports
-(`@tauri-apps/api/core` instead of `@tauri-apps/api/tauri`), removed window
-APIs (`get_webview_window` / `WebviewWindow`), missing v2 capabilities, and
-plugin permission gaps. Use [best-practices.md](best-practices.md) and
-[permissions.md](permissions.md) for the replacement patterns.
-
-Done when: every v1 import, removed window API, and missing capability touched
-by the change is accounted for.
-
-## Core Structure
-
-- Keep `src-tauri/src/main.rs` thin: call the library entry point only.
-
-```rust
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-
-fn main() {
-    app_lib::run();
-}
-```
-
-- Put builder setup, commands, state, plugins, and runtime logic in
-  `src-tauri/src/lib.rs`.
-- Use `#[cfg_attr(mobile, tauri::mobile_entry_point)]` on `pub fn run()` in
-  `lib.rs`.
-- Keep `[lib]` in `Cargo.toml` with `crate-type = ["staticlib", "cdylib",
-  "rlib"]` when the app may build for mobile.
-- Use `#[cfg(desktop)]` / `#[cfg(mobile)]` for platform-only APIs (tray,
-  many window APIs, sidecars, shell, updater).
-- Keep `build.devUrl` aligned with `beforeDevCommand`, and `build.frontendDist`
-  aligned with `beforeBuildCommand`.
+Report the change or finding, checks performed, evidence source and target,
+and remaining uncertainty. A browser-only result, successful compilation, or
+dispatched UI action alone is not proof that the native application works.
