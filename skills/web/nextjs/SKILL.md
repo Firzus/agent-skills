@@ -4,7 +4,8 @@ description: >-
   Next.js 16+ App Router with React Server Components and TypeScript. Use when
   working in app/, layouts, pages, route handlers, proxy.ts, Server Actions,
   "use client"/"use server"/"use cache" boundaries, caching and revalidation,
-  typed routes, or view transitions.
+  typed routes, view transitions, Cache Components adoption, instant navigation
+  optimization, runtime verification, or Partial Prefetching adoption.
 ---
 
 # Next.js
@@ -13,9 +14,13 @@ Reference for Next.js 16+ App Router projects. Prefer the project's existing
 conventions, then steer with four leading words: **boundary**, **dynamic by
 default**, **pass-through**, and **generated types**.
 
-Verified against Next.js 16.3 docs. Where this skill and the installed version
-disagree, the installed version wins — read `node_modules/next/dist/docs/`,
-which ships version-accurate docs, or query the MCP server below.
+The adoption, optimization, and development-loop references target Next.js
+16.3+. Check their prerequisites before using them on a 16.x project; an
+upgrade is a separate change, not an implicit part of a runtime check.
+Prefer installed-version docs in `node_modules/next/dist/docs/` (bundled since
+16.2). Locate guides by filename because directory prefixes are numbered.
+For earlier versions, use the matching official upgrade or API documentation.
+Error pages under `/docs/messages/` must be read online.
 
 Branch-specific references, loaded on demand:
 
@@ -32,17 +37,19 @@ Branch-specific references, loaded on demand:
 
 ## First Checks
 
-1. Read `next.config.ts` for `cacheComponents`, `typedRoutes`, and
-   `experimental.*` flags. `cacheComponents` decides the whole caching branch.
+1. Locate `next.config.{js,ts,mjs,cjs}` and use its directory as the project
+   root. Read `cacheComponents`, `partialPrefetching`, `typedRoutes`, and
+   `experimental.*` flags. `cacheComponents` decides the caching branch.
 2. Get the exact version from the lockfile. Major-version drift makes most of
    this skill's specifics wrong.
 3. Locate the routing root (`app/` or `src/app/`), `proxy.ts`, and whether the
-   project still has a `middleware.ts` to migrate.
+   project still has a `middleware.ts` to migrate. If both app directories
+   exist, `app/` shadows `src/app/`; resolve the intended tree before migration.
 4. Find existing data-fetching, auth, and error-handling conventions before
    introducing new ones.
 
-Done when: the installed Next version is stated, `cacheComponents` is known to
-be on or off, and the routing root is located.
+Done when: the installed Next version is stated, the `cacheComponents` and
+`partialPrefetching` states are known, and the routing root is located.
 
 ## Reach For The MCP Server
 
@@ -51,7 +58,8 @@ the `next-devtools-mcp` package connects an agent to it. It reports real build,
 runtime and type errors (`get_errors`), dev logs (`get_logs`), the route table
 (`get_routes`), a page's rendering info (`get_page_metadata`), and maps a
 Server Action ID back to its source (`get_server_action_by_id`).
-`get_compilation_issues` and `compile_route` need Turbopack.
+Discover the current surface with `tools/list`; tools and prerequisites vary
+by version. `get_compilation_issues` needs Turbopack.
 
 Prefer it over guessing whenever a dev server is running: it answers from the
 running app rather than from this file. It is development-time only, and its
@@ -75,7 +83,21 @@ restart it if it was started before the config landed.
 
 ## Choose The Workflow
 
-Pick one branch. Complete its criterion before claiming the task done.
+Pick the requested branch; follow its prerequisite and verification pointers
+as needed. Complete its criterion before claiming the task done.
+
+### Adoption and runtime workflows
+
+| Task | Read before starting | Completion gate |
+| --- | --- | --- |
+| Enable `cacheComponents`, migrate blocking routes, or review `instant = false` | [cache-components-adoption.md](cache-components-adoption.md) | Requested adoption checkpoint verified; deferred routes distinguished from adopted routes |
+| Grow a static shell or make a navigation instant | [navigation-optimization.md](navigation-optimization.md) | Meaningful shell verified by a production-mode `instant()` regression test |
+| Verify edited app code while `next dev` is running | [dev-loop.md](dev-loop.md) | Framework and browser checks agree; missing checks explicitly reported |
+| Enable `partialPrefetching` or preserve existing full prefetches | [partial-prefetching.md](partial-prefetching.md) | Flag-off preservation baseline and unchanged final tests pass; development insights reviewed |
+
+These references synthesize the four official `vercel/next.js` skills at
+commit `3cf1f7418ff9e3ce0f54b4c3212964e421933237`. Each links its pinned source
+and the detailed recipes needed only on that branch.
 
 ### Adding or changing a component
 
@@ -98,12 +120,9 @@ instances.
 
 ### Fetching or caching data
 
-Apply **dynamic by default**: under `cacheComponents`, nothing is cached until
-`use cache` says so, and a cached scope may not read `cookies()`, `headers()`
-or `searchParams` anywhere in its call stack.
-
-Read [caching.md](caching.md) before adding `use cache`, `cacheLife`,
-`cacheTag`, or any revalidation call.
+Apply **dynamic by default**: make caching deliberate under `cacheComponents`.
+Read [caching.md](caching.md) before changing a cached scope, lifetime, tag, or
+revalidation call; it owns request-data boundaries and existing-cache compatibility.
 
 Done when: every cached scope's request-scoped inputs are read outside it and
 passed in as arguments, each `use cache` has a deliberate `cacheLife` profile
@@ -183,3 +202,5 @@ higher, where that parent is the smallest possible Client Component. See
   branch that uses it rather than at the top of the component.
 - Suspense boundaries exist where streaming is worth it.
 - The build passes with type checking on.
+- Runtime changes follow [dev-loop.md](dev-loop.md); navigation claims use the
+  production-mode checks in their workflow, not the build alone.

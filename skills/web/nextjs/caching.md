@@ -20,9 +20,14 @@ Two consequences to check first:
 
 - Cache Components requires the **Node.js runtime**. A route exporting
   `runtime = 'edge'` must migrate; that export is deprecated.
-- Route segment config is being retired here. `export const revalidate` gives
-  way to `cacheLife()` inside a cached scope, and `export const dynamic` is
-  deprecated.
+- With Cache Components enabled, segment exports `dynamic`, `revalidate`, and
+  `fetchCache` are incompatible, not merely deprecated. Translate their
+  behavior using the [migration guide](https://github.com/vercel/next.js/blob/3cf1f7418ff9e3ce0f54b4c3212964e421933237/docs/01-app/02-guides/migrating-to-cache-components.mdx)
+  before claiming adoption. `revalidate` moves to `cacheLife()` in a cached scope.
+
+Existing `fetch` caches and `unstable_cache` can remain during adoption;
+enabling the flag does not require rewriting them. For the migration sequence,
+read [cache-components-adoption.md](cache-components-adoption.md).
 
 ## `use cache`
 
@@ -69,7 +74,7 @@ The fix is always the same shape — read outside, pass in:
 export default async function Page() {
   const store = await cookies()
   const locale = store.get('locale')?.value ?? 'en'
-  return <Content locale={locale} />   // Content is cached, takes a plain string
+  return <Content locale={locale} />
 }
 ```
 
@@ -97,8 +102,9 @@ instances**. On serverless they typically do not survive between requests;
 build-time caching works normally. Configure `cacheHandlers` in
 `next.config.js` to change the storage.
 
-This matters when porting code: an `unstable_cache` call being replaced by
-`use cache` is losing cross-deployment persistence, quietly.
+Replacing `unstable_cache` is optional. When doing so, verify the storage
+change deliberately; even durable `use cache` storage can recompute values
+after a deployment.
 
 Related directives exist for the cases the default cannot serve:
 `'use cache: remote'` uses a platform-provided handler — a network roundtrip
@@ -120,6 +126,21 @@ just changed. For a webhook or a background refresh, `revalidateTag`.
 `refresh()` is the fourth, narrower tool: Server-Actions-only, it refreshes
 **uncached data only and does not touch the cache**. Use it for a live counter
 or metric sitting beside a cached shell.
+
+## Verify a cache change
+
+Run changed cached call paths under `next start`, with the real authentication
+and request context, as well as building them. Include authorized and denied
+access cases when a boundary moves; request-specific data must remain isolated
+between users. A streaming optimization must preserve authorization before
+protected reads and Server Actions.
+
+For every new or expanded mutable cache, populate it, perform a representative
+mutation, and confirm the next read follows the intended freshness contract.
+Reuse or extend applicable tests; where none cover this lifecycle, record a
+manual production-mode check and its expected and observed results. Check
+invalidation and read-your-writes independently from navigation readiness:
+an `instant()` pass does not establish cache correctness.
 
 ## Avoiding waterfalls
 

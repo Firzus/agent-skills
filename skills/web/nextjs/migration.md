@@ -41,13 +41,20 @@ opted into via `cacheComponents: true` and `use cache`. Full treatment in
 
 - `unstable_cacheLife` / `unstable_cacheTag` lost the prefix and import from
   `next/cache`. Codemod: `remove-unstable-prefix`.
-- `unstable_cache` is replaced by `use cache` — and loses cross-deployment
-  persistence in the process. That is a behaviour change, not a rename.
+- `unstable_cache` still works with Cache Components. Replacing it with
+  `use cache` is optional; review the storage implications in [caching.md](caching.md).
 - `revalidateTag` now **requires a cache profile as its second argument**.
-- `export const revalidate` gives way to `cacheLife()` inside a cached scope;
-  `export const dynamic` is deprecated.
+- With Cache Components enabled, `dynamic`, `revalidate`, and `fetchCache`
+  segment exports error. Translate their behavior before adopting the flag.
 - Cache Components requires the Node.js runtime; `runtime = 'edge'` is
   deprecated.
+
+For Next.js 16.3+ adoption, follow
+[cache-components-adoption.md](cache-components-adoption.md); upgrading the
+framework and completing route adoption are separate checkpoints.
+`experimental.dynamicIO` aborts startup. `experimental.useCache` remains a
+deprecated alias in the pinned adoption source; remove it when setting
+`cacheComponents` rather than treating it as an already-removed option.
 
 ## Turbopack is the default bundler
 
@@ -72,7 +79,7 @@ or accept the coercion.
 
 ## Removed outright
 
-- `experimental.dynamicIO`, `experimental.useCache`, `experimental.ppr`,
+- `experimental.dynamicIO`, `experimental.ppr`,
   `experimental_ppr` — PPR is the default behaviour under `cacheComponents`.
 - **AMP support**, all APIs and configs (`useAmp`, `export const config = { amp: true }`).
 - **`next lint`** — `next build` no longer runs linting. Use ESLint or Biome

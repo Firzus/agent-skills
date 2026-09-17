@@ -105,7 +105,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`greyboxing`](./skills/web/greyboxing) — Greyboxes a site's pages from `DESIGN.md`: per-page loop with prototype variants, motion theses, and a screenshot-verified review.
 - [`real-content`](./skills/web/real-content) — Replaces a greyboxed site's placeholders with real copy, imagery, and data, closed by a copy self-audit.
 - [`shaders`](./skills/web/shaders) — GPU-accelerated visual effects in React/Next.js with the `shaders` npm package.
-- [`nextjs`](./skills/web/nextjs) — Next.js 16+ App Router: server/client boundary, dynamic-by-default caching (`use cache`), Server Actions, generated route types, view transitions, and the 15 → 16 migration.
+- [`nextjs`](./skills/web/nextjs) — Next.js 16+ App Router: server/client boundaries, caching, Server Actions, generated route types, view transitions, and migration; Next.js 16.3+ workflows for Cache Components adoption, instant navigation, runtime verification, and Partial Prefetching.
 - [`swr`](./skills/web/swr) — SWR v2 data fetching for React/Next.js: cache keys, revalidation, mutations, pagination, and subscriptions.
 - [`tanstack-store`](./skills/web/tanstack-store) — Version-aware client state: immutable updates, derived stores, selectors, framework adapters, scoped SSR state, and legacy API migrations.
 - [`zod`](./skills/web/zod) — Version-aware schema validation: boundary parsing, coercion, refinements, errors, codecs, JSON Schema, and Zod migrations.
