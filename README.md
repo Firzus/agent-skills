@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 34 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
+`agent-skills` is a registry of 35 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -87,6 +87,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`setup-project`](./skills/engineering/setup-project) — Writes a project's `AGENTS.md` (overview, guardrails, project decisions), configures the repository, and installs the skills matching the stack.
 - [`setup-codex`](./skills/engineering/setup-codex) — Installs a Codex operating policy and its minimal user-level configuration with backups and idempotent updates.
 - [`skills`](./skills/engineering/skills) — Installs, updates, and authors Agent Skills with the `skills` CLI (`skills.sh`): sources, project vs global scope, symlink vs copy, discovery rules, debugging.
+- [`youtube-transcript`](./skills/engineering/youtube-transcript) — Extracts YouTube captions, routes audio transcription, and produces chapter-based learning reports with visual evidence, targeted review, and claim verification.
 - [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
 - [`canvas`](./skills/engineering/canvas) — Renders standalone analytical artifacts (reviews, audits, reports, dashboards) as self-contained HTML canvases opened beside the chat, in any agent environment.
 - [`improve-architecture`](./skills/engineering/improve-architecture) — Scans a codebase for deepening opportunities, presents them on a live canvas, then delegates each approved refactor to a bounded sub-agent with verified, tracked progress.
