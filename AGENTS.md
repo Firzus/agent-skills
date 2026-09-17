@@ -71,7 +71,7 @@ ls doc/*/overview.md
 python3 -c "import json,glob; listed={s for p in json.load(open('.claude-plugin/marketplace.json'))['plugins'] for s in p['skills']}; found={'./'+d.rstrip('/') for d in glob.glob('skills/*/*/')}; print('missing from manifest:', sorted(found-listed)); print('stale in manifest:', sorted(listed-found))"
 
 # Render-check a Markdown file locally (if pandoc installed)  (unverified)
-pandoc skills/web/vite-plus-best-practices/SKILL.md -t plain | head
+pandoc skills/web/vite-plus/SKILL.md -t plain | head
 ```
 
 Skill install / distribution commands are documented in `README.md` and run by end users — do not execute them from this repo:
