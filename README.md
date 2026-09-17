@@ -91,7 +91,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`canvas`](./skills/engineering/canvas) — Renders standalone analytical artifacts (reviews, audits, reports, dashboards) as self-contained HTML canvases opened beside the chat, in any agent environment.
 - [`improve-architecture`](./skills/engineering/improve-architecture) — Scans a codebase for deepening opportunities, presents them on a live canvas, then delegates each approved refactor to a bounded sub-agent with verified, tracked progress.
 - [`slop-audit`](./skills/engineering/slop-audit) — Audits a codebase for dead code and AI slop, clears every suspect against the legitimate reason it exists, and removes only what a verification ladder supports.
-- [`vite-plus-best-practices`](./skills/web/vite-plus-best-practices) — Best practices for Vite+ (`vp`): config, migrations, testing, monorepos.
+- [`vite-plus`](./skills/web/vite-plus) — Vite+ (`vp`): setup, migrations, checks, testing, packaging, and workspace tasks, validated with reproducible smoke tests.
 - [`tauri`](./skills/web/tauri) — Tauri 2 development, scoped permissions, desktop/mobile validation, and Windows runtime inspection with tauri-agent-kit.
 - [`chrome-devtools`](./skills/engineering/chrome-devtools) — Drives and inspects Chrome via the official chrome-devtools-mcp server: uid-snapshot interaction, performance traces with insights, network/console debugging, emulation.
 - [`dokploy-best-practices`](./skills/web/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
