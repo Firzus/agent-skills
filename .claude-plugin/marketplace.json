@@ -50,14 +50,18 @@
       "description": "Cross-cutting engineering skills \u2014 browser automation, code health, visualization.",
       "skills": [
         "./skills/engineering/canvas",
+        "./skills/engineering/deep-research",
         "./skills/engineering/gamification",
         "./skills/engineering/imagegen",
+        "./skills/engineering/implement",
         "./skills/engineering/improve-architecture",
+        "./skills/engineering/plan-project",
+        "./skills/engineering/prototype",
         "./skills/engineering/setup-codex",
-        "./skills/engineering/setup-project",
         "./skills/engineering/slop-audit",
         "./skills/engineering/skills",
         "./skills/engineering/video-report",
+        "./skills/engineering/work-tracking",
         "./skills/engineering/youtube-transcript"
       ]
     }
