@@ -38,10 +38,9 @@
     {
       "name": "game",
       "source": "./",
-      "description": "Unity development skills \u2014 engine workflow, Figma UI, and Magica Cloth 2.",
+      "description": "Unity development skills \u2014 engine workflow and Figma UI.",
       "skills": [
         "./skills/game/figma-to-unity",
-        "./skills/game/magica-cloth-2",
         "./skills/game/unity"
       ]
     },
