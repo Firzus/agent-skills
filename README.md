@@ -9,7 +9,7 @@
 
 ## Overview
 
-`agent-skills` is a registry of 39 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
+`agent-skills` is a registry of 38 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
@@ -85,7 +85,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`slop-audit`](./skills/engineering/slop-audit) — Audits a codebase for dead code and AI slop, clears every suspect against the legitimate reason it exists, and removes only what a verification ladder supports.
 - [`vite-plus`](./skills/web/vite-plus) — Vite+ (`vp`): setup, migrations, checks, testing, packaging, and workspace tasks, validated with reproducible smoke tests.
 - [`tauri`](./skills/web/tauri) — Tauri 2 development, scoped permissions, desktop/mobile validation, and Windows runtime inspection with tauri-agent-kit.
-- [`chrome-devtools`](./skills/engineering/chrome-devtools) — Drives and inspects Chrome via the official chrome-devtools-mcp server: uid-snapshot interaction, performance traces with insights, network/console debugging, emulation.
+- [`video-report`](./skills/engineering/video-report) — Records and verifies focused video evidence with FFmpeg after visual bug fixes or on request, across web pages, native applications, and games.
 - [`dokploy-best-practices`](./skills/web/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
 - [`web-assets-optimization`](./skills/web/web-assets-optimization) — Optimizes all web assets: images, video, GIF replacement, fonts, SVG, plus per-asset delivery strategy (LCP, lazy loading).
 - [`web-extension`](./skills/web/web-extension) — Builds, ports, tests, and packages WebExtensions for Chromium, Firefox, and Safari with explicit compatibility, permission, lifecycle, and store gates.
@@ -109,7 +109,6 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 - [`unity`](./skills/game/unity) — Routes each Unity need to one chosen tool, and keeps projects CoreCLR-ready.
 - [`figma-to-unity`](./skills/game/figma-to-unity) — Implements Figma designs as Unity UI Toolkit via the Figma MCP.
-- [`magica-cloth-2`](./skills/game/magica-cloth-2) — Code-first cloth/jiggle physics with Magica Cloth 2 in Unity via the Unity MCP.
 
 ## Documentary knowledge base
 

@@ -38,10 +38,9 @@
     {
       "name": "game",
       "source": "./",
-      "description": "Unity development skills \u2014 engine workflow, Figma UI, and Magica Cloth 2.",
+      "description": "Unity development skills \u2014 engine workflow and Figma UI.",
       "skills": [
         "./skills/game/figma-to-unity",
-        "./skills/game/magica-cloth-2",
         "./skills/game/unity"
       ]
     },
@@ -51,7 +50,6 @@
       "description": "Cross-cutting engineering skills \u2014 browser automation, code health, visualization.",
       "skills": [
         "./skills/engineering/canvas",
-        "./skills/engineering/chrome-devtools",
         "./skills/engineering/deep-research",
         "./skills/engineering/gamification",
         "./skills/engineering/imagegen",
@@ -62,6 +60,7 @@
         "./skills/engineering/setup-codex",
         "./skills/engineering/slop-audit",
         "./skills/engineering/skills",
+        "./skills/engineering/video-report",
         "./skills/engineering/work-tracking",
         "./skills/engineering/youtube-transcript"
       ]
