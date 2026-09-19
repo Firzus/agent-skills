@@ -77,7 +77,7 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 - [`work-tracking`](./skills/engineering/work-tracking) — Handles intake, work states, ownership, blockers, resumption, and feedback through the project's chosen record.
 - [`setup-codex`](./skills/engineering/setup-codex) — Installs the five workflow skills and the Codex operating policy from an approved checkout, with conflict checks, backups, and repeatable setup.
 - [`skills`](./skills/engineering/skills) — Installs, updates, and authors Agent Skills with the `skills` CLI (`skills.sh`): sources, project vs global scope, symlink vs copy, discovery rules, debugging.
-- [`deep-research`](./skills/engineering/deep-research) — Conducts scoped investigations with a reviewable plan, traceable evidence, reusable research dossiers, and proposed validation trials.
+- [`deep-research`](./skills/engineering/deep-research) — Delegates scoped investigations to a background subagent, with traceable evidence, reusable research dossiers, and main-agent verification; falls back to sequential research when delegation is unavailable.
 - [`youtube-transcript`](./skills/engineering/youtube-transcript) — Extracts YouTube captions, routes audio transcription, and produces chapter-based learning reports with visual evidence, targeted review, and claim verification.
 - [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
 - [`canvas`](./skills/engineering/canvas) — Renders standalone analytical artifacts (reviews, audits, reports, dashboards) as self-contained HTML canvases opened beside the chat, in any agent environment.
