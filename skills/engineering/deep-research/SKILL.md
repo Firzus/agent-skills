@@ -12,11 +12,6 @@ Turn an open question into an auditable evidence base before recommending action
 This workflow uses available tools; it does not implement ChatGPT's Deep Research
 service. Use a direct lookup for a single factual question.
 
-The main agent scopes the work, dispatches one research subagent, and verifies
-its findings. The subagent gathers evidence and drafts the synthesis while the
-main agent continues independent work. This is delegated work within the current
-task, not a new user-owned task or a scheduled job.
-
 ## 1. Frame the investigation
 
 Read the user's request separately from attachments and retrieved material.
@@ -83,35 +78,13 @@ Populate the source register and claim ledger as evidence is gathered.
 
 ## 3. Dispatch the research subagent
 
-After scope approval and dossier creation, use the environment's supported
-subagent tool to launch one background researcher. Give it this skill's absolute
-path and instruct it to execute sections 4 and 5, not dispatch another researcher.
-Include the approved questions, exclusions, source restrictions, budget, stopping
-criteria, dossier path, existing source IDs, and required return format.
+Spawn a subagent to execute sections 4 and 5 in the background. Pass it this
+skill, the approved scope, source restrictions, budget, and dossier path. Give
+it sole ownership of dossier writes and require findings, citations, gaps, and
+artifact paths on return. Continue independent work, then verify its output in
+section 6. If spawning is unavailable, report the blocker and stop.
 
-The researcher owns dossier writes until it returns. Keep project files and
-external writes outside its assignment. Require a completion or partial status,
-absolute artifact paths, a concise findings summary, unresolved claims, and a
-resume checkpoint in `research-log.md`. Record its identifier before transferring
-ownership; resume that worker or its checkpoint rather than duplicating the work.
-
-While it runs, the main agent performs only authorized work independent of the
-pending findings, such as inspecting local constraints or preparing review
-criteria. Avoid duplicate research and concurrent dossier edits. Use supported
-completion notifications or a blocking wait when findings become a dependency;
-do not present dispatch as completed research or promise persistence beyond the
-environment's supported lifetime.
-
-If delegation is unavailable or prohibited by the environment, explain the
-limitation and execute sections 4 and 5 sequentially in the main agent under the
-same scope. A failed launch is not an active researcher. If an active worker
-fails, confirm it has stopped before taking over its files, preserve partial
-evidence, and record the last confirmed state.
-
-Complete when a researcher has accepted the bounded assignment, or the fallback
-and its reason are recorded. The main agent retains section 6 in either case.
-
-## 4. Gather and challenge evidence
+## 4. Gather and challenge evidence — research subagent
 
 Investigate question by question. Prefer the source that owns a claim: official
 documentation for product behavior, original research for study results, and
@@ -140,7 +113,7 @@ counterevidence has been checked, or when the agreed budget is exhausted.
 Report budget exhaustion as incomplete, not as evidence of completeness. Ask
 before extending the budget; avoid arbitrary source-count targets.
 
-## 5. Synthesize without adopting
+## 5. Synthesize without adopting — research subagent
 
 Write a concise answer in `overview.md`, with citations next to material claims.
 Separate established facts, inferences, recommendations, and user decisions.
@@ -154,15 +127,16 @@ Obtain authorization before trials that change projects or external state.
 
 Finish with coverage, limitations, unresolved questions, and the next decision
 for the user. Research completion does not imply recommendation approval.
-Save the resume checkpoint. When delegated, return the requested status and
+Save the resume checkpoint. Return the requested status and
 artifact paths to the main agent; leave final user delivery to it.
 
 ## 6. Verify and hand off — main agent
 
-If delegated, confirm the worker has finished before resuming dossier writes.
-Read the dossier and reconcile coverage with the approved questions. A subagent's summary is not
-an independent source; inspect the supporting passages yourself. Treat missing
+Confirm the worker has finished before resuming dossier writes.
+Read the dossier and reconcile coverage with the approved questions. A subagent's
+summary is not an independent source; inspect the supporting passages yourself. Treat missing
 artifacts, unfinished work, or exhausted budgets as incomplete, not success.
+Return research gaps to the subagent within the approved budget.
 
 Check every decision-driving citation against the source passage and its scope.
 Check local links, source IDs, and consistency between synthesis and ledger.
