@@ -9,16 +9,16 @@
 
 ## Overview
 
-`agent-skills` is a registry of 38 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
+`agent-skills` is a registry of 37 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
 
 ## Global instructions
 
-Keep instruction ownership explicit. The [workflow V2 guide](./skills/engineering/setup-codex/workflow.md) describes the global policy, personal preferences, project agreements, and five on-demand method skills.
+Keep instruction ownership explicit. The [workflow V2 guide](./skills/engineering/setup-codex/workflow.md) describes the global policy, personal preferences, project agreements, and four on-demand method skills.
 
-Universal behavior and Git conventions belong in the [global operating policy](./skills/engineering/setup-codex/codex-operating-policy.md). Project-specific rules, documentation homes, and tracking choices belong in the project's `AGENTS.md`; use [`plan-project`](./skills/engineering/plan-project) when defining those agreements.
+Universal behavior and Git conventions belong in the [global operating policy](./skills/engineering/setup-codex/codex-operating-policy.md). Project-specific rules, documentary entry points, and Linear context belong in the project's `AGENTS.md`; use [`manage-project`](./skills/engineering/manage-project) when defining those agreements.
 
 Personal instructions contain language and presentation preferences only. For example, use this block in your user-level instruction file, such as `~/.codex/AGENTS.md`:
 
@@ -71,11 +71,10 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 ### Web & app development
 
-- [`plan-project`](./skills/engineering/plan-project) — Plans demonstrable outcomes, resolves consequential uncertainty, and defines project-specific agreements in AGENTS.md.
+- [`manage-project`](./skills/engineering/manage-project) — Plans outcomes and tracks work in Linear, links GitHub delivery, and maintains project agreements and domain vocabulary.
 - [`prototype`](./skills/engineering/prototype) — Tests interface, logic, and feasibility choices in a representative environment with bounded experiments.
 - [`implement`](./skills/engineering/implement) — Delivers authorized changes with integrated TDD and current system documentation.
-- [`work-tracking`](./skills/engineering/work-tracking) — Handles intake, work states, ownership, blockers, resumption, and feedback through the project's chosen record.
-- [`setup-codex`](./skills/engineering/setup-codex) — Installs the five workflow skills and the Codex operating policy from an approved checkout, with conflict checks, backups, and repeatable setup.
+- [`setup-codex`](./skills/engineering/setup-codex) — Installs the four workflow skills and the Codex operating policy from an approved checkout, with conflict checks, backups, and repeatable setup.
 - [`skills`](./skills/engineering/skills) — Installs, updates, and authors Agent Skills with the `skills` CLI (`skills.sh`): sources, project vs global scope, symlink vs copy, discovery rules, debugging.
 - [`deep-research`](./skills/engineering/deep-research) — Requires a background research subagent, with traceable evidence, reusable research dossiers, and main-agent verification; reports a blocker when delegation is unavailable.
 - [`youtube-transcript`](./skills/engineering/youtube-transcript) — Extracts YouTube captions, routes audio transcription, and produces chapter-based learning reports with visual evidence, targeted review, and claim verification.

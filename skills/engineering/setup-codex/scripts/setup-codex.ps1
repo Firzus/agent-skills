@@ -135,7 +135,7 @@ if (-not (Test-Path -LiteralPath $SourcePrompt -PathType Leaf)) {
     throw "Workflow prompt not found: $SourcePrompt. Set -WorkflowSource to an approved complete repository checkout."
 }
 
-$skillNames = @("deep-research", "prototype", "implement", "work-tracking", "plan-project")
+$skillNames = @("deep-research", "prototype", "implement", "manage-project")
 foreach ($name in $ReplaceSkill) {
     if ($name -notin $skillNames) {
         throw "Replacement is not a workflow skill: $name"

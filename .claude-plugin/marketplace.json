@@ -55,13 +55,12 @@
         "./skills/engineering/imagegen",
         "./skills/engineering/implement",
         "./skills/engineering/improve-architecture",
-        "./skills/engineering/plan-project",
+        "./skills/engineering/manage-project",
         "./skills/engineering/prototype",
         "./skills/engineering/setup-codex",
         "./skills/engineering/slop-audit",
         "./skills/engineering/skills",
         "./skills/engineering/video-report",
-        "./skills/engineering/work-tracking",
         "./skills/engineering/youtube-transcript"
       ]
     }

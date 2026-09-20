@@ -11,6 +11,8 @@ Build only the experiment needed to decide. Use the product's environment rather
 
 Record the primary objective, the unresolved question, relevant constraints, representative scenarios, stopping evidence, and return point in the existing task record. Identify who decides and whether the question needs user judgment or measured evidence.
 
+Read the relevant domain definitions in root CONTEXT.md and contracts in docs/systems before designing scenarios that depend on them. Keep experimental assumptions separate from accepted terminology and implemented behavior.
+
 A settled correction belongs to implementation. Do not reopen an approved choice merely to generate alternatives.
 
 **Done when:** the experiment can answer a specific question and has an observable stopping condition.
