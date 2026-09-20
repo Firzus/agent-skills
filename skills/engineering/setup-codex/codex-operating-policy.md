@@ -12,6 +12,7 @@
 ## Context and scope
 
 - Before editing, identify the project and verify the workspace and change destination. Read applicable project instructions and surrounding implementation; ask only when the target remains ambiguous.
+- Each project has a root CONTEXT.md for domain vocabulary and docs/systems for system documentation. Read and maintain only the terms and pages relevant to the authorized work; use manage-project for agreements and vocabulary, and implement for system pages.
 - Reuse existing behavior, configuration, project components, native features, and installed dependencies before writing custom code. Prefer fewer unnecessary concepts and changes, not fewer lines at the expense of readability.
 - Preserve architecture, public contracts, dependencies, data formats, error handling, and unrelated work unless correctness requires a scoped change. Explain necessary supporting work; keep optional improvements out of the diff.
 - Investigate only hypotheses and alternatives supported by evidence and capable of changing the decision. Expand when new evidence warrants it; include a relevant adverse case for security, privacy, money, destructive operations, or public compatibility.
@@ -25,8 +26,7 @@ Use only the relevant procedures from this workflow or an explicitly approved so
 - `deep-research`: a scoped investigation beyond a direct lookup, or resuming its evidence dossier.
 - `prototype`: an unresolved conception choice requiring observation of an interface, logic, or technical behavior.
 - `implement`: an authorized code, configuration, refactoring, or documentation change.
-- `work-tracking`: intake, work-state updates, blockers, handoffs, or closing a feedback loop.
-- `plan-project`: turning a project or milestone objective into bounded outcomes, or defining project agreements.
+- `manage-project`: project or milestone planning, intake, work-state updates, blockers, handoffs, feedback, project agreements, and domain vocabulary.
 
 Read the selected entry point and only the references whose conditions apply. These are alternatives, not mandatory consecutive phases. Resolve procedures from available metadata and their actual source; report a missing or conflicting required procedure rather than silently substitute one. Defer only the affected step and continue independent authorized work.
 
@@ -41,7 +41,7 @@ Read the selected entry point and only the references whose conditions apply. Th
 
 ## Coordination and completion
 
-- Keep a coherent outcome in one task and reuse its existing record. Use the project's tracking agreement; a small task needs no additional form or mandatory tracker.
+- Use Linear for project work and progress, and GitHub for code, PRs, reviews, and CI. Link code artifacts to their Linear work without a second backlog. Follow project-specific destinations and state agreements; keep solo work lightweight and small tasks free of unnecessary administrative steps.
 - Delegate only when allowed and an independent bounded assignment is useful. Identify ownership, inputs, outputs, completion evidence, and shared-resource boundaries; verify and integrate returned results.
 - Use tool schemas, capabilities, and session paths from the current environment. Prefer supported completion notifications or blocking waits over repetitive polling; verify completion before using a background result.
 - Keep checkpoints sufficient for resumption. Report the last confirmed state when an update fails; do not claim synchronization or create a competing record.
@@ -52,7 +52,7 @@ Read the selected entry point and only the references whose conditions apply. Th
 - Keep the branch or worktree prepared by the task environment. When a user-facing branch must be created, name it `<type>/<kebab-case-subject>`, where `<type>` is `feature`, `bugfix`, `hotfix`, `release`, or `chore`.
 - Use Conventional Commits. Mark breaking changes with `!` or a `BREAKING CHANGE:` footer.
 - Open pull requests as drafts and mark them ready only after the requested work and focused validation are complete.
-- In pull requests targeting the default branch, repeat `Closes #<number>` for every issue that should close.
+- Link PRs to the relevant Linear work. In PRs targeting the default branch, use `Closes #<number>` only for existing GitHub issues explicitly intended to close; never substitute a Linear identifier for a GitHub issue number.
 - Preserve uncommitted work before any operation that rewrites the working tree. Never discard it without explicit approval.
 - Preview file cleanup before deletion. Do not delete ignored local settings, credentials, or environment files.
 - Force-push only with `--force-with-lease --force-if-includes`.

@@ -11,6 +11,8 @@ Produce one coherent, reviewable result. TDD and affected documentation belong t
 
 Read the request, project agreements, current files, and nearest tests. Identify the expected outcome, exclusions, acceptance evidence, and delivery boundary. Trace affected callers and public contracts. Separate unrelated local work and pre-existing failures.
 
+Read relevant definitions in root CONTEXT.md and affected pages in docs/systems when the change depends on their terms or contracts. Follow their source links as needed rather than loading all documentation. Report a missing required document without silently turning a narrow change into project setup.
+
 Resolve facts locally before asking. If the requested behavior still needs a user decision, prepare that decision instead of choosing silently. Research or a prototype answers uncertainty; it does not automatically expand implementation.
 
 **Done when:** the authorized outcome and an independent way to check it are clear.
@@ -38,12 +40,14 @@ Use comments only for verified non-obvious local reasons or constraints whose ab
 
 Check whether the change affects system documentation. Read [system documentation](references/system-documentation.md) when creating, materially updating, auditing, or retiring a system page. A simple wording repair needs only its relevant source and link checks.
 
+When introducing or changing domain terms, use manage-project's [vocabulary procedure](../manage-project/references/vocabulary.md) to keep CONTEXT.md current within the change's scope.
+
 **Done when:** code, affected contracts, local explanations, and current documentation agree within the authorized scope.
 
 ## 4. Demonstrate and hand over
 
 Run the focused checks and required project checks. For visible behavior, exercise the connected implementation through its ordinary entry point, including interaction and a relevant narrow or target-device layout. Preserve the review surface using supported tools. State what actually ran and what remains unavailable.
 
-Review every changed block against the requested outcome. Attach or link the result and evidence in the existing task record; use the project's authorized tracking route for external updates. A prepared PR is not acceptance, integration, or release.
+Review every changed block against the requested outcome. Attach or link the result and evidence in the existing task record; use manage-project for meaningful Linear updates and GitHub artifact links within the authorized scope. A prepared PR is not acceptance, integration, or release.
 
 **Done when:** the result is reviewable, evidence and limitations are recorded, and the agreed completion boundary is met or explicitly reported pending.
