@@ -1,27 +1,20 @@
 # Unity CLI — driving the Editor from an agent
 
-The **Unity CLI** (announced 15 July 2026) is a terminal-native interface to the
-Unity Editor and to development Player builds, built for AI agents, CI, and
-custom tooling. It works with Claude, Codex, Copilot, and local models. This is
-the channel an agent uses to act on a Unity project, in place of asking the user
-to click through the Editor.
+Use the **Unity CLI** to drive the Editor and development Player builds from a
+terminal, rather than asking the user to click through the Editor.
 
-It is **experimental / beta**, and its command surface moves between builds.
-`unity --help` is authoritative for the installed version — read it before
-building a command line from this file, and prefer what it reports over what is
-written here.
+It is **experimental / beta**. Read `unity --help` and the relevant subcommand
+help before composing commands: they take precedence over examples here.
 
 The CLI is free and independent of Unity AI — no subscription, and it drives a
 local Editor offline. The paid in-Editor AI Assistant is a separate product.
 
 ## Install
 
-Take the install line from the [CLI docs](https://docs.unity.com/en-us/hub/unity-cli),
-and on Windows the native PowerShell installer rather than WSL. It manages
-Editors without Unity Hub, so `unity install`, `unity editors`, `unity auth` and
-`unity doctor` replace the Hub for an agent.
+Take the install line from the [CLI docs](https://docs.unity.com/en-us/hub/unity-cli);
+on Windows use the native PowerShell installer rather than WSL. No Hub is needed.
 
-Three things the install leaves behind that no `--help` confesses:
+Installation and update traps:
 
 - The binary lands in `%LOCALAPPDATA%\Unity\bin`, appended to the user PATH, so
   `unity` resolves only in shells started afterwards. Already-open terminals
@@ -31,101 +24,116 @@ Three things the install leaves behind that no `--help` confesses:
   rows carrying a path in the `Installed` column exist on disk.
 - `unity doctor` comes first when anything fails to connect: it names the
   configuration problem directly, which beats inferring it from a failed call.
+- On Windows, a running `unity.exe --internal-identity-serve` helper can lock the
+  binary: `unity self-update` reports `success: true` without replacing it.
+  Identify and stop that helper, not unrelated Editor processes, then retry and
+  verify `unity --version`. This was observed in the beta.10 migration session.
 
 ## Build and test
 
-`build` and `test` spawn the Editor in batch mode and forward the conventional
-CI flags, so `-batchmode`, `-nographics`, `-quit` and `-logFile` are handled for
-you. Both resolve the Editor from `ProjectVersion.txt`, which keeps a version
-bump out of the command line:
+`unity build` and `unity test` launch a batch-mode Editor resolved from
+`ProjectVersion.txt`. Close the project's interactive Editor before running
+tests. Discover build options with `unity build --help`:
 
 ```bash
-unity build . --target StandaloneWindows64 --execute-method Builder.PerformBuild
+unity build . --target StandaloneWindows64 --output-path ./Build/MyGame.exe
 unity test . --mode EditMode
 ```
 
-`--target` and `--execute-method` are both required — Unity has no built-in
-command-line build, so the project must supply that static method. `test` writes
-an NUnit XML report (`test-results.xml` by default); add it to `.gitignore`.
+`--execute-method` is optional: without it, the CLI uses a build profile on
+Unity 6+ or legacy desktop player flags. `--profile` supplies its own target.
+`test` writes an NUnit XML report; keep generated reports out of version control.
+
+The separate Pipeline command `unity command build` builds asynchronously in
+the running Editor. Follow it with `build_status` until completion and inspect
+the full BuildReport; submission alone is not success. Discover their schemas
+with `unity list --json` before invoking them.
 
 ## Connect to a running Editor
 
-Live Editor access comes from the experimental `com.unity.pipeline` package,
-supported on Unity 6.0 LTS and newer:
+Live Editor access requires `com.unity.pipeline`. Check the CLI version,
+`ProjectSettings/ProjectVersion.txt`, and resolved package version before
+`unity pipeline install` or `unity pipeline upgrade`.
 
-```bash
-unity pipeline install               # add the package to the project
-unity pipeline list                  # projects using it
-```
+### Compatibility gate
 
-An Editor already running picks the package up without a restart. Start it with
-`-automated`, or the Pipeline server warns that a modal popup can stall a
-command mid-flight:
+These are version-scoped observations from the 2026-09-21 migration report,
+not project pins or a guarantee for later releases. Its working combination was
+CLI `1.0.0-beta.10`, Pipeline `0.6.0-exp.1`, Editor `6000.7.0b1`.
+
+| Combination | Consequence |
+| --- | --- |
+| CLI beta.9+ with Pipeline older than `0.6.0-exp.1` | Commands with arguments fail, while argument-free commands can succeed: connection alone is a false positive. |
+| Pipeline 0.6 / 0.7 with Editor `6000.7.0a3` | Compilation fails with CS0246 (`DialogEventInfo` missing), leading to Safe Mode. Do not upgrade Pipeline blindly. |
+
+After connecting, verify a harmless command **with an argument**, such as the
+`eval` read below, rather than treating an argument-free command as proof.
+
+A first installation can be picked up by a running Editor; after a package
+version change, close and reopen it so the changed manifest is loaded. Start
+with `-automated` to reduce modal interruptions:
 
 ```bash
 unity open . --args -automated       # --args forwards raw flags to the Editor
 unity status                         # connected Editors: port, state, PID
 ```
 
-`unity open` stays attached to the Editor process instead of returning, and does
-not start it when detached from a terminal. Script it in the background against
-the Editor binary directly.
+`unity status` takes no positional project argument (unlike `test` and `close`);
+use its `--project-path` filter when needed. If a modal blocks shutdown, including
+Safe Mode, `unity close . --force` can terminate the Editor. **Neither normal nor
+forced close saves work**: save first, or obtain approval to lose unsaved changes.
 
-With the package installed, discover before invoking — the command set is
-per-project, since projects register their own:
-
-```bash
-unity list                           # tools the connected Editor exposes
-unity command <command-name>
-```
+Discover per-project schemas with `unity list --json` before invoking
+`unity command <command-name>`; projects can register their own commands.
 
 `unity status` reporting an empty table means no Editor is connected: the
-package is missing, or the Editor is still importing.
+package may be missing, still importing, or failing to compile. Listing filters
+(`--query`, `--detail`, `--tag` on `unity command`) need a recent Pipeline; fall
+back to `unity list --json` if unsupported, not to a package upgrade by reflex.
 
 ## Run C# against the live Editor
 
 `eval` compiles with Roslyn and runs on the Unity main thread **without a project
-recompile or domain reload**, which makes it the cheap way to read live Editor state
-rather than reasoning about it from files:
+recompile or domain reload**. Read live state rather than guessing from files:
 
 ```bash
-unity command eval "return UnityEngine.Application.version;"
-unity command eval "return UnityEditor.EditorApplication.isPlaying;"
-unity command eval_file "path/to/script.cs"
+unity command eval --code "return UnityEngine.Application.version;"
+unity command eval --code "return UnityEditor.EditorApplication.isPlaying;"
+unity command eval_file --file "path/to/script.cs"
 ```
 
-Depending on the installed beta, `eval` may sit at the top level instead
-(`unity eval "..."`). Confirm with `unity command --help` or `unity eval --help`.
+Pipeline 0.6 uses named arguments (`--code`, `--file`), not positional values or
+`name=value`. Supply a Roslyn script body: fully qualified names, no `using`
+directives, and a final `return`, rather than a normal C# compilation unit.
 
-Add `--runtime` to target a development Player build rather than the Editor.
+Use fully qualified component types, such as `--type MyGame.Gameplay.Trigger`.
+Arrays are JSON: `--instance_ids "[123]"`, `--scenes '["Assets/X.unity"]'`.
+Ensure PowerShell passes the embedded JSON quotes intact; native argument
+handling varies by PowerShell version. Inspect received parameters on failure.
 
-Use it to answer questions about the real project — which scene is open, whether
-Play Mode is running, what a serialized field actually holds — so an edit lands
-against observed state.
+Use `--runtime <player-name>` for a development Player rather than the Editor.
 
-## Capture the screen
+## Capture visual evidence
 
-| What the shot must show | Reach for |
-| --- | --- |
-| The 3D scene | `screenshot`, `capture_game_view`, `capture_scene_view` |
-| The screen, overlay UI included | `eval` + `ScreenCapture.CaptureScreenshot` |
-| An `EditorWindow` element | `capture_editor_element` |
+Default to `capture_editor_element` for Editor UI. Read the project's capture
+policy first: full-screen restrictions belong in its `AGENTS.md`, not in the
+CLI's capabilities. Discover the selector and output arguments from the schema.
 
-```bash
-unity command eval 'UnityEngine.ScreenCapture.CaptureScreenshot("C:/abs/shot.png"); return "queued";'
-```
+An Inspector can report `No element matched selector` despite the correct
+selection and selector because its UI Toolkit tree has not been built yet.
+Via `eval_file`, call `UnityEditor.ActiveEditorTracker.sharedTracker.ForceRebuild()`
+then `Repaint()` on the target Inspector window. Allow an Editor repaint before
+retrying capture; if it still fails, inspect the tree and selector.
 
-The first row renders **a camera**, and a UI Toolkit or UGUI overlay belongs to
-none — it is composited over the finished image, so only the buffer capture
-proves it reached the screen. World-space UI and the Panel Renderer live in the
-scene, and every command sees them. Trust a camera shot as a verdict on overlay
-UI and you chase a bug that is not there: it reports `success` and omits the UI
-in silence.
+Use scene/game captures for scene evidence, not as proof that overlay UI is
+visible: a camera-only capture can silently omit composited overlays. Where
+project policy permits, `UnityEngine.ScreenCapture.CaptureScreenshot` captures
+the rendered game buffer, not the desktop. It writes asynchronously; verify the
+file exists before inspecting it.
 
-Two edges make a result unreadable. `CaptureScreenshot` writes a frame or two
-after it returns, so poll the path. `save_path` resolves against the authoring
-root — `Temp/shot.png` lands in `Assets/Temp/` and gets imported — where
-`screenshot --output` resolves against the project root.
+Prefer absolute output paths outside `Assets`: `save_path` can resolve against
+the authoring root (`Temp/shot.png` becomes `Assets/Temp/` and gets imported),
+while `screenshot --output` resolves against the project root.
 
 ## Expose project commands
 
@@ -152,23 +160,15 @@ refactors that would break an `eval` snippet.
 
 ## Leave MCP out
 
-Reach the Editor through `unity command` and `unity command eval`. An agent that
-runs shell commands has no use for MCP here: `unity mcp` wraps the same command
-surface as `unity list` behind a protocol layer, so it costs a configuration
-step, permanently loaded tool definitions, and a silent failure mode, and buys
-back nothing the direct call does not already do in 200–600 ms.
+Prefer `unity command` when the agent can run a shell. `unity mcp` wraps the
+same command surface in a protocol layer rather than adding Editor capabilities.
 
-Two setups still reach for it, and both are somebody else's harness: an agent
-that cannot spawn a shell, and a model that composes command lines unreliably.
-Build the command line from `unity mcp configure --help` when you meet one,
-rather than from a recipe cached here that the next beta moves.
+For agents without shell access or unable to compose reliable command lines,
+configure MCP from `unity mcp configure --help`.
 
-Unity deprecated a second MCP server on 24 August 2026 — the one inside
-`com.unity.ai.assistant` (the in-Editor AI Assistant package), superseded by the
-CLI. Support runs at least to the end of 2026, with no removal date published.
-That deprecation is narrow, so read a project's setup before calling it
-affected: a third-party MCP package installed from GitHub is untouched, and so
-is the CLI itself.
+The MCP server in `com.unity.ai.assistant` was deprecated on 24 August 2026,
+with support through at least end-2026 and no published removal date. This
+does not deprecate third-party MCP packages or the CLI.
 
 A project keeping the AI Assistant package alongside the CLI needs it at
 **2.13 or later** — earlier versions conflict with the CLI. Check the version in
@@ -177,11 +177,11 @@ connection.
 
 ## Working against a project
 
-1. `unity doctor` when anything fails to connect.
-2. `unity status` to confirm an Editor is connected before reaching for its commands.
-3. `unity list` to see what this project exposes, before assuming a command name.
-4. `unity command eval` to read live state rather than inferring it from files.
-5. A registered `[CliCommand]` for anything done more than once.
+1. Check the compatibility gate before installing or upgrading Pipeline.
+2. `unity doctor` on connection failure; `unity status` to identify the Editor.
+3. `unity list --json` to discover commands and their parameter schemas.
+4. A read-only `eval --code` to verify argument handling and observe live state.
+5. A registered `[CliCommand]` for recurring operations; verify actual completion.
 
 Global flags cover JSON output and exit codes — see the
 [CLI reference](https://docs.unity.com/en-us/unity-cli/unity-cli-reference) — so
