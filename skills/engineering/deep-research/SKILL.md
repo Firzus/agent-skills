@@ -1,8 +1,8 @@
 ---
 name: deep-research
 description: >-
-  Conduct a scoped, multi-source investigation with a reviewable plan, traceable
-  evidence, and a reusable research dossier. Use for explicit deep research,
+  Delegate a scoped, multi-source investigation to a background subagent with
+  traceable evidence and a reusable dossier. Use for explicit deep research,
   evidence accumulation, or updating an existing research dossier.
 ---
 
@@ -72,10 +72,19 @@ excerpt or faithful paraphrase, conflicting evidence, applicability, and status:
 supported, contested, inferred, or unknown. Explain confidence through evidence
 quality and gaps rather than invented numerical probabilities.
 
-Complete when another researcher can locate the evidence and identify unanswered
-questions without rereading the conversation.
+Complete when the dossier records the scope and supplied evidence, and the
+researcher can identify unanswered questions without rereading the conversation.
+Populate the source register and claim ledger as evidence is gathered.
 
-## 3. Gather and challenge evidence
+## 3. Dispatch the research subagent
+
+Spawn a subagent to execute sections 4 and 5 in the background. Pass it this
+skill, the approved scope, source restrictions, budget, and dossier path. Give
+it sole ownership of dossier writes and require findings, citations, gaps, and
+artifact paths on return. Continue independent work, then verify its output in
+section 6. If spawning is unavailable, report the blocker and stop.
+
+## 4. Gather and challenge evidence — research subagent
 
 Investigate question by question. Prefer the source that owns a claim: official
 documentation for product behavior, original research for study results, and
@@ -98,18 +107,13 @@ copies or secrets. Record inaccessible sources without inventing their contents.
 If browsing is unavailable, mark current external claims unverified and limit
 the report accordingly.
 
-Delegate only when permitted and independent questions justify it. Assign each
-worker a bounded question, source requirements, and separate output ownership.
-Integrate returned evidence and verify decision-driving citations yourself;
-an agent's summary is not an independent source. Work sequentially otherwise.
-
 After each research pass, update coverage and the next highest-value gap.
 Stop when agreed questions have supported answers or explicit gaps and
 counterevidence has been checked, or when the agreed budget is exhausted.
 Report budget exhaustion as incomplete, not as evidence of completeness. Ask
 before extending the budget; avoid arbitrary source-count targets.
 
-## 4. Synthesize without adopting
+## 5. Synthesize without adopting — research subagent
 
 Write a concise answer in `overview.md`, with citations next to material claims.
 Separate established facts, inferences, recommendations, and user decisions.
@@ -123,8 +127,16 @@ Obtain authorization before trials that change projects or external state.
 
 Finish with coverage, limitations, unresolved questions, and the next decision
 for the user. Research completion does not imply recommendation approval.
+Save the resume checkpoint. Return the requested status and
+artifact paths to the main agent; leave final user delivery to it.
 
-## 5. Verify and hand off
+## 6. Verify and hand off — main agent
+
+Confirm the worker has finished before resuming dossier writes.
+Read the dossier and reconcile coverage with the approved questions. A subagent's
+summary is not an independent source; inspect the supporting passages yourself. Treat missing
+artifacts, unfinished work, or exhausted budgets as incomplete, not success.
+Return research gaps to the subagent within the approved budget.
 
 Check every decision-driving citation against the source passage and its scope.
 Check local links, source IDs, and consistency between synthesis and ledger.

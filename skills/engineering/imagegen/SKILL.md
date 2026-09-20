@@ -31,25 +31,23 @@ Generate and edit images for the current project exclusively through the **Codex
 - Simple shapes, diagrams, wireframes, or icons better produced in SVG, HTML/CSS, or canvas.
 - Any task where the user wants deterministic code-native output rather than a generated bitmap.
 
-## Images 2.5 model notes
+## Tool and model boundary
 
 Use the built-in Codex tool schema. Report an exact backend version only when runtime metadata confirms it.
 
-- Strong instruction following, layout control, and in-image text rendering — quote exact text verbatim in the prompt.
-- Produce transparency natively through `image_gen` only; validate it using [references/transparency.md](./references/transparency.md).
-- Use reference images to preserve subject identity and state exactly which details each edit must retain.
+- The [API prompting guide](https://developers.openai.com/api/docs/guides/image-prompting) informs prompt design; its model selectors and request parameters are not a Codex tool contract. Do not add an API execution route to obtain them.
 - Express aspect ratio, resolution intent, and polish level in natural language (for example "wide 16:9 landscape hero"). Set additional tool arguments only when the exposed schema supports them; verify the output rather than treating requested dimensions as guaranteed.
 
 ## Workflow
 
 1. Decide the intent: **generate** (new image, or references used only for style/mood) vs **edit** (parts of an input image must be preserved). Assume generate unless the user clearly wants to change an existing image.
-2. Collect inputs up front: prompt(s), exact text to render (verbatim), constraints/avoid list, input images with an explicit role each (edit target, style reference, compositing insert).
+2. Collect inputs up front: prompt(s), exact text to render (verbatim), constraints/avoid list, input images with an explicit role each (edit target, style reference, compositing insert). Inspect edit targets before drafting changes. Identify acceptance requirements, including any exact dimensions or pixel-identical regions; resolve incompatible requirements before generation.
 3. Shape the image prompt using [references/prompting.md](./references/prompting.md): preserve specific requests and add only success-relevant details.
 4. If transparency is needed, apply the native-transparency prompt from [references/transparency.md](./references/transparency.md).
 5. Run Codex non-interactively (below), instructing it to use its built-in `image_gen` tool and to copy the final image to an explicit workspace path.
-6. Verify the output file exists, then inspect it with an available image-viewing tool: subject, style, composition, text accuracy, constraints respected.
+6. Verify the output file exists and check its format and dimensions against the request. Inspect it using the applicable [acceptance checks](./references/prompting.md#acceptance-checks); report any requirement you cannot verify.
 7. For transparency, complete the alpha and visual checks in [references/transparency.md](./references/transparency.md) before accepting the output.
-8. Iterate with a single targeted change per round; for edits, repeat invariants (`change only X; keep Y unchanged`) every iteration.
+8. If a check fails, use the [revision procedure](./references/prompting.md#revise-an-image) before running the next edit. Finish when all applicable checks pass, or report the unmet requirement if the tool cannot satisfy it.
 9. Save non-destructively: never overwrite an existing project asset unless the user asked for replacement — use a versioned sibling name (`hero-v2.png`). For batches, identify selected finals without deleting other outputs unless the user authorizes cleanup.
 10. Report the final saved path(s) and the final image prompt used.
 
