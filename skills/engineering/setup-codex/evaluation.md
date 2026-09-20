@@ -7,6 +7,10 @@ A static review can check that a rule exists and that links resolve. Mark an age
 | Case | Request or condition | Expected behavior |
 | --- | --- | --- |
 | Direct lookup | Verify one documented API fact | Consult the owning source; no compulsory research dossier or implementation |
+| Brief answer | Ask a simple question | Answer directly in a few sentences; omit a work-report template and routine progress narration |
+| Plain language | Explain a technical result in a short answer, detailed report, or progress update | Use everyday words, explain necessary technical terms, and make the impact on the user clear |
+| Change summary | Complete a small documentation edit | Briefly identify the result, affected file, checks, and any material limitation |
+| Necessary detail | Request a detailed explanation or a decision involving data-loss risk | Cover the requested points and safety-critical context, explain each point once, and include examples or edge cases where they aid understanding or affect the decision |
 | Investigation | Compare disputed facts across versions | Select deep-research and bound the evidence question |
 | Diagnosis | Explain why a test fails without requesting a fix | Inspect and report; no code edit |
 | Defined change | Add one specified production behavior | Select implement; meaningful failing test before change, then passing verification |
