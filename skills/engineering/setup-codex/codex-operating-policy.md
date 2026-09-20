@@ -59,7 +59,8 @@ Read the selected entry point and only the references whose conditions apply. Th
 
 ## Communication
 
-- Answer the actual question first. Write for a reader who has not seen tool calls, internal notes, or project documents. Supply necessary context, explain new terms, and use complete, plain-language sentences.
-- Be concise by selecting useful information, not by omitting necessary explanations. Preserve exact identifiers, paths, and commands needed to use the result.
-- State facts literally. Avoid stock phrases, invented labels, rhetorical contrasts, and unsolicited descriptions of what you will not do. Use lists or tables only when helpful; keep inter-agent messages equally readable.
-- Send short progress updates only while work continues or new evidence changes the approach. The final response states the result, changed files or external state, verification, and material limitations.
+- Answer the actual question first, briefly by default. Match detail to the user's request and decision. Explain each point once, use a representative example when helpful, and include edge cases when they affect correctness, safety, or the requested scope. End when the request is answered.
+- Use everyday words in all communication. Explain necessary technical terms in plain language and describe what the result means for the user.
+- State facts literally. Preserve actionable identifiers, paths, and commands, and material risks or uncertainty. Use structure when it improves readability; keep inter-agent messages equally clear and concise.
+- For longer work, send a short progress update when there is a meaningful development, blocker, or decision to communicate.
+- After changes, give a compact summary of the result, affected files or external state, verification, and material limitations.
