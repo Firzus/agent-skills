@@ -1,55 +1,64 @@
 ---
 name: setup-codex
-description: Install the Codex operating policy and settings into a Codex home directory.
+description: Install the four workflow skills, the Codex operating policy, and its settings with backups and conflict checks.
 disable-model-invocation: true
 ---
 
-# Set up Codex
+# Set up the Codex workflow
 
-Install this skill's operating policy and the configuration keys that activate it. Leave model selection, authentication, permissions, MCP servers, and project instructions untouched.
+Install deep-research, prototype, implement, and manage-project with their references before activating the global policy. Keep personal and project agreements, model selection, authentication, permissions, and MCP servers unchanged.
 
-## 1. Inspect
+## 1. Inspect and prepare
 
-Resolve the target Codex home from `CODEX_HOME`, falling back to `~/.codex`. Read its `config.toml` and `instructions/codex-operating-policy.md` when present.
+Resolve the target Codex home from `CODEX_HOME`, falling back to `~/.codex`. Read the existing policy and configuration. Identify the skill destination and other skill locations exposed by the host; the default user destination is `~/.agents/skills`. An alternate Codex home requires an explicit skill destination to preserve isolation.
 
-Report whether the installer will create, update, or preserve each file. Call out existing values for `model_instructions_file` and `model_verbosity` because the installer will replace those two root keys.
+Locate an approved complete checkout of this repository containing the four methods and setup-codex. Verify its revision or reviewed content. A standalone setup-codex installation does not contain its sibling skills: locate that checkout or obtain the approved revision with an available repository tool before continuing. If the source is unavailable, report it rather than use unrelated same-name skills or silently fetch a different revision.
 
-**Done when:** the target paths and both current values are known or explicitly absent.
+Report source, destinations, installed copies, and conflicts. Include the two managed root keys, `model_instructions_file` and `model_verbosity`, which the installer replaces. Check for duplicate names and conflicting workflow procedures in exposed locations before activation; the script checks its chosen destination, not every host's discovery paths, and leaves all other skill directories untouched.
 
-## 2. Install
+Existing identical skills are preserved. Any different content, including personal files, requires explicit replacement approval by name. Linked paths require a separate approved resolution; the installer refuses to write through them. Preview any removal, preserve shared link targets, and leave unrelated skills untouched.
 
-Run the bundled PowerShell installer:
+**Done when:** source and destinations are unambiguous, conflicts are resolved or their replacements explicitly approved, and the planned changes are understood.
+
+## 2. Install skills, then activate the policy
+
+Use the bundled PowerShell installer with the approved repository root:
 
 ```powershell
-pwsh -File "<skill-directory>/scripts/setup-codex.ps1"
+pwsh -File "<skill-directory>/scripts/setup-codex.ps1" -WorkflowSource "<repository-root>"
 ```
 
-Pass `-CodexHome <path>` to target a different profile. The installer is idempotent and backs up changed files under `<codex-home>/backups/` before writing them.
+When running directly from a complete checkout, the source defaults to that checkout. For another profile or a test, pass both `-CodexHome <path>` and `-SkillsHome <path>`; selecting a Codex profile alone never selects an isolated skill destination.
 
-It installs these settings:
+Use `-WhatIf` to preview without writing. After explicit approval, `-ReplaceSkill <name>` authorizes replacement of that differing skill; the parameter also accepts a PowerShell string array. Without that approval, keep the conflicting skill and stop before activation.
+
+The installer validates all four sources and destinations first. It copies only those four directories, including references, and checks their complete content before writing the prompt and activating its settings. It performs no network installation and adds no dependency. Missing sources and detected conflicts fail before writes; a later filesystem failure can leave a partial skill copy and must be reported, not called a completed install.
+
+These settings are managed:
 
 ```toml
 model_verbosity = "low"
 model_instructions_file = "<codex-home>/instructions/codex-operating-policy.md"
 ```
 
-It does not set `model`, `model_reasoning_effort`, or `personality`; Codex or the user retains those choices.
+Existing profile files and approved replaced skills are backed up under `<codex-home>/backups/`. A current installation is preserved on rerun without another backup. Changed skill content needs renewed replacement approval.
 
-**Done when:** the installer reports that both files were installed or were already current, with no error.
+**Done when:** the installer confirms all four skills and the policy, with no unresolved error.
 
-## 3. Verify
+## 3. Verify and hand over
 
-Read the resulting files and check that:
+Check that:
 
-- each managed key occurs once at the TOML root;
-- `model_instructions_file` resolves to the installed prompt;
-- the installed prompt matches this skill's `codex-operating-policy.md`;
-- every unrelated configuration entry remains present.
+- the four installed directories and references match the approved sources;
+- duplicate names or disabled entries in the host's exposed configuration have been resolved, not assumed away;
+- each managed setting occurs once at the TOML root, the policy path resolves, and its content matches the approved prompt;
+- unrelated configuration and skills remain intact;
+- backups contain the replaced files and any approved skill replacements.
 
-Start a new Codex task because an existing task keeps the instructions loaded when it started.
+Report installed paths, preserved or replaced skills, backup locations, and remaining discovery limits. Verify loading and discovery in a new Codex task; the current task's instructions do not prove that the new package is active. Request a new task from the user when the current tools cannot verify it without creating one.
 
-**Done when:** every check passes and the user has the backup path, or knows that no backup was needed.
+**Done when:** file checks pass and loading is either observed or explicitly pending. Installation alone is not a behavioral trial.
 
 ## Restore
 
-Copy the latest timestamped backup over the corresponding file, or remove the two managed root keys and the installed prompt when the installation created them from scratch. Start a new Codex task after restoring.
+Use the recorded backup to restore replaced profile files and skill directories. Preview removal of newly created destinations or replacement copies before restoring; preserve subsequent user edits and shared link targets. Check the restored state in a new task.

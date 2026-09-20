@@ -9,18 +9,18 @@
 
 ## Overview
 
-`agent-skills` is a registry of 36 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
+`agent-skills` is a registry of 38 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
 
 > [!NOTE]
 > These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
 
 ## Global instructions
 
-How the agent talks to you, and how it handles version control — the two things that stay the same in every repository. Copy the block into your harness's top-level instruction file — `~/.codex/AGENTS.md` for Codex, `~/.claude/CLAUDE.md` for Claude Code, or the equivalent for your tool.
+Keep instruction ownership explicit. The [workflow V2 guide](./skills/engineering/setup-codex/workflow.md) describes the global policy, personal preferences, project agreements, and four on-demand method skills.
 
-Keep global instructions small and non-redundant. Git conventions live here because they apply across repositories, while project-specific architecture, commands, and validation belong in the project.
+Universal behavior and Git conventions belong in the [global operating policy](./skills/engineering/setup-codex/codex-operating-policy.md). Project-specific rules, documentary entry points, and Linear context belong in the project's `AGENTS.md`; use [`manage-project`](./skills/engineering/manage-project) when defining those agreements.
 
-Anything genuinely project-specific — the stack's testing policy, architecture and code standards — belongs to the project; the [`setup-project`](./skills/engineering/setup-project) skill sets that up for you.
+Personal instructions contain language and presentation preferences only. For example, use this block in your user-level instruction file, such as `~/.codex/AGENTS.md`:
 
 ```markdown
 # Global working agreements
@@ -29,22 +29,9 @@ Anything genuinely project-specific — the stack's testing policy, architecture
 
 - Reply in French. Write code, comments, commits, branches, pull requests, issues, and documentation in English.
 - Use a table or Mermaid diagram when it communicates structure more clearly than prose.
-
-## Git delivery
-
-- Keep the branch or worktree prepared by the task environment. When a user-facing branch must be created, name it `<type>/<kebab-case-subject>`, where `<type>` is `feature`, `bugfix`, `hotfix`, `release`, or `chore`.
-- Use Conventional Commits. Mark breaking changes with `!` or a `BREAKING CHANGE:` footer.
-- Open pull requests as drafts and mark them ready only after the requested work and focused validation are complete.
-- In pull requests targeting the default branch, repeat `Closes #<number>` for every issue that should close.
-
-## Git safety
-
-- Preserve uncommitted work before any operation that rewrites the working tree. Never discard it without explicit approval.
-- Preview file cleanup before deletion. Do not delete ignored local settings, credentials, or environment files.
-- Force-push only with `--force-with-lease --force-if-includes`.
 ```
 
-Adapt the language pairing and Git conventions to your workflow. Keep model behavior, project commands, architecture, and validation rules in their respective instruction layers rather than duplicating them here.
+Adapt these preferences to the user. Tool definitions, model availability, and session paths come from the environment, not permanent copies.
 
 ## Install
 
@@ -84,9 +71,12 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 ### Web & app development
 
-- [`setup-project`](./skills/engineering/setup-project) — Writes a project's `AGENTS.md` (overview, guardrails, project decisions), configures the repository, and installs the skills matching the stack.
-- [`setup-codex`](./skills/engineering/setup-codex) — Installs a Codex operating policy and its minimal user-level configuration with backups and idempotent updates.
+- [`manage-project`](./skills/engineering/manage-project) — Plans outcomes and tracks work in Linear, links GitHub delivery, and maintains project agreements and domain vocabulary.
+- [`prototype`](./skills/engineering/prototype) — Tests interface, logic, and feasibility choices in a representative environment with bounded experiments.
+- [`implement`](./skills/engineering/implement) — Delivers authorized changes with integrated TDD and current system documentation.
+- [`setup-codex`](./skills/engineering/setup-codex) — Installs the four workflow skills and the Codex operating policy from an approved checkout, with conflict checks, backups, and repeatable setup.
 - [`skills`](./skills/engineering/skills) — Installs, updates, and authors Agent Skills with the `skills` CLI (`skills.sh`): sources, project vs global scope, symlink vs copy, discovery rules, debugging.
+- [`deep-research`](./skills/engineering/deep-research) — Requires a background research subagent, with traceable evidence, reusable research dossiers, and main-agent verification; reports a blocker when delegation is unavailable.
 - [`youtube-transcript`](./skills/engineering/youtube-transcript) — Extracts YouTube captions, routes audio transcription, and produces chapter-based learning reports with visual evidence, targeted review, and claim verification.
 - [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
 - [`canvas`](./skills/engineering/canvas) — Renders standalone analytical artifacts (reviews, audits, reports, dashboards) as self-contained HTML canvases opened beside the chat, in any agent environment.
@@ -119,7 +109,6 @@ Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
 
 - [`unity`](./skills/game/unity) — Routes each Unity need to one chosen tool, and keeps projects CoreCLR-ready.
 - [`figma-to-unity`](./skills/game/figma-to-unity) — Implements Figma designs as Unity UI Toolkit via the Figma MCP.
-- [`magica-cloth-2`](./skills/game/magica-cloth-2) — Code-first cloth/jiggle physics with Magica Cloth 2 in Unity via the Unity MCP.
 
 ## Documentary knowledge base
 
