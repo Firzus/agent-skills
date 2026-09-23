@@ -1,0 +1,24 @@
+{
+  "name": "tauri-agent-kit-workspace",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vp pack",
+    "test": "vp test",
+    "check": "vp check",
+    "test:rust": "cargo test -p tauri-plugin-agent-kit --lib",
+    "fixture": "cargo run -p agent-kit-fixture",
+    "test:live": "node scripts/live-test.mjs",
+    "test:security": "node scripts/security-test.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "^5.9",
+    "vite": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.2"
+}

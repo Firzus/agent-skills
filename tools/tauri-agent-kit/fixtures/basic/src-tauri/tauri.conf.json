@@ -1,0 +1,23 @@
+{
+  "productName": "Agent Kit Fixture",
+  "version": "0.1.0",
+  "identifier": "dev.agent-kit.fixture",
+  "build": { "frontendDist": "../web" },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      { "label": "main", "title": "Agent Kit Fixture", "width": 800, "height": 640 },
+      {
+        "label": "secondary",
+        "title": "Agent Kit Fixture",
+        "width": 400,
+        "height": 300,
+        "transparent": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": { "active": false }
+}

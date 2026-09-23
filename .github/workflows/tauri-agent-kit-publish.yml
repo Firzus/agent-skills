@@ -1,0 +1,69 @@
+name: Publish Tauri agent kit alpha
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact reviewed alpha version
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: tauri-agent-kit-publish-alpha
+  cancel-in-progress: false
+jobs:
+  check:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/tauri-agent-kit-check.yml
+  publish:
+    defaults:
+      run:
+        working-directory: tools/tauri-agent-kit
+    needs: check
+    runs-on: windows-latest
+    environment: release
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          version: 0.3.2
+          node-version: 24
+          run-install: false
+      - run: vp install
+      - name: Verify reviewed version
+        shell: pwsh
+        run: |
+          $v = $env:RELEASE_VERSION
+          if ($v -notmatch '^\d+\.\d+\.\d+-alpha\.\d+$') { throw 'Only alpha releases are supported' }
+          foreach ($path in @('server/package.json', 'instrumentation/package.json', 'server.json')) {
+            if ((Get-Content $path -Raw | ConvertFrom-Json).version -ne $v) { throw "Version mismatch: $path" }
+          }
+          $metadata = cargo metadata --no-deps --format-version 1 | ConvertFrom-Json
+          if (($metadata.packages | Where-Object name -eq 'tauri-plugin-agent-kit').version -ne $v) { throw 'Rust version mismatch' }
+      - run: vp pack
+      - run: cargo build -p agent-kit-fixture --locked
+      - run: pwsh -File scripts/package-test.ps1
+      - name: Publish npm packages with OIDC
+        shell: pwsh
+        run: |
+          npm publish "artifacts/packages/tauri-agent-kit-$env:RELEASE_VERSION.tgz" --tag alpha --access public --provenance
+          if ($LASTEXITCODE -ne 0) { throw 'Server publication failed; do not overwrite a version' }
+          npm publish "artifacts/packages/tauri-agent-kit-instrumentation-$env:RELEASE_VERSION.tgz" --tag alpha --access public --provenance
+          if ($LASTEXITCODE -ne 0) { throw 'Instrumentation publication failed; inspect partial publication' }
+      - uses: rust-lang/crates-io-auth-action@v1
+        id: crates
+      - run: cargo publish -p tauri-plugin-agent-kit --locked
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.crates.outputs.token }}
+      - name: Create draft prerelease for post-publication verification
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh release create "v$env:RELEASE_VERSION" --target $env:GITHUB_SHA --draft --prerelease --title "v$env:RELEASE_VERSION" --notes-file docs/release-notes.md "artifacts/packages/tauri-agent-kit-$env:RELEASE_VERSION.tgz" "artifacts/packages/tauri-agent-kit-instrumentation-$env:RELEASE_VERSION.tgz" "target/package/tauri-plugin-agent-kit-$env:RELEASE_VERSION.crate"
+          if ($LASTEXITCODE -ne 0) { throw 'Draft creation failed; packages may already be public' }

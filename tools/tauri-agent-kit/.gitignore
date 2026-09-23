@@ -1,0 +1,14 @@
+node_modules/
+target/
+**/dist/
+**/gen/schemas/
+artifacts/
+*.log
+
+.agents/
+.env
+.env.*
+!.env.example
+.npmrc
+*.tgz
+*.crate
