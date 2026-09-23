@@ -118,7 +118,7 @@ before choosing it.
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
 | [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Configure a reviewed Codex Operating Policy through `model_instructions_file`. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
-| [slop-audit](./skills/engineering/slop-audit/SKILL.md) | Investigate dead code and justify scoped cleanup. |
+| [unslop](./skills/engineering/unslop/SKILL.md) | Investigate dead code and justify scoped cleanup. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
 | [writing-for-agents](./skills/engineering/writing-for-agents/SKILL.md) | Write useful skills and project instructions. |
 | [youtube-transcript](./skills/engineering/youtube-transcript/SKILL.md) | Turn video speech and visual evidence into a learning report. |

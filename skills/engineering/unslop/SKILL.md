@@ -1,12 +1,12 @@
 ---
-name: slop-audit
+name: unslop
 description: >-
   Audit a codebase for dead code and AI slop, clear each suspect against the
   legitimate reason it exists, and remove only what the evidence carries.
 disable-model-invocation: true
 ---
 
-# Slop Audit
+# Unslop
 
 Find code that should not exist — **dead code** that no longer runs, and
 **slop** that runs and earns nothing — then prove each candidate before
