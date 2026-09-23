@@ -52,6 +52,7 @@
       "skills": [
         "./skills/engineering/canvas",
         "./skills/engineering/code-review",
+        "./skills/engineering/debug",
         "./skills/engineering/deep-research",
         "./skills/engineering/gamification",
         "./skills/engineering/imagegen",
