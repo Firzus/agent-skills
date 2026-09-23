@@ -1,0 +1,5 @@
+{
+  "identifier": "default",
+  "windows": ["main", "secondary"],
+  "permissions": ["core:default", "agent-kit:allow-record-ipc"]
+}

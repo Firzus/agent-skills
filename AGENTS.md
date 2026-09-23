@@ -2,7 +2,7 @@
 
 ## Project and scope
 
-This repository distributes agent skills through `Firzus/agent-skills`. It is documentation-first, with one application exception: the technical Canvas reader. These instructions apply throughout the repository; check for closer instructions before editing.
+This repository distributes agent skills through `Firzus/agent-skills`. It is documentation-first, with two application exceptions: the technical Canvas reader and `tools/tauri-agent-kit/`. These instructions apply throughout the repository; check for closer instructions before editing.
 
 ## Sources of truth
 
@@ -17,14 +17,18 @@ This repository distributes agent skills through `Firzus/agent-skills`. It is do
 - When authoring skills or project instructions, use `skills/engineering/writing-for-agents/SKILL.md`. Present the complete proposed project-instruction text or diff for approval before applying it.
 - Preserve other contributors' intent and unrelated local work. Keep one authoritative explanation; retain operational references, not authoring research logs or historical evaluation reports inside skills.
 - Keep `SKILL.md` below 500 lines, with `name` and `description` in YAML frontmatter. The folder name must match `name`; preserve explicit invocation settings unless changing them is in scope.
-- Place runtime helpers only under a skill's `scripts/`. Do not introduce a build system or package manager outside the Canvas reader exception.
+- Place runtime helpers only under a skill's `scripts/`. Do not introduce a build system or package manager outside the Canvas reader and `tools/tauri-agent-kit/` exceptions.
 - The Canvas exception is `skills/engineering/canvas/scripts/reader/`: React, TypeScript, Tailwind CSS, Vite, npm dependencies, lockfile, configuration, and tests are permitted there. Keep generated output, dependencies, and logs untracked.
+- The `tools/tauri-agent-kit/` exception is a self-contained application workspace. Keep its TypeScript and Rust manifests, lockfiles, dependencies, builds, fixtures, tests, and release tooling under that directory. Keep generated output, dependencies, logs, and private fixture data untracked.
+- For tauri-agent-kit, publish only generic fixture evidence. Keep private application captures, logs, and integration backups outside the repository and release artifacts.
+- Before tauri-agent-kit native-input tests, reserve the Windows desktop and target only owned fixture processes. A dispatch acknowledgement or safe native rejection does not prove an observed UI effect.
+- Require explicit approval before tauri-agent-kit registry publication. Inspect partial publication results before resuming; npm and crates.io publication is not atomic.
 - Never commit secrets, credentials, license keys, private service URLs, or end-user data. Do not change `LICENSE`.
 
 ## Execution boundaries
 
 - Do not run `npx skills add` or `npx skills update` from this repository. README installation commands are for end users, not maintenance checks.
-- Normal repository edits do not authorize image generation, nested Codex runs, or network installs. Dependency installation is allowed for authorized Canvas reader work only.
+- Normal repository edits do not authorize image generation, nested Codex runs, or network installs. Dependency installation is allowed for authorized Canvas reader or `tools/tauri-agent-kit/` work only.
 - Editing `setup-codex` does not authorize changing the active user profile. Use isolated temporary profiles for installer tests.
 - Do not create or update external issues, push, open pull requests, merge, or deploy as a side effect of documentation work. Respect the approved delivery scope.
 
@@ -35,6 +39,7 @@ For documentation changes, check affected claims, local links and anchors, front
 | Changed area | Required checks | Working directory / prerequisite |
 | --- | --- | --- |
 | Canvas reader | `npm test` and `npm run build`; browser checks for affected visible behavior | `skills/engineering/canvas/scripts/reader/`; Node and installed dependencies |
+| Tauri agent kit | `vp pack`, `vp check`, `vp test`; `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test -p tauri-plugin-agent-kit --lib --locked`, and `cargo check -p tauri-plugin-agent-kit --release --locked`; fixture, live, security, packaging, and consumer checks for affected integration. Preserve regression assertions rather than weakening them to pass CI. | `tools/tauri-agent-kit/`; Windows, Node, Vite+, Rust, and installed dependencies; reserve the desktop before native-input tests |
 | Codex setup installer or embedded policy | `python skills/engineering/setup-codex/scripts/test_setup_codex.py` | Repository root; Python and PowerShell 7; temporary profiles only |
 | Other helper scripts | Relevant safe checks exposed by the owning skill and script | Confirm inputs and effects before execution |
 

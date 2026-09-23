@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Agent Kit Fixture</title>
+  </head>
+  <body style="font: 20px system-ui; background: #eef4ff; color: #102030; margin: 24px">
+    <h1>Agent Kit Fixture</h1>
+    <button id="increment">Increment</button><output id="count">0</output>
+    <p>
+      <label>Message <input id="message" autocomplete="off" /></label
+      ><button id="send">Echo</button>
+    </p>
+    <output id="answer"></output>
+    <p>
+      <label>Password <input type="password" value="fixture-secret" /></label>
+    </p>
+    <button id="block">Block JavaScript for 5 seconds</button>
+    <div style="height: 1000px; background: linear-gradient(#def, #acf)"><p>Scroll area</p></div>
+    <p id="bottom">Bottom marker</p>
+    <output
+      id="pointer"
+      style="position: fixed; bottom: 0; right: 0; pointer-events: none"
+    ></output>
+    <script src="app.js"></script>
+  </body>
+</html>

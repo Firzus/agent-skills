@@ -1,0 +1,38 @@
+name: Tauri agent kit check
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  workflow_dispatch:
+  workflow_call:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'workflow_dispatch' }}
+permissions:
+  contents: read
+jobs:
+  windows:
+    defaults:
+      run:
+        working-directory: tools/tauri-agent-kit
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          version: 0.3.2
+          node-version: 22
+          run-install: false
+      - run: vp install
+      - run: vp pack
+      - run: vp check
+      - run: vp test
+      - run: cargo fmt --all --check
+      - run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - run: cargo test -p tauri-plugin-agent-kit --lib --locked
+      - run: cargo check -p tauri-plugin-agent-kit --release --locked
+      - run: cargo build -p agent-kit-fixture --locked
+      - run: vp run test:live
+      - run: vp run test:security
+      - run: pwsh -File scripts/package-test.ps1
+      - run: cargo package -p tauri-plugin-agent-kit --locked
+      - run: cargo publish -p tauri-plugin-agent-kit --dry-run --locked

@@ -1,0 +1,11 @@
+{
+  "outcomes": [
+    "two same-title windows addressed by exact labels",
+    "WebView click observed; stale reference rejected",
+    "Unicode text, real Tauri IPC, response and instrumentation",
+    "controller zoom restored; native WebView PNG captured",
+    "scroll changes observed geometry",
+    "Windows click observed",
+    "Windows text and Backspace effects observed"
+  ]
+}

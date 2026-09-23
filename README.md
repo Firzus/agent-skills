@@ -103,6 +103,14 @@ It offers `model_verbosity = "low"` with separate user approval. Read its
 [policy template](./skills/engineering/setup-codex/SKILL.md#policy-template)
 before choosing it.
 
+### Tauri companion tooling
+
+The [tauri](./skills/web/tauri/SKILL.md) skill remains the agent-facing entry
+point. Its optional Windows diagnostic application, [tauri-agent-kit](./tools/tauri-agent-kit/README.md),
+is maintained in this repository but is not an installable skill. Installing the
+skill does not install the MCP server or Rust plugin; check the kit's compatibility
+and publication status before integrating it into an application.
+
 ## All skills
 
 ### Engineering

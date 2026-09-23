@@ -1,0 +1,13 @@
+[package]
+name = "agent-kit-fixture"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+tauri.workspace = true
+tauri-plugin-agent-kit = { path = "../../../plugin" }
+serde_json.workspace = true
+
+[build-dependencies]
+tauri-build = "2"

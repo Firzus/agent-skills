@@ -1,0 +1,52 @@
+{
+  "name": "tauri-agent-kit",
+  "version": "0.1.0-alpha.1",
+  "description": "Unofficial Windows WebView2 diagnostics and automation MCP server for Tauri 2.",
+  "keywords": [
+    "diagnostics",
+    "mcp",
+    "tauri",
+    "webview2"
+  ],
+  "homepage": "https://github.com/Firzus/agent-skills/tree/main/tools/tauri-agent-kit",
+  "bugs": {
+    "url": "https://github.com/Firzus/agent-skills/issues"
+  },
+  "license": "MIT",
+  "author": "Firzus",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Firzus/agent-skills.git",
+    "directory": "tools/tauri-agent-kit/server"
+  },
+  "bin": {
+    "tauri-agent-kit": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "os": [
+    "win32"
+  ],
+  "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha"
+  },
+  "scripts": {
+    "check": "vp check"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
+    "zod": "^4.3"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "mcpName": "io.github.Firzus/tauri-agent-kit"
+}

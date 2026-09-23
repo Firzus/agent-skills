@@ -1,0 +1,13 @@
+# Automatically generated - DO NOT EDIT!
+
+"$schema" = "../../schemas/schema.json"
+
+[[permission]]
+identifier = "allow-record-ipc"
+description = "Enables the record_ipc command without any pre-configured scope."
+commands.allow = ["record_ipc"]
+
+[[permission]]
+identifier = "deny-record-ipc"
+description = "Denies the record_ipc command without any pre-configured scope."
+commands.deny = ["record_ipc"]
