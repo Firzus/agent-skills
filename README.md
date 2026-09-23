@@ -62,6 +62,7 @@ for supported agents, installation modes, and troubleshooting.
 | I want to… | Start with |
 | --- | --- |
 | Review an existing change without modifying it | [code-review](./skills/engineering/code-review/SKILL.md) |
+| Diagnose a bug or verify an authorized fix | [debug](./skills/engineering/debug/SKILL.md) |
 | Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) |
 | Investigate a question across multiple sources | [deep-research](./skills/engineering/deep-research/SKILL.md) |
 | Turn an unclear objective into bounded, approved work | [interview](./skills/engineering/interview/SKILL.md) |
@@ -110,6 +111,7 @@ before choosing it.
 | --- | --- |
 | [canvas](./skills/engineering/canvas/SKILL.md) | Technical reports, architecture findings, and progress views. |
 | [code-review](./skills/engineering/code-review/SKILL.md) | Independent read-only review of a scoped change. |
+| [debug](./skills/engineering/debug/SKILL.md) | Evidence-led diagnosis and verification of authorized bug fixes. |
 | [deep-research](./skills/engineering/deep-research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
