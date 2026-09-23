@@ -1,8 +1,7 @@
 # React subscriptions and store ownership
 
 Applies to `@tanstack/react-store` 0.11.1. For older APIs, use
-[legacy.md](./legacy.md). Sources and version evidence are in
-[references/research.md](./references/research.md).
+[legacy.md](./legacy.md).
 
 ## Select the rendered value
 

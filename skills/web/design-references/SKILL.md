@@ -122,8 +122,5 @@ Only when the user requests catalog maintenance, follow the record rules and
 maintenance checks in [catalog-format.md](catalog-format.md). Edit the repository's
 source catalog, not an installed copy during ordinary exploration. Keep inaccessible
 surfaces separate from verified ones, even when another surface of the same product
-is verified. The [pilot report](references/atelier-pilot.md) records the initial
-theoretical validation; load it only when reproducing or reviewing that pilot.
-For the human selection history and release checks, consult the
-[design review record](references/design-review-2026-09-19.md). The bundled JSON
-is self-contained; exploration does not depend on the temporary voting canvas.
+is verified. The bundled JSON is self-contained; exploration does not depend on
+the temporary voting canvas.

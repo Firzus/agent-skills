@@ -4,8 +4,7 @@ Use this branch when the project exposes `Derived`, `Effect`, or the pre-signals
 Store contract. The legacy example is verified against **v0.8.0**; inspect exact
 installed types for earlier versions. The breaking signals rewrite landed in
 **0.9.0**, readonly factory typing was fixed in **0.9.1**, and the modern selector
-hook family landed in **0.11.0**. Detailed citations are in
-[references/research.md](./references/research.md).
+hook family landed in **0.11.0**.
 
 ## Maintain the installed contract
 

@@ -27,7 +27,6 @@ Choose the path before editing:
 | --- | --- |
 | Install, scaffold, migrate, upgrade, or change CI setup | [setup-and-migration.md](./setup-and-migration.md) |
 | Workspace targeting, shared lint/format policy, or cached tasks | [workspaces.md](./workspaces.md) |
-| Reproduce the skill's baseline tests | [Smoke-test record](./references/smoke-tests.md) |
 
 Finish with the target package, resolved versions, existing command path, and
 required validation identified. Ordinary feature work uses the installed
