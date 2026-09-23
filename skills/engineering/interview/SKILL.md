@@ -108,7 +108,9 @@ can be approved independently of the blocked implementation it informs.
 
 1. Check approval, destination, write permissions, and actual Linear tool schemas.
 2. Re-read existing records before updates; preserve concurrent and unrelated content.
-   Use verified project states/labels. Preparation does not authorize issue closure.
+   Use verified team states/labels. Create approved work in Backlog unless it is
+   selected for near-term execution with prerequisites resolved; then use Todo.
+   Preparation does not authorize issue closure.
 3. Publish approved containers/documents, then issues and relationships using returned
    identifiers. Verify content, destination, memberships, and relations.
 4. After a partial or uncertain write, inspect before retrying; retain confirmed IDs
