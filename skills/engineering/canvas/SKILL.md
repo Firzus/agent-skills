@@ -3,7 +3,7 @@ name: canvas
 description: >-
   Renders a standalone analytical artifact — architecture review, audit,
   quantitative analysis, data-heavy report, comparison, timeline, progress
-  dashboard — as a single self-contained HTML file opened beside the chat.
+  dashboard — as a Markdown-backed reader or standalone design HTML beside the chat.
   Works in any environment (Codex, Claude Code, Cursor, generic agents). Use
   when the structured output IS the deliverable and benefits from visual
   layout, and whenever updating an existing canvas file.
@@ -11,9 +11,9 @@ description: >-
 
 # Canvas
 
-A canvas is one self-contained HTML file the agent writes to disk and opens in
-the user's browser. No build step, no framework, no server: any agent that can
-write a file and run a shell command can produce and update one.
+A canvas presents an analytical artifact in the user's browser. Technical
+documents use the bundled React reader with Markdown as the content source;
+free-form design artifacts use standalone HTML.
 
 ## 1. Decide whether to use a canvas
 
@@ -32,7 +32,7 @@ branch.
 
 | Branch | The canvas is | Read |
 | --- | --- | --- |
-| **Technical** | documentation of engineering work — audit, architecture review, code health report, benchmark, migration plan, progress dashboard. The content carries everything; the visual only has to stay out of the way. | [technical.md](technical.md) — a fixed Geist dark design system, applied as-is |
+| **Technical** | documentation of engineering work — audit, architecture review, code health report, benchmark, migration plan, progress dashboard. The content carries everything; the visual only has to stay out of the way. | [technical.md](technical.md) — React Markdown reader with the accepted dark layout |
 | **Design** | an artifact whose layout carries meaning — editorial report, visual comparison, anything the user asked to look a certain way. | [design.md](design.md) — compose freely inside the anti-slop rules |
 
 Route to **technical** whenever the subject is engineering work: a standard
@@ -40,7 +40,16 @@ visual costs no design decisions and no design context. Route to **design**
 when the user asks for a visual treatment, or when the composition itself
 does the explaining.
 
+When the document needs images, read [Images](images.md) for choosing between
+existing assets, generated illustrations through `imagegen`, and real captures;
+it covers provenance, source preservation, embedding, and verification. Images
+are optional and do not require changing the presentation type.
+
 ## 3. Write the canvas
+
+**Technical branch:** follow `technical.md` and the reader README for its source,
+build, preview, and update contract. The standalone file rules below apply only
+to the design branch.
 
 **Location.** Write to `<tmpdir>/canvases/<kebab-name>.html`. Resolve the temp
 directory from `$TMPDIR`, falling back to `/tmp` on Unix or `%TEMP%` on
@@ -49,7 +58,9 @@ descriptive kebab-case filename; nothing lands in the repository.
 
 **File rules:**
 
-- Exactly one `.html` file per canvas. No helper files, no supporting modules.
+- Exactly one delivered `.html` file per canvas. No runtime helper files or
+  supporting modules. Retain original image assets separately as source material;
+  embed their selected bytes in the HTML as described in [Images](images.md).
 - Self-contained: all data inlined at write time. No `fetch()`, no reads of
   local files. External references are limited to the CDN tags listed in your
   branch file: Tailwind for styling, Mermaid for graph-shaped diagrams,
@@ -69,7 +80,9 @@ label.
 
 ## 4. Open and link it
 
-Open the file for the user: `start <path>` on Windows, `open <path>` on
+For the technical reader, open its loopback preview URL and link the source
+Markdown when handing it over. For standalone design HTML, open the file for
+the user: `start <path>` on Windows, `open <path>` on
 macOS, `xdg-open <path>` on Linux. If the environment offers an in-app
 browser or preview tool, use it instead of the OS opener. In the chat
 response, always link the canvas by its absolute path with a short
@@ -78,7 +91,10 @@ it opened beside the chat and can be refreshed after updates.
 
 ## 5. Update in place
 
-A canvas that tracks ongoing work (a progress dashboard, a review being
+A technical reader updates from its Markdown source through Vite during local
+work; rebuild static output after changes. Do not add timed full-page reloads.
+
+A standalone design canvas that tracks ongoing work (a progress dashboard, a review being
 worked through) is a **living artifact**: keep the same file path for its
 whole lifetime and edit the file in place, so a browser refresh shows the
 new state. For a canvas expected to change while the user watches, add

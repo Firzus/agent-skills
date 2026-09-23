@@ -1,0 +1,38 @@
+/* Cursor Docs dark palette observed at https://cursor.com/docs.
+   Native CSS adaptation. Unobserved semantic roles reuse observed neutral tokens.
+   Custom Cursor fonts are not bundled; the declared system fallbacks are used. */
+:root, .dark {
+  color-scheme: dark;
+  --background: #14120b;
+  --foreground: #edecec;
+  --card: #1b1913;
+  --card-foreground: var(--foreground);
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+  --primary: #eb5600;
+  --secondary: #201e18;
+  --secondary-foreground: var(--foreground);
+  --muted: #201e18;
+  --muted-foreground: #969592;
+  --accent: var(--muted);
+  --accent-foreground: var(--foreground);
+  --border: #2a2822;
+  --input: var(--border);
+  --ring: var(--foreground);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--primary);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+  --font-sans: "cursorSans", system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "berkeleyMono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --radius: 4px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
