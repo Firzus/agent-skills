@@ -93,12 +93,11 @@ availability. Explicit-invocation workflows such as **interview**, **implement**
 
 ### Optional: personal Codex instructions
 
-[setup-codex](./skills/engineering/setup-codex/SKILL.md) prepares a **complete
-replacement** of your user-level Codex instructions. It asks for language choices,
-shows the proposed content, waits for approval, and backs up the previous file.
-
-It does not merge existing rules, install other skills, or change Codex configuration.
-This is separate from trying an individual skill. Read its
+[setup-codex](./skills/engineering/setup-codex/SKILL.md) creates a reviewed
+**Codex Operating Policy** file and points `model_instructions_file` in the
+user-level `config.toml` to it. It updates the file on later runs. The skill asks
+for language choices, previews the file and config change, and waits for approval.
+It offers `model_verbosity = "low"` with separate user approval. Read its
 [policy template](./skills/engineering/setup-codex/SKILL.md#policy-template)
 before choosing it.
 
@@ -117,7 +116,7 @@ before choosing it.
 | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and execute selected refactors. |
 | [interview](./skills/engineering/interview/SKILL.md) | Clarify decisions and prepare approved Linear work. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
-| [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Replace personal Codex instructions with a reviewed policy. |
+| [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Configure a reviewed Codex Operating Policy through `model_instructions_file`. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
 | [slop-audit](./skills/engineering/slop-audit/SKILL.md) | Investigate dead code and justify scoped cleanup. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
