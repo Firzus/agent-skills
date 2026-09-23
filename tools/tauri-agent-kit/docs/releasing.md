@@ -55,8 +55,10 @@ Check each command's exit status before continuing. Local bootstrap publications
 Configure trusted publishing for both npm packages and the crate, scoped to
 `Firzus/agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment
 `release`. npm requires a sufficiently recent npm CLI and Node; the workflow
-uses Node 24. Use GitHub-hosted runners. Do not run the workflow until
-environment approval and publisher configuration are verified.
+uses Node 24. Use GitHub-hosted runners. The publishing job remains disabled
+until the repository variable `TAURI_AGENT_KIT_RELEASE_ENABLED` is set to
+`true`. Set it only after explicit release approval, environment protection,
+and publisher configuration are verified. This migration does not set it.
 
 Manually dispatch Publish Tauri agent kit alpha on main with the exact reviewed version. It reruns checks and packaging before entering the approval-gated publishing job. The output remains a draft prerelease. No automatic version bump or stable dist-tag is applied.
 

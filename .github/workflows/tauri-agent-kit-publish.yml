@@ -16,6 +16,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/tauri-agent-kit-check.yml
   publish:
+    if: vars.TAURI_AGENT_KIT_RELEASE_ENABLED == 'true'
     defaults:
       run:
         working-directory: tools/tauri-agent-kit
