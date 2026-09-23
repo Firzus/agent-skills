@@ -66,6 +66,7 @@ for supported agents, installation modes, and troubleshooting.
 | Investigate a question across multiple sources | [deep-research](./skills/engineering/deep-research/SKILL.md) |
 | Turn an unclear objective into bounded, approved work | [interview](./skills/engineering/interview/SKILL.md) |
 | Implement a defined change and verify it | [implement](./skills/engineering/implement/SKILL.md) |
+| Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
 | Read an architecture report or track recommendations visually | [canvas](./skills/engineering/canvas/SKILL.md) |
 | Design a frontend, from visual direction to real content | [frontend-design](./skills/web/frontend-design/SKILL.md) |
 
@@ -117,6 +118,7 @@ before choosing it.
 | [interview](./skills/engineering/interview/SKILL.md) | Clarify decisions and prepare approved Linear work. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
 | [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Configure a reviewed Codex Operating Policy through `model_instructions_file`. |
+| [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
 | [unslop](./skills/engineering/unslop/SKILL.md) | Investigate dead code and justify scoped cleanup. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |

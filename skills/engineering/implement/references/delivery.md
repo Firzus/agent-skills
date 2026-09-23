@@ -23,12 +23,13 @@ the destination and action when existing authorization does not cover them.
    scope, using Conventional Commits; mark breaking changes with `!` or a
    `BREAKING CHANGE:` footer. Without commit approval, preserve the local changes
    and verification evidence and report Git delivery as pending.
-3. Within authorized publication scope, push and open a draft PR. Include outcome,
-   scope, checks, limitations, and the existing Linear reference using project
-   conventions. If targeting the default branch and closing GitHub issues, repeat
-   `Closes #<number>` for each intended closure.
-4. Mark ready only when requested work and required validation are complete and
-   the PR action is authorized. Missing required runtime checks remain explicit.
+3. Within authorized publication scope, push and open a non-draft PR once work and
+   required checks are complete; use a draft only if the user or project requests it.
+   Include outcome, scope, checks, limitations, and the existing Linear reference
+   using project conventions. If targeting the default branch, repeat
+   `Closes #<number>` for each intended GitHub issue closure.
+4. Verify the PR state. Mark a draft ready only after work and required checks are
+   complete and the action is authorized; report missing runtime checks.
 
 Merge and deploy only within their separately authorized scope. Preserve prototype
 branches; never discard unrelated work. Force-push only with both

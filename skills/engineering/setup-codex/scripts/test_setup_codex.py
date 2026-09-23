@@ -92,6 +92,8 @@ class SetupTests(unittest.TestCase):
         expected = match.group(1).replace('{{COMMUNICATION_LANGUAGE}}', 'French').replace('{{WRITING_LANGUAGE}}', 'English').replace('{{CODE_LANGUAGE}}', 'English')
         self.run_setup(*self.approval())
         self.assertEqual(self.policy.read_text(encoding='utf-8'), expected)
+        self.assertIn('open a non-draft PR by default', expected)
+        self.assertIn('use a draft only when the user or project requests one', expected)
 
     def test_existing_policy_and_bom_config_are_backed_up(self):
         self.policy.parent.mkdir()
