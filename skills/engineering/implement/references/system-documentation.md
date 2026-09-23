@@ -12,7 +12,11 @@ Read the implementation, callers, configuration, relevant tests, and existing pa
 
 Use the template's core topics: purpose and boundaries, structure and interactions, behavior and constraints, and the change and verification map. Add state, security, concurrency, performance, or operational detail only when the system's risks require it. Omit empty optional sections and link to existing API references or runbooks rather than reproduce them.
 
-Use root CONTEXT.md for domain definitions and link to it for unfamiliar terms. Keep the system's detailed rules here. A diagram is useful when it clarifies relationships, not as a mandatory deliverable. Keep planned behavior visibly separate from implemented behavior and label unknown reasons rather than reconstruct a decision history.
+Link unfamiliar terms to the project's designated context documents or glossaries. Use root `CONTEXT.md` only where that convention is adopted. Keep the system's detailed rules here. A diagram is useful when it clarifies relationships, not as a mandatory deliverable. Keep planned behavior visibly separate from implemented behavior and label unknown reasons rather than reconstruct a decision history.
+
+For accepted context changes from an issue, follow [context delivery](intake-and-handoff.md#deliver-context-with-the-change).
+Describe the behavior of the repository version being changed; an updated page in
+a PR does not establish integration or deployment.
 
 Local rationale stays beside the relevant code; cross-component context belongs here. Link to existing explanations rather than copying them. Removing a redundant comment does not require a new documentation paragraph.
 

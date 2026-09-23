@@ -1,53 +1,109 @@
 ---
 name: implement
-description: Implement an authorized code, configuration, refactoring, or documentation change with integrated test-first verification and current system documentation. Use for defined features, requested fixes, and documentation work; not diagnosis-only requests, unresolved design choices, or broad project planning.
+description: Deliver prepared work with test-first verification, current documentation, and a verified handoff.
+disable-model-invocation: true
 ---
 
 # Implement a verified change
 
-Produce one coherent, reviewable result. TDD and affected documentation belong to this procedure; no separate TDD skill is required.
+Deliver one coherent, reviewable outcome. Tests, context, and affected documentation
+belong to the change; an implementation request does not authorize unrelated work,
+external publication, merge, or deployment.
 
-## 1. Establish the change
+## 1. Read the work and verify readiness
 
-Read the request, project agreements, current files, and nearest tests. Identify the expected outcome, exclusions, acceptance evidence, and delivery boundary. Trace affected callers and public contracts. Separate unrelated local work and pre-existing failures.
+1. Read the request, project instructions, current repository state, and existing
+   work record. For a Linear issue, include comments, linked decisions, acceptance
+   criteria, prerequisites, and delivery boundary.
+2. Apply [intake and handoff](references/intake-and-handoff.md) to verify the work
+   type, ownership, prerequisites, prototype version, and context changes.
+3. Trace the affected behavior through callers, contracts, configuration, and tests.
+   Separate unrelated local work and pre-existing failures.
+4. Resolve discoverable facts locally. For consequential open choices or conflicts,
+   record the decision needed and propose returning to interview; pause only the
+   dependent work. A ready label alone is not evidence of readiness.
 
-Read relevant definitions in root CONTEXT.md and affected pages in docs/systems when the change depends on their terms or contracts. Follow their source links as needed rather than loading all documentation. Report a missing required document without silently turning a narrow change into project setup.
+**Done:** scope, prerequisites, authorization, and independent acceptance evidence
+are clear. Otherwise report the precise blocker and continue only independent,
+authorized work. In read-only or planning mode, retain a plan rather than edit.
 
-Resolve facts locally before asking. If the requested behavior still needs a user decision, prepare that decision instead of choosing silently. Research or a prototype answers uncertainty; it does not automatically expand implementation.
+## 2. Prepare the change and verification
 
-**Done when:** the authorized outcome and an independent way to check it are clear.
+1. Preserve the prepared branch/worktree and unrelated changes. Identify existing
+   components and dependencies to reuse; avoid speculative restructuring.
+   Record the task's starting revision and scoped local changes for later review.
+2. Establish the relevant baseline and map each acceptance criterion to a focused
+   check, including consequential adverse cases for security, privacy, money,
+   destructive operations, or public compatibility.
+3. Choose the smallest coherent implementation sequence and the agreed delivery
+   boundary. Read [delivery](references/delivery.md) before Git publication or
+   Linear updates; continue local preparation when external writes are pending.
 
-## 2. Verify one behavior before implementing it
+**Done:** baseline and checks identified, work isolated, delivery expectations explicit.
+
+## 3. Implement with tests and documentation
 
 For each production behavior:
 
-1. Choose the nearest existing public test boundary and a concrete expected result, independent of the proposed code.
-2. Write one focused test. Run it and inspect the failure: it must demonstrate the missing behavior, not a broken fixture, dependency, or test command.
-3. Apply the smallest correct change that makes this test pass, using existing project patterns.
-4. Run the focused check again. Refactor only while it remains green, then proceed to the next behavior.
+1. Write a focused test at an existing caller-facing boundary.
+2. Run it and inspect the failure: it must demonstrate the missing behavior,
+   not a broken fixture, dependency, or command.
+3. Make the smallest correct change using established components and contracts.
+4. Run the test again; refactor while green, then move to the next behavior.
 
-Reuse established boundaries without renewed approval. For an unsuitable test-first case, record why and use a relevant substitute; do not invent infrastructure solely to preserve the ceremony. For refactoring, establish a passing behavior baseline and preserve it.
+| Work shape | Verification |
+| --- | --- |
+| Production behavior | Test first by default |
+| Test-first unsuitable | State why and use relevant substitute evidence; avoid infrastructure solely for ceremony |
+| Refactoring | Establish and preserve a passing behavioral baseline |
+| Documentation only | Verify sources, claims, and links; no artificial code change or failing test |
 
-For documentation-only work, inspect source evidence, edit the document, and validate its claims and links. Do not invent a code change or failing automated test.
+- Deliver the accepted context delta using [intake and handoff](references/intake-and-handoff.md#deliver-context-with-the-change).
+- For a new, substantially changed, audited, or retired system page, use
+  [system documentation](references/system-documentation.md). Keep small wording
+  repairs local to their sources and links.
+- Keep comments beside verified, non-obvious rationale or caller obligations.
+  Explain workaround sources and removal conditions; update stale affected comments.
+  Avoid narration, decorative labels, vague TODOs, and disabled code.
+- A new consequential decision returns to clarification; ordinary internal choices
+  remain with implementation. Research/prototype needs do not expand scope silently.
 
-**Done when:** every changed behavior has its meaningful failure and passing result, or a stated exception with substitute evidence.
+**Done:** each behavior has failing/passing evidence or a justified substitute;
+code, context, contracts, and affected documentation agree.
 
-## 3. Complete the affected system
+## 4. Verify the complete result
 
-Inspect the final diff for callers, error paths, compatibility, and state transitions. Include the consequential adverse case required by the change. Keep optional cleanup separate.
+1. Run [the review-correction loop](references/review-loop.md) using `code-review`.
+   Reviewers inspect; implement verifies findings, corrects confirmed problems,
+   and requests targeted follow-up. Keep optional cleanup out of the change.
+2. Run focused checks and required project checks. Fix failures caused by the
+   change; report pre-existing failures without broadening the task.
+3. For user-visible behavior, exercise the ordinary integrated entry point,
+   interactions, and relevant narrow or target-device layout. Keep the review
+   surface available through supported tools.
+4. Identify prototype, simulation, or live data. Distinguish inspected behavior,
+   executed checks, and unavailable runtime evidence.
+5. After a visual bug fix or when a recorded demo is requested, use the available
+   `video-report` skill to capture and review evidence; its capture rules stay there.
+   Video supplements tests, not replaces them. If unavailable, report the gap;
+   it blocks delivery only when video is required acceptance evidence. Keep recordings
+   local unless their publication is authorized.
 
-Use comments only for verified non-obvious local reasons or constraints whose absence could cause an incorrect change. Keep them brief and adjacent. Avoid narration, decorative labels, vague TODOs, and disabled code. A workaround identifies its source and removal condition. Document API caller obligations when not evident or when required. Update comments invalidated by this change and preserve unrelated ones.
+**Done:** the review loop's stopping conditions hold, and acceptance evidence covers
+the connected result and relevant failure cases.
+Missing required verification remains a delivery limitation, not a claimed pass.
 
-Check whether the change affects system documentation. Read [system documentation](references/system-documentation.md) when creating, materially updating, auditing, or retiring a system page. A simple wording repair needs only its relevant source and link checks.
+## 5. Deliver and report
 
-When introducing or changing domain terms, use manage-project's [vocabulary procedure](../manage-project/references/vocabulary.md) to keep CONTEXT.md current within the change's scope.
+1. Follow [delivery](references/delivery.md) for authorized commits, PRs, reviews,
+   and meaningful Linear updates.
+2. Preserve the existing record; link artifacts and evidence rather than creating
+   another backlog. Report acceptance, integration, and deployment separately.
+3. Return the result, affected files, checks, limitations, and next owner/action.
+   When video evidence was produced, include its supported preview or absolute local
+   path, the demonstrated scenario and observed result, and any review limitations.
+   A newly prepared issue or broader goal needs a separate request, not automatic
+   continuation into the next feature.
 
-**Done when:** code, affected contracts, local explanations, and current documentation agree within the authorized scope.
-
-## 4. Demonstrate and hand over
-
-Run the focused checks and required project checks. For visible behavior, exercise the connected implementation through its ordinary entry point, including interaction and a relevant narrow or target-device layout. Preserve the review surface using supported tools. State what actually ran and what remains unavailable.
-
-Review every changed block against the requested outcome. Attach or link the result and evidence in the existing task record; use manage-project for meaningful Linear updates and GitHub artifact links within the authorized scope. A prepared PR is not acceptance, integration, or release.
-
-**Done when:** the result is reviewable, evidence and limitations are recorded, and the agreed completion boundary is met or explicitly reported pending.
+**Done:** the agreed completion boundary is met and required updates are verified.
+Otherwise report the completed local work and exact pending delivery operations.

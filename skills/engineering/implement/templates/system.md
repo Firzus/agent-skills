@@ -4,7 +4,7 @@
 
 ## Purpose and boundaries
 
-*What outcome this system provides, for whom, what it owns, and what it leaves to other systems. Link relevant domain definitions in the root CONTEXT.md.*
+*What outcome this system provides, for whom, what it owns, and what it leaves to other systems. Link relevant domain definitions in the project's designated context documents or glossaries.*
 
 ## Structure and interactions
 
