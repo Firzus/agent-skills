@@ -41,9 +41,9 @@ Keep one working record: accepted decisions, open questions and prerequisites,
 missing evidence, exclusions, and resume point. The **frontier** contains questions
 whose prerequisites are settled.
 
-1. Choose independent frontier questions, usually two or three; use one when only
-   one is ready or the user prefers a slower pace. Resolve outcome/scope before
-   dependent behavior/design choices.
+1. Choose the independent frontier questions that could change the next result.
+   Ask them in the same round; use one when only one is ready or the user prefers
+   a slower pace. Resolve outcome/scope before dependent behavior/design choices.
 2. Inspect discoverable facts. When useful, delegate a bounded read-only question
    with required evidence; verify the result while continuing independent questions.
    Without delegation, inspect directly and report actual access limits.
@@ -72,25 +72,17 @@ These rules cover questions, choices, and accompanying explanations only:
   recommendation only when helpful.
 - Test contradictions and consequential failures with concrete situations.
 - Rephrase an unclear question before advancing.
-- Treat user preferences as decisions: silence, timeouts, and question-UI feedback
-  are not answers.
+- Treat user preferences as decisions; silence is not an answer.
 
 Example: "If you delete a task by mistake, should you be able to restore it?"
 Final artifacts retain technical precision and the project's artifact language.
 
 ### Question delivery
 
-Inspect the native tool's actual schema and mode permissions. Send independent
-questions together when supported, within its limits; number questions in chat.
-
-| Available mechanism | Action |
-| --- | --- |
-| Blocking question tool | Send the round and wait for answers |
-| Async tool with supported interruptible wait | Keep the turn open until answer, cancellation, or new direction; a timeout leaves the question pending |
-| No permitted tool or no way to keep it active | Ask in chat and yield to the user |
-
-Ending an async turn may dismiss its questions. Use the supported wait, not polling
-or an immediate final message; a tool acknowledgment is not the user's answer.
+Present the questions directly in the conversation. Number independent questions
+in one message, then wait for the user's answers. Do not include a question whose
+answer depends on another unanswered question in that round. If the user answers
+only some, keep the rest open for the next round.
 
 **Done:** consequential choices for the selected preparation result are accepted.
 **Waiting:** a user decision is unanswered.
