@@ -5,9 +5,13 @@ param(
     [Parameter(Mandatory)][ValidatePattern('^[^\r\n{}]{1,80}$')][string]$CommunicationLanguage,
     [Parameter(Mandatory)][ValidatePattern('^[^\r\n{}]{1,80}$')][string]$WritingLanguage,
     [Parameter(Mandatory)][ValidatePattern('^[^\r\n{}]{1,80}$')][string]$CodeLanguage,
-    [switch]$ApproveReplacement,
+    [switch]$ApproveInstall,
     [string]$ApprovedContentHash,
-    [string]$ExpectedTargetHash
+    [string]$ApprovedConfigHash,
+    [string]$ExpectedPolicyHash,
+    [string]$ExpectedConfigHash,
+    [switch]$SetLowVerbosity,
+    [switch]$ApproveLowVerbosity
 )
 
 $ErrorActionPreference = 'Stop'
@@ -32,73 +36,125 @@ function Get-TargetHash([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
 }
 
+function Get-BytesHash([byte[]]$Bytes) {
+    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($Bytes))
+}
+
+function Set-RootSetting([string]$Text, [string]$Key, [string]$Value) {
+    $table = [regex]::Match($Text, '(?m)^[ \t]*\[[^\r\n]+\]')
+    $rootEnd = if ($table.Success) { $table.Index } else { $Text.Length }
+    $matches = [regex]::Matches($Text.Substring(0, $rootEnd), '(?m)^[ \t]*' + [regex]::Escape($Key) + '[ \t]*=[^\r\n]*')
+    if ($matches.Count -gt 1) { throw "Multiple user-level $Key settings require manual resolution." }
+    $setting = "$Key = $Value"
+    if ($matches.Count -eq 1) {
+        $match = $matches[0]
+        return $Text.Substring(0, $match.Index) + $setting + $Text.Substring($match.Index + $match.Length)
+    }
+    $newline = if ($Text.Contains("`r`n")) { "`r`n" } else { "`n" }
+    return $setting + $newline + $Text
+}
+
+function Install-File([string]$Path, [byte[]]$Bytes, [string]$ExpectedHash, [string]$Backup) {
+    $staged = Join-Path $CodexHome ('.setup-codex-' + [Guid]::NewGuid().ToString('N') + '.tmp')
+    try {
+        [IO.File]::WriteAllBytes($staged, $Bytes)
+        Assert-UnlinkedPath $Path
+        if ((Get-TargetHash $Path) -cne $ExpectedHash) { throw "Destination changed during setup: $Path" }
+        if ($ExpectedHash -eq 'MISSING') {
+            [IO.File]::Move($staged, $Path)
+        } else {
+            [IO.File]::Replace($staged, $Path, $Backup)
+        }
+        if ((Get-TargetHash $Path) -cne (Get-BytesHash $Bytes)) { throw "Post-write verification failed: $Path" }
+    } finally {
+        if (Test-Path -LiteralPath $staged) { Remove-Item -LiteralPath $staged }
+    }
+}
+
 $CodexHome = [IO.Path]::GetFullPath($CodexHome)
 $useEmbeddedPolicy = -not $PSBoundParameters.ContainsKey('SourcePolicy')
 if ($useEmbeddedPolicy) { $SourcePolicy = Join-Path (Split-Path $PSScriptRoot -Parent) 'SKILL.md' }
 $SourcePolicy = [IO.Path]::GetFullPath($SourcePolicy)
-$target = Join-Path $CodexHome 'AGENTS.md'
-$override = Join-Path $CodexHome 'AGENTS.override.md'
+$policy = Join-Path $CodexHome 'instructions/codex-operating-policy.md'
 $config = Join-Path $CodexHome 'config.toml'
-foreach ($path in @($CodexHome, $SourcePolicy, $target, $override, $config)) { Assert-UnlinkedPath $path }
-if ($SourcePolicy -eq $target) { throw 'The source policy cannot be the destination.' }
+foreach ($path in @($CodexHome, $SourcePolicy, $policy, $config)) { Assert-UnlinkedPath $path }
+if ($SourcePolicy -in @($policy, $config)) { throw 'The source policy cannot be a destination.' }
 $template = [IO.File]::ReadAllText($SourcePolicy)
 if ($useEmbeddedPolicy) {
-    $blocks = [regex]::Matches($template, '(?ms)^```markdown\r?\n(# User operating instructions\r?\n.*?)^```\r?$')
-    if ($blocks.Count -ne 1) { throw 'SKILL.md must contain exactly one operating policy block.' }
+    $blocks = [regex]::Matches($template, '(?ms)^```markdown\r?\n(# Codex Operating Policy\r?\n.*?)^```\r?$')
+    if ($blocks.Count -ne 1) { throw 'SKILL.md must contain exactly one Codex Operating Policy block.' }
     $template = $blocks[0].Groups[1].Value
 }
 $content = $template.Replace('{{COMMUNICATION_LANGUAGE}}', $CommunicationLanguage.Trim()).Replace('{{WRITING_LANGUAGE}}', $WritingLanguage.Trim()).Replace('{{CODE_LANGUAGE}}', $CodeLanguage.Trim())
 if ([string]::IsNullOrWhiteSpace($content) -or $content -match '\{\{[^}]+\}\}') { throw 'The policy is empty or contains unresolved placeholders.' }
-$bytes = [Text.UTF8Encoding]::new($false).GetBytes($content)
-$contentHash = [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($bytes))
-$targetHash = Get-TargetHash $target
-$hasOverride = (Test-Path -LiteralPath $override -PathType Leaf) -and -not [string]::IsNullOrWhiteSpace([IO.File]::ReadAllText($override))
-if ($hasOverride) { Write-Warning 'AGENTS.override.md takes precedence. Resolve it separately before applying.' }
-if (Test-Path -LiteralPath $config -PathType Leaf) {
-    if ([IO.File]::ReadAllText($config) -match '(?m)^\s*(model_instructions_file|developer_instructions)\s*=') {
-        Write-Warning 'Custom instructions are configured. They are not modified; inspect them for conflicts before claiming activation.'
-    }
+$utf8 = [Text.UTF8Encoding]::new($false, $true)
+$policyBytes = $utf8.GetBytes($content)
+$contentHash = Get-BytesHash $policyBytes
+$policyHash = Get-TargetHash $policy
+$configHash = Get-TargetHash $config
+if ($configHash -eq 'MISSING') { $configRaw = [byte[]]::new(0) } else { $configRaw = [IO.File]::ReadAllBytes($config) }
+$hasBom = $configRaw.Length -ge 3 -and $configRaw[0] -eq 0xEF -and $configRaw[1] -eq 0xBB -and $configRaw[2] -eq 0xBF
+$configText = if ($hasBom) { $utf8.GetString($configRaw, 3, $configRaw.Length - 3) } else { $utf8.GetString($configRaw) }
+$policyValue = ConvertTo-Json -InputObject ($policy.Replace('\', '/')) -Compress
+$configContent = Set-RootSetting $configText 'model_instructions_file' $policyValue
+if ($SetLowVerbosity) { $configContent = Set-RootSetting $configContent 'model_verbosity' '"low"' }
+$configBytes = $utf8.GetBytes($configContent)
+if ($hasBom) { $configBytes = [byte[]]@(0xEF, 0xBB, 0xBF) + $configBytes }
+$newConfigHash = Get-BytesHash $configBytes
+if ($configText -match '(?m)^[ \t]*developer_instructions[ \t]*=') {
+    Write-Warning 'Existing developer_instructions may add conflicting instructions.'
 }
-Write-Output "Target: $target"
-Write-Output "Target SHA256: $targetHash"
+Write-Output "Policy target: $policy"
+Write-Output "Policy SHA256: $policyHash"
+Write-Output "Config target: $config"
+Write-Output "Config SHA256: $configHash"
 Write-Output "Content SHA256: $contentHash"
+Write-Output "Proposed config SHA256: $newConfigHash"
+Write-Output "Proposed config setting: model_instructions_file = $policyValue"
+if ($SetLowVerbosity) {
+    Write-Output 'Proposed verbosity setting: model_verbosity = "low"'
+}
 Write-Output "Proposed complete content:`n$content"
 if ($WhatIfPreference) {
-    $null = $PSCmdlet.ShouldProcess($target, 'Replace complete user instructions with backup')
+    $null = $PSCmdlet.ShouldProcess($policy, 'Install operating policy and configure Codex')
     return
 }
-if (-not $ApproveReplacement -or $ApprovedContentHash -cne $contentHash) {
-    throw 'Preview first, obtain approval of the complete content, then pass -ApproveReplacement and its -ApprovedContentHash.'
+if (-not $ApproveInstall -or $ApprovedContentHash -cne $contentHash) {
+    throw 'Preview first, obtain approval of the complete policy and config setting, then pass -ApproveInstall and -ApprovedContentHash.'
 }
-if ($ExpectedTargetHash -cne $targetHash) { throw 'The target differs from the reviewed snapshot. Preview and approve again.' }
-if ($hasOverride) { throw 'The global override prevents the intended instruction loading. No files were changed.' }
-if ($targetHash -ceq $contentHash) { Write-Output 'Already current; no files or backups changed.'; return }
-if (-not $PSCmdlet.ShouldProcess($target, 'Replace complete user instructions with backup')) { return }
+if ($ApprovedConfigHash -cne $newConfigHash) {
+    throw 'The proposed config differs from the approved preview. Pass its -ApprovedConfigHash.'
+}
+if ($SetLowVerbosity -and -not $ApproveLowVerbosity) {
+    throw 'Explicit approval of model_verbosity = "low" is required. Ask the user, then pass -ApproveLowVerbosity.'
+}
+if ($ApproveLowVerbosity -and -not $SetLowVerbosity) { throw '-ApproveLowVerbosity requires -SetLowVerbosity.' }
+if ($ExpectedPolicyHash -cne $policyHash -or $ExpectedConfigHash -cne $configHash) {
+    throw 'A destination differs from the reviewed snapshot. Preview and approve again.'
+}
+if ($policyHash -ceq $contentHash -and $configHash -ceq $newConfigHash) {
+    Write-Output 'Already current.'
+    return
+}
+if (-not $PSCmdlet.ShouldProcess($policy, 'Install operating policy and configure Codex')) { return }
 
-$backup = $null
-if ($targetHash -ne 'MISSING') {
+New-Item -ItemType Directory -Path (Split-Path $policy -Parent) -Force | Out-Null
+$backupDirectory = $null
+if (($policyHash -ne 'MISSING' -and $policyHash -cne $contentHash) -or
+    ($configHash -ne 'MISSING' -and $configHash -cne $newConfigHash)) {
     $backupDirectory = Join-Path $CodexHome ('backups/setup-codex-' + [Guid]::NewGuid().ToString('N'))
     Assert-UnlinkedPath $backupDirectory
     New-Item -ItemType Directory -Path $backupDirectory -Force | Out-Null
-    $backup = Join-Path $backupDirectory 'AGENTS.md'
 }
-New-Item -ItemType Directory -Path $CodexHome -Force | Out-Null
-$staged = Join-Path $CodexHome ('.agents-' + [Guid]::NewGuid().ToString('N') + '.tmp')
+$policyBackup = if ($policyHash -ne 'MISSING' -and $policyHash -cne $contentHash) { Join-Path $backupDirectory 'codex-operating-policy.md' } else { $null }
+$configBackup = if ($configHash -ne 'MISSING' -and $configHash -cne $newConfigHash) { Join-Path $backupDirectory 'config.toml' } else { $null }
 try {
-    [IO.File]::WriteAllBytes($staged, $bytes)
-    Assert-UnlinkedPath $target
-    if ((Get-TargetHash $target) -cne $targetHash) { throw 'The destination changed during setup. The replacement was cancelled.' }
-    if ($targetHash -eq 'MISSING') {
-        [IO.File]::Move($staged, $target)
-    } else {
-        [IO.File]::Replace($staged, $target, $backup)
-    }
-    if ((Get-TargetHash $target) -cne $contentHash) { throw "Post-write verification failed. Backup: $backup" }
+    if ($policyHash -cne $contentHash) { Install-File $policy $policyBytes $policyHash $policyBackup }
+    if ($configHash -cne $newConfigHash) { Install-File $config $configBytes $configHash $configBackup }
 } catch {
-    throw "Setup failed: $($_.Exception.Message) Backup: $backup"
-} finally {
-    if (Test-Path -LiteralPath $staged) { Remove-Item -LiteralPath $staged }
+    throw "Setup failed: $($_.Exception.Message) Inspect the policy and config destinations. Backup directory: $backupDirectory"
 }
-Write-Output "Replaced: $target"
-if ($backup) { Write-Output "Backup: $backup" }
-Write-Output 'Configuration and installed skills were not modified. Verify loading in a new Codex task.'
+Write-Output "Policy installed: $policy"
+Write-Output "Configuration updated: $config"
+if ($backupDirectory) { Write-Output "Backups: $backupDirectory" }
+Write-Output 'Verify loading in a new Codex task.'

@@ -1,33 +1,35 @@
 ---
 name: setup-codex
-description: Replace the user-level Codex AGENTS.md with reviewed operating instructions, explicit language choices, a backup, and verification.
+description: Configure a reviewed Codex Operating Policy through model_instructions_file and offer low model verbosity with separate consent, backups, and verification.
 disable-model-invocation: true
 ---
 
-# Set up user-level Codex instructions
+# Set up the Codex Operating Policy
 
-Prepare and replace the complete user `AGENTS.md`. This is not a merge, a managed
-section, or a migration of the existing prompt configuration. The previous
-content is retained only in a backup. Updating this skill does not authorize
-running it against the user's active profile.
+Create the policy at `<codex-home>/instructions/codex-operating-policy.md` and set
+`model_instructions_file` in the user-level `config.toml` to that path. Update the
+policy file when it already exists. Codex reads it as its model instructions. Offer
+`model_verbosity = "low"` as an additional config change, subject to the user's
+separate explicit approval.
 
 ## 1. Inspect the target and ask about language
 
-Resolve `CODEX_HOME`, falling back to the user's `.codex` directory. Inspect its
-`AGENTS.md`, `AGENTS.override.md`, and relevant custom-instruction settings in
-`config.toml`. Read referenced policy files only as needed to identify conflicting
-instructions. Do not collect credentials or unrelated private configuration.
+Resolve `CODEX_HOME`, falling back to the user's `.codex` directory. Inspect the
+policy destination and `config.toml`, especially an existing
+`model_instructions_file`, `model_verbosity`, and `developer_instructions`. Read
+referenced policy files as needed to identify actual instruction conflicts. Limit
+inspection to relevant instruction sources.
 
 Ask which language the user wants for conversation and reports, repository
 writing, and code/comments/Git text. One answer may cover all three. Reuse explicit
-answers supplied for this setup request; do not infer them from the chat language.
-Do not ask for an agent quota: delegation is based on independent work and evidence
-needs, as specified in the [embedded policy](#policy-template).
+answers supplied for this setup request.
+Note the current verbosity setting before preparing the optional `low` proposal.
 
-**Done:** exact target, existing instruction sources, language choices, and known
-conflicts are identified. Linked paths require separate resolution before writes.
+**Done:** exact targets, existing instruction sources, language choices, current
+verbosity, and known conflicts are identified. Linked paths require
+separate resolution before writes.
 
-## 2. Preview the complete replacement
+## 2. Preview the policy and configuration
 
 Use the bundled PowerShell 7 installer with the user's language choices:
 
@@ -39,72 +41,77 @@ pwsh -NoProfile -File "<skill-directory>/scripts/setup-codex.ps1" `
   -CodeLanguage "<chosen-language>" -WhatIf
 ```
 
-The preview prints the final content, target path, current target hash (or
-`MISSING`), and proposed content hash without writing files. Show the complete
-replacement and a diff against the existing file; explicitly identify the personal
-rules it removes. Ask for approval of this content and destination before applying.
-An approval of the general idea is not approval of unseen instructions.
+Append `-SetLowVerbosity` to preview that option. Show the existing verbosity
+value (or absence) and the proposed `model_verbosity = "low"` line. Explain that
+this controls response detail for supported models and is distinct from reasoning
+effort. Ask whether the user accepts this additional change. If declined, rerun
+the preview without that switch before seeking policy approval.
 
-A nonempty `AGENTS.override.md` blocks application. Ask the user to resolve it
-separately; never silently edit or delete it. Custom instruction settings can still
-compete with the new file. Report them, but do not migrate or disable them.
+The preview prints the complete policy, both target paths and current hashes (or
+`MISSING`), its content hash, the proposed config hash, and the proposed settings.
+Show the policy diff and the exact config change. Explain how Codex will load the
+policy file. Ask for approval of this content and both destinations before applying.
+Obtain separate explicit approval for low verbosity.
 
-**Done:** the user approves the exact replacement and destination, or the operation
-remains a proposal with no writes.
+Report actual conflicts from `developer_instructions` or project and profile config.
+Resolve material conflicts before claiming activation.
 
-## 3. Replace with backup
+**Done:** the user approves the exact policy and configuration, including low
+verbosity when selected. Continue the proposal after any declined setting.
+
+## 3. Install with backups
 
 Repeat the preview command with identical inputs, omit `-WhatIf`, and add:
 
 ```powershell
--ApproveReplacement `
+-ApproveInstall `
 -ApprovedContentHash "<content-hash-from-approved-preview>" `
--ExpectedTargetHash "<target-hash-from-approved-preview-or-MISSING>"
+-ApprovedConfigHash "<proposed-config-hash-from-approved-preview>" `
+-ExpectedPolicyHash "<policy-hash-from-approved-preview-or-MISSING>" `
+-ExpectedConfigHash "<config-hash-from-approved-preview-or-MISSING>"
 ```
 
-Hashes bind the operation to the reviewed content and target snapshot; they are
-not a substitute for user approval. If either changes, preview and obtain approval
-again. The installer replaces only `AGENTS.md`, with the previous bytes backed up
-under `<codex-home>/backups/setup-codex-<unique-id>/AGENTS.md`. Identical content is
-left untouched without another backup.
+When the user explicitly approved low verbosity, repeat `-SetLowVerbosity` and
+add `-ApproveLowVerbosity`. Use the preview and approval hashes matching the
+selected settings.
 
-The installer does not copy skills, modify `config.toml`, write a custom system
-prompt, change models, or alter permissions. The former `WorkflowSource`,
-`SkillsHome`, `ReplaceSkill`, `SourcePrompt`, and `Verbosity` parameters are retired;
-do not use the old activation commands as a fallback.
+Obtain user approval, then use the hashes to bind the operation to the reviewed
+content, proposed config, and both target snapshots. If any changes, preview and
+obtain approval again. The installer writes the policy file and the
+`model_instructions_file` key in `config.toml`, plus `model_verbosity` when
+separately approved. Previous versions are backed up under
+`<codex-home>/backups/setup-codex-<unique-id>/`.
 
-**Done:** the script confirms the replacement and backup, or reports failure with
-the last confirmed state. Never call a partial write or a warning proof of loading.
+**Done:** the script confirms both destinations and backups, or reports failure with
+the last confirmed state. Inspect both files after a partial failure.
 
 ## 4. Verify and hand over
 
-Check the target hash, complete content, selected languages, and backup bytes.
-Verify unrelated configuration and installed skills remain unchanged. Confirm an
-identical rerun would not modify the file or create a backup. When maintaining the installer, run `python scripts/test_setup_codex.py` from
-this skill directory; the tests use temporary profiles, not the active profile.
+Check the policy hash, complete content, selected languages, config settings, and
+backup bytes. Confirm an identical rerun reports the current state. When maintaining
+the installer, run `python scripts/test_setup_codex.py` from this skill directory.
 
 Report the exact paths, verification, unresolved custom-instruction conflicts, and
 restoration procedure. Verify loading in a new Codex task when supported and
-explicitly authorized; otherwise mark loading unverified and ask the user to start
-one. The current task's behavior does not establish new instructions are active.
+explicitly authorized; otherwise ask the user to start one for runtime verification.
 
 **Done:** file-level verification passes and runtime loading is either observed or
 explicitly pending.
 
 ## Restore
 
-Preview the difference between the current file and the recorded backup. Obtain
-approval before replacing the current `AGENTS.md`, preserving any intervening edits
-in a separate backup. Restore only that file; configuration and skills were not
-changed by this setup. Verify loading in a new task again.
+Preview the differences between the current policy and config and their recorded
+backups. Obtain approval before restoring either file, preserving intervening edits
+in separate backups. If a destination did not exist before setup, preview its
+removal. Restore the changed policy and config. Verify loading in a new task again.
 
 ## Policy template
 
 The installer reads this block by default and substitutes the three language
-placeholders. Install only its contents, not the surrounding skill instructions.
+placeholders into its contents.
 
 ```markdown
-# User operating instructions
+# Codex Operating Policy
 
 ## Communication
 
@@ -127,7 +134,7 @@ placeholders. Install only its contents, not the surrounding skill instructions.
 ## Anti-slop
 
 - Avoid speculative abstractions, trivial forwarding layers, duplicated logic, disabled code, and defensive branches that hide errors. Preserve necessary validation at input and trust boundaries.
-- Add dependencies, retries, fallbacks, migrations, and compatibility layers only for an actual requirement or demonstrated correctness need.
+- Add dependencies, retries, fallbacks, and compatibility layers only for an actual requirement or demonstrated correctness need.
 - Avoid cryptic names, clever one-liners, and comments that merely narrate the code. Brevity must not remove meaningful checks or obscure behavior.
 - Remove filler, flattery, stock chatbot phrases, generic conclusions, decorative jargon, unsupported claims, and repeated explanations.
 - Avoid artificial contrasts, forced groups of three, meaningless ranges, decorative emoji, and dramatic punctuation. Preserve language conventions and technical syntax.
