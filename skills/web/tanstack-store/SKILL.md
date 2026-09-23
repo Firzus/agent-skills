@@ -123,15 +123,13 @@ subscription has a cleanup owner.
 
 - **React selectors, component-owned stores, context, SSR, or persistence:** read
   [react.md](./react.md). Subscribe to the slice rendered by the component.
-- **Other frameworks:** read the matching adapter section in
-  [references/research.md](./references/research.md#framework-adapters), then the
-  linked official quick start and installed types. Vue refs, Solid accessors,
+- **Other frameworks:** inspect the adapter's official quick start and installed types. Vue refs, Solid accessors,
   Svelte `.current`, and Angular signals are different return contracts.
 - **Legacy maintenance or an explicitly requested upgrade:** read
   [legacy.md](./legacy.md); migrate lifecycle and consumers together.
 - **Atoms, async atoms, action factories, devtools, or disputed API behavior:**
-  read [the research evidence](./references/research.md) before extending the
-  implementation. Verify exports; custom persistence and request caching are
+  inspect the installed implementation and matching official documentation before
+  extending it. Verify exports; custom persistence and request caching are
   not implicit Store capabilities.
 
 Finish when the store survives the intended renders, is disposed at the right
@@ -150,5 +148,3 @@ Use the project's existing typecheck and nearest tests. Cover the paths changed:
 - Scoped instances remain independent; SSR hydration starts from matching data.
 
 Report the resolved versions, checks run, and any untested runtime boundary.
-The dated [research record](./references/research.md) contains primary-source
-citations and distinguishes implementation facts from application recommendations.

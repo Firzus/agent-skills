@@ -1,145 +1,176 @@
 # agent-skills
 
-> Community-maintained Agent Skills for AI coding assistants.
+Practical workflows for your coding agent: review a change, explore a design,
+investigate a question, or implement a scoped feature.
 
 [![skills.sh](https://skills.sh/b/Firzus/agent-skills)](https://skills.sh/Firzus/agent-skills)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 
-[Global instructions](#global-instructions) • [Install](#install) • [Browse skills](#browse-skills) • [Manual install](#manual-install) • [Skill structure](#skill-structure)
+A skill is a folder of instructions, references, and optional helpers that your
+agent loads for a particular task. Start with one skill on a small project; you
+do not need to install the whole collection or replace your global instructions.
 
-## Overview
+These are independent, community-maintained skills, not official vendor products.
 
-`agent-skills` is a registry of 38 Markdown-based skills for AI coding agents — Claude Code, Cursor, Codex, and any assistant that supports local skill folders. Each skill packages task-specific instructions, references, and optional helper scripts behind a single `SKILL.md` entry point, kept focused through progressive disclosure. The repository also hosts 26 documentary corpora under [`doc/`](./doc/README.md); these are source material, not installable skills.
+[Try a skill](#try-a-skill) · [Choose by task](#choose-by-task) · [Requirements](#requirements) · [All skills](#all-skills) · [Contribute](#contribute)
 
-> [!NOTE]
-> These skills are independent, community-maintained reference material. They are not official products of the vendors or tools they cover.
+## Try a skill
 
-## Global instructions
+You need a coding agent that supports skills, plus Node.js and npm for the installer.
 
-Keep instruction ownership explicit. The [workflow V2 guide](./skills/engineering/setup-codex/workflow.md) describes the global policy, personal preferences, project agreements, and four on-demand method skills.
+1. Open a terminal in the project where you want to use the skill.
+2. Install a focused review workflow:
 
-Universal behavior and Git conventions belong in the [global operating policy](./skills/engineering/setup-codex/codex-operating-policy.md). Project-specific rules, documentary entry points, and Linear context belong in the project's `AGENTS.md`; use [`manage-project`](./skills/engineering/manage-project) when defining those agreements.
+   ```bash
+   npx skills add Firzus/agent-skills --skill code-review
+   ```
 
-Personal instructions contain language and presentation preferences only. For example, use this block in your user-level instruction file, such as `~/.codex/AGENTS.md`:
+3. Follow the installer's prompts to choose your agent and destination.
+   Installation defaults to project scope; use `-g` only if you want global installation.
+4. Select **code-review** through your agent's skill picker or supported invocation
+   syntax. If it is not discovered, check the installation location and restart the session.
+5. Ask it to review a small, clearly identified change. Provide the intended behavior,
+   the files or diff to review, and a read-only scope.
 
-```markdown
-# Global working agreements
-
-## Communication
-
-- Reply in French. Write code, comments, commits, branches, pull requests, issues, and documentation in English.
-- Use a table or Mermaid diagram when it communicates structure more clearly than prose.
-```
-
-Adapt these preferences to the user. Tool definitions, model availability, and session paths come from the environment, not permanent copies.
-
-## Install
-
-Add the whole collection:
-
-```bash
-npx skills add Firzus/agent-skills
-```
-
-Add a single skill — replace `<skill-name>` with any name from [Browse skills](#browse-skills):
-
-```bash
-npx skills add Firzus/agent-skills --skill <skill-name>
-```
+The result should be findings and verification limits, not automatic edits or a
+published pull request. This workflow uses independent reviewers, so check that
+your agent supports subagents before trying it.
 
 <details>
-<summary>More CLI options</summary>
+<summary>Browse, update, or remove installed skills</summary>
 
 ```bash
-# List available skills without installing them
+# Browse the collection without installing it
 npx skills add Firzus/agent-skills --list
 
-# Install globally for Claude Code, non-interactive
-npx skills add Firzus/agent-skills --skill <skill-name> -g -a claude-code -y
+# Choose skills interactively
+npx skills add Firzus/agent-skills
 
-# Install all skills, non-interactive
-npx skills add Firzus/agent-skills --all -y
+# Manage installed skills
+npx skills list
+npx skills update code-review
+npx skills remove code-review
 ```
+
+See the [skills CLI documentation](https://github.com/vercel-labs/skills)
+for supported agents, installation modes, and troubleshooting.
 
 </details>
 
-## Browse skills
+## Choose by task
 
-Jump to a category: [Web & app development](#web--app-development) · [Game development](#game-development)
+| I want to… | Start with |
+| --- | --- |
+| Review an existing change without modifying it | [code-review](./skills/engineering/code-review/SKILL.md) |
+| Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) |
+| Investigate a question across multiple sources | [deep-research](./skills/engineering/deep-research/SKILL.md) |
+| Turn an unclear objective into bounded, approved work | [interview](./skills/engineering/interview/SKILL.md) |
+| Implement a defined change and verify it | [implement](./skills/engineering/implement/SKILL.md) |
+| Read an architecture report or track recommendations visually | [canvas](./skills/engineering/canvas/SKILL.md) |
+| Design a frontend, from visual direction to real content | [frontend-design](./skills/web/frontend-design/SKILL.md) |
 
-Install any skill with `npx skills add Firzus/agent-skills --skill <name>`.
+Research, prototyping, preparation, and implementation are different entry points,
+not mandatory consecutive phases. Some workflows call other skills; install the
+ones referenced by the workflow you choose.
 
-### Web & app development
+## Requirements
 
-- [`manage-project`](./skills/engineering/manage-project) — Plans outcomes and tracks work in Linear, links GitHub delivery, and maintains project agreements and domain vocabulary.
-- [`prototype`](./skills/engineering/prototype) — Tests interface, logic, and feasibility choices in a representative environment with bounded experiments.
-- [`implement`](./skills/engineering/implement) — Delivers authorized changes with integrated TDD and current system documentation.
-- [`setup-codex`](./skills/engineering/setup-codex) — Installs the four workflow skills and the Codex operating policy from an approved checkout, with conflict checks, backups, and repeatable setup.
-- [`skills`](./skills/engineering/skills) — Installs, updates, and authors Agent Skills with the `skills` CLI (`skills.sh`): sources, project vs global scope, symlink vs copy, discovery rules, debugging.
-- [`deep-research`](./skills/engineering/deep-research) — Requires a background research subagent, with traceable evidence, reusable research dossiers, and main-agent verification; reports a blocker when delegation is unavailable.
-- [`youtube-transcript`](./skills/engineering/youtube-transcript) — Extracts YouTube captions, routes audio transcription, and produces chapter-based learning reports with visual evidence, targeted review, and claim verification.
-- [`gamification`](./skills/engineering/gamification) — Gamification design grounded in motivation science: design process, mechanics catalog (points, badges, leaderboards, streaks), anti-patterns, ethics gate.
-- [`canvas`](./skills/engineering/canvas) — Renders standalone analytical artifacts (reviews, audits, reports, dashboards) as self-contained HTML canvases opened beside the chat, in any agent environment.
-- [`improve-architecture`](./skills/engineering/improve-architecture) — Scans a codebase for deepening opportunities, presents them on a live canvas, then delegates each approved refactor to a bounded sub-agent with verified, tracked progress.
-- [`slop-audit`](./skills/engineering/slop-audit) — Audits a codebase for dead code and AI slop, clears every suspect against the legitimate reason it exists, and removes only what a verification ladder supports.
-- [`vite-plus`](./skills/web/vite-plus) — Vite+ (`vp`): setup, migrations, checks, testing, packaging, and workspace tasks, validated with reproducible smoke tests.
-- [`tauri`](./skills/web/tauri) — Tauri 2 development, scoped permissions, desktop/mobile validation, and Windows runtime inspection with tauri-agent-kit.
-- [`video-report`](./skills/engineering/video-report) — Records and verifies focused video evidence with FFmpeg after visual bug fixes or on request, across web pages, native applications, and games.
-- [`dokploy-best-practices`](./skills/web/dokploy-best-practices) — Self-hosting on Dokploy (Docker Swarm + Traefik): CI/CD, zero-downtime, hardening.
-- [`web-assets-optimization`](./skills/web/web-assets-optimization) — Optimizes all web assets: images, video, GIF replacement, fonts, SVG, plus per-asset delivery strategy (LCP, lazy loading).
-- [`web-extension`](./skills/web/web-extension) — Builds, ports, tests, and packages WebExtensions for Chromium, Firefox, and Safari with explicit compatibility, permission, lifecycle, and store gates.
-- [`imagegen`](./skills/engineering/imagegen) — Generates and edits images via Codex CLI (ChatGPT account), targeting Images 2.5 with native transparency only.
-- [`extract-theme`](./skills/web/extract-theme) — Extracts a website's design tokens into shadcn/ui + Tailwind CSS v4.
-- [`figma-to-code`](./skills/web/figma-to-code) — Implements a Figma design in the project's stack (or as a standalone review page) via the Figma MCP: tokens, committed assets, and a geometry-diff + screenshot loop until pixel-accurate.
-- [`frontend-design`](./skills/web/frontend-design) — Router over the frontend-design pipeline: design-system → greyboxing → real-content, handing off through `DESIGN.md` and `PAGES.md`.
-- [`design-references`](./skills/web/design-references) — Delegates focused design research using a bundled catalog, prioritizing user-approved designs and relevant product surfaces; distinguishes visual, motion, and behavioral evidence and keeps exploration read-only.
-- [`design-system`](./skills/web/design-system) — Turns a brief into a validated design system: design read, dials, tokens, multi-surface themes, recorded in `DESIGN.md`.
-- [`greyboxing`](./skills/web/greyboxing) — Greyboxes a site's pages from `DESIGN.md`: per-page loop with prototype variants, motion theses, and a screenshot-verified review.
-- [`real-content`](./skills/web/real-content) — Replaces a greyboxed site's placeholders with real copy, imagery, and data, closed by a copy self-audit.
-- [`shaders`](./skills/web/shaders) — GPU-accelerated visual effects in React/Next.js with the `shaders` npm package.
-- [`nextjs`](./skills/web/nextjs) — Next.js 16+ App Router: server/client boundaries, caching, Server Actions, generated route types, view transitions, and migration; Next.js 16.3+ workflows for Cache Components adoption, instant navigation, runtime verification, and Partial Prefetching.
-- [`swr`](./skills/web/swr) — SWR v2 data fetching for React/Next.js: cache keys, revalidation, mutations, pagination, and subscriptions.
-- [`tanstack-store`](./skills/web/tanstack-store) — Version-aware client state: immutable updates, derived stores, selectors, framework adapters, scoped SSR state, and legacy API migrations.
-- [`zod`](./skills/web/zod) — Version-aware schema validation: boundary parsing, coercion, refinements, errors, codecs, JSON Schema, and Zod migrations.
-- [`payload-cms`](./skills/web/payload-cms) — Payload CMS 3.x: config-as-schema, opt-in access control, hooks, Local API and transactions, plus the official MCP plugin.
-- [`astryx`](./skills/web/astryx) — Astryx (`@astryxdesign`), Meta's agent-ready React + StyleX design system: setup, CLI discovery loop, xstyle, tokens, theming, migration.
-- [`adsense`](./skills/web/adsense) — AdSense publisher monetization: policy gate, RPM/coverage metrics, placement and Auto ads, revenue levers, ad-caused CWV damage, revenue-drop diagnostics.
+Installing instructions does not install every tool they describe or authorize
+every action they can perform. Check the selected skill's prerequisites first.
+
+| Workflow | Additional requirements |
+| --- | --- |
+| Independent reviews, delegated research, architectural refactors | An agent with subagent support |
+| Figma or Linear workflows | The relevant integration, account access, and approval for external writes |
+| Technical Canvas reader | Node.js 22.12 or later and the reader's npm dependencies |
+| Video reports | FFmpeg and access to the application being recorded |
+| YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
+| Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
+
+Host support for installing skills does not guarantee identical behavior or tool
+availability. Explicit-invocation workflows such as **interview**, **implement**,
+**improve-architecture**, and **setup-codex** should be selected deliberately.
+
+### Optional: personal Codex instructions
+
+[setup-codex](./skills/engineering/setup-codex/SKILL.md) prepares a **complete
+replacement** of your user-level Codex instructions. It asks for language choices,
+shows the proposed content, waits for approval, and backs up the previous file.
+
+It does not merge existing rules, install other skills, or change Codex configuration.
+This is separate from trying an individual skill. Read its
+[policy template](./skills/engineering/setup-codex/SKILL.md#policy-template)
+before choosing it.
+
+## All skills
+
+### Engineering
+
+| Skill | Purpose |
+| --- | --- |
+| [canvas](./skills/engineering/canvas/SKILL.md) | Technical reports, architecture findings, and progress views. |
+| [code-review](./skills/engineering/code-review/SKILL.md) | Independent read-only review of a scoped change. |
+| [deep-research](./skills/engineering/deep-research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
+| [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
+| [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
+| [implement](./skills/engineering/implement/SKILL.md) | Deliver a defined change with tests and documentation. |
+| [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and execute selected refactors. |
+| [interview](./skills/engineering/interview/SKILL.md) | Clarify decisions and prepare approved Linear work. |
+| [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
+| [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Replace personal Codex instructions with a reviewed policy. |
+| [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
+| [slop-audit](./skills/engineering/slop-audit/SKILL.md) | Investigate dead code and justify scoped cleanup. |
+| [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
+| [writing-for-agents](./skills/engineering/writing-for-agents/SKILL.md) | Write useful skills and project instructions. |
+| [youtube-transcript](./skills/engineering/youtube-transcript/SKILL.md) | Turn video speech and visual evidence into a learning report. |
+
+### Web and app development
+
+| Skill | Purpose |
+| --- | --- |
+| [adsense](./skills/web/adsense/SKILL.md) | Publisher monetization, ad placement, policy, and performance. |
+| [astryx](./skills/web/astryx/SKILL.md) | Build interfaces with the Astryx design system. |
+| [design-references](./skills/web/design-references/SKILL.md) | Research relevant visual and interaction references. |
+| [design-system](./skills/web/design-system/SKILL.md) | Define design tokens, themes, and visual direction. |
+| [dokploy-best-practices](./skills/web/dokploy-best-practices/SKILL.md) | Deploy and operate applications with Dokploy. |
+| [extract-theme](./skills/web/extract-theme/SKILL.md) | Extract a website's design tokens for Tailwind and shadcn/ui. |
+| [figma-to-code](./skills/web/figma-to-code/SKILL.md) | Implement Figma designs and verify the visual result. |
+| [frontend-design](./skills/web/frontend-design/SKILL.md) | Coordinate design-system, layout, and content workflows. |
+| [greyboxing](./skills/web/greyboxing/SKILL.md) | Explore page layouts and interactions before final content. |
+| [nextjs](./skills/web/nextjs/SKILL.md) | Build and migrate Next.js applications. |
+| [payload-cms](./skills/web/payload-cms/SKILL.md) | Model content, access rules, and hooks with Payload CMS. |
+| [real-content](./skills/web/real-content/SKILL.md) | Replace placeholders with real copy, imagery, and data. |
+| [shaders](./skills/web/shaders/SKILL.md) | Add GPU-driven visual effects to React interfaces. |
+| [swr](./skills/web/swr/SKILL.md) | Manage React data fetching, caching, and mutations. |
+| [tanstack-query](./skills/web/tanstack-query/SKILL.md) | Manage asynchronous server state with TanStack Query. |
+| [tanstack-router](./skills/web/tanstack-router/SKILL.md) | Build type-safe routes with TanStack Router. |
+| [tanstack-start](./skills/web/tanstack-start/SKILL.md) | Build full-stack applications with TanStack Start. |
+| [tanstack-store](./skills/web/tanstack-store/SKILL.md) | Manage reactive client state with TanStack Store. |
+| [tauri](./skills/web/tauri/SKILL.md) | Build and validate Tauri desktop and mobile applications. |
+| [vite-plus](./skills/web/vite-plus/SKILL.md) | Configure Vite+ tooling, checks, and workspace tasks. |
+| [web-assets-optimization](./skills/web/web-assets-optimization/SKILL.md) | Optimize images, video, fonts, SVG, and asset delivery. |
+| [web-extension](./skills/web/web-extension/SKILL.md) | Build and package browser extensions. |
+| [zod](./skills/web/zod/SKILL.md) | Validate data and evolve schemas with Zod. |
 
 ### Game development
 
-- [`unity`](./skills/game/unity) — Routes each Unity need to one chosen tool, and keeps projects CoreCLR-ready.
-- [`figma-to-unity`](./skills/game/figma-to-unity) — Implements Figma designs as Unity UI Toolkit via the Figma MCP.
+| Skill | Purpose |
+| --- | --- |
+| [figma-to-unity](./skills/game/figma-to-unity/SKILL.md) | Implement Figma designs in Unity UI Toolkit. |
+| [unity](./skills/game/unity/SKILL.md) | Choose the appropriate tools for Unity development tasks. |
 
-## Documentary knowledge base
+## Contribute
 
-The 26 corpora in [`doc/`](./doc/README.md) — 24 game systems plus an agent-tooling review and a dead-code and AI-slop evidence base — are Markdown source material for future documentation and skills. They are deliberately absent from the skills marketplace and have no `SKILL.md` entry point.
+Found a problem? [Open an issue](https://github.com/Firzus/agent-skills/issues)
+with the skill name, agent and version, expected result, and actual result.
+Remove secrets and private project data from examples.
 
-## Manual install
+For repository changes, read [AGENTS.md](./AGENTS.md) for contribution boundaries
+and validation. A skill lives at `skills/<section>/<name>/SKILL.md`; supporting
+references and helpers stay in its folder. Keep the README catalog and
+[marketplace manifest](./.claude-plugin/marketplace.json) aligned with skill folders.
 
-If you do not use the skills CLI, clone the repo and copy a skill folder into your agent's skills directory:
+The [documentary knowledge base](./doc/README.md) contains source material,
+not installable skills. It is separate from the skill catalog.
 
-```bash
-git clone https://github.com/Firzus/agent-skills.git
-cp -r agent-skills/skills/<section>/<skill-name> ~/.claude/skills/
-```
-
-| Agent | Destination |
-| ----- | ----------- |
-| Claude Code | `~/.claude/skills/<skill-name>/` |
-| Codex CLI | `~/.codex/skills/<skill-name>/` |
-| Cursor | `~/.cursor/skills/<skill-name>/` or `.cursor/skills/<skill-name>/` |
-| Generic agents | `~/.agents/skills/<skill-name>/` |
-
-## Skill structure
-
-Each skill is a folder with a `SKILL.md` file and optional supporting files:
-
-```text
-skills/<skill-name>/
-├── SKILL.md          # YAML frontmatter + concise agent instructions
-├── topic-a.md        # optional reference loaded on demand
-├── references/       # optional longer-form references
-└── scripts/          # optional helper scripts
-```
-
-The folder name matches the `name:` field in `SKILL.md` frontmatter. Keep each description concrete — agents use it to decide when the skill applies.
+Licensed under [MIT](./LICENSE).

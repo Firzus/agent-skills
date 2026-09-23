@@ -10,7 +10,8 @@ Provide a reset to known initial data and repeatable scenarios:
 - an ordering, boundary, or repeated action that could invalidate the model;
 - an invalid operation with its expected rejection or consequence.
 
-Offer free exploration when it helps reveal an incorrect assumption, alongside explicit scenario steps. A single model may be sufficient; three visual variants are not a requirement for logic exploration.
+Offer free exploration when it helps reveal an incorrect assumption, alongside
+explicit scenario steps. Use the minimum models needed to test the disputed rules.
 
 Run the scenarios and verify that displayed states correspond to the actual experimental behavior. Simulated dependencies must be labeled. Record which expectations held and which revealed an unresolved rule.
 

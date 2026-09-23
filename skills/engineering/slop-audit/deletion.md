@@ -23,7 +23,8 @@ Cheapest to strongest. Climb until the evidence matches the blast radius.
 
 Rungs 1–4 are free and offline: run all four, every time. Rung 5 is a judgement
 that changes the whole procedure. Rungs 6–8 cost time and infrastructure. Rung 9
-is mandatory regardless.
+is required for authorized Git delivery. Without commit authorization, retain
+local changes and evidence and report that delivery step as pending.
 
 ## Evidence strength
 

@@ -1,52 +1,97 @@
 ---
 name: prototype
-description: Resolve a bounded conception question with a runnable prototype of an interface, logic or state model, or technical feasibility. Use for requested exploration or choices that require observation; not a settled implementation or a source-only factual lookup.
+description: Resolve a bounded design or feasibility question through an observable experiment. Use for authorized interface, logic, or technical exploration, including prepared Prototype issues; not settled implementation or source-only research.
 ---
 
 # Prototype a decision
 
-Build only the experiment needed to decide. Use the product's environment rather than prescribing a web page, engine, or file format.
+Build the smallest experiment that answers the question, in a representative
+environment. A prototype produces evidence for a decision, not a production feature.
 
-## 1. Bound the question
+## 1. Resume and bound the experiment
 
-Record the primary objective, the unresolved question, relevant constraints, representative scenarios, stopping evidence, and return point in the existing task record. Identify who decides and whether the question needs user judgment or measured evidence.
+1. Read the request, project instructions, and existing issue or interview record,
+   including accepted choices, prerequisites, and evidence. Reuse settled framing.
+2. Follow project conventions to consult relevant domain definitions, pending accepted
+   changes, and system contracts. Resolve consequential conflicts; distinguish
+   experimental assumptions from accepted meanings and implemented behavior.
+   Missing conventions call for targeted clarification, not automatic project setup.
+3. Establish question, scope/exclusions, scenarios, constraints, decision owner,
+   stopping evidence, and where the interview resumes. Distinguish a measured fact
+   from a preference requiring the owner's judgment.
+4. Verify execution authorization, access, and representative inputs. A prepared
+   brief or a ready label alone does not authorize building or external writes.
 
-Read the relevant domain definitions in root CONTEXT.md and contracts in docs/systems before designing scenarios that depend on them. Keep experimental assumptions separate from accepted terminology and implemented behavior.
-
-A settled correction belongs to implementation. Do not reopen an approved choice merely to generate alternatives.
-
-**Done when:** the experiment can answer a specific question and has an observable stopping condition.
-
-## 2. Select the representative environment
-
-Inspect runtime, assets, inputs, existing components, and verification tools. Use the smallest environment that preserves the behavior being studied. Isolated logic cannot establish engine physics, device interaction, rendering, or production performance.
-
-Choose the applicable reference, combining branches only when the question requires it:
-
-| Question | Procedure |
+| Request | Action |
 | --- | --- |
-| Appearance, organization, or interaction | [Interface comparison](references/interface.md) |
-| Rules, data shape, or state transitions | [Logic scenarios](references/logic.md) |
-| Integration, physics, capacity, or performance feasibility | [Technical evidence](references/feasibility.md) |
+| Choice requires observing behavior | Prepare/run the bounded experiment within authorization |
+| Only source evidence is missing | Return a research prerequisite rather than build a demonstration |
+| Behavior already settled | Propose implementation; do not reopen design for ceremony |
+| Preparation only, read-only mode, or unmet prerequisite | Retain the experiment brief and name what is pending |
 
-Identify simulated data, temporary resources, and persistent effects. Reuse project conventions; isolate writes and keep exploratory resources out of delivery. Preserve security and access controls.
+**Done:** question, stopping condition, owner, and execution scope established.
+**Blocked:** preserve the missing decision/evidence and continue only independent,
+authorized preparation.
 
-**Done when:** the selected environment and branch fit the question, and their limits and isolation are explicit.
+## 2. Choose the environment and isolate the work
 
-## 3. Execute the comparison or scenarios
+1. Inspect runtime, assets, inputs, components, and verification tools. Reuse the
+   smallest environment preserving the behavior under test; isolated logic cannot
+   establish real physics, rendering, device interaction, or production performance.
+2. Before building, follow [retention and handoff](references/retention-and-handoff.md)
+   to establish the dedicated branch and preserve the prepared checkout.
+3. Identify simulated data, temporary resources, and persistent effects. Isolate the
+   experiment from ordinary use; preserve security and access controls.
+4. Select only the procedures needed:
 
-Build the bounded experiment. Record its entry point, required environment, configuration, initial data, actions, and expected observations. Run those steps yourself before presenting it: startup, selection or reset, representative cases, and isolation from ordinary use.
+   | Question | Reference |
+   | --- | --- |
+   | Appearance, organization, interaction | [Interface comparison](references/interface.md) |
+   | Rules, data shape, state transitions | [Logic scenarios](references/logic.md) |
+   | Integration, physics, capacity, performance | [Technical evidence](references/feasibility.md) |
 
-Use checks or measurements when they protect the question being tested; neither a full production test suite nor a blanket ban on tests fits every prototype.
+**Done:** representative environment, isolation, branch, and experimental limits clear.
+Unavailable tools or unsafe conditions remain blockers, not invented capabilities.
 
-**Done when:** the question has observed evidence or explicit missing evidence, and someone else can repeat the demonstrated steps.
+## 3. Build and exercise the experiment
 
-## 4. Obtain the decision and return
+1. Build only the accepted scope, with the minimum variants needed to answer the
+   question. One model can suffice; comparisons need meaningful alternatives.
+2. Record entry point, dependencies/configuration, initial data, actions, reset,
+   expected observations, and limitations with the experiment.
+3. Run startup, representative scenarios, reset/selection where relevant, and
+   isolation checks yourself before presenting it.
+4. Use focused tests or measurements when they protect the question. Neither a full
+   production suite nor a blanket ban on tests is appropriate for every prototype.
 
-Provide the runnable artifact or supported review surface and keep it available. Screenshots and recordings supplement execution, not interactive review when interaction is the question. Label prototype, simulation, assumptions, measured facts, and untested expectations.
+**Done:** another person can repeat the demonstrated steps and inspect the evidence.
+**Unresolved:** observations are missing or inconclusive; name the gap rather than
+claim the question answered. Negative results are valid evidence.
 
-Present the evidence to the decision owner. Ask only for unresolved choices requiring judgment; do not ask the user to decide an already measured fact. Record the accepted behavior, rejected alternatives, and uncertainty, then stop exploration.
+## 4. Review the evidence and obtain the decision
 
-Preserve useful evidence in the existing record before previewing removal of task-owned temporary artifacts. Production implementation requires its own authorized scope and ordinary verification; prototype approval does not prove production correctness.
+1. Provide the runnable artifact or supported review surface and keep it available.
+   Screenshots or video supplement interaction, not replace it when interaction is
+   the question. Label simulation, assumptions, measured facts, and untested claims.
+2. Present observations and trade-offs to the decision owner. Ask only for open
+   judgments; do not ask the user to decide an already measured fact.
+3. Record accepted/rejected behavior and remaining uncertainty against the reviewed
+   version. Later changes require renewed validation of affected conclusions.
 
-**Done when:** the bounded question is answered or its blocker is reported, the decision and evidence are retained, and work returns to the primary objective.
+**Done:** the question is answered by evidence and any required judgment is accepted.
+**Waiting:** owner judgment remains open; preserve the artifact and resume point.
+A demonstrated failure may conclude the experiment without authorizing a new design.
+
+## 5. Preserve and return
+
+Follow [retention and handoff](references/retention-and-handoff.md) for the reviewed
+commit, authorized remote publication, and updates to the existing Linear record.
+
+Return the result, artifact/version, decision or unresolved question, limitations,
+and next action to the interview or originating task. Stop exploration at its
+evidence target. Product implementation needs its own request and ordinary verification;
+prototype approval does not establish production reliability.
+
+**Done:** evidence retained, required publication verified, and handoff usable.
+**Pending:** distinguish accepted decision, local artifact, remote availability, and
+tracker synchronization; name exact remaining operations instead of claiming completion.

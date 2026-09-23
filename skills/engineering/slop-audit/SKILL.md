@@ -132,12 +132,19 @@ cleared is not a finding.
 
 ## 4. Present
 
-Invoke the `canvas` skill and render the audit as a **living artifact** — one
-file, kept for the whole run, updated in place at every stage below. Where the
-repository keeps a domain glossary (`CONTEXT.md`), name things with its
-vocabulary.
+Use the available `canvas` skill's technical reader and its Markdown tracker
+contract. Keep one source report and task-specific reader copy throughout the
+run; update the Markdown in place, not a separate HTML or card model. If Canvas
+is unavailable, preserve the Markdown report and disclose the missing preview.
+Use the project's domain vocabulary and the report's language.
 
-One card per candidate:
+Give each candidate a stable ID such as `SLOP-01`, a short title, and a matching
+section heading. Populate the tracker table using the reader's required headers,
+statuses, and dependency IDs. Each candidate starts at `À lancer`; move it to
+`En cours` only when its approved implementation starts. Keep verdicts and blocker
+reasons separate from progress status.
+
+In each candidate section, retain:
 
 - **Files**: the exact locations.
 - **Signal**: what fired, with the command that produced it.
@@ -145,14 +152,13 @@ One card per candidate:
 - **Cleared**: the exonerations checked and why none applied.
 - **Blast radius**: what breaks if this was alive, loud or silent.
 - **Verdict**: `Remove`, `Consolidate`, `Migrate`, or `Ask`.
-- **Status badge**: every candidate starts at `Proposed`.
 
 Duplication is a `Consolidate` verdict, never a `Remove`: extract the shared
 behaviour, redirect every call site, and the originals then become ordinary
 unreferenced symbols with established provenance. A superseded implementation
 still serving traffic is `Migrate` — an incomplete migration, not a deletion.
 
-Order the cards by evidence grade, then by blast radius ascending, so the
+Order the candidates by evidence grade, then by blast radius ascending, so the
 cheapest and safest work reads first. End with a **Top recommendation**, then
 ask the user which candidates to run. Work starts on a pick.
 
@@ -163,26 +169,29 @@ verification ladder until the evidence matches the blast radius. Rungs 1–4 are
 free and offline; run all four every time. Public surface switches the work to
 a deprecation cycle, which the audit proposes rather than performs.
 
-Land each logical deletion as its **own commit**, with a message recording
-which searches ran and what they returned, so a revert is one command and the
-evidence survives in history. Delete outright rather than commenting out: git
-already keeps the content, while a commented block keeps the reading cost and
-loses compiler checking.
+When commits are authorized, land each logical deletion as its **own commit**,
+with a message recording which searches ran and what they returned. Without
+commit authorization, preserve the local changes and verification evidence;
+report Git delivery as pending rather than committing or discarding the work.
+Delete outright rather than commenting out; preserve a recoverable copy of any
+uncommitted content before removal.
 
 Independent candidates with disjoint files may run as parallel sub-agents, each
-given the candidate card, the ladder rungs required, and the instruction that
+given the candidate section, the ladder rungs required, and the instruction that
 everything outside its files is out of bounds. Overlapping scopes run in
 sequence.
 
 Verify from the main thread before marking anything done: re-read the diff,
 re-run the build and tests, and confirm the scope held. A sub-agent's claim is
-not the evidence. Passed: flip the badge to `Verified` and record the outcome.
-Failed or scope drifted: flip to `Blocked` with the reason, then re-dispatch or
-surface the decision.
+not the evidence. Mark `Terminé` only when verification and the agreed delivery
+boundary are met. Failed checks, scope drift, or pending required delivery leave
+the task `En cours`, with the reason recorded in the table; re-dispatch within
+scope or surface the decision. A prerequisite before starting leaves it `À lancer`.
 
-**Done when** every approved candidate reads `Verified` or `Blocked` on the
-canvas, and the closing message links the canvas with a one-line summary per
-candidate.
+**Done when** every approved candidate meets its verification and agreed delivery
+conditions, and the closing message links the report with a one-line outcome per
+candidate. Otherwise report partial completion and the unresolved blockers;
+recording a blocker does not complete the candidate.
 
 ## Standing guardrails
 

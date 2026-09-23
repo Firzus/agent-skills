@@ -1,94 +1,41 @@
 # AGENTS.md
 
-## Overview & Scope
+## Project and scope
 
-`agent-skills`: community-maintained Agent Skills and documentary game-system corpora for AI coding assistants (Claude Code, Cursor, Codex, generic agents). Skills are distributed via the [`skills` CLI](https://skills.sh) at `Firzus/agent-skills`; corpora under `doc/` are source material and are not installable skills. Pure documentation repo — no app, no build system, no package manager.
+This repository distributes agent skills through `Firzus/agent-skills`. It is documentation-first, with one application exception: the technical Canvas reader. These instructions apply throughout the repository; check for closer instructions before editing.
 
-Applies to the entire repository. No nested `AGENTS.md` exist; if one is added later, the closest `AGENTS.md` to the edited file wins.
+## Sources of truth
 
-## Agent Role
+- `README.md` is the newcomer-facing guide: choose a skill, install it, understand its prerequisites, and find the full catalog. Keep maintenance details out of the getting-started path.
+- `skills/<section>/<name>/SKILL.md` owns each skill's public workflow. Supporting references and scripts belong in the same folder.
+- `.claude-plugin/marketplace.json` owns installation groups. Add or remove a skill there and in the README together; keep each skill in its appropriate section.
+- `doc/<subject>/overview.md` introduces a documentary corpus. Corpora are not skills: they have no `SKILL.md` and are excluded from the marketplace.
 
-Technical writer + skill author for AI coding agents. Treat each `skills/<section>/<name>/SKILL.md` as the public contract consumed by agents and each `doc/<subject>/` directory as a standalone documentary source.
+## Editing constraints
 
-- Allowed: edit/add Markdown skill files, add reference docs, update `README.md`, fix typos, restructure skills, propose new skills.
-- Not allowed: introduce a build system or package manager, add runtime code outside `skills/<section>/<name>/scripts/`, commit secrets, change the `LICENSE`, or invent install commands the user did not request.
+- Write repository documentation, code, comments, and Git text in English. Preserve the Canvas requirement to write generated technical reports in the user's conversation language.
+- When authoring skills or project instructions, use `skills/engineering/writing-for-agents/SKILL.md`. Present the complete proposed project-instruction text or diff for approval before applying it.
+- Preserve other contributors' intent and unrelated local work. Keep one authoritative explanation; retain operational references, not authoring research logs or historical evaluation reports inside skills.
+- Keep `SKILL.md` below 500 lines, with `name` and `description` in YAML frontmatter. The folder name must match `name`; preserve explicit invocation settings unless changing them is in scope.
+- Place runtime helpers only under a skill's `scripts/`. Do not introduce a build system or package manager outside the Canvas reader exception.
+- The Canvas exception is `skills/engineering/canvas/scripts/reader/`: React, TypeScript, Tailwind CSS, Vite, npm dependencies, lockfile, configuration, and tests are permitted there. Keep generated output, dependencies, and logs untracked.
+- Never commit secrets, credentials, license keys, private service URLs, or end-user data. Do not change `LICENSE`.
 
-## Repository Layout
+## Execution boundaries
 
-```
-.
-├── README.md                  # User-facing index (install, skill list)
-├── LICENSE                    # MIT
-├── .gitignore
-├── .cursor/                   # Cursor workspace metadata (kept empty in VCS)
-├── .claude-plugin/
-│   └── marketplace.json       # One plugin per section — drives the skills-CLI install groups
-├── doc/                        # Game-system documentary corpora, not installable skills
-└── skills/
-    ├── web/                   # Web & app development (frontend-design pipeline, frameworks, assets)
-    ├── game/                  # Unity development skills
-    └── engineering/           # Cross-cutting engineering (browser automation, code health, PR care)
-```
+- Do not run `npx skills add` or `npx skills update` from this repository. README installation commands are for end users, not maintenance checks.
+- Normal repository edits do not authorize image generation, nested Codex runs, or network installs. Dependency installation is allowed for authorized Canvas reader work only.
+- Editing `setup-codex` does not authorize changing the active user profile. Use isolated temporary profiles for installer tests.
+- Do not create or update external issues, push, open pull requests, merge, or deploy as a side effect of documentation work. Respect the approved delivery scope.
 
-Skills live one level below their section (`skills/web/tauri/`, `skills/game/unity/`). A new skill goes into the section it belongs to, **and** into that section's `skills` list in `.claude-plugin/marketplace.json` — the installer's grouping reads that list, not the directory tree.
+## Validation
 
-Documentary corpora live at `doc/<subject>/`. Each corpus starts with
-`overview.md` and may contain narrower topic records. These directories have no
-`SKILL.md` and never appear in `.claude-plugin/marketplace.json`.
+For documentation changes, check affected claims, local links and anchors, frontmatter, line counts, and consistency between README entries, skill folders, and the marketplace. Exclude code examples from literal link checks. Verify each documentary corpus has its overview. Run `git diff --check` and inspect the scoped diff, including untracked files.
 
-Each skill folder follows the [progressive disclosure](https://skills.sh/docs) layout:
+| Changed area | Required checks | Working directory / prerequisite |
+| --- | --- | --- |
+| Canvas reader | `npm test` and `npm run build`; browser checks for affected visible behavior | `skills/engineering/canvas/scripts/reader/`; Node and installed dependencies |
+| Codex setup installer or embedded policy | `python skills/engineering/setup-codex/scripts/test_setup_codex.py` | Repository root; Python and PowerShell 7; temporary profiles only |
+| Other helper scripts | Relevant safe checks exposed by the owning skill and script | Confirm inputs and effects before execution |
 
-```
-skills/<section>/<skill-name>/
-├── SKILL.md          # YAML frontmatter (name, description) + body, < 500 lines
-├── <topic>.md        # optional reference, loaded on demand
-├── references/       # optional, longer-form references
-└── scripts/          # optional, executable helpers
-```
-
-## Build, Test & Validation Commands
-
-No package manager, no test suite, no CI script. Validation is manual.
-
-```bash
-# Quick repo check
-git status
-git log --oneline -10
-
-# Find all SKILL.md files
-ls skills/*/*/SKILL.md
-
-# Verify each SKILL.md has YAML frontmatter (name + description)
-head -n 5 skills/*/*/SKILL.md
-
-# Line-count guard (SKILL.md should stay under ~500 lines)
-wc -l skills/*/*/SKILL.md
-
-# Every documentary corpus must have an overview
-ls doc/*/overview.md
-
-# Every skill folder must be listed in the marketplace manifest
-python3 -c "import json,glob; listed={s for p in json.load(open('.claude-plugin/marketplace.json'))['plugins'] for s in p['skills']}; found={'./'+d.rstrip('/') for d in glob.glob('skills/*/*/')}; print('missing from manifest:', sorted(found-listed)); print('stale in manifest:', sorted(listed-found))"
-
-# Render-check a Markdown file locally (if pandoc installed)  (unverified)
-pandoc skills/web/vite-plus/SKILL.md -t plain | head
-```
-
-Skill install / distribution commands are documented in `README.md` and run by end users — do not execute them from this repo:
-
-```bash
-# End-user install via the skills CLI (do NOT run from this repo)  (unverified)
-npx skills add Firzus/agent-skills
-npx skills add Firzus/agent-skills --skill <skill-name>
-```
-
-## Safety & Guardrails
-
-- Off-limits: secrets, credentials, license keys, internal-only URLs, end-user data.
-- Never edit:
-  - `LICENSE`
-  - Other contributors' SKILL.md without preserving their authorial intent
-- Never run:
-  - `npx skills add …` / `npx skills update` from inside this repo
-  - Image generation / `codex` / network installs as part of a normal edit task
-- Safe to automate: Markdown edits, frontmatter fixes, README table updates, link checks, line-count audits.
+Documentary checks do not prove agent behavior or host loading. Report untested runtime boundaries and distinguish a local change from an installed or published skill.
