@@ -2991,90 +2991,6 @@
       }
     },
     {
-      "id": "radix-primitives",
-      "name": "Radix Primitives - Accordion documentation",
-      "url": "https://www.radix-ui.com/primitives/docs/components/accordion",
-      "description": "Accordion keyboard contract.",
-      "source_type": "design-system",
-      "surface": "component-documentation",
-      "component_tags": [
-        "accordion"
-      ],
-      "interaction_tags": [
-        "expand-collapse",
-        "keyboard-navigation"
-      ],
-      "contexts": [
-        "professional-tool"
-      ],
-      "visual_characteristics": [],
-      "available_evidence": [
-        "documentation",
-        "source-code"
-      ],
-      "access": "public",
-      "strengths": [
-        "Inspect accessible disclosure controls."
-      ],
-      "limitations": [
-        "Keyboard contract read, not tested."
-      ],
-      "verification_status": "verified",
-      "last_verified": "2026-09-19",
-      "last_attempted": "2026-09-19",
-      "verification": {
-        "url": "https://www.radix-ui.com/primitives/docs/components/accordion",
-        "method": "page-text",
-        "observed": "Keyboard table documents Enter/Space expansion and arrow/Home/End navigation among disclosure triggers.",
-        "limitations": "Keyboard contract read, not tested."
-      }
-    },
-    {
-      "id": "radix-themes-components",
-      "name": "Radix Themes - Component examples",
-      "url": "https://www.radix-ui.com/themes/docs/components/segmented-control",
-      "description": "Styled component examples retained from explicit human review; evidence level varies by linked reference.",
-      "source_type": "design-system",
-      "surface": "component-library",
-      "component_tags": [
-        "segmented-control",
-        "view-selector"
-      ],
-      "interaction_tags": [],
-      "contexts": [
-        "dashboard",
-        "messaging"
-      ],
-      "visual_characteristics": [],
-      "available_evidence": [
-        "documentation",
-        "interactive-demo"
-      ],
-      "access": "public",
-      "strengths": [
-        "Compact mutually exclusive view selection."
-      ],
-      "limitations": [
-        "Approval applies only to the linked reviewed examples, not the entire library.",
-        "Documentary evidence does not establish visual appearance or tested interaction. See each reference."
-      ],
-      "verification_status": "verified",
-      "last_verified": "2026-09-19",
-      "last_attempted": "2026-09-19",
-      "verification": {
-        "url": "https://www.radix-ui.com/themes/docs/components/segmented-control",
-        "method": "page-text",
-        "observed": "Official example groups Inbox, Drafts and Sent options.",
-        "limitations": "Official example and documentation inspected; live interaction and responsive behavior not tested. Visual appearance not inspected unless explicitly stated in evidence."
-      },
-      "design_review": {
-        "status": "approved",
-        "date": "2026-09-19",
-        "scope": "Only the explicitly reviewed examples: https://www.radix-ui.com/themes/docs/components/segmented-control",
-        "reason": "User-approved component examples retained from the review session."
-      }
-    },
-    {
       "id": "react-aria-tree",
       "name": "React Aria - Tree documentation",
       "url": "https://react-aria.adobe.com/Tree",
@@ -9376,23 +9292,6 @@
       "last_verified": "2026-09-19"
     },
     {
-      "id": "radix-primitives-reference",
-      "source_id": "radix-primitives",
-      "url": "https://www.radix-ui.com/primitives/docs/components/accordion",
-      "target": "Accordion keyboard contract",
-      "observations": [
-        "Documented; not interaction-tested: Keyboard table documents Enter/Space expansion and arrow/Home/End navigation among disclosure triggers."
-      ],
-      "evidence_inspected": [
-        {
-          "kind": "documentation",
-          "url": "https://www.radix-ui.com/primitives/docs/components/accordion",
-          "method": "page-text"
-        }
-      ],
-      "last_verified": "2026-09-19"
-    },
-    {
       "id": "react-aria-tree-reference",
       "source_id": "react-aria-tree",
       "url": "https://react-aria.adobe.com/Tree",
@@ -9978,40 +9877,6 @@
         "status": "approved",
         "date": "2026-09-19",
         "scope": "Magic UI - Terminal",
-        "reason": "User approved this component example in the review session."
-      }
-    },
-    {
-      "id": "review-component-radix-segmented-control",
-      "source_id": "radix-themes-components",
-      "url": "https://www.radix-ui.com/themes/docs/components/segmented-control",
-      "target": "Radix Themes - Segmented Control",
-      "observations": [
-        "Official example groups Inbox, Drafts and Sent options."
-      ],
-      "evidence_inspected": [
-        {
-          "kind": "documentation",
-          "url": "https://www.radix-ui.com/themes/docs/components/segmented-control",
-          "method": "page-text"
-        }
-      ],
-      "last_verified": "2026-09-19",
-      "dynamic_visuals": [],
-      "component_tags": [
-        "segmented-control",
-        "view-selector"
-      ],
-      "interaction_tags": [],
-      "contexts": [
-        "messaging",
-        "dashboard"
-      ],
-      "visual_characteristics": [],
-      "design_review": {
-        "status": "approved",
-        "date": "2026-09-19",
-        "scope": "Radix Themes - Segmented Control",
         "reason": "User approved this component example in the review session."
       }
     },
