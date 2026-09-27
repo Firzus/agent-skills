@@ -1,39 +1,24 @@
 ---
 name: interview
-description: Prepare approved Linear work briefs through a continuous interview, with progressive framing for large goals.
+description: Resolve open decisions through short rounds of questions and return the accepted decisions to the calling workflow, triage or an Interview issue run by implement.
 disable-model-invocation: true
 ---
 
-# Interview before implementation
+# Resolve decisions by interview
 
-Prepare the next useful work, reusing accepted answers and existing artifacts.
+Ask the questions that settle open decisions, then return the result to the caller.
+`triage` runs it to define new work; `implement` runs it for an Interview issue.
+The caller owns drafting, publication, and issue status.
 
-| Boundary | Rule |
-| --- | --- |
-| Product implementation or bug fix | Requires a separate execution request |
-| Research or prototype during preparation | Requires explicit scope; return findings to this interview |
-| Repository context | Prepare changes in the issue; deliver them during implementation |
-| Read-only or planning mode | Keep drafts in the conversation; defer all writes |
+## 1. Establish the questions
 
-## 1. Establish the starting point
+1. Read the caller's input: open questions, evidence gathered, the issue when there
+   is one, and the resume point. Read relevant code, tests, and linked records.
+2. Separate discoverable facts from decisions that need the user. Inspect facts
+   directly; when useful, delegate a bounded read-only question with required
+   evidence and verify the result while continuing independent questions.
 
-1. Read the request, project instructions, relevant code/tests, and existing work.
-   Include linked issues' comments and evidence; reuse equivalent capabilities,
-   issues, and decisions.
-2. Read [domain context](references/domain-context.md) to reconcile integrated
-   definitions with relevant accepted changes still pending.
-3. Identify audience, problem, outcome, exclusions, current behavior, and unknowns.
-   Resolve repository and Linear destination from evidence; ask only for gaps.
-   With no existing code, label technical assumptions unverified.
-4. For a defect, run safe existing checks against the reported steps. Record
-   reproduction steps, expected/actual behavior, checked conditions, and verdict: reproduced,
-   not reproduced here, or insufficient evidence. An unsuccessful reproduction
-   leaves the report open; propose bounded diagnosis rather than guessing a cause.
-5. For multiple outcomes or delivery/review limits that may be exceeded, use
-   [large work](references/large-work.md) before drafting an execution issue.
-
-**Done:** starting point and existing work identified; missing facts separated
-from user decisions. Inaccessible evidence blocks only dependent preparation.
+**Done:** the decisions that need the user are identified.
 
 ## 2. Resolve decisions in short rounds
 
@@ -41,24 +26,35 @@ Keep one working record: accepted decisions, open questions and prerequisites,
 missing evidence, exclusions, and resume point. The **frontier** contains questions
 whose prerequisites are settled.
 
-1. Choose the independent frontier questions that could change the next result.
-   Ask them in the same round; use one when only one is ready or the user prefers
-   a slower pace. Resolve outcome/scope before dependent behavior/design choices.
-2. Inspect discoverable facts. When useful, delegate a bounded read-only question
-   with required evidence; verify the result while continuing independent questions.
-   Without delegation, inspect directly and report actual access limits.
-3. Ask using the style and delivery rules below; wait for answers.
-4. Retain partial answers, keep unanswered decisions open, and recompute the frontier.
+1. Choose the independent frontier questions that could change the caller's next
+   result. Ask them in the same round; use one when only one is ready or the user
+   prefers a slower pace. Resolve outcome/scope before dependent behavior/design choices.
+2. Ask using the style and delivery rules below; wait for answers.
+3. Retain partial answers, keep unanswered decisions open, and recompute the frontier.
    Revisit accepted choices only when new evidence affects them.
-5. Before another round, check whether the next result can be drafted. Ask only
-   what could change scope, evidence, feasibility, or readiness; leave routine
+4. Before another round, check whether the caller's next result can be drafted. Ask
+   only what could change scope, evidence, feasibility, or readiness; leave routine
    execution details to implementation.
 
-| Additional need | Reference |
-| --- | --- |
-| Changed domain meaning or durable rationale | [Domain context](references/domain-context.md) |
-| Broad goal, Linear structure, milestones | [Large work](references/large-work.md) |
-| Design, research, prototype, access prerequisite | [Design and uncertainty](references/design-and-uncertainty.md) |
+### Domain meaning
+
+- Establish what the project does, for whom, and the relevant concepts. Resolve an
+  ambiguous meaning with a scenario: does closing an account end access, billing, or both?
+- Separate current behavior from intended behavior; resolve conflicting pending
+  changes with the user.
+- Keep one accepted term per concept **within its context**; preserve distinct meanings
+  across contexts and public names/contracts. Terminology agreement does not authorize
+  code renaming.
+
+### Design choices
+
+- Trace callers, responsible modules, dependencies, and tests. Describe caller-facing
+  contracts: inputs, results, errors, ordering, invariants, in project vocabulary.
+- Prefer small interfaces containing complexity; justify a new abstraction by a
+  concrete variation or constraint.
+- Compare alternatives only when outcome, compatibility, testability, or reversal
+  cost could change. Obtain consequential choices in plain language; leave routine
+  internals to implementation.
 
 ### Question style
 
@@ -75,56 +71,30 @@ These rules cover questions, choices, and accompanying explanations only:
 - Treat user preferences as decisions; silence is not an answer.
 
 Example: "If you delete a task by mistake, should you be able to restore it?"
-Final artifacts retain technical precision and the project's artifact language.
 
 ### Question delivery
 
 Present the questions directly in the conversation. Number independent questions
-in one message, then wait for the user's answers. Do not include a question whose
-answer depends on another unanswered question in that round. If the user answers
+in one message, then wait for the user's answers. Keep a question whose answer
+depends on another unanswered question for a later round. If the user answers
 only some, keep the rest open for the next round.
 
-**Done:** consequential choices for the selected preparation result are accepted.
+**Done:** consequential choices for the caller's next result are accepted.
 **Waiting:** a user decision is unanswered.
-**Blocked:** evidence or an experiment is needed; record its question, prerequisites,
-stopping evidence, and return point. Prepare that investigation or continue independent
-questions. A ready experiment need not have answered its own research question.
+**Blocked:** an answer needs substantial research or observed behavior; record its
+question, prerequisites, and stopping evidence as a need for the caller, and continue
+independent questions.
 
-## 3. Draft and obtain approval
+## 3. Return the result
 
-1. Synthesize settled answers without restarting the interview.
-2. Use [routing and the issue contract](references/issue-contract.md#choose-the-next-work)
-   for the next bounded work; use [large-work framing](references/large-work.md)
-   for a broad goal. Write for someone without this chat. A valid result may be
-   an investigation brief, not a ready product implementation.
-3. Present the draft, readiness, and proposed structure. Obtain approval of content,
-   publication action, destination, and any project, document, issues, or milestones.
-4. Apply feedback only to affected decisions and passages.
+Return to the caller: accepted decisions and their consequences, accepted domain
+meanings, remaining open questions, research or observation needs, and follow-up
+work identified. `triage` puts them in its draft; `implement` records them in the
+Interview issue and carries them into its follow-up work.
 
-**Done:** content and breakdown approved. Otherwise retain the draft. An investigation
-can be approved independently of the blocked implementation it informs.
-
-## 4. Publish and hand over
-
-1. Check approval, destination, write permissions, and actual Linear tool schemas.
-2. Re-read existing records before updates; preserve concurrent and unrelated content.
-   Use verified team states/labels. Create approved work in Backlog unless it is
-   selected for near-term execution with prerequisites resolved; then use Todo.
-   Preparation does not authorize issue closure.
-3. Publish approved containers/documents, then issues and relationships using returned
-   identifiers. Verify content, destination, memberships, and relations.
-4. After a partial or uncertain write, inspect before retrying; retain confirmed IDs
-   and name pending operations.
-5. Return named links, readiness/blockers, pending context changes, and the selected
-   resume skill. Stop before executing handed-off work: publication grants no execution
-   authorization. Authorized research/prototypes may return to this interview.
-
-**Done:** publication verified and handoff usable.
-**Pending publication:** return the approved draft and exact remaining operation;
-retain Linear as the destination rather than creating another backlog.
+**Done:** each question has an accepted answer, an explicit open status, or a returned need.
 
 ## Resume
 
-Recover accepted decisions, evidence, open questions, and the resume point from
-the existing authorized record or conversation. Continue there; a new conversation
-is optional.
+Recover accepted decisions, open questions, and the resume point from the caller's
+record or conversation, and continue there.

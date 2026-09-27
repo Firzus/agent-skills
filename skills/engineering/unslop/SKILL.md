@@ -8,10 +8,11 @@ disable-model-invocation: true
 
 # Unslop
 
-Find code that should not exist — **dead code** that no longer runs, and
-**slop** that runs and earns nothing — then prove each candidate before
-touching it. The product of a run is a ranked report with the evidence
-attached; removal follows the user's approval, one deletion per commit.
+Find code that should not exist, **dead code** that no longer runs and
+**slop** that runs and earns nothing, then prove each candidate before
+touching it. A run proposes a ranked list of candidates in the conversation,
+with the evidence attached; removal follows the user's approval, one deletion
+per commit.
 
 ## Two problems, two epistemics
 
@@ -23,11 +24,11 @@ produces confident wrong deletions.
 | Question | Is this **reachable**? | Should this **exist in this form**? |
 | Decided by | Reference graphs, call graphs, runtime evidence | Reading the code |
 | Core | Decidable, with documented blind spots | No decidable core |
-| Terminates in | A removal backed by evidence | A ranked report for a human |
+| Terminates in | A removal backed by evidence | A ranked proposal for a human |
 
 **No tool decides deadness.** Each one decides a *decidable approximation* of
-it, and the identity of that approximation — never the tool's confidence score
-— determines whether removal is safe. Perfect detection reduces to the halting
+it, and the identity of that approximation, never the tool's confidence score,
+determines whether removal is safe. Perfect detection reduces to the halting
 problem, so every tool is either unsound for deletion or incomplete.
 
 **Authorship is not the defect.** No detector of LLM-written source exists, and
@@ -42,7 +43,7 @@ the defect and the rule it violates; leave authorship out of the finding.
   alive or earns its shape. Every signal has an exoneration list, and clearing
   that list is the whole work of the audit.
 - A **candidate** is a suspect whose exonerations were checked and none applied.
-  Only candidates reach the report.
+  Only candidates reach the proposal.
 - The **root set** is the declared entry points reachability is measured from.
   "Unreachable" is a function of the root set, so it is a configuration
   artifact, not a property of the code.
@@ -84,8 +85,8 @@ excluded trees.
 ## 2. Detect
 
 Read [`signals.md`](signals.md) and collect suspects against it. It carries
-the signal table — detection procedure, what a hit proves, the exoneration
-list, and the evidence grade — plus what each detector is structurally unable
+the signal table (detection procedure, what a hit proves, the exoneration
+list, and the evidence grade) plus what each detector is structurally unable
 to see.
 
 Run whatever the repository already has before installing anything: its linter,
@@ -121,8 +122,8 @@ Two moves carry most of the weight, and both are free:
   prefix and a variable is unresolvable statically, and that ends the enquiry.
 
 Grade what survives. **A** and **B** signals may carry a removal proposal.
-**C** signals produce a question for the author. **D** signals — anything
-resting on tone or style — are reported at most, never acted on.
+**C** signals produce a question for the author. **D** signals, anything
+resting on tone or style, are mentioned at most, never acted on.
 
 **Done when** every suspect is either dismissed with the exoneration that
 cleared it, or promoted to a candidate carrying: files, signal, what the signal
@@ -132,19 +133,10 @@ cleared is not a finding.
 
 ## 4. Present
 
-Use the available `canvas` skill's technical reader and its Markdown tracker
-contract. Keep one source report and task-specific reader copy throughout the
-run; update the Markdown in place, not a separate HTML or card model. If Canvas
-is unavailable, preserve the Markdown report and disclose the missing preview.
-Use the project's domain vocabulary and the report's language.
-
-Give each candidate a stable ID such as `SLOP-01`, a short title, and a matching
-section heading. Populate the tracker table using the reader's required headers,
-statuses, and dependency IDs. Each candidate starts at `À lancer`; move it to
-`En cours` only when its approved implementation starts. Keep verdicts and blocker
-reasons separate from progress status.
-
-In each candidate section, retain:
+Present the candidates directly in the conversation as a numbered list, in the
+user's language and the project's domain vocabulary. Order them by evidence
+grade, then by blast radius ascending, so the cheapest and safest work reads
+first. Give each candidate a short title and:
 
 - **Files**: the exact locations.
 - **Signal**: what fired, with the command that produced it.
@@ -156,16 +148,15 @@ In each candidate section, retain:
 Duplication is a `Consolidate` verdict, never a `Remove`: extract the shared
 behaviour, redirect every call site, and the originals then become ordinary
 unreferenced symbols with established provenance. A superseded implementation
-still serving traffic is `Migrate` — an incomplete migration, not a deletion.
+still serving traffic is `Migrate`: an incomplete migration, not a deletion.
 
-Order the candidates by evidence grade, then by blast radius ascending, so the
-cheapest and safest work reads first. End with a **Top recommendation**, then
-ask the user which candidates to run. Work starts on a pick.
+End with a **Top recommendation**, then ask the user which numbered candidates
+to apply. Work starts only on the candidates the user accepts.
 
 ## 5. Remove
 
-For each approved candidate, read [`deletion.md`](deletion.md) and climb its
-verification ladder until the evidence matches the blast radius. Rungs 1–4 are
+For each accepted candidate, read [`deletion.md`](deletion.md) and climb its
+verification ladder until the evidence matches the blast radius. Rungs 1 to 4 are
 free and offline; run all four every time. Public surface switches the work to
 a deprecation cycle, which the audit proposes rather than performs.
 
@@ -177,19 +168,17 @@ Delete outright rather than commenting out; preserve a recoverable copy of any
 uncommitted content before removal.
 
 Independent candidates with disjoint files may run as parallel sub-agents, each
-given the candidate section, the ladder rungs required, and the instruction that
+given the candidate's evidence, the ladder rungs required, and the instruction that
 everything outside its files is out of bounds. Overlapping scopes run in
 sequence.
 
-Verify from the main thread before marking anything done: re-read the diff,
+Verify from the main thread before reporting a candidate done: re-read the diff,
 re-run the build and tests, and confirm the scope held. A sub-agent's claim is
-not the evidence. Mark `Terminé` only when verification and the agreed delivery
-boundary are met. Failed checks, scope drift, or pending required delivery leave
-the task `En cours`, with the reason recorded in the table; re-dispatch within
-scope or surface the decision. A prerequisite before starting leaves it `À lancer`.
+not the evidence. Failed checks, scope drift, or pending required delivery leave
+the candidate open with its reason; re-dispatch within scope or surface the decision.
 
 **Done when** every approved candidate meets its verification and agreed delivery
-conditions, and the closing message links the report with a one-line outcome per
+conditions, and the closing message gives a one-line outcome per numbered
 candidate. Otherwise report partial completion and the unresolved blockers;
 recording a blocker does not complete the candidate.
 

@@ -10,17 +10,19 @@ environment. A prototype produces evidence for a decision, not a production feat
 
 ## 1. Resume and bound the experiment
 
-1. Read the request, project instructions, and existing issue or interview record,
+1. Read the request, project instructions, and existing issue record,
    including accepted choices, prerequisites, and evidence. Reuse settled framing.
 2. Follow project conventions to consult relevant domain definitions, pending accepted
    changes, and system contracts. Resolve consequential conflicts; distinguish
    experimental assumptions from accepted meanings and implemented behavior.
    Missing conventions call for targeted clarification, not automatic project setup.
 3. Establish question, scope/exclusions, scenarios, constraints, decision owner,
-   stopping evidence, and where the interview resumes. Distinguish a measured fact
+   stopping evidence, and the work it unblocks. Distinguish a measured fact
    from a preference requiring the owner's judgment.
 4. Verify execution authorization, access, and representative inputs. A prepared
-   brief or a ready label alone does not authorize building or external writes.
+   brief alone does not authorize building or external writes. When `implement`
+   runs a Prototype issue, that invocation authorizes building, committing, and
+   pushing the dedicated branch.
 
 | Request | Action |
 | --- | --- |
@@ -88,9 +90,11 @@ Follow [retention and handoff](references/retention-and-handoff.md) for the revi
 commit, authorized remote publication, and updates to the existing Linear record.
 
 Return the result, artifact/version, decision or unresolved question, limitations,
-and next action to the interview or originating task. Stop exploration at its
+and next action to `implement` or the originating task. Stop exploration at its
 evidence target. Product implementation needs its own request and ordinary verification;
 prototype approval does not establish production reliability.
+When `implement` ran the issue, return to it: it moves the issue to Done once the
+owner has validated the result and the reviewed commit is on the remote.
 
 **Done:** evidence retained, required publication verified, and handoff usable.
 **Pending:** distinguish accepted decision, local artifact, remote availability, and

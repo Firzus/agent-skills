@@ -3,9 +3,11 @@
 ## Establish the boundary
 
 Resolve repository, remote/base branch, Linear issue, reviewer, and completion
-boundary from project evidence. Ask only for material gaps. Local preparation does
-not imply permission to commit, push, open a PR, change Linear, merge, or deploy; confirm
-the destination and action when existing authorization does not cover them.
+boundary from project evidence. Ask only for material gaps. Invoking `implement` on
+a Linear issue authorizes commits and Linear updates for that issue. For a Task or
+Bug, the push and PR wait for the user's validation at the end of the work. Without
+an issue, confirm those actions unless existing authorization covers them. Merge
+and deployment always need separate authorization.
 
 | Evidence | What it establishes |
 | --- | --- |
@@ -18,15 +20,19 @@ the destination and action when existing authorization does not cover them.
 
 1. Preserve the task's branch/worktree and unrelated changes. If a new user-facing
    branch is needed, use `<type>/<kebab-case-subject>` with feature, bugfix, hotfix,
-   release, or chore. Keep implementation separate from retained prototype branches.
+   release, or chore. For a Linear issue, start the subject with its identifier,
+   such as `bugfix/fir-31-market-sidebar-ad-slot`, so Linear links the branch.
+   Keep implementation separate from retained prototype branches.
 2. Inspect the diff and staged paths. Commit only within the approved delivery
    scope, using Conventional Commits; mark breaking changes with `!` or a
    `BREAKING CHANGE:` footer. Without commit approval, preserve the local changes
    and verification evidence and report Git delivery as pending.
-3. Within authorized publication scope, push and open a non-draft PR once work and
-   required checks are complete; use a draft only if the user or project requests it.
-   Include outcome, scope, checks, limitations, and the existing Linear reference
-   using project conventions. If targeting the default branch, repeat
+3. Once work and required checks are complete, present the result and ask the user
+   to validate opening the PR. After validation, push and open a non-draft PR; use a
+   draft only if the user or project requests it.
+   Include outcome, scope, checks, limitations, and `Fixes <issue-id>` (for example
+   `Fixes FIR-31`) so Linear treats the PR as closing the issue. A Markdown link
+   alone does not. If targeting the default branch, repeat
    `Closes #<number>` for each intended GitHub issue closure.
 4. Verify the PR state. Mark a draft ready only after work and required checks are
    complete and the action is authorized; report missing runtime checks.
@@ -44,19 +50,20 @@ the team's workflow. The implementer maintains evidence; the designated reviewer
 accepts the result. One person may hold both roles. Status tracks the workflow;
 record acceptance, integration, and deployment as separate facts.
 
-| Transition | Required evidence |
-| --- | --- |
-| In Progress | Work actually started |
-| In Review | A linked PR opened, including a draft PR |
-| Blocker (record in the issue, not an invented status) | Cause, resolution owner, required outcome, and next action |
-| Done | The linked PR merged; for work without a PR, its agreed completion boundary was met |
+| Transition | Trigger | Set by |
+| --- | --- | --- |
+| In Progress | `implement` starts on the issue | `implement` |
+| In Review | A linked PR opened, including a draft PR | Linear Git automation; `implement` sets it if the status did not change |
+| Done (Task, Bug) | The linked closing PR merged | Linear Git automation |
+| Done (Research) | Research completed; answer, remaining uncertainty, and dossier link recorded in the issue | `implement` |
+| Done (Prototype, Interview) | The user validated the result, recorded in the issue | `implement` |
+| Blocker (recorded in the issue, not an invented status) | A prerequisite stops progress; record cause, resolution owner, required outcome, and next action | `implement` |
 
-1. Confirm write authorization, then re-read the affected record to preserve
-   concurrent and unrelated content.
+1. Re-read the affected record to preserve concurrent and unrelated content.
 2. Link the PR and check/review evidence in the existing issue. Record implemented,
-   accepted, integrated, and deployed as separate facts. A PR opening moves the
-   issue to In Review, not Done; a linked PR merge moves it to Done. Check the
-   actual status before writing when an integration may have already updated it.
+   accepted, integrated, and deployed as separate facts. After opening the PR,
+   re-read the status; if it is not In Review, set it and report that the team's
+   Git automation may be off.
 3. Verify the returned or re-read state. After an uncertain write, inspect for
    partial success before retrying; avoid duplicate comments or records.
 4. On failure, preserve last confirmed state, intended update, evidence, and next

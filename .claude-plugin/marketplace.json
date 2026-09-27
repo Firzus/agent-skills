@@ -63,6 +63,7 @@
         "./skills/engineering/setup-codex",
         "./skills/engineering/security-review",
         "./skills/engineering/skills",
+        "./skills/engineering/triage",
         "./skills/engineering/unslop",
         "./skills/engineering/video-report",
         "./skills/engineering/writing-for-agents",

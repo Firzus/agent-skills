@@ -8,7 +8,7 @@ project's agreed implementation and review limits.
 
 | Signal | Response |
 | --- | --- |
-| Ambiguous success or behavior | Interview or gather bounded evidence |
+| Ambiguous success or behavior | Run `interview` or gather bounded evidence |
 | Distinct acceptance or ownership commitments | Propose a breakdown |
 | Broad ambition with uncertain future work | Frame it and select the next useful outcome |
 | Narrow but high-risk change | Strengthen safeguards and verification, not hierarchy |
@@ -27,53 +27,36 @@ Reuse existing records; obtain publication approval before creating structure.
 | --- | --- |
 | One bounded outcome | One issue using the [issue contract](issue-contract.md) |
 | Bounded group with separately tracked outcomes/decisions | Parent and justified sub-issues |
-| Broad goal needing durable framing and staged outcomes | Project, Markdown framing document, and sufficiently understood issues |
+| Broad goal needing durable framing and staged outcomes | Project using the [project template](#project-template) and sufficiently understood issues |
 
 An existing initiative may provide context; portfolio hierarchy is optional.
-A project is not automatically one repository. Markdown preserves reasoning, not
-automatically links, attachments, history, or native relationships.
 
 ## Frame, narrow, and return
 
 1. Establish ambition, audience, constraints, resources, and long-term dependencies.
-2. Keep one framing document using the template below. Index decisions rather than
-   duplicating rationale; each decision has one home in the document or owning issue.
+2. Keep the framing in the project description using the project template. Index
+   decisions rather than duplicating rationale; each decision has one home in the
+   project description or owning issue.
 3. Agree the next observable outcome: learning can be useful before production.
-   For an experiment, agree question, minimum scope, and judgment; check execution
-   prerequisites separately from accepting its framing.
+   For an experiment, agree question, minimum scope, and judgment in a Prototype
+   issue.
 4. Detail that outcome only; keep distant areas coarse. Use
    [routing](issue-contract.md#choose-the-next-work) for issues and their types.
 5. Return findings to the same record, updating affected decisions and next outcome.
-   Use [design and uncertainty](design-and-uncertainty.md) for experiments and
+   Use [bound missing evidence](issue-contract.md#bound-missing-evidence) for experiments and
    [domain context](domain-context.md) for definitions and pending deltas.
 
-### Framing document
+### Project template
 
-```markdown
-# <Goal>
+The template is strict, under the same rules as the
+[issue templates](issue-contract.md#issue-templates): every section, in this order,
+"None" when empty, no added section, headings in the project's artifact language.
+Its user stories, in priority order, are the project's specification; each
+becomes a Task issue when it is detailed.
 
-## Destination and constraints
-<Outcome/experience, audience, resources, constraints.>
-
-## Accepted decisions
-- <Decision and rationale, or named link to its authoritative record.>
-
-## Open decisions
-- <Question, prerequisite, decision owner, evidence needed.>
-
-## Not yet specified
-- <In-scope area still too uncertain to detail.>
-
-## Out of scope
-- <Exclusion and reason.>
-
-## Next useful outcome
-<Bounded result, demonstration, acceptance owner.>
-- <Links to approved issues and any milestone.>
-
-## Resume here
-<Next question or required evidence.>
-```
+Use the [project template](../templates/project.md): set its fields, then write the
+description sections. The Product label is defined in
+[labels, status, and relations](issue-contract.md#labels-status-and-relations).
 
 For an AAA game, clarify player experience, resources, and dominant uncertainty
 before choosing a playable or learning outcome. One prototype cannot establish

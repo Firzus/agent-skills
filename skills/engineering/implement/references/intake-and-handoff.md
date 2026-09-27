@@ -1,24 +1,60 @@
 # Resume prepared work
 
-## Select executable scope
+## Route the issue
 
 Read the current issue, comments, evidence, existing owner, and project agreements.
 Reuse that issue; avoid taking over work already owned elsewhere without agreement.
-A precise direct request can establish local scope without a forced interview or
+A precise direct request can establish local scope without a forced triage or
 unapproved ticket creation. Record any project-required tracking as pending.
 
-| Input | Action |
+A parent that only groups sub-issues has no Type and is delivered through them:
+ask which sub-issue to run before changing status. A Need triage issue goes to
+`triage` before execution. Apply the following status rules to executable work.
+
+| Status | Action |
 | --- | --- |
-| Implementation issue or defined direct change | Verify acceptance criteria, prerequisites, and authorization |
-| Decision issue or consequential unresolved choice | Propose `interview`; keep dependent implementation pending |
-| Research issue | Propose `deep-research`, not production implementation |
-| Prototype issue | Propose `prototype`, not production implementation |
-| Broad map, project, or milestone | Identify the selected bounded implementation issue; otherwise propose `interview` |
+| Backlog or Todo | Move the selected executable issue to In Progress, then continue |
+| In Progress or In Review | Continue from the recorded state |
+| Done, Canceled, or Duplicate | Report the status and stop |
 
-These are handoff suggestions, not automatic skill invocation. Report unavailable
-skills or access; do not silently replace missing preparation with guesses.
+Route by the Type label. When an executable issue has none, infer the type
+from its content, apply the label, and state the choice.
 
-For each prerequisite, identify the required outcome and its evidence:
+| Type | Route | Completion |
+| --- | --- | --- |
+| Task | Continue this workflow | Linear moves the issue to Done when the linked PR merges |
+| Bug | Run `debug` to reproduce, diagnose, and fix, then continue at step 4 of this workflow | Linear moves the issue to Done when the linked PR merges |
+| Prototype | Run `prototype` on the issue's question | User validates the result; push the reviewed commit, record the handoff, move to Done |
+| Research | Run `deep-research` on the issue's question | Research complete; record the answer, remaining uncertainty, and dossier link, move to Done |
+| Interview | Run `interview` on the issue's decision, with the results of its blocking issues | User accepts the decision; record it in the issue and in the work it informs, move to Done |
+
+A Research issue closes when `deep-research` completes, without waiting for the
+user. For Prototype and Interview, the user's validation is the completion event:
+present the result, ask whether it is accepted, and iterate within the issue's
+scope until it is or the user stops. A rejected or inconclusive result stays In
+Progress with its evidence recorded.
+
+An accepted Interview decision reaches the work it informs in the same session,
+so that work needs no further discovery. Rewrite affected passages within each
+dependent issue's existing template: expected behavior and acceptance criteria for Task/Bug,
+question and evidence for Research, experiment and judgment for Prototype, or
+decision and inputs for Interview. Link the owning Interview in References;
+use Accepted decisions where that section exists. Recheck readiness for the
+dependent issue's type and retain any other unmet prerequisites. Work that no
+issue covers yet is drafted with `triage` from its step 3, which obtains approval
+and publishes it in Backlog.
+
+A broad map, project, or milestone without a selected issue
+calls for `triage`. Report an unavailable skill or access instead of
+substituting another procedure.
+
+For Bug, the `implement` invocation authorizes `debug` to fix. `debug` owns the
+reproduction, diagnosis, regression test, and fix; this workflow then runs its
+review, verification, recap, and PR steps. If `debug` ends without a verified fix
+(no reproduction, unresolved cause, or blocked), open no PR: record the diagnosis
+and the next needed evidence in the issue, keep it In Progress, and report.
+
+For each blocking relation, identify the required outcome and its evidence:
 
 - An accepted decision, an accessible artifact, and an integrated change are
   different requirements. A linked issue need not be merged if only its decision
