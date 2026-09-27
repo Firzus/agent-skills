@@ -5,9 +5,14 @@ description: Create, update, and review AGENTS.md files, skills, and their refer
 
 # Write useful agent instructions
 
-Make behavior explicit with the smallest sufficient document. Update the owning
-passage rather than accumulating corrective layers. A justified no-change result
-is valid; a template is a coverage check, not a quota of content.
+Make behavior explicit with the smallest sufficient document. Treat every change
+as a rewrite of the whole document: reread it with the new requirement, then
+rewrite the affected passages so the result reads as if written in one pass.
+Rules, exceptions, and clarifications stacked on existing text make a document
+hard to follow. A prohibition is the usual symptom: a "do not" added beside the
+instruction that already says what to do. Correct that instruction instead. A
+justified no-change result is valid; a template is a coverage check, not a quota
+of content.
 
 ## 1. Inspect the document and its authority
 
@@ -45,8 +50,7 @@ can be useful when it communicates which check is required, even if scripts exis
 ### Editorial rules
 
 - Give each rule one authoritative home; keep necessary task-specific triggers.
-- State actions with literal language and observable outcomes. Prefer positive
-  directions, retaining explicit prohibitions where they protect a real boundary.
+- State actions with literal language and observable outcomes.
 - Keep common actions in the entry point; disclose specialized branches through
   links stating both **when to read** and **what the reader will obtain**.
 - Group a concept's rules and exceptions together. Use lists for actions and tables
@@ -67,7 +71,7 @@ manufacturing a proposal or requesting unnecessary approval.
 | Situation | Action |
 | --- | --- |
 | New document | Use the relevant template; include only supported, useful content |
-| Existing document | Revise or replace affected passages; remove justified obsolete/duplicate text; preserve useful unrelated content |
+| Existing document | Rewrite the affected passages in the context of the whole document, as if drafting it anew with the change; remove text the change makes obsolete or duplicate; preserve useful unrelated content |
 | Contradictory guidance | Identify the owning rule and resolve the conflict, rather than append another exception |
 | Unverified claim or command | Verify safely or expose the gap in the proposal; never invent a requirement |
 
@@ -105,5 +109,5 @@ approval gate. In planning/read-only mode, retain proposals without writes.
 
 **Done:** intended changes verified, obsolete contradictions removed, and remaining
 limits explicit. Return changed paths, verification evidence, and pending operations.
-For future updates, repeat the same approval gate; do not add rules automatically
-after every isolated mistake.
+For future updates, repeat the same approval gate. Answer an isolated mistake by
+correcting the instruction that should have prevented it.

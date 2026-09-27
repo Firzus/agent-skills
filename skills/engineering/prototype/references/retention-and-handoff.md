@@ -4,6 +4,8 @@ This workflow's durable handoff is the retained remote branch and existing Linea
 record. Experiment completion and handoff completion are separate: a local result
 can answer the question while remote publication remains pending. Preparation or
 experiment authorization never grants those external-write permissions implicitly.
+When `implement` runs a Prototype issue, that invocation grants them for the
+dedicated branch and the originating issue.
 
 ## Establish a dedicated branch
 
@@ -26,7 +28,8 @@ conflicting branch instructions require a decision, not automatic provisioning.
    Commit that version and launch instructions only within the approved delivery
    scope, using project commit conventions. Without commit authorization, preserve
    the local files and review evidence; report the versioned handoff as pending.
-   Experiment authorization alone does not authorize a commit.
+   Experiment authorization alone does not authorize a commit; an `implement` run
+   on the Prototype issue does.
 2. Associate observations and the owner's decision with that exact commit; a moving
    branch name alone is insufficient. Label an unaccepted or inconclusive result as
    such. Do not transfer approval to later changes without review.
@@ -42,10 +45,11 @@ or artifact. Local acceptance alone is not a remotely available handoff.
 ## Update the existing work record
 
 Use project tracking conventions and actual Linear schemas. Reuse the originating
-issue or interview record; publish a new issue only within an approved action.
+issue; publish a new issue only within an approved action.
 Confirm destination and write scope, re-read before updating, preserve concurrent
 content, and verify the returned or re-read result. Git push approval is not Linear
-publication approval. On partial success, inspect before retrying to avoid duplicates.
+publication approval outside an `implement` run. On partial success, inspect before
+retrying to avoid duplicates.
 
 Use this compact handoff, omitting empty optional fields:
 
@@ -58,14 +62,15 @@ Use this compact handoff, omitting empty optional fields:
 - Owner decision: accepted / rejected / pending.
 - Outcome: supported / contradicted / unresolved.
 - Assumptions, simulations, and untested limits:
-- Remaining prerequisite and next interview question:
+- Remaining prerequisite and next question:
 - Publication: local / remote verified / tracker update pending or verified.
 ```
 
 Retain accepted domain changes as proposed deltas in their owning record under
 project conventions; an experiment does not authorize changing integrated context.
 An issue's completion requires its agreed evidence/delivery boundary, not merely
-a successful process or an attractive result. Do not close issues without authorization.
+a successful process or an attractive result. Leave the issue status to `implement`,
+which moves a Prototype issue to Done after owner validation and verified push.
 
 **Done:** verified record links the experiment, its outcome, and resume point.
 **Pending:** return the draft and last confirmed state in the conversation without

@@ -7,11 +7,10 @@ The source and release workflow are maintained in `Firzus/agent-skills` under
 directory. Migration to this repository does not authorize a release.
 
 The kit check workflow (`.github/workflows/tauri-agent-kit-check.yml` at the
-repository root) does not start on push. It runs when a PR opens, reopens,
-receives new commits, or becomes ready for review. A standalone manual workflow
-run is useful for diagnostics but does not satisfy a required PR status check.
-Confirm the destination repository's actual branch rules before describing
-this workflow as required.
+repository root) runs only on manual dispatch or when called by the manual
+publication workflow. Pushes and pull requests do not trigger CI. A standalone
+manual run does not satisfy a required PR status check; repository branch rules
+must not require this workflow for merging.
 
 ## Public-content gate
 

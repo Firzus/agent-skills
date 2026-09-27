@@ -65,10 +65,10 @@ for supported agents, installation modes, and troubleshooting.
 | Diagnose a bug or verify an authorized fix | [debug](./skills/engineering/debug/SKILL.md) |
 | Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) |
 | Investigate a question across multiple sources | [deep-research](./skills/engineering/deep-research/SKILL.md) |
-| Turn an unclear objective into bounded, approved work | [interview](./skills/engineering/interview/SKILL.md) |
-| Implement a defined change and verify it | [implement](./skills/engineering/implement/SKILL.md) |
+| Turn a new request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) |
+| Execute a prepared Linear issue or implement a defined change | [implement](./skills/engineering/implement/SKILL.md) |
 | Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
-| Read an architecture report or track recommendations visually | [canvas](./skills/engineering/canvas/SKILL.md) |
+| Explore data, simulations, maps, or interface ideas visually | [canvas](./skills/engineering/canvas/SKILL.md) |
 | Design a frontend, from visual direction to real content | [frontend-design](./skills/web/frontend-design/SKILL.md) |
 
 Research, prototyping, preparation, and implementation are different entry points,
@@ -82,15 +82,15 @@ every action they can perform. Check the selected skill's prerequisites first.
 
 | Workflow | Additional requirements |
 | --- | --- |
-| Independent reviews, delegated research, architectural refactors | An agent with subagent support |
+| Independent reviews and delegated research | An agent with subagent support |
 | Figma or Linear workflows | The relevant integration, account access, and approval for external writes |
-| Technical Canvas reader | Node.js 22.12 or later and the reader's npm dependencies |
+| Canvas React runtime | Node.js 22.12 or later and the runtime's npm dependencies |
 | Video reports | FFmpeg and access to the application being recorded |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
 | Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
 
 Host support for installing skills does not guarantee identical behavior or tool
-availability. Explicit-invocation workflows such as **interview**, **implement**,
+availability. Explicit-invocation workflows such as **triage**, **interview**, **implement**,
 **improve-architecture**, and **setup-codex** should be selected deliberately.
 
 ### Optional: personal Codex instructions
@@ -117,20 +117,21 @@ and publication status before integrating it into an application.
 
 | Skill | Purpose |
 | --- | --- |
-| [canvas](./skills/engineering/canvas/SKILL.md) | Technical reports, architecture findings, and progress views. |
+| [canvas](./skills/engineering/canvas/SKILL.md) | Interactive React visualizations, simulations, comparisons, and mockups. |
 | [code-review](./skills/engineering/code-review/SKILL.md) | Independent read-only review of a scoped change. |
 | [debug](./skills/engineering/debug/SKILL.md) | Evidence-led diagnosis and verification of authorized bug fixes. |
 | [deep-research](./skills/engineering/deep-research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
-| [implement](./skills/engineering/implement/SKILL.md) | Deliver a defined change with tests and documentation. |
-| [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and execute selected refactors. |
-| [interview](./skills/engineering/interview/SKILL.md) | Clarify decisions and prepare approved Linear work. |
+| [implement](./skills/engineering/implement/SKILL.md) | Execute a Linear issue by work type, or deliver a defined change with tests and documentation. |
+| [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and publish approved refactors as Linear sub-issues. |
+| [interview](./skills/engineering/interview/SKILL.md) | Resolve open decisions through short question rounds for triage or an Interview issue. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
 | [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Configure a reviewed Codex Operating Policy through `model_instructions_file`. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
-| [unslop](./skills/engineering/unslop/SKILL.md) | Investigate dead code and justify scoped cleanup. |
+| [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview. |
+| [unslop](./skills/engineering/unslop/SKILL.md) | Propose evidenced dead-code and slop removals in the conversation, then apply the accepted ones. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
 | [writing-for-agents](./skills/engineering/writing-for-agents/SKILL.md) | Write useful skills and project instructions. |
 | [youtube-transcript](./skills/engineering/youtube-transcript/SKILL.md) | Turn video speech and visual evidence into a learning report. |

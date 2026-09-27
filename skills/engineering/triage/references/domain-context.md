@@ -14,21 +14,18 @@ missing `CONTEXT.md` alone does not require project setup.
 
 1. Read both sources for the requested outcome. Verify integration from linked
    delivery evidence, not issue status alone.
-2. Establish what the project does, for whom, and the relevant concepts. Resolve
-   ambiguity with scenarios: does closing an account end access, billing, or both?
-3. Separate current behavior from intended behavior. Resolve conflicting pending
-   changes with the user and record dependencies; inaccessible decisions leave
-   affected readiness unknown.
+2. Identify the relevant concepts and separate current behavior from intended
+   behavior. Send ambiguous meanings and conflicting pending changes to `interview`,
+   and record dependencies; inaccessible decisions leave affected readiness unknown.
 
-Use one accepted term per concept **within its context**; preserve distinct meanings
-across contexts and public names/contracts. Terminology agreement does not authorize
-code renaming. Include aliases/translations only when useful.
+Record accepted terms with the rules of `interview`'s domain meaning; include
+aliases/translations only when useful.
 
 **Done:** relevant meanings and conflicts resolved; unknown domain meaning stays open.
 
 ## Prepare the context delta
 
-Leave repository context files unchanged during the interview. Put only the delta
+Leave repository context files unchanged during triage. Put only the delta
 in the issue draft, labeled **Accepted, not integrated**:
 
 - Target document/section; addition, change, or removal; rationale.
@@ -50,7 +47,7 @@ Include these delivery requirements in the issue:
    Mark a delta integrated only after integration is confirmed.
 
 A context-only clarification gets a bounded documentation task rather than waiting
-for an unrelated feature. The interview prepares the issue, not its PR.
+for an unrelated feature. Triage prepares the issue; `implement` delivers it.
 Keep definitions/deltas accessible to the implementer; missing required artifacts
 are prerequisites.
 

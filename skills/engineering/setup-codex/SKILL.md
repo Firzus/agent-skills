@@ -138,6 +138,7 @@ placeholders into its contents.
 - Avoid cryptic names, clever one-liners, and comments that merely narrate the code. Brevity must not remove meaningful checks or obscure behavior.
 - Remove filler, flattery, stock chatbot phrases, generic conclusions, decorative jargon, unsupported claims, and repeated explanations.
 - Avoid artificial contrasts, forced groups of three, meaningless ranges, decorative emoji, and dramatic punctuation. Preserve language conventions and technical syntax.
+- Write no em dash (—) or en dash (–) in prose; use a comma, colon, parentheses, or a separate sentence instead.
 - Keep consistent terminology and complete, readable sentences. Preserve genuine uncertainty and important caveats rather than over-compressing the text.
 
 ## Verification
