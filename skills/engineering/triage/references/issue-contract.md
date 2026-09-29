@@ -51,18 +51,24 @@ capabilities instead of inventing them or provisioning services.
 
 ## Labels, status, and relations
 
-| Group | Applied to | Values |
+| Record | Complete label set | Values |
 | --- | --- | --- |
-| Type | Every executable issue, exactly one; none on a parent that only groups sub-issues | Task, Bug, Prototype, Research, Interview |
-| Product | Every project, exactly one | The product the project serves, such as Huzounet App or Atelier |
-| None (standalone label) | Captured work awaiting triage | Need triage |
+| Executable issue | Exactly one Type label | Task, Bug, Prototype, Research, Interview |
+| Grouping parent | No labels | None |
+| Project | Exactly one Product label | The product the project serves, such as Huzounet App or Atelier |
+| Captured work awaiting triage | Only the standalone Need triage label | Need triage |
 
-- Each label is named by its value inside its group; some tools display it as
-  `Type/Bug`. Reuse the existing label for each value. Create a missing label inside
-  its group, and create the group when it is absent. Apply no other classification
-  label unless the user requests it.
-- Resolve the product from the repository and existing projects; ask only when the
-  evidence names none.
+- Resolve Type labels in the issue-label catalog and Product labels in the
+  project-label catalog. Reuse labels in the correct catalog; create a missing
+  label and its group there when needed. Each grouped label is named by its value;
+  some tools display it as `Type/Bug`.
+- Resolve the product from the repository and existing projects when labeling a
+  project; ask only when the evidence names none. Product labels belong exclusively
+  to projects, including when an issue-label catalog contains legacy product labels.
+- For every issue created or updated by triage, apply and verify the complete label
+  set above rather than append a Type label to existing labels. Include removal of
+  legacy product or other extra labels in the approved draft; leave issues outside
+  the approved publication scope unchanged.
 - Publish every new issue in **Backlog**. A reused issue keeps its status. The user
   moves selected issues to **Todo** for the week's work.
 - Record each prerequisite as a native Linear blocking relation. Blocking is the only
