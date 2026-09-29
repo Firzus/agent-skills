@@ -4,11 +4,11 @@
 <Destination of the project: outcome or experience delivered, for whom, and why it matters.>
 
 ## Success criteria
-- <Observable signal that the final goal is reached, and who accepts it.>
+- <Observable signal that the final goal is reached.>
 
 ## Current goal
 <Outcome delivered by the project's open issues, as far as current knowledge and
-progress allow: bounded result, demonstration, and acceptance owner.>
+progress allow: bounded result and demonstration.>
 
 ## Constraints
 <Resources, deadlines, and product or technical limits.>
@@ -21,8 +21,8 @@ progress allow: bounded result, demonstration, and acceptance owner.>
 - <Decision and rationale, or named link to its authoritative record.>
 
 ## Open decisions
-- <Question or in-scope area still too uncertain to detail; prerequisite,
-  decision owner, evidence needed.>
+- <Question or in-scope area still too uncertain to detail; prerequisite and
+  evidence needed.>
 
 ## Out of scope
 - <Exclusion and reason.>

@@ -140,8 +140,8 @@ Read the draft without chat history, checking the selected work's scope:
 | --- | --- |
 | Task, Bug | Scope and expected behavior are defined, with observable acceptance criteria; a Bug's cause remains for debug to establish |
 | Research | Question, scope, and required evidence are defined; the answer is the result of execution |
-| Prototype | Question, experiment, constraints, judgment criteria, and decision owner are defined; observations are the result of execution |
-| Interview | Decision question, decision owner, and required inputs are identified and available; the accepted choice is the result of execution |
+| Prototype | Question, experiment, constraints, and judgment criteria are defined; observations are the result of execution |
+| Interview | Decision question and required inputs are identified and available; the accepted choice is the result of execution |
 
 **Ready:** checks pass for the selected work, not necessarily the whole feature.
 Otherwise name the gap, prepare its prerequisite using the routing table, and
