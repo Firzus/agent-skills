@@ -66,7 +66,7 @@ for supported agents, installation modes, and troubleshooting.
 | Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) |
 | Investigate a question across multiple sources | [deep-research](./skills/engineering/deep-research/SKILL.md) |
 | Turn a new request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) |
-| Execute a prepared Linear issue or implement a defined change | [implement](./skills/engineering/implement/SKILL.md) |
+| Execute a prepared Linear issue | [implement](./skills/engineering/implement/SKILL.md) |
 | Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
 | Explore data, simulations, maps, or interface ideas visually | [canvas](./skills/engineering/canvas/SKILL.md) |
 | Design a frontend, from visual direction to real content | [frontend-design](./skills/web/frontend-design/SKILL.md) |
@@ -123,7 +123,7 @@ and publication status before integrating it into an application.
 | [deep-research](./skills/engineering/deep-research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
-| [implement](./skills/engineering/implement/SKILL.md) | Execute a Linear issue by work type, or deliver a defined change with tests and documentation. |
+| [implement](./skills/engineering/implement/SKILL.md) | Execute a published Linear issue by work type, with tests and documentation. |
 | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and publish approved refactors as Linear sub-issues. |
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve open decisions through short question rounds for triage or an Interview issue. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |

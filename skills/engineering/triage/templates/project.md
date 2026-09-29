@@ -8,7 +8,7 @@
 
 ## Current goal
 <Outcome delivered by the project's open issues, as far as current knowledge and
-progress allow: bounded result, demonstration, acceptance owner, and milestone if any.>
+progress allow: bounded result, demonstration, and acceptance owner.>
 
 ## Constraints
 <Resources, deadlines, and product or technical limits.>

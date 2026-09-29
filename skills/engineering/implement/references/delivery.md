@@ -5,8 +5,7 @@
 Resolve repository, remote/base branch, Linear issue, reviewer, and completion
 boundary from project evidence. Ask only for material gaps. Invoking `implement` on
 a Linear issue authorizes commits and Linear updates for that issue. For a Task or
-Bug, the push and PR wait for the user's validation at the end of the work. Without
-an issue, confirm those actions unless existing authorization covers them. Merge
+Bug, the push and PR wait for the user's validation at the end of the work. Merge
 and deployment always need separate authorization.
 
 | Evidence | What it establishes |
@@ -71,7 +70,7 @@ record acceptance, integration, and deployment as separate facts.
 
 If automation advances a status without the corresponding event, report the mismatch
 and reconcile only within authorized scope. Cancellation is not successful delivery.
-An issue's completion does not automatically accept its milestone or whole project.
+An issue's completion does not automatically accept its project.
 
 **Done:** required updates verified, or exact remaining operations reported.
 

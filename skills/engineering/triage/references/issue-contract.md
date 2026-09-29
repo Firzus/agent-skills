@@ -5,23 +5,28 @@ authoritative definitions, decisions, and evidence rather than copying them.
 
 ## Choose the next work
 
-- Keep direct fact lookups in triage and short questions in `interview`.
-- Every bounded work item selected for later execution gets an issue, even a small
-  implementation. Reuse existing issues; inline clarification needs no extra issue.
-- Create an Interview issue for a decision that waits on a Research or Prototype
-  result, or that needs independent ownership or follow-up.
-- Use [large work](large-work.md) for broad ambitions; publication requires approval.
+- Triage looks up discoverable facts itself; `interview` settles consequential
+  decisions with the user during triage.
+- Every work item selected for later execution gets an issue, even a small
+  implementation. Reuse existing issues; a decision settled during triage needs no
+  extra issue.
+- Create an Interview issue only for a decision that waits on a Research or Prototype
+  result, or that a person other than the current user must take.
+- A decision the user left to the agent keeps its mark in "Accepted decisions":
+  `Agent recommendation (delegated by the user): <choice>, because <reason>.`
+- Use [large work](large-work.md) for work that needs more than one issue.
 
 | What must happen next | Type label | Expected result |
 | --- | --- | --- |
 | Resolve a preference or domain choice | Interview | An accepted choice and its consequences |
 | Investigate a question through substantial source research | Research | A sourced answer and remaining uncertainty |
 | Build and observe an experiment to answer a question | Prototype | Observations supporting a design or feasibility decision |
-| Correct a reported defect | Bug | A diagnosed cause and a verified fix merged through a linked PR |
-| Deliver defined behavior or documentation | Task | A verified change merged through a linked PR |
+| Correct a defect: existing behavior contradicts its accepted or documented expected behavior | Bug | A diagnosed cause and a verified fix merged through a linked PR |
+| Deliver new or changed behavior, or documentation | Task | A verified change merged through a linked PR |
 
 Choose the missing result, not size, risk, or UI presence. Prepare prerequisites
-first, keeping later work conditional; these are alternatives, not mandatory stages.
+first; these are alternatives, not mandatory stages. Work whose content depends on
+an open Interview decision is drafted after that decision, not before.
 A Research or Prototype issue can be ready while the Interview issue it informs,
 and the work depending on that decision, stay blocked. `implement` executes every
 type and selects the matching skill from the Type label.
@@ -52,14 +57,20 @@ capabilities instead of inventing them or provisioning services.
 | Product | Every project, exactly one | The product the project serves, such as Huzounet App or Atelier |
 | None (standalone label) | Captured work awaiting triage | Need triage |
 
-- Reuse the existing label for each value. Create a missing label inside its group,
-  and create the group when it is absent. Apply no other classification label unless
-  the user requests it.
+- Each label is named by its value inside its group; some tools display it as
+  `Type/Bug`. Reuse the existing label for each value. Create a missing label inside
+  its group, and create the group when it is absent. Apply no other classification
+  label unless the user requests it.
 - Resolve the product from the repository and existing projects; ask only when the
   evidence names none.
-- Publish every issue in **Backlog**. The user moves selected issues to **Todo**
-  for the week's work.
-- Record each prerequisite as a native Linear blocking relation.
+- Publish every new issue in **Backlog**. A reused issue keeps its status. The user
+  moves selected issues to **Todo** for the week's work.
+- Record each prerequisite as a native Linear blocking relation. Blocking is the only
+  native relation triage creates; cite other related issues in References.
+- When triage changes the content or relations of a reused issue, rewrite its body
+  to the template of its type, even when only a relation changes. Preserve its
+  existing information and status; include the rewritten body in the draft for
+  approval. An issue only cited in References stays unchanged.
 
 ### Need triage
 
@@ -69,8 +80,8 @@ such as a quick note or an out-of-scope finding, as an issue labeled **Need tria
 template until triaged.
 
 A `triage` run processes it: resolve its decisions, rewrite it with its type template,
-apply the Type label, remove Need triage, and keep it in Backlog. Mark it
-Duplicate or Canceled instead when it is redundant or not wanted.
+apply the Type label, remove Need triage, and preserve its current status. Mark it
+Duplicate when another issue covers it, or Canceled when the user declines it.
 
 ## Issue templates
 
@@ -88,13 +99,16 @@ artifact language without changing their number or order.
 | Interview | [interview.md](../templates/interview.md) | Decision, known options, inputs, and the work it informs |
 
 A Task delivers one user story. A story too large for one reviewable change
-becomes several Tasks, each with its own story and scenarios.
+becomes several Tasks, each with its own story and scenarios; see
+[large work](large-work.md#choose-the-structure) for the size rule.
 
 ## Authoring rules
 
 - Express acceptance as behavior, not files to edit.
 - Use verified code locations as navigation hints. A small prototype fragment may
   clarify an accepted contract; identify its provenance and experimental status.
+- Name existing tests in Verification only when they are verified; otherwise
+  describe the evidence that will demonstrate each criterion.
 - Carry the defect's reproduction record; distinguish symptoms from unproven causes.
 - Redact secrets, personal data, and private details. Replace inaccessible evidence
   links with safe summaries or approved shared artifacts; brief publication does
