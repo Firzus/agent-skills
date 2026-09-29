@@ -23,11 +23,18 @@ Route by the Type label:
 | Task | Continue this workflow | Linear moves the issue to Done when the linked PR merges |
 | Bug | Run `debug` to reproduce, diagnose, and fix, then continue at step 4 of this workflow | Linear moves the issue to Done when the linked PR merges |
 | Prototype | Run `prototype` on the issue's question | User validates the result; push the reviewed commit, record the handoff, move to Done |
-| Research | Run `deep-research` on the issue's question | Research complete; record the answer, remaining uncertainty, and dossier link, move to Done |
+| Research | Run `deep-research` on the issue's question | Research complete; publish the report as a Linear document, record the answer, remaining uncertainty, and document link, move to Done |
 | Interview | Run `interview` on the issue's decision, with the results of its blocking issues | User accepts the decision; record it in the issue and in the work it informs, move to Done |
 
 A Research issue closes when `deep-research` completes, without waiting for the
-user. For Prototype and Interview, the user's validation is the completion event:
+user. Teammates cannot open the local dossier, so publish its `overview.md` as a
+Linear document attached to the issue, titled from its heading; on a rerun, update
+the issue's existing report document instead of adding another. Replace links to
+other local dossier files with their labels, keep public source links, and remove
+secrets and private data. The closing comment links that document, not a local
+path. If publication fails, keep the issue In Progress and report the pending upload.
+
+For Prototype and Interview, the user's validation is the completion event:
 present the result, ask whether it is accepted, and iterate within the issue's
 scope until it is or the user stops. A rejected or inconclusive result stays In
 Progress with its evidence recorded.

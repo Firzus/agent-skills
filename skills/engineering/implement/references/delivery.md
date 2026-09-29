@@ -54,7 +54,7 @@ record acceptance, integration, and deployment as separate facts.
 | In Progress | `implement` starts on the issue | `implement` |
 | In Review | A linked PR opened, including a draft PR | Linear Git automation; `implement` sets it if the status did not change |
 | Done (Task, Bug) | The linked closing PR merged | Linear Git automation |
-| Done (Research) | Research completed; answer, remaining uncertainty, and dossier link recorded in the issue | `implement` |
+| Done (Research) | Research completed; report published as a Linear document attached to the issue; answer, remaining uncertainty, and document link recorded in the issue | `implement` |
 | Done (Prototype, Interview) | The user validated the result, recorded in the issue | `implement` |
 | Blocker (recorded in the issue, not an invented status) | A prerequisite stops progress; record cause, resolution owner, required outcome, and next action | `implement` |
 

@@ -10,8 +10,9 @@ Deliver one coherent, reviewable outcome. Tests, context, and affected documenta
 belong to the change. This skill runs only on a published Linear issue; a request
 without an issue goes to `triage` first: say so and stop. Invoking this skill on a
 Linear issue authorizes, for that issue: status changes, commits, pushing a prototype
-branch, closing a Research issue when its research completes, and closing a
-Prototype or Interview issue after the user validates its result. For a Task or
+branch, publishing a Research issue's report as a Linear document attached to it
+and closing the issue when its research completes, and closing a Prototype or
+Interview issue after the user validates its result. For a Task or
 Bug, ask the user to validate opening the PR once the work is verified; that
 validation authorizes the push and a non-draft PR. It does not authorize
 unrelated work, merge, or deployment.
