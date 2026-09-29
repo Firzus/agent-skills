@@ -88,7 +88,8 @@ accepted, or each open decision has its prepared issues.
 1. Record the accepted decisions without reopening them.
 2. Draft each executable issue with the [template of its type](references/issue-contract.md#issue-templates)
    and a project with the [project template](templates/project.md). A grouping
-   parent contains its outcome in one sentence and the list of its sub-issues.
+   parent contains its outcome in one sentence. Its sub-issues are represented by
+   native Linear parent-child relations.
    Write for a reader without this conversation, then run the
    [readiness review](references/issue-contract.md#readiness-review).
 3. Draft no issue whose content depends on a decision still open in an Interview
