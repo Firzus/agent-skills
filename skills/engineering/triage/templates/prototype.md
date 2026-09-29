@@ -1,7 +1,7 @@
 # <Question the experiment answers>
 
 ## Question
-<The design or feasibility question, in terms the decision owner uses.>
+<The design or feasibility question, in domain terms.>
 
 ## Decision informed
 <The Interview issue this one blocks, and the choice it holds.>
@@ -13,7 +13,7 @@
 - <Production concern the experiment leaves aside.>
 
 ## Judgment
-<How the result is judged and by whom: a measured fact, or the owner's preference.>
+<How the result is judged: a measured fact or a stated preference.>
 
 ## References
 - <Source, constraint, or earlier experiment.>
