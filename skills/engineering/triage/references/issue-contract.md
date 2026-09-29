@@ -59,9 +59,11 @@ capabilities instead of inventing them or provisioning services.
 | Captured work awaiting triage | Only the standalone Need triage label | Need triage |
 
 - Resolve Type labels in the issue-label catalog and Product labels in the
-  project-label catalog. Reuse labels in the correct catalog; create a missing
-  label and its group there when needed. Each grouped label is named by its value;
-  some tools display it as `Type/Bug`.
+  project-label catalog. Match the catalog, parent group, and active state, not
+  just the name; archived or retired labels are ineligible. Before reusing an
+  ungrouped label in the correct catalog, place it in the required group and
+  verify the membership. Create a missing label or group in that catalog.
+  Each grouped label is named by its value; some tools display it as `Type/Bug`.
 - Resolve the product from the repository and existing projects when labeling a
   project; ask only when the evidence names none. Product labels belong exclusively
   to projects, including when an issue-label catalog contains legacy product labels.
