@@ -66,7 +66,7 @@ for supported agents, installation modes, and troubleshooting.
 | Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) |
 | Investigate a question across multiple sources | [deep-research](./skills/engineering/deep-research/SKILL.md) |
 | Turn a new request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) |
-| Execute a prepared Linear issue or implement a defined change | [implement](./skills/engineering/implement/SKILL.md) |
+| Execute a prepared Linear issue | [implement](./skills/engineering/implement/SKILL.md) |
 | Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
 | Explore data, simulations, maps, or interface ideas visually | [canvas](./skills/engineering/canvas/SKILL.md) |
 | Design a frontend, from visual direction to real content | [frontend-design](./skills/web/frontend-design/SKILL.md) |
@@ -123,14 +123,14 @@ and publication status before integrating it into an application.
 | [deep-research](./skills/engineering/deep-research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
-| [implement](./skills/engineering/implement/SKILL.md) | Execute a Linear issue by work type, or deliver a defined change with tests and documentation. |
+| [implement](./skills/engineering/implement/SKILL.md) | Execute a published Linear issue by work type, with tests and documentation. |
 | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and publish approved refactors as Linear sub-issues. |
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve open decisions through short question rounds for triage or an Interview issue. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
 | [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Configure a reviewed Codex Operating Policy through `model_instructions_file`. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
-| [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview. |
+| [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview, and continue a project goal by goal. |
 | [unslop](./skills/engineering/unslop/SKILL.md) | Propose evidenced dead-code and slop removals in the conversation, then apply the accepted ones. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
 | [writing-for-agents](./skills/engineering/writing-for-agents/SKILL.md) | Write useful skills and project instructions. |

@@ -10,6 +10,12 @@ Ask the questions that settle open decisions, then return the result to the call
 `triage` runs it to define new work; `implement` runs it for an Interview issue.
 The caller owns drafting, publication, and issue status.
 
+A question is for the user only when it asks a **consequential decision**: a choice
+whose answer changes an issue's type, scope, acceptance criteria, structure, or
+blocking relations. Facts available in the repository, Linear, linked records, or
+documentation are looked up, never asked. Every other choice is routine and stays
+with implementation.
+
 ## 1. Establish the questions
 
 1. Read the caller's input: open questions, evidence gathered, the issue when there
@@ -27,14 +33,18 @@ missing evidence, exclusions, and resume point. The **frontier** contains questi
 whose prerequisites are settled.
 
 1. Choose the independent frontier questions that could change the caller's next
-   result. Ask them in the same round; use one when only one is ready or the user
-   prefers a slower pace. Resolve outcome/scope before dependent behavior/design choices.
+   result, and ask all of them in the same round. There is no minimum or maximum
+   number per round; ask one at a time only when the user asks for it. Resolve
+   outcome and scope before the behavior and design choices that depend on them.
 2. Ask using the style and delivery rules below; wait for answers.
 3. Retain partial answers, keep unanswered decisions open, and recompute the frontier.
    Revisit accepted choices only when new evidence affects them.
-4. Before another round, check whether the caller's next result can be drafted. Ask
-   only what could change scope, evidence, feasibility, or readiness; leave routine
-   execution details to implementation.
+4. When the user leaves a decision to the agent ("you choose"), choose one option and
+   record it as accepted, marked as the agent's recommendation with its reason:
+   `Agent recommendation (delegated by the user): <choice>, because <reason>.`
+   The mark stays in every record that carries the decision.
+5. Before another round, check whether the caller's next result can be drafted. When
+   no consequential decision remains open, stop asking.
 
 ### Domain meaning
 
@@ -53,8 +63,8 @@ whose prerequisites are settled.
 - Prefer small interfaces containing complexity; justify a new abstraction by a
   concrete variation or constraint.
 - Compare alternatives only when outcome, compatibility, testability, or reversal
-  cost could change. Obtain consequential choices in plain language; leave routine
-  internals to implementation.
+  cost could change. Ask consequential choices in plain language; leave routine
+  choices to implementation.
 
 ### Question style
 
@@ -64,8 +74,10 @@ These rules cover questions, choices, and accompanying explanations only:
   Split distinct choices (such as player experience and platform) into separate
   questions, even when they fit in one sentence.
 - Ask about behavior and consequences, keeping implementation mechanisms in analysis.
-- Keep choices short; add an example, necessary term explanation, or justified
-  recommendation only when helpful.
+- Keep choices short and neutral. Add an example or a term explanation when the
+  question needs it. Never add a recommendation or mark a preferred option: a
+  question the agent could settle by research is a fact to look up, not a decision.
+  A recommendation appears only after the user delegates the decision (step 2.4).
 - Test contradictions and consequential failures with concrete situations.
 - Rephrase an unclear question before advancing.
 - Treat user preferences as decisions; silence is not an answer.

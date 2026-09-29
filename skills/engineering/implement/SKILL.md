@@ -1,14 +1,15 @@
 ---
 name: implement
-description: Execute a Linear issue by work type, or deliver a defined change, with status tracking, test-first verification, current documentation, and a verified handoff.
+description: Execute a published Linear issue by work type, with status tracking, test-first verification, current documentation, and a verified handoff.
 disable-model-invocation: true
 ---
 
 # Implement a verified change
 
 Deliver one coherent, reviewable outcome. Tests, context, and affected documentation
-belong to the change. Invoking this skill on a Linear issue authorizes, for that
-issue: status changes, creation of a missing label, commits, pushing a prototype
+belong to the change. This skill runs only on a published Linear issue; a request
+without an issue goes to `triage` first: say so and stop. Invoking this skill on a
+Linear issue authorizes, for that issue: status changes, commits, pushing a prototype
 branch, publishing a Research issue's report as a Linear document attached to it
 and closing the issue when its research completes, and closing a Prototype or
 Interview issue after the user validates its result. For a Task or
@@ -21,13 +22,14 @@ unrelated work, merge, or deployment.
 1. Read the request, project instructions, current repository state, and existing
    work record. For a Linear issue, include comments, linked decisions, acceptance
    criteria, and native blocking relations.
-   Record the starting revision and scoped local changes before routing or edits,
-   so later review can distinguish this task's changes from existing work.
-2. Apply [intake and handoff](references/intake-and-handoff.md): check the status,
-   route executable work by its Type label, move it to In Progress, and verify prerequisites,
-   prototype version, and context changes. A Prototype, Research, or Interview
-   issue follows its route there instead of the rest of this workflow; a Bug goes
-   through `debug` and resumes at step 4.
+   For a Task or Bug, record the starting revision and scoped local changes before
+   any skill handoff or edits, so later review can distinguish this task's changes
+   from existing work.
+2. Apply [intake and handoff](references/intake-and-handoff.md) in its order: check
+   the status, accept or refuse the issue, move it to In Progress, route it by its
+   Type label, and verify prerequisites, prototype version, and context changes. A
+   Prototype, Research, or Interview issue follows its route there instead of the
+   rest of this workflow; a Bug goes through `debug` and resumes at step 4.
 3. Trace the affected behavior through callers, contracts, configuration, and tests.
    Separate unrelated local work and pre-existing failures.
 4. Resolve discoverable facts locally. For consequential open choices or conflicts,
@@ -65,8 +67,8 @@ For each production behavior:
 
 | Work shape | Verification |
 | --- | --- |
-| Production behavior | Test first by default |
-| Test-first unsuitable | State why and use relevant substitute evidence; avoid infrastructure solely for ceremony |
+| Change to code behavior or user-visible output, including displayed text | Test first when a test boundary exists for it |
+| No test boundary exists, or test-first is otherwise unsuitable | State why and use relevant substitute evidence; avoid infrastructure solely for ceremony |
 | Refactoring | Establish and preserve a passing behavioral baseline |
 | Documentation only | Verify sources, claims, and links; no artificial code change or failing test |
 

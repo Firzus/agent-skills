@@ -4,21 +4,19 @@
 
 Read the current issue, comments, evidence, existing owner, and project agreements.
 Reuse that issue; avoid taking over work already owned elsewhere without agreement.
-A precise direct request can establish local scope without a forced triage or
-unapproved ticket creation. Record any project-required tracking as pending.
+Apply these checks in order; the first matching row decides:
 
-A parent that only groups sub-issues has no Type and is delivered through them:
-ask which sub-issue to run before changing status. A Need triage issue goes to
-`triage` before execution. Apply the following status rules to executable work.
-
-| Status | Action |
+| Check | Action |
 | --- | --- |
-| Backlog or Todo | Move the selected executable issue to In Progress, then continue |
-| In Progress or In Review | Continue from the recorded state |
-| Done, Canceled, or Duplicate | Report the status and stop |
+| No Linear issue was given | Say that the request goes to `triage` first, and stop |
+| Status Done, Canceled, or Duplicate | Report the status and stop. New work on it goes through `triage` |
+| Grouping parent (no Type label, has sub-issues) | List its open sub-issues without a recommendation and ask which one to run; the parent keeps its status. If the user leaves the choice to the agent, choose one and state it as the agent's recommendation with its reason. Continue with the chosen sub-issue |
+| Labeled Need triage | Say that it goes to `triage` first, and stop |
+| Breaks the triage contract: no Type label, more than one, or a Research or Prototype issue with no Interview issue blocked by it | Refuse it: report the gap, point to `triage`, and stop without changing its status |
+| Status Backlog or Todo | Move it to In Progress, then route it |
+| Status In Progress or In Review | Continue from the recorded state |
 
-Route by the Type label. When an executable issue has none, infer the type
-from its content, apply the label, and state the choice.
+Route by the Type label:
 
 | Type | Route | Completion |
 | --- | --- | --- |
@@ -51,9 +49,8 @@ dependent issue's type and retain any other unmet prerequisites. Work that no
 issue covers yet is drafted with `triage` from its step 3, which obtains approval
 and publishes it in Backlog.
 
-A broad map, project, or milestone without a selected issue
-calls for `triage`. Report an unavailable skill or access instead of
-substituting another procedure.
+A project without a selected issue calls for `triage`. Report an unavailable
+skill or access instead of substituting another procedure.
 
 For Bug, the `implement` invocation authorizes `debug` to fix. `debug` owns the
 reproduction, diagnosis, regression test, and fix; this workflow then runs its
