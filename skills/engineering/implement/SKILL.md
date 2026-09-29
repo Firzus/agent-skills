@@ -9,8 +9,9 @@ disable-model-invocation: true
 Deliver one coherent, reviewable outcome. Tests, context, and affected documentation
 belong to the change. Invoking this skill on a Linear issue authorizes, for that
 issue: status changes, creation of a missing label, commits, pushing a prototype
-branch, closing a Research issue when its research completes, and closing a
-Prototype or Interview issue after the user validates its result. For a Task or
+branch, publishing a Research issue's report as a Linear document attached to it
+and closing the issue when its research completes, and closing a Prototype or
+Interview issue after the user validates its result. For a Task or
 Bug, ask the user to validate opening the PR once the work is verified; that
 validation authorizes the push and a non-draft PR. It does not authorize
 unrelated work, merge, or deployment.
