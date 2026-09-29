@@ -130,7 +130,7 @@ and publication status before integrating it into an application.
 | [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Configure a reviewed Codex Operating Policy through `model_instructions_file`. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
-| [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview. |
+| [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview, and continue a project goal by goal. |
 | [unslop](./skills/engineering/unslop/SKILL.md) | Propose evidenced dead-code and slop removals in the conversation, then apply the accepted ones. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
 | [writing-for-agents](./skills/engineering/writing-for-agents/SKILL.md) | Write useful skills and project instructions. |

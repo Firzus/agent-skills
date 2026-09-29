@@ -1,6 +1,6 @@
 ---
 name: triage
-description: Turn a new request or a Need triage issue into approved Linear work by finding existing records, choosing the work type and structure, clarifying open decisions through interview, drafting with strict templates, and publishing in Backlog.
+description: Turn a new request, a Need triage issue, or a Linear project to continue into approved Linear work by finding existing records, choosing the work type and structure, clarifying open decisions through interview, drafting with strict templates, and publishing in Backlog.
 disable-model-invocation: true
 ---
 
@@ -25,6 +25,7 @@ to publish the follow-up work of an Interview issue.
    Search Linear for equivalent issues, projects, and decisions, including linked
    issues' comments and evidence; reuse them. For an issue labeled Need triage,
    the rewritten issue is the outcome ([Need triage](references/issue-contract.md#need-triage)).
+   For a project link, [continue the project](references/large-work.md#continue-a-project).
 2. Read [domain context](references/domain-context.md) to reconcile integrated
    definitions with relevant accepted changes still pending.
 3. Identify audience, problem, outcome, exclusions, current behavior, and unknowns.
@@ -85,6 +86,8 @@ can be approved independently of the blocked implementation it informs.
 5. Return named links, status and blocking relations, and pending context changes.
    Point to `implement` for issues the user selects. Stop before executing handed-off
    work: publication grants no execution authorization.
+   For a project, state that running `triage` with the project link in a new
+   conversation continues it once its open issues are closed.
 
 **Done:** publication verified and handoff usable.
 **Pending publication:** return the approved draft and exact remaining operation;
