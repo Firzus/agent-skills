@@ -73,10 +73,11 @@ For each production behavior:
 | Documentation only | Verify sources, claims, and links; no artificial code change or failing test |
 
 - Deliver the accepted context delta using [intake and handoff](references/intake-and-handoff.md#deliver-context-with-the-change).
-- For a new, substantially changed, audited, or retired system page, use
-  [system documentation](references/system-documentation.md). Keep small wording
-  repairs local to their sources and links. Any edit to a system page updates its
-  "Last updated" date.
+- When a change affects a system's overview or an explanation not adequately
+  conveyed by code and comments, use
+  [system documentation](references/system-documentation.md).
+  Use that reference for documentation audits and retirement as well.
+  Implementation changes alone do not require expanding a system page.
 - Keep comments beside verified, non-obvious rationale or caller obligations.
   Explain workaround sources and removal conditions; update stale affected comments.
   Avoid narration, decorative labels, vague TODOs, and disabled code.
