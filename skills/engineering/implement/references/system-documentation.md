@@ -1,33 +1,89 @@
-# Document the current system
+# Explain a system without duplicating its implementation
 
-Use this method for a new system page, a substantial update, a documentation audit, or a retired system. Keep a small wording repair local.
+Use this reference when creating, substantially revising, auditing, or retiring
+a system page. Keep small corrections local.
 
-## Decide whether a page is warranted
+## Decide what needs explaining
 
-A system page explains a mechanism that spans several files and stays non-intuitive even after reading them: what local comments cannot explain on their own. Explain behavior confined to one location with a comment beside the code instead. Each system has exactly one Markdown file, `docs/systems/<system>.md`.
+A system page serves two purposes:
 
-## Establish ownership and evidence
+- Briefly situate the system: its purpose, boundaries, and place in the project.
+- Explain consequential relationships, assumptions, or reasons that the code
+  and its comments do not adequately convey.
 
-Find the page owning this system and update it rather than create a competing explanation. Use the strict [system template](../templates/system.md) for a new page, and bring an existing page to it when you substantially update it; adapt the depth of each section to the system, not the set of sections. If existing agreements conflict with this location, report the conflict and resolve the affected scope before writing; do not reorganize unrelated documentation.
+Spanning several files is not sufficient reason to document a mechanism.
+Identify the reader's actual comprehension gap before creating or expanding
+a page. An existing overview may already provide enough orientation; not every
+system needs its own document.
 
-Read the implementation, callers, configuration, relevant tests, and existing page. Identify what is observed, planned, unverified, or obsolete. Ask for a structural rationale only when its reason cannot be established from available evidence; label unknown reasons rather than invent them.
+Reuse the project's documentation location and ownership. When a new page is
+warranted and no convention exists, propose its location before writing.
+The [system template](../templates/system.md) is a starting point, not a quota
+of sections to fill.
 
-## Write the useful current account
+## Establish the explanation
 
-Fill the template's four sections: purpose and boundaries, structure and interactions, behavior and constraints, and the change and verification map. Put state, security, concurrency, performance, or operational detail under behavior and constraints when the system's risks require it. Link to existing API references or runbooks rather than reproduce them.
+Read the relevant implementation, callers, configuration, tests, comments, and
+existing documentation. Use documentation to locate evidence, not as proof of
+current behavior. Verify the claims on which the task depends.
 
-Link unfamiliar terms to the project's designated context documents or glossaries. Use root `CONTEXT.md` only where that convention is adopted. Keep the system's detailed rules here. A diagram is useful when it clarifies relationships, not as a mandatory deliverable. Keep planned behavior visibly separate from implemented behavior and label unknown reasons rather than reconstruct a decision history.
+Separate observed behavior, accepted intent, historical rationale, and unknowns.
+Do not infer an architectural reason from the implementation alone. Ask only
+when an unavailable reason is necessary to explain a consequential choice.
 
-For accepted context changes from an issue, follow [context delivery](intake-and-handoff.md#deliver-context-with-the-change).
-Describe the behavior of the repository version being changed; an updated page in
-a PR does not establish integration or deployment.
+For accepted domain-context changes, follow
+[context delivery](intake-and-handoff.md#deliver-context-with-the-change).
 
-Local rationale stays beside the relevant code; cross-component context belongs here. Link to existing explanations rather than copying them. Removing a redundant comment does not require a new documentation paragraph.
+## Write only what helps understanding
 
-## Update and verify
+Start with two to four sentences of orientation. Follow with the explanations
+needed to close the identified comprehension gap.
 
-Change affected pages with the implementation and set their "Last updated" date to the date of the change. Replace obsolete statements instead of appending a contradictory new account. For a retired system, update its page and incoming references so readers cannot mistake it for an active system. Preview any requested deletion.
+Prefer a compact diagram when it makes relationships, ownership, or a flow easier
+to understand than prose. Show conceptual responsibilities, not every module.
+Explain non-obvious consequences rather than narrating the diagram.
 
-Check each material assertion against the actual source, then check links, commands cited as evidence, and consistency with neighboring pages. Distinguish documentary inspection from executed runtime checks.
+Keep each explanation where it is most useful:
 
-**Done when:** readers can locate the current responsibilities, behavior, and reasons without following obsolete claims, and all unresolved evidence is explicit.
+- Local implementation rationale stays beside the code.
+- Definitions remain in the project's glossary or context document.
+- Contracts, runbooks, and decision records already in the repository are linked,
+  not copied.
+- Task progress and execution results remain in delivery records.
+
+Omit file inventories, exhaustive behavior lists, and implementation details
+already clear from code or comments. Include an exact value only when that value
+is necessary to understand the explanation; link its authoritative source.
+
+Use relative links to the few source files, tests, or documents present in the
+repository version being documented. System pages must remain understandable
+without external documents: no references to issues, pull requests, external
+documentation, or hosted historical snapshots, including those of the same project.
+When an external record holds an essential reason, verify it and retain only the
+necessary explanation locally, not a copied discussion or a bare issue identifier.
+If it cannot be verified, expose the uncertainty instead of inventing a reason.
+Do not turn local links into a repository tour or a verification report.
+A section with no useful content is omitted, not filled with "None".
+
+## Maintain and verify
+
+Update a page when a change affects its overview or retained explanations,
+not merely because implementation files changed. Replace superseded passages
+instead of appending a change history. Preserve the project's date convention,
+but never treat a recent date as evidence that every claim remains correct.
+
+During an authorized audit, remove redundant explanations rather than move them
+into new documents. Preserve unique rationale and necessary operational guidance.
+Preview page deletions and update incoming links within the authorized scope.
+Project-instruction changes follow their own approval gate.
+
+Check retained claims against their sources and validate affected links and
+diagram relationships. Verify that documentary references resolve within the
+current repository and no explanation depends on an external record.
+Report unavailable evidence and documentary versus runtime verification in the
+handoff. Repository documentation does not establish deployment or live external
+behavior.
+
+**Done:** a reader can quickly place the system, understand what its code and
+comments leave unexplained, and find the relevant sources without reading a
+second description of the implementation.

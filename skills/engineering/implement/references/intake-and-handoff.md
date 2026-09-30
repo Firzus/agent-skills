@@ -98,8 +98,9 @@ context; root `CONTEXT.md` applies only where that convention is adopted. Reuse
 existing locations rather than introducing a parallel document. The owning issue
 holds the accepted delta until integration.
 
-1. Read relevant definitions, pending deltas, and affected system pages. Follow owning
-   source links rather than loading all documentation.
+1. Read relevant definitions, pending deltas, and affected system explanations.
+   Use their links to locate sources and verify the current behavior on which
+   the task depends; do not load all documentation or treat prose as proof.
 2. Reconcile intervening changes. Resolve consequential conflicts with the decision
    owner, preserving public names/contracts and distinct meanings across contexts.
 3. Implement this issue's accepted additions, changes, or removals in the owning

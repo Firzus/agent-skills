@@ -41,7 +41,9 @@ it for approval rather than assume every project uses it:
 - Repository `CONTEXT.md` and mapped glossaries describe integrated meanings.
 - The owning Linear issue records accepted changes not yet integrated.
 - Before work depending on those meanings, consult both and resolve contradictions.
-- Detailed system behavior belongs to its documentation; task methods belong to skills.
+- System documentation provides brief orientation and explanations not adequately
+  conveyed by code and comments. Implementation details remain with their sources;
+  task methods belong to skills.
 
 Record verified destinations, not guessed identifiers. Establishing these agreements
 does not authorize creating context files, provisioning Linear, or migrating existing
