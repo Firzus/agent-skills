@@ -59,6 +59,7 @@
         "./skills/engineering/implement",
         "./skills/engineering/improve-architecture",
         "./skills/engineering/interview",
+        "./skills/engineering/monorepo",
         "./skills/engineering/prototype",
         "./skills/engineering/setup-codex",
         "./skills/engineering/security-review",
