@@ -1,12 +1,14 @@
 ---
 name: interview
-description: Resolve open decisions through short rounds of questions and return the accepted decisions to the calling workflow, triage or an Interview issue run by implement.
+description: Resolve open decisions through question rounds until the agreed scope and consequential edge cases are covered, then return accepted decisions to triage or an Interview issue run by implement.
 disable-model-invocation: true
 ---
 
 # Resolve decisions by interview
 
-Ask the questions that settle open decisions, then return the result to the caller.
+Explore every decision branch within the agreed scope, including consequential
+edge cases, until the user and agent share an understanding. A draftable result
+is not evidence that the interview is complete. Return the result to the caller.
 `triage` runs it to define new work; `implement` runs it for an Interview issue.
 The caller owns drafting, publication, and issue status.
 
@@ -23,28 +25,60 @@ with implementation.
 2. Separate discoverable facts from decisions that need the user. Inspect facts
    directly; when useful, delegate a bounded read-only question with required
    evidence and verify the result while continuing independent questions.
+3. Map the decisions and their dependencies within the agreed scope. Treat the
+   caller's initial questions as a starting point, not a complete inventory. Mark
+   branches still to explore and assumptions that could hide a consequential choice.
 
-**Done:** the decisions that need the user are identified.
+**Done:** scope, initial decision branches, and evidence gaps are identified.
 
 ## 2. Resolve decisions in short rounds
 
-Keep one working record: accepted decisions, open questions and prerequisites,
-missing evidence, exclusions, and resume point. The **frontier** contains questions
-whose prerequisites are settled.
+Keep one working record: accepted decisions, explored and unexplored branches,
+open questions and prerequisites, consequential assumptions, missing evidence,
+exclusions, and resume point. The **frontier** contains questions whose
+prerequisites are settled; an empty frontier can mean blocked branches, not completion.
 
-1. Choose the independent frontier questions that could change the caller's next
-   result, and ask all of them in the same round. There is no minimum or maximum
+1. Choose the independent frontier questions that could change the agreed work,
+   and ask all of them in the same round. There is no minimum or maximum
    number per round; ask one at a time only when the user asks for it. Resolve
    outcome and scope before the behavior and design choices that depend on them.
 2. Ask using the style and delivery rules below; wait for answers.
-3. Retain partial answers, keep unanswered decisions open, and recompute the frontier.
-   Revisit accepted choices only when new evidence affects them.
+3. Retain partial answers and keep unanswered decisions open. Trace each answer's
+   consequences and newly reachable branches, then recompute the frontier. Revisit
+   accepted choices only when new evidence affects them.
 4. When the user leaves a decision to the agent ("you choose"), choose one option and
    record it as accepted, marked as the agent's recommendation with its reason:
    `Agent recommendation (delegated by the user): <choice>, because <reason>.`
    The mark stays in every record that carries the decision.
-5. Before another round, check whether the caller's next result can be drafted. When
-   no consequential decision remains open, stop asking.
+5. Before ending, review every in-scope branch using the coverage checks below.
+   Turn each newly found consequential gap or assumption into a question and
+   continue the rounds. Neither a draftable result nor a fixed number of rounds
+   ends the interview.
+6. When every in-scope branch has been reviewed and no consequential decision or
+   evidence gap remains, summarize the accepted behavior and exclusions and ask
+   the user to confirm the shared understanding. If feedback reveals a gap, reopen
+   the affected branch and continue. This confirmation does not authorize the
+   caller's publication or implementation.
+
+### Coverage before completion
+
+Walk through the normal scenario and relevant edge cases against the accepted
+decisions. Use the following prompts where the agreed work makes them relevant,
+not as a mandatory questionnaire for every request:
+
+- Who can act, under what conditions, and what inputs or states are valid? What
+  happens at empty, missing, invalid, or boundary values?
+- What happens when an operation fails, is interrupted, canceled, repeated, or
+  overlaps another operation? What is retained, undone, retried, or recoverable?
+- How do accepted choices interact with existing behavior, permissions, data,
+  external dependencies, and compatibility obligations? Do any choices conflict?
+- What observable result distinguishes success from failure in these scenarios?
+
+Look up behavior already established by evidence. Ask only when the remaining
+choice meets the consequential-decision rule. Leave routine choices to
+implementation and record explicit exclusions as out of scope; neither needs extra
+questions. A newly discovered out-of-scope concern is returned as follow-up work,
+not silently added to this interview.
 
 ### Domain meaning
 
@@ -91,11 +125,14 @@ in one message, then wait for the user's answers. Keep a question whose answer
 depends on another unanswered question for a later round. If the user answers
 only some, keep the rest open for the next round.
 
-**Done:** consequential choices for the caller's next result are accepted.
-**Waiting:** a user decision is unanswered.
+**Done:** all in-scope branches and relevant consequential edge cases are reviewed,
+their choices are accepted, and the user confirms the shared understanding.
+**Waiting:** a user decision or final confirmation is unanswered.
 **Blocked:** an answer needs substantial research or observed behavior; record its
 question, prerequisites, and stopping evidence as a need for the caller, and continue
 independent questions.
+**Stopped by the user:** preserve open branches and the resume point; return the
+partial result without claiming completion.
 
 ## 3. Return the result
 
@@ -104,9 +141,12 @@ meanings, remaining open questions, research or observation needs, and follow-up
 work identified. `triage` puts them in its draft; `implement` records them in the
 Interview issue and carries them into its follow-up work.
 
-**Done:** each question has an accepted answer, an explicit open status, or a returned need.
+**Handoff complete:** each branch has accepted decisions, an explicit open status,
+or a returned need. State whether the interview completed, is blocked by evidence,
+or was stopped by the user; a partial handoff is not a completed interview.
 
 ## Resume
 
-Recover accepted decisions, open questions, and the resume point from the caller's
-record or conversation, and continue there.
+Recover accepted decisions, explored and unexplored branches, open questions,
+consequential assumptions, evidence gaps, and the resume point from the caller's
+record or conversation. Recompute the frontier and continue there.
