@@ -48,9 +48,8 @@
     {
       "name": "engineering",
       "source": "./",
-      "description": "Cross-cutting engineering skills \u2014 browser automation, code health, visualization.",
+      "description": "Cross-cutting engineering skills \u2014 browser automation, code health.",
       "skills": [
-        "./skills/engineering/canvas",
         "./skills/engineering/code-review",
         "./skills/engineering/debug",
         "./skills/engineering/deep-research",
