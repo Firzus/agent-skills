@@ -28,7 +28,7 @@ This repository distributes agent skills through `Firzus/agent-skills`. It is do
 
 - Do not run `npx skills add` or `npx skills update` from this repository. README installation commands are for end users, not maintenance checks.
 - Normal repository edits do not authorize image generation, nested Codex runs, or network installs. Dependency installation is allowed for authorized `tools/tauri-agent-kit/` work only.
-- Editing `setup-codex` does not authorize changing the active user profile. Use isolated temporary profiles for installer tests.
+- Editing `setup-codex` or `setup-cursor` does not authorize changing the active user profile. Use isolated temporary profiles for installer tests.
 - Do not create or update external issues, push, open pull requests, merge, or deploy as a side effect of documentation work. Respect the approved delivery scope.
 
 ## Validation
@@ -39,6 +39,7 @@ For documentation changes, check affected claims, local links and anchors, front
 | --- | --- | --- |
 | Tauri agent kit | `vp pack`, `vp check`, `vp test`; `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test -p tauri-plugin-agent-kit --lib --locked`, and `cargo check -p tauri-plugin-agent-kit --release --locked`; fixture, live, security, packaging, and consumer checks for affected integration. Preserve regression assertions rather than weakening them to pass CI. | `tools/tauri-agent-kit/`; Windows, Node, Vite+, Rust, and installed dependencies; reserve the desktop before native-input tests |
 | Codex setup installer or embedded policy | `python skills/engineering/setup-codex/scripts/test_setup_codex.py` | Repository root; Python and PowerShell 7; temporary profiles only |
+| Cursor setup installer or embedded policy | `python skills/engineering/setup-cursor/scripts/test_setup_cursor.py` | Repository root; Python and PowerShell 7; temporary profiles only |
 | Other helper scripts | Relevant safe checks exposed by the owning skill and script | Confirm inputs and effects before execution |
 
 Documentary checks do not prove agent behavior or host loading. Report untested runtime boundaries and distinguish a local change from an installed or published skill.
