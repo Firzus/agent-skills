@@ -1,4 +1,4 @@
-# Editor tools — authoring UI for the gaps you fill yourself
+# Editor tools: authoring UI for the gaps you fill yourself
 
 Some needs have no Unity tool, so the project builds one — animation notifies,
 ability definitions, combo trees, dialogue graphs. That tool needs an authoring
@@ -19,6 +19,8 @@ foreign license behind it.
 | Fields bound to serialized data | `PropertyField` |
 | Timeline strips, curves, custom graphics | `generateVisualContent` + `painter2D` |
 | A control reused across tools | `[UxmlElement]` / `[UxmlAttribute]` |
+| A control in the main Editor toolbar | `MainToolbarCustomElement` |
+| Data that is genuinely a graph: dialogue, state machines | **Graph Toolkit**, see [Node graphs](#node-graphs) |
 | An API with no UI Toolkit equivalent yet | `IMGUIContainer` |
 
 ## Master-detail
@@ -101,18 +103,23 @@ recognisable badge in a list.
 
 ## Node graphs
 
-Author on lists, trees, and timelines rather than a node canvas: Unity has no
-production-ready graph foundation to build on. `UnityEditor.Experimental.GraphView`
-is still experimental and carries the warning that it may change or be removed,
-and its successor **Graph Toolkit** is Editor-time authoring only, with no
-execution backend — the graph runs nothing on its own. It ships as an Editor
-module, so use the built-in namespace directly. Model a port without data as
-`typeof(Untyped)`, set its capacity with `IPortBuilder.WithCapacity`, and define
-valid connections in `Graph.IsConnectionAllowed`.
+Author on lists, trees, and timelines by default. Reach for **Graph Toolkit**
+only when the data is genuinely a graph, such as dialogue trees and state
+machines, where a list would hide the connections the author edits.
 
-Keep the data model independent of the authoring UI — serialized types that know
-nothing about `VisualElement`. A graph front-end then becomes a second view over
-the same data once a stable foundation ships, rather than a rewrite.
+Graph Toolkit is the authoring front end: it compiles graphs to runtime models
+but ships no execution backend, so the project writes the runtime that walks
+them. Budget that runtime as part of the tool.
+
+- Use the built-in Editor module namespace (`Unity.GraphToolkit.Editor`); no package is needed.
+- Build state machines on its state-machine authoring API (6.7): `StateMachine`, `State`, transitions, conditions, and variables, defined from Editor scripts as serialized graph assets.
+- Model a port without data as `typeof(Untyped)`, set its capacity with `IPortBuilder.WithCapacity`, and define valid connections in `Graph.IsConnectionAllowed`. A port accepting several data types declares them with `WithDataTypes` (6.7).
+- Show the project runtime's execution flow inside the graph through the `GraphVisualization` API.
+
+Keep the data model independent of the authoring UI: serialized types that know
+nothing about `VisualElement` or Graph Toolkit, compiled from the graph by the
+project's own step. The runtime then depends on the model alone, and the
+authoring view can change without a data migration.
 
 ## Editor code placement
 
@@ -120,3 +127,8 @@ Editor code lives under `Editor/` folders or Editor asmdefs, and the runtime
 types it edits stay in runtime assemblies — see
 [project-structure.md](./project-structure.md). A tool meant to be reused ships
 as a UPM package with that split already in place.
+
+Register Editor callbacks, such as `EditorApplication.update` subscriptions, in
+an `[OnCodeLoaded]` method and remove them in the matching `[OnCodeUnloading]`
+method, so each code reload leaves exactly one subscription; see
+[runtime.md](./runtime.md#static-state).
