@@ -7,7 +7,6 @@ is not distributed through the skills marketplace. Start with the subject's
 
 ## Engine and rendering
 
-- [Unreal Engine 5 AAA practices](./ue5-aaa-best-practices/overview.md)
 - [Stylized rendering](./stylized-rendering/overview.md)
 
 ## Architecture and foundation
@@ -52,8 +51,3 @@ is not distributed through the skills marketplace. Start with the subject's
 ## Multiplayer
 
 - [Co-op sessions](./coop-session/overview.md)
-
-## Engineering practice
-
-- [AI coding-agent efficiency tools](./ai-agent-efficiency-tools/overview.md)
-- [Dead code and AI slop](./dead-code-and-slop/overview.md)

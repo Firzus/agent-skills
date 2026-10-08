@@ -1,8 +1,7 @@
 # Engine mapping — Unity 6 (URP/HDRP) & UE5
 
 Concrete node/pass/API names and gotchas for shipping the NPR look. Version
-flags inline. Engine-wide practice: `unity` /
-`ue5-aaa-best-practices`.
+flags inline. Engine-wide Unity practice: `unity`.
 
 ## Unity 6 — URP
 
