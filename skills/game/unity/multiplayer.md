@@ -1,4 +1,4 @@
-# Multiplayer — netcode, authority, sessions, dedicated server
+# Multiplayer: netcode, authority, sessions, dedicated server
 
 Networking is decided before gameplay code exists: the netcode stack, the
 authority model, and the client/server split shape prediction, state ownership,
@@ -18,11 +18,19 @@ For engine-agnostic replication theory and drop-in co-op session design, use the
 | Multi-peer testing | `com.unity.multiplayer.playmode` |
 
 **Netcode for GameObjects** is the default: `NetworkBehaviour`, `NetworkVariable`,
-and RPCs over GameObjects. **Netcode for Entities** (`com.unity.netcode`)
-is the supported step off that row, for DOTS-scale simulation — many networked
-entities with prediction at scale. It pairs with the ECS core packages, and a
-project takes it only when already built on ECS. The two stacks do not
-interoperate, so this is a per-project choice.
+and RPCs over GameObjects. Its 3.x line, the 7.0 default, installs Netcode for
+Entities, Entities, Burst, and Collections as package dependencies; gameplay
+code still uses the GameObject API. Its time types (`NetworkTime`,
+`NetworkTimeSystem`, `NetworkTickSystem`) live in
+`Unity.Netcode.GameObjects.Timing`, and its Editor assemblies are
+`Unity.Netcode.GameObjects.Editor*`.
+
+**Netcode for Entities** (`com.unity.netcode`) is the supported step off that
+row, for DOTS-scale simulation: many networked entities with prediction at
+scale. A project writes its netcode against it only when its simulation is
+already built on ECS. The two programming models do not interoperate, so this
+is a per-project choice. Its host runs as a single world by default (Single
+World Host).
 
 ## Authority
 
@@ -59,8 +67,8 @@ rather than the individual services or hand-rolled sockets.
 
 - Matchmaker (6.4) supports CEL OR-operator pools and filters, config history with diffs, dashboard log access, and third-party hosting hooks.
 - Cloud Code gained an experimental stateful mode with a local server (6.5) for per-player and per-session state, which prototypes persistence before dedicated servers exist.
-- Build session UI on **Unity Building Blocks**. Multiplayer Widgets was deprecated in 6.3.
-- Plan hosting on the current Multiplayer Services or third-party path: Multiplay Hosting as configured pre-6.3 was removed from the Editor and runtime when the service sunset.
+- Build session UI on **Unity Building Blocks**.
+- Host dedicated servers with a third-party provider, connected through the Matchmaker's hosting hooks.
 
 **Multiplayer Center** (`Window → Multiplayer → Multiplayer Center`) scaffolds
 packages, samples, and tutorials from a questionnaire. It is still pre-1.0, and
@@ -85,4 +93,5 @@ scripting defines, and run them in CI like any other target — see
 **Multiplayer Play Mode** runs multiple virtual players in
 one Editor, so host-and-client behaviour is testable without several Editor
 installs or standalone builds. Its capabilities now live largely in the Play Mode
-Framework and the engine's Multiplayer modules.
+Framework and the engine's Multiplayer modules. Each developer's local player
+run mode is stored per developer (6.7), not in the shared scenario asset.

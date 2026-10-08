@@ -14,7 +14,7 @@
 - Dependencies point one way: features depend on shared foundations, never on each other, never back upward.
 - Put an asmdef (or `.asmref`) inside every `Editor/` folder that sits under a runtime asmdef. An asmdef in a parent folder overrides the `Editor/` special-folder rule, so without one those scripts compile into the runtime assembly and break player builds.
 - Use an `.asmref` (assembly definition reference asset) to compile scripts from a distant folder into an existing assembly, keeping the folder where it belongs.
-- Set `noEngineReferences: true` on domain logic to make an assembly pure C#, with the compiler forbidding any `UnityEngine` access. It is the cleanest way to keep that logic testable outside the Editor.
+- Set `noEngineReferences: true` on domain logic to make an assembly pure C#, with the compiler forbidding any `UnityEngine` access. It is the cleanest way to keep that logic testable outside the Editor. Keep such an assembly free of static state, as [runtime.md](./runtime.md#static-state) explains.
 - Set `autoReferenced: false` to stop leftover code in `Assembly-CSharp` from reaching into a module without declaring it.
 - When unsure where a script compiles, select it in the Project window: the inspector's information section names its assembly and owning asmdef.
 - Code under `Packages/` is ignored entirely unless it carries an asmdef.
@@ -44,11 +44,13 @@ decouple systems without singletons. They are assets: see
 - Move measured hot paths — pathfinding, procedural generation, mass transform updates — into Burst-compiled jobs over `NativeArray` and `Unity.Mathematics`. Burst alone often pays 5–10x on a hot loop.
 - Allocate native containers once at init and reuse scratch buffers across runs; a job that only reads and writes pre-allocated containers is what makes the hot path zero-allocation.
 - Native containers live outside the GC, so every one you create needs a matching `Dispose` — guard with `IsCreated` in `OnDestroy`, and pick the `Allocator` that matches the data's lifetime (`Temp`, `TempJob`, `Persistent`).
+- Write into a `NativeList` or `UnsafeList` through `Add`, `AddRange`, or after setting `Length`: when capacity grows, only the first `Length` elements survive, so data written past `Length` through the raw pointer is lost.
 - Match the container to the data size: `NativeParallelHashSet`/`NativeParallelHashMap` pay for hashing, buckets, and thread safety, so on a handful of items a plain `NativeArray` with a linear scan wins on both speed and cache locality — even under Burst, the data structure decides the outcome.
 - Schedule early and complete late, chaining `JobHandle`s. Calling `.Complete()` straight after scheduling runs the job synchronously and discards the parallelism.
+- Complete the job writing a `NativeArray` before passing it as an `AsyncGPUReadback` destination; a destination still in use fails through the readback callback.
 - Size `IJobParallelFor` batches to the work per item: large batches for cheap items, small for expensive ones.
-- Entities, Collections, Mathematics, and Entities Graphics ship with the Editor as core packages since 6.4 (`Unity.Mathematics` is a built-in module in 6.5) and track Editor releases. Jobs, Burst, and Mathematics are therefore a default tool for hot paths, not an opt-in dependency.
-- Reserve **full ECS** for genuine scale — RTS hordes, large simulations, thousands of active entities — used hybrid alongside GameObjects. It costs iteration speed and ecosystem compatibility, which is the trade the scale has to justify.
+- Burst, Collections, and Mathematics are engine modules, and Entities and Entities Graphics ship with the Editor as core packages; all track Editor releases. Jobs, Burst, Collections, and Mathematics are therefore a default tool for hot paths, not an opt-in dependency.
+- Reserve **full ECS** for genuine scale (RTS hordes, large simulations, thousands of active entities), used hybrid alongside GameObjects. It costs iteration speed and ecosystem compatibility, which is the trade the scale has to justify. In 7.0 a GameObject is not an entity: SubScenes remain the ECS authoring and streaming unit.
 
 ## Profiling
 
@@ -63,6 +65,11 @@ problem.
 
 Hold steady-state gameplay at zero per-frame managed allocations — GC spikes are
 frame hitches, and incremental GC moves the cost rather than removing it.
+
+Profile allocations on the backend you ship. The Editor and CoreCLR players run
+the CoreCLR generational GC, whose incremental mode is not configurable and
+whose large object heap starts at 85 KB; IL2CPP players keep the incremental
+Boehm GC.
 
 - Cache component references at init; reuse collections and `StringBuilder`s.
 - Use the non-alloc physics query overloads.
