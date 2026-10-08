@@ -1,0 +1,10 @@
+{
+  "setup-worktree-windows": [
+    "git fetch --prune --quiet origin",
+    "$up = git -C \"$env:ROOT_WORKTREE_PATH\" rev-parse --abbrev-ref '@{upstream}' 2>$null; if ($up -and -not (git status --porcelain)) { git merge-base --is-ancestor HEAD $up; if ($LASTEXITCODE -eq 0) { git merge --ff-only --quiet $up } }"
+  ],
+  "setup-worktree-unix": [
+    "git fetch --prune --quiet origin",
+    "up=$(git -C \"$ROOT_WORKTREE_PATH\" rev-parse --abbrev-ref '@{upstream}' 2>/dev/null); if [ -n \"$up\" ] && [ -z \"$(git status --porcelain)\" ] && git merge-base --is-ancestor HEAD \"$up\"; then git merge --ff-only --quiet \"$up\"; fi"
+  ]
+}
