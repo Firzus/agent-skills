@@ -245,7 +245,3 @@ build are not substitutes for each other.
 Silent failures deserve a higher evidence bar than loud ones: a broken build
 costs one cycle, while a deleted migration path costs an incident whose cause
 is no longer traceable to the audit.
-
-Primary sources for every mechanism above:
-[`doc/dead-code-and-slop/false-positives.md`](../../../doc/dead-code-and-slop/false-positives.md)
-and [`unity-and-csharp.md`](../../../doc/dead-code-and-slop/unity-and-csharp.md).

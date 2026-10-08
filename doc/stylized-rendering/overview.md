@@ -15,7 +15,7 @@ look lives in the authored maps. Plan the **art pipeline**, not just the shader.
 
 Excluded (separate subjects): web/React screen-space shaders (`shaders`), full-
 site palette extraction (`extract-theme`), in-engine VFX/particles, animation.
-Engine-wide practice: `unity` / `ue5-aaa-best-practices`.
+Engine-wide Unity practice: `unity`.
 
 ## Pick your art-direction pole first
 

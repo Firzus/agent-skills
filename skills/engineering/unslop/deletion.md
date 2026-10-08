@@ -73,6 +73,3 @@ deprecation cycle first.
   is invisible to tests.
 - **A feature flag is a staging mechanism with an expiry, not a resting place.**
   Flagged-off code still ships and still runs when the flag flips.
-
-Primary sources:
-[`doc/dead-code-and-slop/safe-deletion.md`](../../../doc/dead-code-and-slop/safe-deletion.md).

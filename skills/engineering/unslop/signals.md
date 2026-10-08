@@ -68,6 +68,3 @@ the author; **D** is reported at most.
 - **Duplication and deadness are orthogonal.** Nothing in a clone detector says
   a clone is unused; nothing in an unused-symbol tool says a live function is
   not a copy-paste. Run and read them separately.
-
-The full evidence base, with primary sources and per-tool detail, is in
-[`doc/dead-code-and-slop/`](../../../doc/dead-code-and-slop/overview.md).

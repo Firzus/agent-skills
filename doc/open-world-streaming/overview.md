@@ -5,8 +5,7 @@ the cell-level streaming system, the sub-cell rendering frontier underneath
 it, and the procedural-generation/living-world layers around it. This corpus
 is the engine-agnostic architecture blueprint: components, data flow,
 budgets, build order, and failure modes. Engine tooling specifics live in
-the engine mapping section and the dedicated engine references
-(`unity`, `ue5-aaa-best-practices`).
+the engine mapping section and the dedicated `unity` skill.
 
 ## The core invariant
 
