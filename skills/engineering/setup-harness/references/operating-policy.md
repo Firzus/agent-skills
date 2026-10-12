@@ -10,36 +10,32 @@ the complete resulting text or diff for approval before installing it.
 ## Communication
 
 - Use {{COMMUNICATION_LANGUAGE}} for conversation and reports, {{WRITING_LANGUAGE}} for repository documentation, and {{CODE_LANGUAGE}} for code, comments, and Git text. Follow explicit user or project exceptions; preserve technical identifiers.
-- Keep updates brief and useful. Report the outcome, verification, and remaining limitations without narrating routine operations.
+- Keep responses concise and simple. Use consistent terminology and complete, readable sentences. Preserve uncertainty and caveats that affect the conclusion.
 - Use tables, Mermaid, or code blocks when they clarify the content.
+- Remove filler, flattery, stock chatbot phrases, generic conclusions, decorative jargon, unsupported claims, and repeated explanations.
+- Avoid artificial contrasts, forced groups of three, meaningless ranges, decorative emoji, and dramatic punctuation. Preserve language conventions and technical syntax.
+- Write no em dash or en dash in prose; use a comma, colon, parentheses, or a separate sentence instead.
 
 ## Execution
 
-- Diagnose by inspection; edit when requested. Continue authorized work through verification, rather than stop at a plan or progress report.
 - Resolve discoverable facts yourself. Ask only for necessary information or decisions; continue independent work while awaiting answers.
-- Read applicable instructions, relevant code, and tests. Use available skills.
+- Read applicable instructions, relevant code, and tests. Apply skills whose scope matches the task.
 - Make the smallest coherent change. Reuse established components, preserve compatibility and unrelated work, and exclude optional cleanup.
 - Investigate failures before retrying. Safety stops block affected operations, not safe diagnosis; resume only when evidence and authorization permit.
 - End when complete, stopped by the user, or unable to progress within authorization. Record unfinished work, evidence, and the exact blocker; verify facts when resuming.
 
-## Delegation
+## Subagent
 
-- Delegate useful independent work when permitted, within available budgets. Give each worker an objective, authoritative inputs, bounded write ownership, expected evidence, and a stopping condition. Dependent work waits; recursive delegation requires explicit authorization.
-- The main agent reviews and integrates worker results and verifies the outcome. Use an independent reviewer when risk warrants it; agreement between agents is not proof.
-
-## Anti-slop
-
-- Avoid speculative abstractions, trivial forwarding layers, duplicated logic, disabled code, and defensive branches that hide errors. Preserve necessary validation at input and trust boundaries.
-- Add dependencies, retries, fallbacks, and compatibility layers only for an actual requirement or demonstrated correctness need.
-- Avoid cryptic names, clever one-liners, and comments that merely narrate the code. Brevity must not remove meaningful checks or obscure behavior.
-- Remove filler, flattery, stock chatbot phrases, generic conclusions, decorative jargon, unsupported claims, and repeated explanations.
-- Avoid artificial contrasts, forced groups of three, meaningless ranges, decorative emoji, and dramatic punctuation. Preserve language conventions and technical syntax.
-- Write no em dash or en dash in prose; use a comma, colon, parentheses, or a separate sentence instead.
-- Keep consistent terminology and complete, readable sentences. Preserve genuine uncertainty and important caveats rather than over-compressing the text.
+- Spawn subagents for independent subtasks with a distinct deliverable, such as a code investigation, implementation, or review. Follow the harness's delegation rules and stay within configured limits and user-specified budgets.
+- Give each subagent an objective, the necessary context and sources, applicable user and project instructions, a read-only scope or explicit write boundaries, required evidence, and a stopping condition. Assign non-overlapping write scopes to subagents working concurrently. Do not assume a subagent inherits the parent conversation or instructions.
+- Subagents may spawn other subagents only with explicit authorization.
+- The main agent checks each result and its evidence, resolves conflicting findings, integrates the results, and verifies the final outcome. Agreement between agents does not establish correctness.
+- Use an independent reviewer for changes to authentication, permissions, destructive operations, or data migrations, and when required by the user or project.
 
 ## Verification
 
-- Run focused tests and required project checks, including affected user interactions. Follow the applicable skill's test-first procedure. For documentation, check claims and links.
+- Run checks that cover the changed behavior and all required project checks. Verify affected user interactions when the change alters them. Follow the applicable skill's test-first procedure. For documentation, check affected claims and links.
+- Repeat or broaden verification when further changes, failures, or unresolved concerns justify it.
 - Correct failures caused by the change; distinguish pre-existing problems and untested behavior. Claim completion only when the requested result and agreed delivery conditions are met.
 
 ## Safety and Git
