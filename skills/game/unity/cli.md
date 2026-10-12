@@ -66,31 +66,48 @@ Live Editor access requires `com.unity.pipeline`. Check the CLI version,
 
 ### Compatibility gate
 
-A trial on 2026-10-08 verified CLI `1.0.0-beta.13` with Pipeline
-`0.8.0-exp.1` on Editor `7000.0.0a7`: open, status, doctor, list, `eval` with
-arguments, `recompile`, a project command, an Inspector capture, and close.
-This is a version-scoped observation, not a project pin or a guarantee for
-later releases.
+The CLI and Pipeline are experimental and change together. Verify the
+installed pair on the project rather than assuming a release behaves like an
+earlier one.
 
-- Pin the Pipeline version you install (`unity pipeline install --package-version <version>`) rather than upgrading by reflex: a CLI and Pipeline pair that mismatches can fail only on commands with arguments, or fail to compile and drop the Editor into Safe Mode.
-- After connecting, verify a harmless command **with an argument**, such as the `eval` read below. An argument-free command succeeding proves only the connection.
-- Pipeline 0.9 renames many commands. After any Pipeline upgrade, rediscover names with `unity list --json` before using a command name from this file.
+- Change the CLI or Pipeline version deliberately, not by reflex, and pass an explicit `--package-version` to `unity pipeline install`. A mismatched pair can fail only on commands with arguments, or fail to compile and drop the Editor into Safe Mode.
+- After connecting, verify a harmless command **with an argument**, such as the readiness `eval` below. An argument-free command succeeding proves only the connection.
+- Pipeline releases can rename commands. After any Pipeline upgrade, rediscover names with `unity list --json` before using a command name from this file.
 
 A first installation can be picked up by a running Editor; after a package
 version change, close and reopen it so the changed manifest is loaded. Start
-with `-automated` to reduce modal interruptions:
+with `-automated` to reduce modal interruptions, then wait until it accepts
+commands:
 
 ```bash
 unity open . --args -automated       # --args forwards raw flags to the Editor
-unity status --until-ready           # waits until the Editor accepts commands
+unity status --until-ready           # waits for the Editor to report ready
+unity command eval --code "return UnityEngine.Application.unityVersion;" --result-only --timeout 300
 ```
+
+`ready` from `unity status` does not prove that the Editor accepts main-thread
+commands. A cold start that reimports assets can report `ready` a minute or
+more before commands are accepted. Meanwhile, main-thread commands fail with
+`503 Service Unavailable: Server Busy`, saying the Editor is still `settling`,
+while `unity status` keeps showing `ready`.
+
+The first successful `eval` with an argument is the readiness proof. While the
+Editor is busy, the CLI keeps retrying a command until its `--timeout`, so size
+that timeout to the import: several minutes for a cold `Library`. If it still expires with `Server Busy` or `settling`, rerun it
+within a total time limit, then report the timeout rather than proceeding.
+Treat any other error as a real failure.
 
 `unity status` takes no positional project argument (unlike `test` and `close`);
 use its `--project-path` filter when needed. A modal dialog shows there as
-`STATUS_BLOCKED_BY_DIALOG`, naming the dialog in `blockedBy`. If a modal blocks
-shutdown, including Safe Mode, `unity close . --force` can terminate the
-Editor. **Neither normal nor forced close saves work**: save first, or obtain
-approval to lose unsaved changes.
+`STATUS_BLOCKED_BY_DIALOG`, naming the dialog in `blockedBy`.
+
+`unity close .` sent to an Editor still settling can time out with
+`closed: false`, `method: none`, and `PROJECTS_CLOSE_TIMEOUT` advising
+`--force`. Wait for the readiness `eval` to succeed, then retry the normal
+close. Use `unity close . --force` only when a modal
+blocks shutdown, including Safe Mode, or when a ready Editor still fails to
+close; it terminates the process. **Neither normal nor forced close saves
+work**: save first, or obtain approval to lose unsaved changes.
 
 Discover per-project schemas with `unity list --json` before invoking
 `unity command <command-name>`; projects can register their own commands.
@@ -197,9 +214,9 @@ diagnosing anything else about a broken connection.
 ## Working against a project
 
 1. Check the compatibility gate before installing or upgrading Pipeline.
-2. `unity doctor` on connection failure; `unity status --until-ready` to identify the Editor and wait for it.
+2. `unity doctor` on connection failure; `unity status --until-ready` to identify the Editor, then the readiness `eval` to confirm it accepts commands with arguments.
 3. `unity list --json` to discover commands and their parameter schemas.
-4. A read-only `eval --code` to verify argument handling and observe live state.
+4. Read-only `eval --code` calls to observe live state.
 5. A registered `[CliCommand]` for recurring operations; verify actual completion.
 
 Global flags cover JSON output and exit codes — see the
