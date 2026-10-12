@@ -90,8 +90,6 @@ every action they can perform. Check the selected skill's prerequisites first.
 Host support for installing skills does not guarantee identical behavior or tool
 availability. Explicit-invocation workflows such as **triage**, **interview**, **implement**,
 **improve-architecture**, and **setup-harness** should be selected deliberately.
-The legacy **setup-codex** and **setup-cursor** names remain manual entry points
-that direct users to **setup-harness**; install the replacement to use them.
 
 ### Optional: personal harness instructions
 
@@ -110,8 +108,7 @@ Cursor's project `AGENTS.md` is not a global substitute. See the
 [native destinations](./skills/engineering/setup-harness/references/harnesses.md)
 for loading limits, and review the
 [shared policy template](./skills/engineering/setup-harness/references/operating-policy.md)
-before choosing this skill. The former setup installers no longer write files;
-existing configuration and legacy policy files are left unchanged.
+before choosing this skill.
 
 ### Tauri companion tooling
 
@@ -137,8 +134,6 @@ and publication status before integrating it into an application.
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve decisions through question rounds until the agreed scope and consequential edge cases are covered. |
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
-| [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Legacy Codex entry point (app and CLI); requires setup-harness. |
-| [setup-cursor](./skills/engineering/setup-cursor/SKILL.md) | Legacy Cursor entry point; requires setup-harness. |
 | [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Set up reviewed personal instructions for selected harnesses without backups or system-prompt replacement. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
