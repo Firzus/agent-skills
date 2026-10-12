@@ -89,26 +89,29 @@ every action they can perform. Check the selected skill's prerequisites first.
 
 Host support for installing skills does not guarantee identical behavior or tool
 availability. Explicit-invocation workflows such as **triage**, **interview**, **implement**,
-**improve-architecture**, **setup-codex**, and **setup-cursor** should be selected deliberately.
+**improve-architecture**, and **setup-harness** should be selected deliberately.
+The legacy **setup-codex** and **setup-cursor** names remain manual entry points
+that direct users to **setup-harness**; install the replacement to use them.
 
-### Optional: personal Codex instructions
+### Optional: personal harness instructions
 
-[setup-codex](./skills/engineering/setup-codex/SKILL.md) creates a reviewed
-**Codex Operating Policy** file and points `model_instructions_file` in the
-user-level `config.toml` to it. It updates the file on later runs. The skill asks
-for language choices, previews the file and config change, and waits for approval.
-It offers `model_verbosity = "low"` with separate user approval. Read its
-[policy template](./skills/engineering/setup-codex/SKILL.md#policy-template)
-before choosing it.
+[setup-harness](./skills/engineering/setup-harness/SKILL.md) asks which harnesses
+and languages to configure, previews the complete changes, and waits for approval.
+It adds personal instructions without replacing the built-in system prompt and
+creates no backups. Existing unrelated instructions are preserved.
 
-### Optional: personal Cursor instructions
+| Harness | Personal instruction destination |
+| --- | --- |
+| Codex (app and CLI) | One shared `AGENTS.md` per `CODEX_HOME` (default `~/.codex`) |
+| Cursor | User Rules in Customize > Rules; manual handoff if UI editing is unavailable |
+| Claude Code | `~/.claude/CLAUDE.md` |
 
-[setup-cursor](./skills/engineering/setup-cursor/SKILL.md) installs a reviewed
-**Cursor Operating Policy** as an always-applied user rule file in
-`~/.cursor/rules/`. It updates the file on later runs. The skill asks for language
-choices, previews the file, and waits for approval. Read its
-[policy template](./skills/engineering/setup-cursor/SKILL.md#policy-template)
-before choosing it.
+Cursor's project `AGENTS.md` is not a global substitute. See the
+[native destinations](./skills/engineering/setup-harness/references/harnesses.md)
+for loading limits, and review the
+[shared policy template](./skills/engineering/setup-harness/references/operating-policy.md)
+before choosing this skill. The former setup installers no longer write files;
+existing configuration and legacy policy files are left unchanged.
 
 ### Tauri companion tooling
 
@@ -134,8 +137,9 @@ and publication status before integrating it into an application.
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve decisions through question rounds until the agreed scope and consequential edge cases are covered. |
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
-| [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Configure a reviewed Codex Operating Policy through `model_instructions_file`. |
-| [setup-cursor](./skills/engineering/setup-cursor/SKILL.md) | Install a reviewed Cursor Operating Policy as an always-applied user rule. |
+| [setup-codex](./skills/engineering/setup-codex/SKILL.md) | Legacy Codex entry point (app and CLI); requires setup-harness. |
+| [setup-cursor](./skills/engineering/setup-cursor/SKILL.md) | Legacy Cursor entry point; requires setup-harness. |
+| [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Set up reviewed personal instructions for selected harnesses without backups or system-prompt replacement. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
 | [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview, and continue a project goal by goal. |
