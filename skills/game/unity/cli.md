@@ -66,15 +66,13 @@ Live Editor access requires `com.unity.pipeline`. Check the CLI version,
 
 ### Compatibility gate
 
-A trial on 2026-10-08 verified CLI `1.0.0-beta.13` with Pipeline
-`0.8.0-exp.1` on Editor `7000.0.0a7`: open, status, doctor, list, `eval` with
-arguments, `recompile`, a project command, an Inspector capture, and close.
-This is a version-scoped observation, not a project pin or a guarantee for
-later releases.
+The CLI and Pipeline are experimental and change together. Verify the
+installed pair on the project rather than assuming a release behaves like an
+earlier one.
 
-- Pin the Pipeline version you install (`unity pipeline install --package-version <version>`) rather than upgrading by reflex: a CLI and Pipeline pair that mismatches can fail only on commands with arguments, or fail to compile and drop the Editor into Safe Mode.
+- Change the CLI or Pipeline version deliberately, not by reflex, and pass an explicit `--package-version` to `unity pipeline install`. A mismatched pair can fail only on commands with arguments, or fail to compile and drop the Editor into Safe Mode.
 - After connecting, verify a harmless command **with an argument**, such as the readiness `eval` below. An argument-free command succeeding proves only the connection.
-- Pipeline 0.9 renames many commands. After any Pipeline upgrade, rediscover names with `unity list --json` before using a command name from this file.
+- Pipeline releases can rename commands. After any Pipeline upgrade, rediscover names with `unity list --json` before using a command name from this file.
 
 A first installation can be picked up by a running Editor; after a package
 version change, close and reopen it so the changed manifest is loaded. Start
