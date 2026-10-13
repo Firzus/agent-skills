@@ -75,12 +75,11 @@ earlier one.
 - Pipeline releases can rename commands. After any Pipeline upgrade, rediscover names with `unity list --json` before using a command name from this file.
 
 A first installation can be picked up by a running Editor; after a package
-version change, close and reopen it so the changed manifest is loaded. Start
-with `-automated` to reduce modal interruptions, then wait until it accepts
-commands:
+version change, close and reopen it so the changed manifest is loaded. Open
+the Editor, then wait until it accepts commands:
 
 ```bash
-unity open . --args -automated       # --args forwards raw flags to the Editor
+unity open .
 unity status --until-ready           # waits for the Editor to report ready
 unity command eval --code "return UnityEngine.Application.unityVersion;" --result-only --timeout 300
 ```
@@ -101,13 +100,28 @@ Treat any other error as a real failure.
 use its `--project-path` filter when needed. A modal dialog shows there as
 `STATUS_BLOCKED_BY_DIALOG`, naming the dialog in `blockedBy`.
 
+Reserve `-automated` (`unity open . --args -automated`, where `--args`
+forwards raw flags to the Editor) for unattended sessions such as tests or bulk
+operations. That Editor shows no dialog and answers each one with cancel:
+`EditorUtility.DisplayDialog` returns `false`, `DisplayDialogComplex` returns
+`1`. Tools that confirm before acting then abort silently, and quitting with
+unsaved changes stops at the hidden "Save changes?" prompt. Open the Editor
+without the flag whenever the user will work in it (manual review, in-scene
+trials, Play Mode checks); the CLI works either way. A running Editor
+auto-answers dialogs when this returns `false`:
+
+```bash
+unity command eval --code "return UnityEditorInternal.InternalEditorUtility.isHumanControllingUs;" --result-only --timeout 60
+```
+
 `unity close .` sent to an Editor still settling can time out with
 `closed: false`, `method: none`, and `PROJECTS_CLOSE_TIMEOUT` advising
 `--force`. Wait for the readiness `eval` to succeed, then retry the normal
-close. Use `unity close . --force` only when a modal
-blocks shutdown, including Safe Mode, or when a ready Editor still fails to
-close; it terminates the process. **Neither normal nor forced close saves
-work**: save first, or obtain approval to lose unsaved changes.
+close. Use `unity close . --force` only when a modal blocks shutdown, including
+Safe Mode, when a ready Editor still fails to close, or when an `-automated`
+Editor cannot quit because of unsaved changes; it terminates the process, as
+does stopping the PID that `unity status` reports. **Neither normal nor forced
+close saves work**: save first, or obtain approval to lose unsaved changes.
 
 Discover per-project schemas with `unity list --json` before invoking
 `unity command <command-name>`; projects can register their own commands.
