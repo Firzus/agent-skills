@@ -22,8 +22,14 @@ Identify the Tauri version, target platforms, existing invoke wrapper, and
 commands for the relevant development and validation work. Distinguish the
 host OS from the platforms the application ships on.
 
-Done when the affected boundary, target platform, and existing commands are
-known, or their absence is explicit.
+[Detect whether the project integrates tauri-agent-kit](agent-kit.md#detect-the-integration).
+When it is missing or incomplete and the project can use it, propose the
+integration once per session as described in
+[Propose the integration](agent-kit.md#propose-the-integration), then continue
+the requested work while awaiting the answer.
+
+Done when the affected boundary, target platform, existing commands, and
+agent-kit integration status are known, or their absence is explicit.
 
 ## 2. Choose the work
 
@@ -42,9 +48,10 @@ and the development and permissions references. Account for changed imports,
 window APIs, and plugin permissions within the requested migration scope.
 
 Prefer tauri-agent-kit for supported Windows development sessions. Its
-availability is separate from Tauri's desktop/mobile support. If unavailable,
-offer integration and continue with existing evidence; do not install packages
-or migrate the application just to obtain diagnostics.
+availability is separate from Tauri's desktop/mobile support. Until an
+integration is approved and connected, continue with existing evidence;
+installing the kit or upgrading Tauri happens only after the user approves
+the proposal.
 
 ## 3. Verify and report
 
