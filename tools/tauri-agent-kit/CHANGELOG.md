@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0-alpha.1 — Unreleased
+## 0.1.0-alpha.1 — 2026-10-15
 
 - MCP v2 stdio server and authenticated debug-only Windows named-pipe plugin.
 - Exact instance and WebView targeting, DOM snapshots and native viewport screenshots.

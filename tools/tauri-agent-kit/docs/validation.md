@@ -32,10 +32,9 @@ Two private Tauri applications were exercised locally. Discovery, snapshots, vie
 - Child-WebView inventory is implemented; the live fixture uses two WebView windows, not several child views inside one native window.
 - macOS, Linux, Tauri 2.0.x, frame traversal and shadow-root snapshots are not implemented or validated.
 - Console and Rust tracing diagnostics intentionally omit argument/field values; IPC instrumentation covers only wrapped or explicitly reported calls.
-- npm, crates.io and GitHub publication have not been performed.
 
 ## Alpha packaging checks
 
 The npm archives were allowlist-inspected, installed outside the workspace with lifecycle scripts disabled, and exercised through the installed command shim and a real MCP live fixture. The instrumentation export imported successfully. The Rust crate passed package verification and publish dry-run; a separate consumer compiled against the unpacked crate outside the workspace. CLI help/version and invalid arguments are covered by regression tests.
 
-The current publication candidate has not been pushed or published. Remote CI, registry authentication, trusted-publisher settings, public-registry reinstall checks and MCP Registry listing remain pending approval. See `dependencies.md` for audit warnings, and `releasing.md` for the publication gates.
+Version 0.1.0-alpha.1 was published locally on 2026-10-15 from commit `df2290a` to npm (`alpha` tag; npm also set `latest` on first publication), crates.io, a GitHub prerelease and the MCP Registry. The exact public npm versions were installed in a fresh folder and passed the native live test, and a new Tauri consumer built against the crates.io version was exercised through the installed server. Local bootstrap publications carry no OIDC provenance. Remote CI and trusted-publisher settings remain pending. See `dependencies.md` for audit warnings, and `releasing.md` for the publication gates.
