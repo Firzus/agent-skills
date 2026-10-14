@@ -1,6 +1,6 @@
 # tauri-plugin-agent-kit
 
-Independent, unofficial MCP diagnostic bridge for Tauri 2.11.5 on Windows x64. MIT licensed; alpha software.
+Independent, unofficial MCP diagnostic bridge for Tauri 2.12 on Windows x64. MIT licensed; alpha software.
 
 ```rust
 .plugin(tauri_plugin_agent_kit::init(tauri_plugin_agent_kit::Config {

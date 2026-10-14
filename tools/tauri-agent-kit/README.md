@@ -11,7 +11,7 @@ The TypeScript server speaks MCP over stdio. The Rust plugin addresses the appli
 ## Requirements
 
 - Windows x64 with WebView2 Evergreen.
-- Tauri 2.11.5. The current implementation uses Tauri's `unstable` feature for child-WebView inventory.
+- Tauri 2.12.4 or a later 2.12 patch. The current implementation uses Tauri's `unstable` feature for child-WebView inventory.
 - Node 22 or newer, pnpm 10.33.2, and Vite+ 0.3.2.
 - Rust/Cargo and the Windows C++ build tools.
 

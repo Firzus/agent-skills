@@ -1,6 +1,6 @@
 # tauri-agent-kit 0.1.0-alpha.1
 
-First public alpha candidate: independent, unofficial MCP automation and diagnostics for Tauri 2.11.5 development builds on Windows x64.
+First public alpha candidate: independent, unofficial MCP automation and diagnostics for Tauri 2.12 development builds on Windows x64.
 
 - Authenticated local named pipes; no public debugging port.
 - Exact instance and WebView identity, snapshots, native viewport screenshots and zoom.

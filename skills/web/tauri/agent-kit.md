@@ -27,9 +27,9 @@ platform support, Tauri constraint, runtime prerequisites, and publication
 status before proposing dependency or client configuration changes.
 
 The reviewed baseline is `0.1.0-alpha.1`: Windows x64, WebView2 Evergreen,
-Tauri 2.11.5 with the unstable feature, and Node 22+. The README describes a
-pre-release candidate, not guaranteed registry availability. Recheck these
-constraints rather than assuming compatibility with all Tauri 2 applications.
+Tauri 2.12.4 or a later 2.12 patch with the unstable feature, and Node 22+.
+The README describes a pre-release candidate, not guaranteed registry
+availability. Recheck these constraints rather than assuming compatibility with all Tauri 2 applications.
 
 The kit applies only when the development host is Windows and the application
 ships on Windows. Otherwise, skip the proposal and state the limit only when a

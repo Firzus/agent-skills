@@ -7,7 +7,7 @@ const { version } = metadata;
 const args = process.argv.slice(2);
 if (args.includes("--help")) {
   process.stdout.write(
-    `tauri-agent-kit ${version}\nUsage: tauri-agent-kit [--advanced]\nWindows x64 and Tauri 2.11.5 development builds only.\nDefault: MCP over stdio. --advanced enables privileged tools; the app must also opt in.\n--help     Show this help and exit\n--version  Show the version and exit\n`,
+    `tauri-agent-kit ${version}\nUsage: tauri-agent-kit [--advanced]\nWindows x64 and Tauri 2.12 development builds only.\nDefault: MCP over stdio. --advanced enables privileged tools; the app must also opt in.\n--help     Show this help and exit\n--version  Show the version and exit\n`,
   );
 } else if (args.includes("--version")) {
   process.stdout.write(`${version}\n`);
