@@ -27,6 +27,14 @@ features by default when they represent incompatible configurations.
 
 ## Frontend and Rust
 
+For a Rust/TypeScript IPC change, regenerate Specta bindings and type-check
+the frontend. Check the affected results, errors, and events.
+
+Make generation reproducible and integrate its verification into the
+project's CI. If bindings are version-controlled, check that regeneration
+produces no differences. Otherwise, generate them before the TypeScript
+check. Reuse existing scripts and report any missing checks.
+
 Use frontend tests for UI logic and error handling. Mocked invokes can verify
 caller expectations, but cannot establish that registration or capabilities
 work in Tauri.
@@ -64,8 +72,14 @@ When packaging changes, verify the configured frontend build output matches
 are included. Use the project's existing bundle command and signing process.
 [Sidecars](https://v2.tauri.app/develop/sidecar/)
 
-For updater changes, check HTTPS production endpoints and signed artifacts
-through the existing release workflow. Keep credentials outside the repository.
+For an updater change, verify production HTTPS endpoints and signed
+artifacts through the existing release process. Protect the private key
+and keep credentials outside the repository.
+
+In a controlled test environment, verify a valid update, rejection of an
+invalid signature, handling of an installation failure, and restart into
+the expected version. Distinguish automated checks from actually observed
+flows and report scenarios that were not exercised.
 [Updater](https://v2.tauri.app/plugin/updater/)
 
 A working development instance does not establish packaged behavior.

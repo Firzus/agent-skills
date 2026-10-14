@@ -18,9 +18,14 @@ Inspect the Tauri configuration, Cargo manifest and lockfile, builder entry
 point, and frontend scripts. Account for workspace paths and platform-specific
 configuration instead of assuming every app has the default layout.
 
-Identify the Tauri version, target platforms, existing invoke wrapper, and
-commands for the relevant development and validation work. Distinguish the
-host OS from the platforms the application ships on.
+Identify the Tauri version, target platforms, IPC bindings, their generation
+process, and the project's validation commands. Distinguish the host OS from
+the platforms the application ships on.
+
+For any Rust/TypeScript IPC work, apply the mandatory Tauri Specta contract in
+[Commands and IPC](best-practices.md#commands-and-ipc). Before changing an
+exposed operation, its permissions, a remote origin, or the CSP, read
+[Permissions](permissions.md).
 
 [Detect whether the project integrates tauri-agent-kit](agent-kit.md#detect-the-integration).
 When it is missing or incomplete and the project can use it, propose the
