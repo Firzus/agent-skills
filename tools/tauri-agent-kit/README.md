@@ -15,7 +15,7 @@ The TypeScript server speaks MCP over stdio. The Rust plugin addresses the appli
 - Node 22 or newer, pnpm 10.33.2, and Vite+ 0.3.2.
 - Rust/Cargo and the Windows C++ build tools.
 
-Version 0.1.0-alpha.1 is a pre-release candidate. Registry installation below becomes available after publication. APIs may change before 1.0.
+Version 0.1.0-alpha.1 is a public alpha published on npm, crates.io and the MCP Registry. APIs may change before 1.0.
 
 ## Build and test
 
