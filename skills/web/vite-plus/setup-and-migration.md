@@ -1,77 +1,101 @@
-# Setup, migration, and CI
+# Setup, migration, updates, and CI
 
-## Establish the setup boundary
+## Choose who owns the toolchain
 
-Use the existing local `vite-plus` installation when it meets the request.
-Global `vp` additionally manages runtimes and package managers; installing or
-reconfiguring it changes the machine, not just the project. Select global or
-project-local setup explicitly with the user before changing runtime ownership.
-Follow the [official installation guide](https://viteplus.dev/guide/) for the
-selected platform and verify a new shell can resolve the intended binary.
+A local `vite-plus` dependency is enough for project commands. A global `vp`
+also manages runtimes and package managers, so installing or reconfiguring it
+changes the machine rather than the project. Agree on global or project-local
+setup with the user before changing runtime ownership, follow the
+[installation guide](https://viteplus.dev/guide/) for the platform, and confirm
+that a new shell resolves the intended binary.
 
-For 0.3.2 the local package's Node engine range is
-`^20.19.0 || ^22.18.0 || >=24.11.0`. Check the installed release's manifest when
-choosing a runtime. `vp env current` and `vp env doctor` inspect the global
-manager's selection; reading system `node --version` alone is insufficient.
+Select a Node version within the `engines` range of the installed `vite-plus`.
+`vp staged` has stricter Node and Git requirements; read them before enabling
+hooks. With a global `vp`, `vp env current` and `vp env doctor` show the runtime
+it selects; system `node --version` alone does not.
 
-For a new project, inspect `vp help create` and choose a template appropriate to
-the application or library. For an existing project, use migration rather than
-scaffolding over its files. Keep its declared package manager and lockfile.
-Finish setup by resolving the local toolchain and running its actual checks.
+For a new project, read `vp help create` and choose a template matching the
+application or library. For an existing project, migrate instead of scaffolding
+over its files, and keep its declared package manager and lockfile.
 
-## Migrate with a reviewable boundary
+**Done:** the intended `vp` resolves and the project's own checks run.
 
-1. Inventory existing scripts, plugins, checks, TypeScript projects, imports,
-   dependencies, hooks, and editor/agent files. Preserve uncommitted work.
-   The documented starting point is Vite 8+ and Vitest 4.1+; handle prerequisite
-   upgrades as a distinct compatibility change.
-2. Read `vp help migrate` from the selected release. Run from the workspace
-   root. To preserve existing setup ownership while converting the toolchain:
+## Migrate an existing project
+
+1. Inventory scripts, plugins, checks, TypeScript projects, imports,
+   dependencies, runtime pins, hooks, CI workflows, and editor or agent files.
+   Compare the project's Vite and Vitest versions with the
+   [migration guide](https://viteplus.dev/guide/migrate); treat an upgrade to
+   its starting point as a separate prerequisite change.
+2. Confirm uncommitted work is preserved: migration writes in place, and a
+   `BLOCK` can stop it after partial writes.
+3. Read `vp help migrate`, then run it from the workspace root. To leave hooks,
+   editor files, and `AGENTS.md` untouched:
 
    ```bash
    vp migrate --no-interactive --no-agent --no-editor --no-hooks
    ```
 
-   These flags skip setup files, not installation: migration can download
-   dependencies, package managers, and tool-specific migrators. Enable hook or
-   editor setup only when it is part of the requested change.
-3. Review every changed file against the inventory. Confirm scripts still do
-   required work, plugins remain, test discovery is equivalent, and lint/format
-   rules retain their intended coverage. Remove old configuration only after
-   its behavior has been accounted for in the replacement.
-4. Verify imports and dependency identities using the installed migration
-   rules. Config entry points move to `vite-plus`; arbitrary non-config Vite
-   API imports are not a global search-and-replace target. Keep required Vite
-   core aliases, direct peer dependencies, package-manager overrides, and
-   catalog entries. Align Vitest with the bundled release rather than removing
-   every standalone-looking dependency.
-5. Run the project's static checks, finite tests, and app or library build.
-   Compare the outputs and relevant behavior with the baseline. Migration is
-   complete only when every original requirement is preserved or an explicit
-   remaining incompatibility is reported.
+   A non-interactive run (the default under `CI` or without a terminal) sets
+   those files up on a first migration unless these flags are given. Enable
+   them only when the request includes that setup. The flags do not prevent
+   the remaining changes:
 
-Load the release's [migration rules](https://viteplus.dev/guide/migrate-rules)
-before handling browser providers, Nuxt test utilities, declaration merging,
-dynamic configs, unsupported hook tools, or package-manager peer resolution.
-Node-mode tests do not exercise these branches. Playwright/WebdriverIO browser
-providers and their browser framework remain separate requirements.
+   | Always possible | Review |
+   | --- | --- |
+   | Downloads of dependencies, package managers, and tool migrators | Network access and lockfile |
+   | ESLint, Prettier, and tsup configuration converted | Rule and format coverage |
+   | `.nvmrc` replaced by `.node-version`, Node pins raised | Runtime and CI pins |
+   | `voidzero-dev/setup-vp` references rewritten to a specific release | [CI](#ci) |
+   | `@andrewbranch/ts5to6` run on a legacy `baseUrl` | Whether `typeAware`/`typeCheck` were enabled |
 
-Type checking uses the Go-based toolchain. A legacy `baseUrl` needs conversion;
-do not hide incompatibility by silently disabling validation. Check installed
-diagnostics and retain supplemental framework checks where needed.
+   When the `baseUrl` fix fails or is declined, migration leaves
+   `typeAware`/`typeCheck` disabled. Husky, lefthook, and other hook tools are
+   not converted, and hook setup is skipped when one is present.
+4. Review the summary and every changed file against the inventory. A zero exit
+   can still report `REVIEW` items. Confirm that scripts still do their work,
+   plugins remain, test discovery is equivalent, and lint and format rules keep
+   their coverage. Remove old configuration only once the replacement accounts
+   for its behavior.
+5. Check imports and dependencies against the
+   [migration rules](https://viteplus.dev/guide/migrate-rules). Config entry
+   points move to `vite-plus`; other Vite API imports are not a global
+   search-and-replace target. Keep required Vite core aliases, direct peer
+   dependencies, package-manager overrides, and catalog entries, and align
+   Vitest with the bundled release.
+6. Run the static checks, finite tests, and app or library build, then compare
+   outputs and behavior with the baseline.
 
-## Upgrade the intended layer
+Read the migration rules before handling browser providers, Nuxt test
+utilities, declaration merging, dynamic configs, or package-manager peer
+resolution; Node-mode tests do not exercise them. Playwright and WebdriverIO
+browser providers stay separate requirements; WebdriverIO comes from the
+community `@vitest/browser-webdriverio` package. Type checking uses the
+Go-based toolchain: keep supplemental framework checks where its diagnostics do
+not cover them.
 
-`vp upgrade` updates the global installation. `vp migrate` aligns an existing
-Vite+ project's local toolchain; `--full` also repeats setup. Treat either as an
-explicit maintenance action, review changed pins/aliases, and repeat focused
-validation. A global upgrade alone does not validate a project upgrade.
+**Done:** every original requirement preserved, or each remaining
+incompatibility reported.
+
+## Update the intended layer
+
+| Layer | Command |
+| --- | --- |
+| Global CLI | `vp upgrade` (Homebrew: `brew upgrade vite-plus`) |
+| Project toolchain | `vp migrate`; `--full` also repeats setup |
+
+Each is an explicit maintenance action: review changed pins and aliases, then
+repeat focused validation. A global update does not validate a project. Updates
+bring new Oxlint and Oxfmt rules that can flag code that passed before, so read
+the release notes and repeat `vp check` after each one.
 
 ## CI
 
-Keep frozen-lockfile installation and the project's existing required checks.
-For GitHub Actions, select a verified exact release or commit of
-[`voidzero-dev/setup-vp`](https://github.com/voidzero-dev/setup-vp); its `v1` tag
-is frozen. Separate dependency caching from task-result caching. Test workflow
-changes on the actual runner before claiming CI coverage; the local smoke
-record establishes neither action execution nor cross-platform support.
+Keep frozen-lockfile installation and the project's required checks. On GitHub
+Actions, reference the latest verified release or commit of
+[`voidzero-dev/setup-vp`](https://github.com/voidzero-dev/setup-vp): its major
+`v1` tag no longer follows new releases, and the release `vp migrate` writes can
+be older than the latest one. Its dependency cache stays off unless enabled;
+keep dependency caching distinct from task result caching. Run changed
+workflows on the actual runner before claiming CI coverage; local checks prove
+neither action execution nor other platforms.

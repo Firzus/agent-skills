@@ -1,64 +1,61 @@
 ---
 name: vite-plus
 description: >-
-  Vite+ projects using vite-plus and the vp CLI. Use when setting up or
-  migrating to Vite+, configuring its checks, tests or library builds,
+  Vite+ projects using vite-plus and the vp CLI. Use when setting up, migrating
+  to, or updating Vite+, configuring its checks, tests or library builds,
   debugging built-in versus script execution, or configuring workspace tasks
   and caching. Applies to Vite+ integrations, not every standalone Vite project.
 ---
 
 # Vite+
 
-## 1. Identify the installed contract
+Work within a project's Vite+ toolchain: choose the command that owns each
+action, change only the configuration the task needs, and prove the result with
+the project's real checks. These rules assume the latest Vite+ release is
+installed. Ordinary feature work uses the toolchain as it is; setting it up,
+migrating to it, or updating it is a separate, explicit change.
 
-Read the target package and workspace manifests, lockfile, scripts, existing
-`vite.config.*`, TypeScript configuration, and relevant CI commands. Run
-`vp --version` from the target project to distinguish the global CLI, local
-`vite-plus`, bundled tools, and selected runtime. With no global CLI, use the
-project's already installed binary through its package manager.
+## 1. Read the project's setup
 
-This skill's executable baseline is **Vite+ 0.3.2**, checked on **2026-09-17**.
-For a different release, inspect its installed help and declarations before
-copying options. Live documentation can describe unreleased behavior.
-
-Choose the path before editing:
+Read the target package and workspace manifests, lockfile, scripts,
+`vite.config.*`, TypeScript configuration, and CI commands. Identify whether
+the project runs a global `vp` or only its local `vite-plus` binary through the
+package manager. Before using an option not shown here, read `vp help <command>`.
 
 | Request | Read next |
 | --- | --- |
-| Install, scaffold, migrate, upgrade, or change CI setup | [setup-and-migration.md](./setup-and-migration.md) |
+| Install, scaffold, migrate, update, or change CI setup | [setup-and-migration.md](./setup-and-migration.md) |
 | Workspace targeting, shared lint/format policy, or cached tasks | [workspaces.md](./workspaces.md) |
 
-Finish with the target package, resolved versions, existing command path, and
-required validation identified. Ordinary feature work uses the installed
-toolchain; it does not require migrating or upgrading it.
+**Done:** target package, current command path, and required validation
+identified.
 
-## 2. Select the command by its owner
+## 2. Map each action to its owning command
 
 | Intended action | Command |
 | --- | --- |
 | Bundled app dev server / production build | `vp dev` / `vp build` |
 | Existing framework or custom build script | `vp run build` |
 | Configured script or task | `vp run <name>` |
-| Static validation | `vp check` |
+| Static validation (format, lint, types) | `vp check` |
 | Apply formatting and lint fixes | `vp check --fix` |
-| Check formatting without writing | `vp fmt --check` |
-| Write formatting | `vp fmt` |
+| Check formatting without writing / write it | `vp fmt --check` / `vp fmt` |
 | Bundled tests, one finite run | `vp test` |
 | Interactive test watching | `vp test watch` |
 | Library build | `vp pack` |
 
-Built-ins do not dispatch to same-named scripts. Preserve framework commands
-and supplemental checks already required by the project. A direct `vp build`
-must not silently replace a script that generates code or runs a framework CLI.
+Built-ins never dispatch to a same-named script: `vp build` runs the bundled
+Vite build, while `vp run build` runs the `build` script. Keep a script that
+generates code or calls a framework CLI on its `vp run` path, and keep any
+supplemental checks the project already requires.
 
-Finish with each requested action mapped to the built-in, script, or task that
+**Done:** each requested action mapped to the built-in, script, or task that
 actually owns it.
 
 ## 3. Configure only the relevant blocks
 
-Use `defineConfig` from `vite-plus` in the Vite+ configuration. Preserve the
-existing plugins and unrelated options. Add the blocks needed for the task,
-rather than an empty block for every bundled tool.
+Import `defineConfig` from `vite-plus`, preserve existing plugins and unrelated
+options, and add only the blocks the task needs:
 
 ```ts
 import { defineConfig } from 'vite-plus';
@@ -73,14 +70,15 @@ export default defineConfig({
 });
 ```
 
-`vp check` only provides the expected type validation when that path is enabled
-and the relevant files belong to its TypeScript projects. Inspect `check.fmt`,
-`check.lint`, ignore patterns, and CLI skips before treating a green exit as full
-coverage. Keep dependency and generated-output directories ignored; the blank
-smoke fixture needed `.gitignore` entries for `node_modules/` and its outputs.
-Retain framework-specific type checkers until equivalent coverage is proven.
+`vp check` validates types only when `typeAware` and `typeCheck` are enabled and
+the files belong to its TypeScript projects. Before treating a green exit as full
+coverage, inspect `check.fmt`, `check.lint`, ignore patterns, and CLI skips.
+Make sure `.gitignore` or ignore patterns exclude dependencies and generated
+output. Keep framework-specific type checkers until equivalent coverage is
+proven.
 
-Use `vite-plus/test` for test APIs. A minimal finite test is:
+Import test APIs from `vite-plus/test`. Import a `vite-plus/test/*` subpath only
+when the installed package's `exports` declares it.
 
 ```ts
 import { expect, test } from 'vite-plus/test';
@@ -91,7 +89,7 @@ test('adds two numbers', () => {
 });
 ```
 
-For a library, add packaging options to the existing config:
+For a library, add a `pack` block with only the formats consumers need:
 
 ```ts
 pack: {
@@ -101,24 +99,29 @@ pack: {
 }
 ```
 
-Select only the formats consumers need. Inspect emitted files and align
-`package.json` exports/types with the actual filenames. `vp pack` builds files;
-it neither publishes them nor substitutes for a package-manager tarball check.
+Inspect the emitted files and align `package.json` exports and types with their
+actual names. `vp pack` only builds: it neither publishes nor replaces a
+package-manager tarball check.
 
-Finish with the changed configuration loaded successfully by its actual
-command, not merely accepted by an editor.
+**Done:** the changed configuration loaded by the command that uses it, not
+merely accepted by an editor.
 
 ## 4. Verify the requested behavior
 
-Run `vp check`, the relevant finite tests, and the owning app/library build.
-Use the project's script path when it contains required additional steps.
-Inspect build artifacts; for library changes, exercise a consumer import.
+1. Run `vp check`, the relevant finite tests, and the owning app or library
+   build, through the project's script when it adds required steps.
+2. Inspect build artifacts. For a library change, import it from a consumer.
+3. When changing validation or cache configuration, prove the failure boundary
+   in an isolated fixture: introduce a type error, failing assertion, or changed
+   task input, require the expected nonzero exit or cache miss, then restore it
+   and require a passing run. A cached replay is not a fresh execution.
 
-When changing validation or cache configuration, prove the failure boundary in
-an isolated fixture: introduce a type error, failing assertion, or changed task
-input; require the appropriate nonzero exit; restore the fixture and require a
-passing run. A cached replay is not evidence of a fresh execution.
+[scripts/smoke.mjs](./scripts/smoke.mjs) checks these rules in a temporary
+Node-mode fixture: commands, failure boundaries, and task caching. Run it with
+Node when they must be confirmed on a host. It installs the latest `vite-plus`
+from npm and calls `vp` from `PATH`, so it requires authorization for network
+installs; it keeps the fixture and logs for review.
 
-Finish by reporting the exact commands, versions, results, and any untested
-scope. Do not report browser mode, a framework migration, another package
-manager, or remote CI as validated by the Node-mode baseline smoke.
+**Done:** exact commands and results reported, with untested scope named.
+Browser mode, framework migrations, other package managers, and remote CI
+remain untested unless exercised directly.

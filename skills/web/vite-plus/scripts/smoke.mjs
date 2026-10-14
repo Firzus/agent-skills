@@ -15,14 +15,14 @@ function write(path, content) {
   writeFileSync(join(root, path), content);
 }
 
-function run(label, command, args, expected = 0, pattern) {
+function run(label, command, args, expected = 0, pattern, extraEnv = {}) {
   const result = spawnSync(command, args, {
     cwd: root,
     encoding: "utf8",
     timeout: 120000,
     maxBuffer: 8 * 1024 * 1024,
     windowsHide: true,
-    env: { ...process.env, CI: "true", NO_COLOR: "1" },
+    env: { ...process.env, CI: "true", NO_COLOR: "1", ...extraEnv },
   });
   const output = `${result.stdout ?? ""}${result.stderr ?? ""}`;
   writeFileSync(join(logs, `${label}.log`), output);
@@ -40,7 +40,7 @@ write("package.json", JSON.stringify({
   private: true,
   type: "module",
   scripts: { build: "node -e \"console.log('SCRIPT_BUILD')\"" },
-  devDependencies: { "vite-plus": "0.3.2", typescript: "5.9.3" },
+  devDependencies: { "vite-plus": "latest", typescript: "latest" },
 }));
 write(".gitignore", "node_modules/\ndist-app/\ndist-lib/\n");
 write("tsconfig.json", JSON.stringify({
@@ -75,7 +75,7 @@ if (process.platform === "win32") {
 } else {
   run("install", "npm", ["install", "--no-audit", "--no-fund"]);
 }
-run("versions", vp, ["--version"], 0, /vite-plus\s+v0\.3\.2/);
+run("versions", vp, ["--version"], 0, /vite-plus\s+v\d+\.\d+\.\d+/);
 run("format", vp, ["fmt"]);
 run("check", vp, ["check"]);
 run("test", vp, ["test"], 0, /1 passed/);
@@ -110,6 +110,14 @@ write("src/index.ts", source.replace("a + b", "a - b"));
 run("cache-invalidation", vp, ["run", "verify"], 1, /1 failed/);
 write("src/index.ts", formattedSource);
 run("cache-bypass", vp, ["run", "--no-cache", "verify"], 0, /cache disabled/);
+const cachedTask = '{ command: "vp test", cache: { env: ["SMOKE_KEY"], input: [{ auto: true }] } }';
+write("vite.config.ts", config.replace('{ command: "vp test", cache: false }', cachedTask));
+run("cache-env-fill", vp, ["run", "verify"], 0, /1 passed/, { SMOKE_KEY: "a" });
+run("cache-env-hit", vp, ["run", "verify"], 0, /cache hit/, { SMOKE_KEY: "a" });
+run("cache-env-miss", vp, ["run", "verify"], 0, /cache miss: env 'SMOKE_KEY' changed/, { SMOKE_KEY: "b" });
+write("vite.config.ts", config.replace('cache: false', 'env: ["SMOKE_KEY"]'));
+run("reject-top-level-env", vp, ["run", "verify"], 1, /must be set under `cache`/);
+write("vite.config.ts", config);
 run("reject-empty-filter", vp, ["run", "--filter", "missing-package", "--fail-if-no-match", "build"], 1, /No packages matched/);
 run("final-format", vp, ["fmt"]);
 run("final-check", vp, ["check"]);
