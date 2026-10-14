@@ -8,4 +8,4 @@
 - Payload-free optional IPC instrumentation and bounded Rust/console metadata.
 - Generic fixture, live MCP tests and cancellation/authentication regression checks.
 
-Windows x64 and Tauri 2.11.5 only. APIs may change before 1.0. No cross-platform or stable-release claim.
+Windows x64 and Tauri 2.12 only. APIs may change before 1.0. No cross-platform or stable-release claim.

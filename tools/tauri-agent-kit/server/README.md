@@ -1,6 +1,6 @@
 # tauri-agent-kit
 
-Independent, unofficial MCP diagnostics and automation for Tauri 2 development builds on Windows x64. Requires Node 22+, WebView2, and the companion `tauri-plugin-agent-kit` Rust plugin in the target application. Validated against Tauri 2.11.5 only.
+Independent, unofficial MCP diagnostics and automation for Tauri 2 development builds on Windows x64. Requires Node 22+, WebView2, and the companion `tauri-plugin-agent-kit` Rust plugin in the target application. Requires Tauri 2.12.4 or a later 2.12 patch.
 
 ```powershell
 npx --yes tauri-agent-kit@0.1.0-alpha.1 --help
