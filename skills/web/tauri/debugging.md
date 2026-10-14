@@ -82,7 +82,8 @@ instrumentation or considering advanced tools.
 
 ## Without agent-kit
 
-Offer integration once, then use the evidence already available. On macOS,
+When the integration is absent, pending approval, or declined, use the
+evidence already available. On macOS,
 Linux, mobile, or release builds, use the project's supported platform tools
 rather than claiming MCP support.
 

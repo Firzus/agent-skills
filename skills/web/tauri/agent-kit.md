@@ -1,7 +1,23 @@
 # Agent Kit Integration
 
-Read when setting up tauri-agent-kit, checking compatibility, or resolving a
-missing connection. Runtime actions belong to [Diagnosis](debugging.md).
+Read when detecting or proposing tauri-agent-kit, setting it up, checking
+compatibility, or resolving a missing connection. Runtime actions belong to
+[Diagnosis](debugging.md).
+
+## Detect the integration
+
+Check each part of the integration in the project:
+
+- The Tauri crate's Cargo manifest, or its workspace, declares
+  `tauri-plugin-agent-kit`.
+- The builder registers `tauri_plugin_agent_kit::init`.
+- The MCP client used for this project exposes the kit's tools, such as
+  `list_instances`, or its configuration declares the server. The tool
+  namespace varies by client.
+
+All parts present means integrated: continue with
+[Establish a connection](#establish-a-connection). Missing parts make the
+integration absent or incomplete; check compatibility, then propose it.
 
 ## Check compatibility before changing the app
 
@@ -15,10 +31,27 @@ Tauri 2.11.5 with the unstable feature, and Node 22+. The README describes a
 pre-release candidate, not guaranteed registry availability. Recheck these
 constraints rather than assuming compatibility with all Tauri 2 applications.
 
-If a prerequisite is missing, offer integration and continue with
-[available evidence](debugging.md#without-agent-kit). Obtain approval before
-installing dependencies or changing client configuration. A Tauri upgrade is
-a separate decision, not a diagnostic prerequisite to apply silently.
+The kit applies only when the development host is Windows and the application
+ships on Windows. Otherwise, skip the proposal and state the limit only when a
+runtime diagnosis needs it.
+
+## Propose the integration
+
+Propose once per session, when the integration is absent or incomplete and
+the project can use it. State:
+
+- the selected version and whether it is published;
+- the missing parts to add: plugin dependency, builder registration enabled
+  by `TAURI_AGENT_KIT`, and the server entry in the MCP client configuration,
+  with its scope (project or user);
+- unmet prerequisites, such as a different Tauri version. A Tauri upgrade is
+  a separate decision, never a silent part of the integration;
+- that release builds do not start the bridge.
+
+Continue the requested work with [available evidence](debugging.md#without-agent-kit)
+while awaiting the answer. Install dependencies or change client
+configuration only after approval. A refusal ends the proposal for the
+session.
 
 ## Separate the components
 

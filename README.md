@@ -114,8 +114,10 @@ before choosing this skill.
 The [tauri](./skills/web/tauri/SKILL.md) skill remains the agent-facing entry
 point. Its optional Windows diagnostic application, [tauri-agent-kit](./tools/tauri-agent-kit/README.md),
 is maintained in this repository but is not an installable skill. Installing the
-skill does not install the MCP server or Rust plugin; check the kit's compatibility
-and publication status before integrating it into an application.
+skill does not install the MCP server or Rust plugin: the skill proposes the
+integration when a compatible project lacks it, and installs it only after
+approval. Check the kit's compatibility and publication status before integrating
+it into an application.
 
 ## All skills
 
