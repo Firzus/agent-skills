@@ -68,7 +68,6 @@ for supported agents, installation modes, and troubleshooting.
 | Turn a new request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) |
 | Execute a prepared Linear issue | [implement](./skills/engineering/implement/SKILL.md) |
 | Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
-| Design a frontend, from visual direction to real content | [frontend-design](./skills/web/frontend-design/SKILL.md) |
 
 Research, prototyping, preparation, and implementation are different entry points,
 not mandatory consecutive phases. Some workflows call other skills; install the
@@ -149,16 +148,10 @@ and publication status before integrating it into an application.
 | --- | --- |
 | [adsense](./skills/web/adsense/SKILL.md) | Publisher monetization, ad placement, policy, and performance. |
 | [astryx](./skills/web/astryx/SKILL.md) | Build interfaces with the Astryx design system. |
-| [design-references](./skills/web/design-references/SKILL.md) | Research relevant visual and interaction references. |
-| [design-system](./skills/web/design-system/SKILL.md) | Define design tokens, themes, and visual direction. |
 | [dokploy-best-practices](./skills/web/dokploy-best-practices/SKILL.md) | Deploy and operate applications with Dokploy. |
 | [extract-theme](./skills/web/extract-theme/SKILL.md) | Extract a website's design tokens for Tailwind and shadcn/ui. |
-| [figma-to-code](./skills/web/figma-to-code/SKILL.md) | Implement Figma designs and verify the visual result. |
-| [frontend-design](./skills/web/frontend-design/SKILL.md) | Coordinate design-system, layout, and content workflows. |
-| [greyboxing](./skills/web/greyboxing/SKILL.md) | Explore page layouts and interactions before final content. |
 | [nextjs](./skills/web/nextjs/SKILL.md) | Build and migrate Next.js applications. |
 | [payload-cms](./skills/web/payload-cms/SKILL.md) | Model content, access rules, and hooks with Payload CMS. |
-| [real-content](./skills/web/real-content/SKILL.md) | Replace placeholders with real copy, imagery, and data. |
 | [shaders](./skills/web/shaders/SKILL.md) | Add GPU-driven visual effects to React interfaces. |
 | [swr](./skills/web/swr/SKILL.md) | Manage React data fetching, caching, and mutations. |
 | [tanstack-query](./skills/web/tanstack-query/SKILL.md) | Manage asynchronous server state with TanStack Query. |

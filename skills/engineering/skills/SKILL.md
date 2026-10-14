@@ -25,7 +25,7 @@ Common flags on `add`: `-s, --skill <names...>` (quote names containing spaces, 
 
 ```bash
 npx skills add vercel-labs/agent-skills --list
-npx skills add vercel-labs/agent-skills --skill frontend-design -g -a claude-code -y
+npx skills add Firzus/agent-skills --skill code-review -g -a claude-code -y
 npx skills use owner/repo@some-skill | claude
 ```
 
