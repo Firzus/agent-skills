@@ -5,29 +5,44 @@ or platform entry points.
 
 ## Commands and IPC
 
-Trace the frontend caller through its existing bindings to the Rust handler.
-Keep typed wrappers and generated bindings rather than introducing a second
-invoke path.
+Tauri Specta is required for application commands and events exchanged
+between Rust and TypeScript. Define their contracts in Rust and generate
+frontend bindings, including arguments, results, errors, and event payloads.
 
-- Import v2 invoke from `@tauri-apps/api/core`. Match the registered command
-  name and argument casing; camelCase is the default unless the command
-  explicitly changes it.
-- Deserialize command inputs and serialize successful results and errors.
-  Prefer owned input values for async commands, then borrow inside helpers.
-  Borrowed async inputs are not universally invalid; preserve working
-  signatures supported by the project's Tauri version.
-- Keep errors in the application's existing IPC shape. Return recoverable
-  failures through `Result`, not panics or raw internal diagnostics.
-- Extend the existing invoke handler; a second `invoke_handler` registration
-  replaces the first. Commands in separate modules need appropriate visibility;
-  commands at the library root should not be made public automatically.
+Identify compatible versions of Tauri, tauri-specta, Specta, and the
+TypeScript exporter. Consult the documentation for those versions before
+changing the integration.
+[Tauri Specta](https://github.com/specta-rs/tauri-specta)
 
-Verify exact signatures against
-[Calling Rust](https://v2.tauri.app/develop/calling-rust/) when changing a
-command or migrating its bindings.
+If Specta is missing, include its setup and migration of the affected
+contracts in the authorized IPC work. If that migration exceeds the
+authorized scope or encounters an incompatibility, report the dependent
+IPC changes as blocked and continue independent work. Another generator
+or a manually typed wrapper does not satisfy this requirement.
 
-Done when the caller, registered handler, argument names, serialized result,
-and failure handling agree.
+- Route application calls through the generated bindings. An existing
+  wrapper may encapsulate them but must not redefine their contracts.
+  Keep official SDKs for plugin calls.
+- Match registered commands, argument names, and serialization to the
+  generated bindings.
+- Deserialize inputs and serialize results and errors. Prefer owned inputs
+  for async commands, then borrow inside helpers. Preserve working borrowed
+  signatures supported by the versions in use.
+- Return recoverable failures through `Result`. Preserve observable success
+  and error behavior when migrating bindings, without exposing sensitive
+  internal diagnostics.
+- Integrate Specta into the single `invoke_handler` and preserve existing
+  commands. A second registration replaces the first. Give commands the
+  visibility required by their organization.
+- Expose narrowly scoped business operations for sensitive actions.
+  Validate their inputs and enforce their restrictions in Rust.
+  Generated types provide neither business validation nor authorization.
+  Apply [Permissions](permissions.md) to exposed operations.
+
+[Calling Rust](https://v2.tauri.app/develop/calling-rust/)
+
+Done when Rust contracts, generated bindings, registration, and call behavior
+agree, with the checks specified in [Testing](testing.md).
 
 ## State and long-running work
 
@@ -50,15 +65,31 @@ cancellation observable through the existing application contract.
 
 ## Events and channels
 
-Use events for notifications and channels for ordered streaming to a caller.
-Target the intended window or WebView for local notifications instead of
-broadcasting private data. Release frontend event listeners when their owner
-unmounts. Event payloads and listeners need their own contract; events do not
-replace validated command inputs.
+Use commands to request an operation, events for notifications, and channels
+for ordered or frequent streams.
+
+Apply the generation contract in [Commands and IPC](#commands-and-ipc) to
+application events. Target the intended windows or WebViews for sensitive
+data. Typed events do not provide access control for their data.
+
+Release frontend subscriptions when their owner unmounts. Make progress,
+completion, and errors observable for operations that continue after a
+command returns.
 [Calling the Frontend](https://v2.tauri.app/develop/calling-frontend/)
 
-Done when the consumer receives the intended payload, subscriptions are
-released, and long-running failures cannot disappear after command success.
+Done when the recipient receives the expected data, subscriptions are
+released, and failures remain observable.
+
+## Diagnostics
+
+When implementing an operation spanning Rust and the frontend, provide
+errors and logs that allow its steps and outcome to be correlated. Reuse
+the project's tools and include useful context: operation, application
+version, platform, and a correlation ID when operations may overlap.
+
+Exclude secrets and private payloads. Match log levels and volume to their
+purpose. Choose crash reporting according to the project's support needs,
+without requiring a particular vendor.
 
 ## Windows and platform structure
 

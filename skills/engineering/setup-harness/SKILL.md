@@ -21,8 +21,8 @@ the same `CODEX_HOME`. The current host is not an implicit selection. Confirm th
 machine/profile when it affects the destination. Default to personal,
 cross-project scope.
 
-Ask for the languages used for conversation/reports, repository documentation,
-and code/comments/Git text. One answer may cover all three; reuse explicit choices
+Ask for the languages used for conversation/reports and code/comments/Git text.
+One answer may cover both; reuse explicit choices
 made for this setup. Do not infer permanent preferences from the chat's language.
 
 For each selected harness, read its section in
@@ -44,7 +44,7 @@ on the others; do not invent a global `AGENTS.md` path.
    destination and obtain approval for that target rather than writing through a
    link silently. A directory where a file is expected blocks that target.
 3. Read the [policy template](references/operating-policy.md) to draft the shared
-   policy. Substitute the three language placeholders and adapt only approved
+   policy. Substitute the two language placeholders and adapt only approved
    preferences. Reconcile existing policy sections rather than appending duplicates.
    Keep harness-specific loading details out of the installed policy.
 4. Present the complete proposed text or diff and each exact destination. Explain

@@ -1,6 +1,6 @@
 # Personal policy template
 
-Use this template when drafting personal instructions. Replace the three language
+Use this template when drafting personal instructions. Replace the two language
 placeholders with explicit user choices. Merge with existing preferences and show
 the complete resulting text or diff for approval before installing it.
 
@@ -9,7 +9,7 @@ the complete resulting text or diff for approval before installing it.
 
 ## Communication
 
-- Use {{COMMUNICATION_LANGUAGE}} for conversation and reports, {{WRITING_LANGUAGE}} for repository documentation, and {{CODE_LANGUAGE}} for code, comments, and Git text. Follow explicit user or project exceptions; preserve technical identifiers.
+- Use {{COMMUNICATION_LANGUAGE}} for conversation and reports and {{CODE_LANGUAGE}} for code, comments, and Git text. Follow explicit user or project exceptions; preserve technical identifiers.
 - Keep responses concise and simple. Use consistent terminology and complete, readable sentences. Preserve uncertainty and caveats that affect the conclusion.
 - Use tables, Mermaid, or code blocks when they clarify the content.
 - Remove filler, flattery, stock chatbot phrases, generic conclusions, decorative jargon, unsupported claims, and repeated explanations.
