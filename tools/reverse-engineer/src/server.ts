@@ -30,6 +30,8 @@ export async function serve(version: string): Promise<void> {
     );
   }
   await server.connect(new StdioServerTransport());
-  // The client closing stdin ends the session: exit, which also stops any running third-party tool.
-  process.stdin.once("end", () => process.exit(0));
+  // The client closing stdin (or a broken pipe) ends the session: exit, which also stops any running third-party tool.
+  const exit = () => process.exit(0);
+  process.stdin.once("end", exit);
+  process.stdin.once("close", exit);
 }

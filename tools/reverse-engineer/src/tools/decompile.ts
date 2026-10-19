@@ -276,6 +276,11 @@ const projectQueue = new Map<string, Promise<unknown>>();
 function inProjectQueue<T>(projectDir: string, job: () => Promise<T>): Promise<T> {
   const next = (projectQueue.get(projectDir) ?? Promise.resolve()).catch(() => undefined).then(job);
   projectQueue.set(projectDir, next);
+  // The last job of a project removes its entry, so the map does not keep every result.
+  const settle = () => {
+    if (projectQueue.get(projectDir) === next) projectQueue.delete(projectDir);
+  };
+  next.then(settle, settle);
   return next;
 }
 

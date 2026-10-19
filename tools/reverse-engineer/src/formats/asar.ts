@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { copyFile, mkdir, open, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { copyFile, mkdir, open, readdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { basename, dirname, join } from "node:path";
 import { artifactPath, exists, readJson, sha256, sha256File, writeJson } from "../core/cache";
 
 export interface AsarEntry {
@@ -191,13 +191,25 @@ async function fill(asar: string, sha: string, root: string, work: string, start
 }
 
 /**
- * Moves the new tree into place. An older tree is renamed aside first and deleted afterwards, so a
- * file still held open in it (a reader, an antivirus scan) delays only its cleanup.
+ * Moves the new tree into place: an older tree is renamed aside, then deleted. Renames refused while
+ * a file is open (a reader, an antivirus scan on Windows) are retried; if the swap still fails, the
+ * older tree is put back. Older trees left by an interrupted run are deleted on the way.
  */
 async function publish(work: string, root: string): Promise<void> {
+  const parent = dirname(root);
+  const stale = `${basename(root)}.old-`;
+  for (const name of await readdir(parent).catch(() => [] as string[])) {
+    if (name.startsWith(stale)) await rm(join(parent, name), { recursive: true, force: true }).catch(() => {});
+  }
   const old = `${root}.old-${process.pid}-${Date.now()}`;
-  if (await exists(root)) await retrying(() => rename(root, old));
-  await retrying(() => rename(work, root));
+  const hadRoot = await exists(root);
+  if (hadRoot) await retrying(() => rename(root, old));
+  try {
+    await retrying(() => rename(work, root));
+  } catch (error) {
+    if (hadRoot) await rename(old, root).catch(() => {});
+    throw error;
+  }
   await rm(old, { recursive: true, force: true }).catch(() => {});
 }
 

@@ -15,8 +15,10 @@ let hooked = false;
 function stopRunningOnExit(): void {
   if (hooked) return;
   hooked = true;
+  // A signal stops them, then exits, which runs this again: clear the set so nothing is killed twice.
   const stopAll = () => {
     for (const pid of running) killTree(pid, true);
+    running.clear();
   };
   process.on("exit", stopAll);
   for (const [signal, number] of [

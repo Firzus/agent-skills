@@ -221,7 +221,8 @@ describe("ghidraWorkRoot", () => {
       chmodSync(work, 0o755);
       await expect(ensureWorkRoot()).rejects.toThrow(/not a private directory/);
     } finally {
-      process.env.TMPDIR = savedTmp;
+      if (savedTmp === undefined) delete process.env.TMPDIR;
+      else process.env.TMPDIR = savedTmp;
     }
   });
 });
