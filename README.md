@@ -126,8 +126,8 @@ it into an application.
 The [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) skill works
 with shell commands alone, but it is faster and more economical with its read-only
 MCP server, [tools/reverse-engineer](./tools/reverse-engineer/README.md). Installing
-the skill does not install the server: build it from a clone and register it with
-your agent, as described in its README. The server is not published to npm yet.
+the skill does not install the server: register its npm package, `reverse-engineer`
+(alpha), with your agent, as described in its README.
 
 ## All skills
 

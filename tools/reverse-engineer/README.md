@@ -29,15 +29,11 @@ Design rules:
 
 Requirements: Node.js 24.11 or later. Optional: Ghidra 11+ with JDK 21 for `decompile`, `ilspycmd` (.NET 10 SDK) and `jadx` (JDK 21) for `managed`. The agent can install them with the skill's [install guide](../../skills/engineering/reverse-engineer/references/install-tools.md): official releases go into a per-user tools root (`%LOCALAPPDATA%\reverse-engineer\tools`, `~/Library/Application Support/reverse-engineer/tools`, or `$XDG_DATA_HOME/reverse-engineer/tools`; override with `REVERSE_ENGINEER_TOOLS`), without admin rights or a `PATH` change. The tools look there first, then on `PATH`, `GHIDRA_INSTALL_DIR` and the usual install folders.
 
-The package is not published to npm yet. Build it from a clone:
+The package is published to npm as an alpha prerelease, [`reverse-engineer`](https://www.npmjs.com/package/reverse-engineer), and listed in the MCP Registry as `io.github.Firzus/reverse-engineer`. Pin the exact version:
 
 ```sh
-git clone https://github.com/Firzus/agent-skills
-cd agent-skills/tools/reverse-engineer
-npm install
-npx vp pack                     # builds dist/cli.mjs, a single file with no runtime dependency
-node dist/cli.mjs triage ./some.exe
-node dist/cli.mjs electron_surface "C:\Program Files\App" --focus audio,microphone
+npx -y reverse-engineer@0.1.0-alpha.1 triage ./some.exe
+npx -y reverse-engineer@0.1.0-alpha.1 electron_surface "C:\Program Files\App" --focus audio,microphone
 ```
 
 Claude Code MCP configuration (project `.mcp.json`):
@@ -46,12 +42,14 @@ Claude Code MCP configuration (project `.mcp.json`):
 {
   "mcpServers": {
     "reverse-engineer": {
-      "command": "node",
-      "args": ["/path/to/agent-skills/tools/reverse-engineer/dist/cli.mjs", "mcp"]
+      "command": "npx",
+      "args": ["-y", "reverse-engineer@0.1.0-alpha.1", "mcp"]
     }
   }
 }
 ```
+
+On Windows, use `"command": "cmd"` with `"args": ["/c", "npx", "-y", "reverse-engineer@0.1.0-alpha.1", "mcp"]`. To run an unreleased build from a clone, run the [Develop](#develop) commands, then point the configuration at `node <checkout>/tools/reverse-engineer/dist/cli.mjs mcp`.
 
 Install the skill with `npx skills add Firzus/agent-skills --skill reverse-engineer`.
 
@@ -60,12 +58,24 @@ Install the skill with `npx skills add Firzus/agent-skills --skill reverse-engin
 The toolchain is [Vite+](https://viteplus.dev) (`vite-plus`, local dev dependency). `.github/workflows/reverse-engineer-check.yml` runs the same checks on Windows, macOS and Linux:
 
 ```sh
+npm install
 npx vp check    # format, lint, type check
 npx vp test     # unit tests on synthetic and hostile fixtures
-npx vp pack     # bundle dist/cli.mjs
+npx vp pack     # bundle dist/cli.mjs, a single file with no runtime dependency
 ```
 
 Tests against real targets are opt-in: set `RE_TARGETS` (a folder with `app.asar`, `app.asar.unpacked/` and `gh.exe`), `RE_NOTION_DIR` (an installed Notion app), `RE_GHIDRA=1`, `RE_DOTNET_DLL`, or `RE_APK`.
+
+## Release
+
+Publication to npm and the MCP Registry requires the maintainer's explicit approval. From a clean checkout of the reviewed commit on `main`:
+
+1. Set the same version in `package.json`, `package-lock.json`, `server.json`, the pinned commands above and in the skill's `SKILL.md`; a unit test checks the first three. When `vp pack` reports a new bundled dependency, add its license to `THIRD_PARTY_NOTICES.md`.
+2. Run the [Develop](#develop) checks, then `npm pack` (it rebuilds `dist/`) and inspect the tarball: `LICENSE`, `README.md`, `THIRD_PARTY_NOTICES.md`, `dist/cli.mjs`, `ghidra/ExportDecompiled.java`, `package.json`.
+3. Recheck the name on npm (a 404 is not a reservation), then `npm publish <tarball>`. `publishConfig` applies the `alpha` tag and public access. In an empty folder, run `npx -y reverse-engineer@<version> --version`.
+4. Run `mcp-publisher login github`, then `mcp-publisher publish` from this folder, and check the entry at `https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.Firzus/reverse-engineer`.
+
+Never overwrite or unpublish a version to hide a failed release; publish a new one.
 
 ## Benchmark
 
