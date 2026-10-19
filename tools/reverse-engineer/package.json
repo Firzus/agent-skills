@@ -1,7 +1,6 @@
 {
   "name": "reverse-engineer",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.0-alpha.1",
   "description": "Fast, compact reverse engineering for coding agents: a short skill plus a small read-only MCP server.",
   "keywords": [
     "agent-skill",
@@ -15,7 +14,12 @@
     "pe",
     "reverse-engineering"
   ],
+  "homepage": "https://github.com/Firzus/agent-skills/tree/main/tools/reverse-engineer",
+  "bugs": {
+    "url": "https://github.com/Firzus/agent-skills/issues"
+  },
   "license": "MIT",
+  "author": "Firzus",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Firzus/agent-skills.git",
@@ -26,14 +30,20 @@
   },
   "files": [
     "dist",
-    "ghidra"
+    "ghidra",
+    "THIRD_PARTY_NOTICES.md"
   ],
   "type": "module",
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha"
+  },
   "scripts": {
     "build": "vp pack",
     "check": "vp check",
     "test": "vp test",
-    "mcp": "node dist/cli.mjs mcp"
+    "mcp": "node dist/cli.mjs mcp",
+    "prepack": "vp pack"
   },
   "devDependencies": {
     "@modelcontextprotocol/server": "^2.3.1",
@@ -44,5 +54,6 @@
   },
   "engines": {
     "node": ">=24.11.0"
-  }
+  },
+  "mcpName": "io.github.Firzus/reverse-engineer"
 }

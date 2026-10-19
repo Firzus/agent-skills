@@ -5,7 +5,7 @@ description: Reverse engineer shipped software quickly with compact, cited evide
 
 # reverse-engineer
 
-The `reverse-engineer` MCP tools never run the target. They write only to their own cache, plus a private Ghidra work folder in the temp directory when the cache path contains a dot folder such as `~/.cache`; the third-party tools keep their own settings in the home folder. Every fact they return cites `file:line:col`, `file@0xoffset`, a symbol or a string. A long result ends with a cache file path: page it with `read` or filter it with `search` instead of calling the tool again. Installing this skill does not install the server (it is built from `tools/reverse-engineer` in https://github.com/Firzus/agent-skills): when its tools are not available, use [Without the MCP server](#without-the-mcp-server).
+The `reverse-engineer` MCP tools never run the target. They write only to their own cache, plus a private Ghidra work folder in the temp directory when the cache path contains a dot folder such as `~/.cache`; the third-party tools keep their own settings in the home folder. Every fact they return cites `file:line:col`, `file@0xoffset`, a symbol or a string. A long result ends with a cache file path: page it with `read` or filter it with `search` instead of calling the tool again. Installing this skill does not install the server (the npm package `reverse-engineer`, source in `tools/reverse-engineer` of https://github.com/Firzus/agent-skills): when its tools are not available, use [Without the MCP server](#without-the-mcp-server).
 
 ## Rules
 
@@ -34,7 +34,7 @@ Tool notes:
 
 ## Without the MCP server
 
-With a build of `tools/reverse-engineer` (see its README), the same tools run as a CLI: `node <checkout>/tools/reverse-engineer/dist/cli.mjs <tool> <path> --pattern X --glob '*.js'`. Otherwise use the shell (batch independent probes in one call with `echo '--- name'` markers and cap output with `head`):
+With Node.js 24.11+, the same tools run as a CLI: `npx -y reverse-engineer@0.1.0-alpha.1 <tool> <path> --pattern X --glob '*.js'`. Otherwise use the shell (batch independent probes in one call with `echo '--- name'` markers and cap output with `head`):
 
 | Need | Windows (Git Bash or PowerShell) | macOS / Linux |
 |---|---|---|
