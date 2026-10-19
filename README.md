@@ -68,6 +68,7 @@ for supported agents, installation modes, and troubleshooting.
 | Turn a new request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) |
 | Execute a prepared Linear issue | [implement](./skills/engineering/implement/SKILL.md) |
 | Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
+| Explain how shipped software works from its files | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) |
 
 Research, prototyping, preparation, and implementation are different entry points,
 not mandatory consecutive phases. Some workflows call other skills; install the
@@ -85,6 +86,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Video reports | FFmpeg and access to the application being recorded |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
 | Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
+| Reverse engineering | Node.js 20+ and the reverse-engineer MCP server for the fast route; the skill installs Ghidra, jadx or ilspycmd per user when a task needs them |
 
 Host support for installing skills does not guarantee identical behavior or tool
 availability. Explicit-invocation workflows such as **triage**, **interview**, **implement**,
@@ -119,6 +121,14 @@ integration when a compatible project lacks it, and installs it only after
 approval. Check the kit's compatibility and publication status before integrating
 it into an application.
 
+### Reverse-engineer companion server
+
+The [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) skill works
+with shell commands alone, but it is faster and more economical with its read-only
+MCP server, [tools/reverse-engineer](./tools/reverse-engineer/README.md). Installing
+the skill does not install the server: build it from a clone and register it with
+your agent, as described in its README. The server is not published to npm yet.
+
 ## All skills
 
 ### Engineering
@@ -135,6 +145,7 @@ it into an application.
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve decisions through question rounds until the agreed scope and consequential edge cases are covered. |
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
+| [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) | Explain shipped software (Electron apps, native binaries and Node addons, Go/Rust, .NET, APK) from its files, with cited evidence and an optional read-only MCP server. |
 | [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Set up reviewed personal instructions for selected harnesses without backups or system-prompt replacement. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |

@@ -1,0 +1,63 @@
+name: Reverse-engineer check
+on:
+  pull_request:
+    paths:
+      - tools/reverse-engineer/**
+      - skills/engineering/reverse-engineer/scripts/**
+      - .github/workflows/reverse-engineer-check.yml
+  workflow_dispatch:
+  workflow_call:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: tools/reverse-engineer
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use a temporary tools root and cache (forward slashes, readable by bash, node and pwsh)
+        run: |
+          temp="$RUNNER_TEMP"; if command -v cygpath >/dev/null; then temp="$(cygpath -m "$RUNNER_TEMP")"; fi
+          echo "REVERSE_ENGINEER_TOOLS=$temp/re-tools" >> "$GITHUB_ENV"
+          echo "REVERSE_ENGINEER_CACHE=$temp/re-cache" >> "$GITHUB_ENV"
+          echo "WORK=$temp" >> "$GITHUB_ENV"
+      - uses: voidzero-dev/setup-vp@v1
+        with:
+          version: 1.3.0
+          node-version: 22
+          working-directory: tools/reverse-engineer
+          run-install: false
+      - run: vp install
+      - run: vp check
+      - run: vp test
+      - run: vp pack
+      - name: CLI smoke test on the bundle itself
+        run: node dist/cli.mjs triage dist/cli.mjs | tee "$WORK/triage.txt" && grep -q 'sha256' "$WORK/triage.txt"
+      # The skill's install scripts, then managed through the tools root: JDK lookup, jadx launcher, process handling.
+      - name: Install JDK 21 and jadx into the tools root (macOS, Linux)
+        if: runner.os != 'Windows'
+        run: sh ../../skills/engineering/reverse-engineer/scripts/install-tools.sh jdk jadx
+      - name: Install JDK 21 and jadx into the tools root (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ../../skills/engineering/reverse-engineer/scripts/install-tools.ps1 jdk jadx
+      - name: Decompile a JAR through the tools root
+        run: |
+          jdk="$(ls -d "$REVERSE_ENGINEER_TOOLS"/jdk-21* | head -n 1)"
+          home="$jdk"; if [ -d "$jdk/Contents/Home" ]; then home="$jdk/Contents/Home"; fi
+          src="$WORK/jar"; mkdir -p "$src"
+          printf 'public class Hello { public static void main(String[] a) { System.out.println("hi"); } }\n' > "$src/Hello.java"
+          "$home/bin/javac" -d "$src" "$src/Hello.java"
+          "$home/bin/jar" --create --file "$WORK/hello.jar" -C "$src" Hello.class
+          node dist/cli.mjs managed "$WORK/hello.jar" | tee "$WORK/managed.txt"
+          grep -q 'jadx: decompiled' "$WORK/managed.txt"
