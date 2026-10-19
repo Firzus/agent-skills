@@ -42,7 +42,7 @@ For documentation changes, check affected claims, local links and anchors, front
 | Changed area | Required checks | Working directory / prerequisite |
 | --- | --- | --- |
 | Tauri agent kit | The step sequence in `.github/workflows/tauri-agent-kit-check.yml`, from `vp install` through the packaging checks. Preserve regression assertions rather than weakening them to pass CI. | `tools/tauri-agent-kit/`; prerequisites in `CONTRIBUTING.md`; reserve the desktop before native-input tests |
-| Reverse-engineer server | The step sequence in `.github/workflows/reverse-engineer-check.yml`: `vp install`, `vp check`, `vp test`, `vp pack`. Real-target tests are opt-in, as described in its README. | `tools/reverse-engineer/`; Node.js 20+ |
+| Reverse-engineer server | The step sequence in `.github/workflows/reverse-engineer-check.yml`, from `vp install` through the CLI smoke test. Its last steps download a JDK and jadx: run them locally only with network authorization. Real-target tests are opt-in, as described in its README. | `tools/reverse-engineer/`; Node.js 24.11+ |
 | Other helper scripts | Relevant safe checks exposed by the owning skill and script | Confirm inputs and effects before execution |
 
 Documentary checks do not prove agent behavior or host loading. Report untested runtime boundaries and distinguish a local change from an installed or published skill.
