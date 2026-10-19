@@ -17,9 +17,17 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
 # Prints the download URL of the latest release asset of $1 matching the regex $2.
+# GH_TOKEN or GITHUB_TOKEN, when set, lifts the anonymous GitHub API limit (60 requests an hour per IP).
 release() {
-  url="$(curl -fsSL "https://api.github.com/repos/$1/releases/latest" | grep -o '"browser_download_url": *"[^"]*"' |
-    cut -d'"' -f4 | grep -E "$2" | head -n 1)" || true
+  api="https://api.github.com/repos/$1/releases/latest"
+  token="${GH_TOKEN:-${GITHUB_TOKEN:-}}"
+  if [ -n "$token" ]; then
+    json="$(curl -fsSL -H "Authorization: Bearer $token" "$api")" || json=""
+  else
+    json="$(curl -fsSL "$api")" || json=""
+  fi
+  [ -n "$json" ] || { echo "cannot read the latest release of $1 (GitHub API rate limit? set GH_TOKEN)" >&2; exit 1; }
+  url="$(printf '%s\n' "$json" | grep -o '"browser_download_url": *"[^"]*"' | cut -d'"' -f4 | grep -E "$2" | head -n 1)" || true
   [ -n "$url" ] || { echo "no release asset matching $2 in $1" >&2; exit 1; }
   printf '%s\n' "$url"
 }

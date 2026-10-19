@@ -24,8 +24,17 @@ $arch = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'aarch64' } else { 'x64' 
 $curl = Join-Path $env:SystemRoot 'System32\curl.exe'
 $tar = Join-Path $env:SystemRoot 'System32\tar.exe'
 
+# GH_TOKEN or GITHUB_TOKEN, when set, lifts the anonymous GitHub API limit (60 requests an hour per IP).
 function Get-Release([string] $Repo, [string] $Pattern) {
-  $url = (Invoke-RestMethod "https://api.github.com/repos/$Repo/releases/latest").assets |
+  $token = if ($env:GH_TOKEN) { $env:GH_TOKEN } else { $env:GITHUB_TOKEN }
+  $headers = @{}
+  if ($token) { $headers.Authorization = "Bearer $token" }
+  try {
+    $latest = Invoke-RestMethod "https://api.github.com/repos/$Repo/releases/latest" -Headers $headers
+  } catch {
+    throw "cannot read the latest release of $Repo (GitHub API rate limit? set GH_TOKEN): $($_.Exception.Message)"
+  }
+  $url = $latest.assets |
     Where-Object name -Match $Pattern | Select-Object -First 1 -ExpandProperty browser_download_url
   if (-not $url) { throw "no release asset matching $Pattern in $Repo" }
   $url

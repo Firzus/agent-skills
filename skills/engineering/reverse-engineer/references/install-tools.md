@@ -26,6 +26,8 @@ The scripts take the latest official release from each source, need no admin rig
 | macOS | `~/Library/Application Support/reverse-engineer/tools` |
 | Linux | `${XDG_DATA_HOME:-~/.local/share}/reverse-engineer/tools` |
 
+If a script fails with `cannot read the latest release` (an HTTP 403 from the anonymous GitHub API limit), rerun it with `GH_TOKEN` set, for example from `gh auth token`.
+
 If the tool still reports it missing, list the tools root and compare with the expected layout: `jdk-21*/bin/java` (macOS: `jdk-21*/Contents/Home/bin/java`), `ghidra_*/support/analyzeHeadless`, `jadx/bin/jadx`, `dotnet-tools/ilspycmd`.
 
 ## System-wide install (admin rights)

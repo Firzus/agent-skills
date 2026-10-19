@@ -24,7 +24,7 @@ jobs:
         working-directory: tools/reverse-engineer
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Use a temporary tools root and cache (forward slashes, readable by bash, node and pwsh)
         run: |
           temp="$RUNNER_TEMP"; if command -v cygpath >/dev/null; then temp="$(cygpath -m "$RUNNER_TEMP")"; fi
@@ -44,12 +44,17 @@ jobs:
       - name: CLI smoke test on the bundle itself
         run: node dist/cli.mjs triage dist/cli.mjs | tee "$WORK/triage.txt" && grep -q 'sha256' "$WORK/triage.txt"
       # The skill's install scripts, then managed through the tools root: JDK lookup, jadx launcher, process handling.
+      # The token lifts the anonymous GitHub API rate limit that hosted runners share.
       - name: Install JDK 21 and jadx into the tools root (macOS, Linux)
         if: runner.os != 'Windows'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: sh ../../skills/engineering/reverse-engineer/scripts/install-tools.sh jdk jadx
       - name: Install JDK 21 and jadx into the tools root (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: ../../skills/engineering/reverse-engineer/scripts/install-tools.ps1 jdk jadx
       - name: Decompile a JAR through the tools root
         run: |
