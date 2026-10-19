@@ -1,6 +1,6 @@
 # Install the optional third-party tools
 
-Read this when `decompile` or `managed` reports a missing tool. You install it yourself with this skill's scripts; the user does not need to visit any site.
+Read this when `decompile` or `managed` reports a missing tool, or when the shell route needs Ghidra, jadx or ilspycmd. You install it yourself with this skill's scripts; the user does not need to visit any site.
 
 | Tool | Needed by | Source | Download |
 |---|---|---|---|
@@ -16,7 +16,7 @@ Read this when `decompile` or `managed` reports a missing tool. You install it y
 3. Run the script from this skill's `scripts/` folder, by its full path (`<skill>` below):
    - Windows (PowerShell, or Git Bash calling PowerShell): `powershell -NoProfile -ExecutionPolicy Bypass -File <skill>/scripts/install-tools.ps1 jdk jadx`
    - macOS and Linux (needs `curl`, `tar`, `unzip`): `sh <skill>/scripts/install-tools.sh jdk jadx`
-4. Call the tool again. It looks in the tools root first, so there is no restart and no `PATH` change.
+4. Call the tool again. It looks in the tools root first, so there is no restart and no `PATH` change. On the shell route, call the installed tool by its full path in the tools root.
 
 The scripts take the latest official release from each source, need no admin rights, and overwrite in place, so rerunning one is safe. They install into the tools root:
 

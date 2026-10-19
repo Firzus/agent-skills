@@ -214,13 +214,10 @@ function cString(buf: Uint8Array, offset: number, max = 512): string {
   return Buffer.from(buf.subarray(offset, end)).toString("latin1");
 }
 
+// The Windows loader reads descriptors up to the null entry and ignores the directory size, so only a cap bounds them.
 const MAX_DESCRIPTORS = 4096;
 const MAX_THUNKS = 20000;
 const MAX_IMPORT_NAMES = 100000;
-
-/** Descriptors to read: the directory size bounds them when it is set, the global cap always. */
-const descriptorLimit = (dir: PeDirectory, size: number): number =>
-  dir.size >= size ? Math.min(Math.floor(dir.size / size), MAX_DESCRIPTORS) : MAX_DESCRIPTORS;
 
 /**
  * Import and delay-import tables: library names and imported symbols (or #ordinal). Descriptor and name counts
@@ -253,7 +250,7 @@ export function peImports(buf: Uint8Array, image: PeImage): PeImport[] {
   const imports = image.directories[PE_DIR.import];
   if (imports && imports.rva !== 0) {
     let at = peRvaToOffset(image, imports.rva);
-    const limit = descriptorLimit(imports, 20);
+    const limit = MAX_DESCRIPTORS;
     for (let i = 0; i < limit && at !== undefined && at + 20 <= buf.length && total < MAX_IMPORT_NAMES; i++) {
       const lookup = view.getUint32(at, true);
       const nameRva = view.getUint32(at + 12, true);
@@ -271,7 +268,7 @@ export function peImports(buf: Uint8Array, image: PeImage): PeImport[] {
   const delay = image.directories[PE_DIR.delayImport];
   if (delay && delay.rva !== 0) {
     let at = peRvaToOffset(image, delay.rva);
-    const limit = descriptorLimit(delay, 32);
+    const limit = MAX_DESCRIPTORS;
     for (let i = 0; i < limit && at !== undefined && at + 32 <= buf.length && total < MAX_IMPORT_NAMES; i++) {
       const attributes = view.getUint32(at, true);
       const vaBased = (attributes & 1) === 0;

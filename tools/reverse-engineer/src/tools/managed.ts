@@ -75,7 +75,7 @@ async function runDecompiler(path: string, sha: string, tool: string, root: stri
   if (!binary) {
     const needs = tool === "ilspycmd" ? "the .NET 10 SDK" : "JDK 21";
     throw new Error(
-      `${tool} not found. Install it and ${needs} into ${toolsRoot()} (install.md in the reverse-engineer skill), or use triage and binary_inventory instead.`,
+      `${tool} not found. Install it and ${needs} into ${toolsRoot()} (references/install-tools.md in the reverse-engineer skill), or use triage and binary_inventory instead.`,
     );
   }
   await rm(root, { recursive: true, force: true });

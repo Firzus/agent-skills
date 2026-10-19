@@ -4,7 +4,7 @@ import { fit } from "./core/budget";
 import { tools } from "./tools/index";
 
 const INSTRUCTIONS =
-  "Read-only reverse engineering of local files. Start with triage(path). Responses are capped; when truncated, the footer names a cache file to page with read or filter with search. Every fact cites file:line:col or file@offset.";
+  "Read-only reverse engineering of local files. Start with triage(path). Responses are capped; when truncated, the footer names a cache file to page with read or filter with search. Every fact cites file:line:col, file@offset, a symbol or a string.";
 
 export async function serve(version: string): Promise<void> {
   const server = new McpServer({ name: "reverse-engineer", version }, { instructions: INSTRUCTIONS });
@@ -30,4 +30,6 @@ export async function serve(version: string): Promise<void> {
     );
   }
   await server.connect(new StdioServerTransport());
+  // The client closing stdin ends the session: exit, which also stops any running third-party tool.
+  process.stdin.once("end", () => process.exit(0));
 }

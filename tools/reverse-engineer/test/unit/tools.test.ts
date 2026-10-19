@@ -1,9 +1,9 @@
-import { truncateSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, statSync, truncateSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vite-plus/test";
 import { tmpdir } from "node:os";
 import { parseArgs } from "../../src/args";
-import { ghidraWorkRoot } from "../../src/tools/decompile";
+import { ensureWorkRoot, ghidraWorkRoot } from "../../src/tools/decompile";
 import {
   addonIdentifiers,
   collectChannels,
@@ -202,6 +202,27 @@ describe("ghidraWorkRoot", () => {
     );
     process.env.REVERSE_ENGINEER_CACHE = join(tmpdir(), "plain", "cache");
     expect(ghidraWorkRoot()).toBe(join(tmpdir(), "plain", "cache"));
+  });
+
+  test.runIf(process.getuid !== undefined)("the temp fallback must be private; the cache root needs not", async () => {
+    const savedTmp = process.env.TMPDIR;
+    process.env.TMPDIR = tempDir();
+    try {
+      // The user's own cache root, created 0755 by the other tools, is used as is.
+      const cache = join(tempDir(), "plain", "cache");
+      mkdirSync(cache, { recursive: true, mode: 0o755 });
+      process.env.REVERSE_ENGINEER_CACHE = cache;
+      expect(await ensureWorkRoot()).toBe(cache);
+      // A dotted cache moves the work to a private temp folder, created 0700 before anything inside it.
+      process.env.REVERSE_ENGINEER_CACHE = join(tempDir(), ".cache", "reverse-engineer");
+      const work = await ensureWorkRoot();
+      expect(statSync(work).mode & 0o777).toBe(0o700);
+      // A shared folder that someone opened up is refused.
+      chmodSync(work, 0o755);
+      await expect(ensureWorkRoot()).rejects.toThrow(/not a private directory/);
+    } finally {
+      process.env.TMPDIR = savedTmp;
+    }
   });
 });
 

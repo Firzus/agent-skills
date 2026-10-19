@@ -58,6 +58,7 @@ foreach ($tool in $Tools) {
         & $curl -fsSL -o $installer https://dot.net/v1/dotnet-install.ps1
         if ($LASTEXITCODE) { throw 'download failed: dotnet-install.ps1' }
         & $installer -Channel 10.0 -InstallDir (Join-Path $root 'dotnet')
+        Remove-Item $installer -Force
         $dotnet = Join-Path $root 'dotnet\dotnet.exe'
       }
       & $dotnet tool update ilspycmd --tool-path (Join-Path $root 'dotnet-tools')

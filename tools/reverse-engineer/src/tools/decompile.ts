@@ -74,11 +74,16 @@ export function ghidraWorkRoot(): string {
 }
 
 /**
- * Creates the work root. In a shared temp directory, another user could create it first
- * and swap the post script: on Unix it must be our own, private, real directory.
+ * Creates the work root before anything inside it. The cache root is the user's own folder.
+ * The temp fallback is shared: another user could create it first and swap the post script,
+ * so on Unix it must be our own, private, real directory.
  */
-async function ensureWorkRoot(): Promise<string> {
+export async function ensureWorkRoot(): Promise<string> {
   const root = ghidraWorkRoot();
+  if (root === cacheRoot()) {
+    await mkdir(root, { recursive: true });
+    return root;
+  }
   await mkdir(root, { recursive: true, mode: 0o700 });
   const uid = process.getuid?.();
   if (uid !== undefined) {
@@ -127,6 +132,7 @@ async function importAndExport(
   outDir: string,
   extra: string[] = [],
 ): Promise<RunResult> {
+  await ensureWorkRoot();
   await rm(projectDir, { recursive: true, force: true });
   await mkdir(projectDir, { recursive: true });
   const budget = process.env.REVERSE_ENGINEER_DECOMPILE_BUDGET ?? "150";
@@ -186,7 +192,7 @@ async function analyze(path: string): Promise<Analysis> {
       const ghidra = await findGhidra();
       if (!ghidra)
         throw new Error(
-          `Ghidra not found. Install Ghidra and JDK 21 into ${toolsRoot()} (install.md in the reverse-engineer skill), or set GHIDRA_INSTALL_DIR. Meanwhile use binary_inventory.`,
+          `Ghidra not found. Install Ghidra and JDK 21 into ${toolsRoot()} (references/install-tools.md in the reverse-engineer skill), or set GHIDRA_INSTALL_DIR. Meanwhile use binary_inventory.`,
         );
       await rm(dir, { recursive: true, force: true });
       const started = Date.now();
@@ -264,6 +270,49 @@ const decompileSchema = z.object({
 
 export type DecompileOptions = Omit<z.output<typeof decompileSchema>, "path">;
 
+const projectQueue = new Map<string, Promise<unknown>>();
+
+/** Runs Ghidra jobs on one project one at a time: an open project is locked, and a rebuild deletes it. */
+function inProjectQueue<T>(projectDir: string, job: () => Promise<T>): Promise<T> {
+  const next = (projectQueue.get(projectDir) ?? Promise.resolve()).catch(() => undefined).then(job);
+  projectQueue.set(projectDir, next);
+  return next;
+}
+
+/** One function's C: from the exported files, else from a new Ghidra run on the project. */
+async function decompileOne(path: string, analysis: Analysis, address: string): Promise<Decompiled> {
+  // An earlier queued call may have exported it already.
+  const exported = (await loadDecompiled(analysis.outDir)).get(address);
+  if (exported) return exported;
+  const ghidra = await findGhidra();
+  if (!ghidra) throw new Error("Ghidra not found");
+  // The project can be gone while the exported results remain (a cleared temp directory): rebuild it.
+  // `-process` without a name runs on the only program, whatever name it was imported under.
+  const { code, log } = (await exists(join(analysis.projectDir, "re.gpr")))
+    ? await runHeadless(
+        ghidra,
+        [
+          analysis.projectDir,
+          "re",
+          "-process",
+          "-noanalysis",
+          "-readOnly",
+          "-scriptPath",
+          await stagedScriptDir(),
+          "-postScript",
+          "ExportDecompiled.java",
+          analysis.outDir,
+          "60",
+          address,
+        ],
+        300_000,
+      )
+    : await importAndExport(ghidra, path, analysis.projectDir, analysis.outDir, [address]);
+  const decompiled = (await loadDecompiled(analysis.outDir)).get(address);
+  if (!decompiled) throw new Error(`decompilation of ${address} failed (exit ${code}):\n${log.slice(-1200)}`);
+  return decompiled;
+}
+
 export async function decompile(path: string, options: DecompileOptions): Promise<string> {
   const analysis = await analyze(path);
   const out: string[] = [];
@@ -288,36 +337,7 @@ export async function decompile(path: string, options: DecompileOptions): Promis
       return out.join("\n");
     }
     const target = matches.find((m) => m.name === options.function) ?? (matches[0] as FunctionRow);
-    let decompiled = (await loadDecompiled(analysis.outDir)).get(target.address);
-    if (!decompiled) {
-      const ghidra = await findGhidra();
-      if (!ghidra) throw new Error("Ghidra not found");
-      // The project can be gone while the exported results remain (a cleared temp directory): rebuild it.
-      // `-process` without a name runs on the only program, whatever name it was imported under.
-      const { code: exit, log } = (await exists(join(analysis.projectDir, "re.gpr")))
-        ? await runHeadless(
-            ghidra,
-            [
-              analysis.projectDir,
-              "re",
-              "-process",
-              "-noanalysis",
-              "-readOnly",
-              "-scriptPath",
-              await stagedScriptDir(),
-              "-postScript",
-              "ExportDecompiled.java",
-              analysis.outDir,
-              "60",
-              target.address,
-            ],
-            300_000,
-          )
-        : await importAndExport(ghidra, path, analysis.projectDir, analysis.outDir, [target.address]);
-      decompiled = (await loadDecompiled(analysis.outDir)).get(target.address);
-      if (!decompiled)
-        throw new Error(`decompilation of ${target.address} failed (exit ${exit}):\n${log.slice(-1200)}`);
-    }
+    const decompiled = await inProjectQueue(analysis.projectDir, () => decompileOne(path, analysis, target.address));
     out.push(`// ${target.address} ${target.name} | ${target.signature} | ${decompiled.file}:${decompiled.line}`);
     out.push(decompiled.text.trimEnd());
     return out.join("\n");

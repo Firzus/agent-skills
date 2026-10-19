@@ -128,6 +128,15 @@ async function extractInto(asar: string, sha: string, root: string): Promise<Asa
   const started = Date.now();
   const work = `${root}.tmp-${process.pid}-${Date.now()}`;
   await mkdir(work, { recursive: true });
+  try {
+    return await fill(asar, sha, root, work, started);
+  } catch (error) {
+    await rm(work, { recursive: true, force: true });
+    throw error;
+  }
+}
+
+async function fill(asar: string, sha: string, root: string, work: string, started: number): Promise<AsarExtraction> {
   const header = await readAsarHeader(asar);
   const unpackedRoot = `${asar}.unpacked`;
   const result: AsarExtraction = {
@@ -176,8 +185,31 @@ async function extractInto(asar: string, sha: string, root: string): Promise<Asa
     }
   }
   result.seconds = (Date.now() - started) / 1000;
-  await rm(root, { recursive: true, force: true });
-  await rename(work, root);
+  await publish(work, root);
   await writeJson(`${root}.json`, result);
   return result;
+}
+
+/**
+ * Moves the new tree into place. An older tree is renamed aside first and deleted afterwards, so a
+ * file still held open in it (a reader, an antivirus scan) delays only its cleanup.
+ */
+async function publish(work: string, root: string): Promise<void> {
+  const old = `${root}.old-${process.pid}-${Date.now()}`;
+  if (await exists(root)) await retrying(() => rename(root, old));
+  await retrying(() => rename(work, root));
+  await rm(old, { recursive: true, force: true }).catch(() => {});
+}
+
+/** Retries a rename that Windows refuses while another handle is open on the folder. */
+async function retrying(op: () => Promise<void>): Promise<void> {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await op();
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (attempt >= 5 || (code !== "EPERM" && code !== "EBUSY" && code !== "EACCES")) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 100 * attempt));
+    }
+  }
 }

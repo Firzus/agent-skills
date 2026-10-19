@@ -86,7 +86,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Video reports | FFmpeg and access to the application being recorded |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
 | Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
-| Reverse engineering | Node.js 20+ and the reverse-engineer MCP server for the fast route; the skill installs Ghidra, jadx or ilspycmd per user when a task needs them |
+| Reverse engineering | The reverse-engineer MCP server for the fast route (Node.js 24.11+); the skill installs Ghidra, jadx or ilspycmd per user when a task needs them |
 
 Host support for installing skills does not guarantee identical behavior or tool
 availability. Explicit-invocation workflows such as **triage**, **interview**, **implement**,

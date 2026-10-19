@@ -27,7 +27,7 @@ Design rules:
 
 ## Use
 
-Requirements: Node.js 20 or later. Optional: Ghidra 11+ with JDK 21 for `decompile`, `ilspycmd` (.NET 10 SDK) and `jadx` (JDK 21) for `managed`. The agent can install them with the skill's [install guide](../../skills/engineering/reverse-engineer/references/install-tools.md): official releases go into a per-user tools root (`%LOCALAPPDATA%\reverse-engineer\tools`, `~/Library/Application Support/reverse-engineer/tools`, or `$XDG_DATA_HOME/reverse-engineer/tools`; override with `REVERSE_ENGINEER_TOOLS`), without admin rights or a `PATH` change. The tools look there first, then on `PATH`, `GHIDRA_INSTALL_DIR` and the usual install folders.
+Requirements: Node.js 24.11 or later. Optional: Ghidra 11+ with JDK 21 for `decompile`, `ilspycmd` (.NET 10 SDK) and `jadx` (JDK 21) for `managed`. The agent can install them with the skill's [install guide](../../skills/engineering/reverse-engineer/references/install-tools.md): official releases go into a per-user tools root (`%LOCALAPPDATA%\reverse-engineer\tools`, `~/Library/Application Support/reverse-engineer/tools`, or `$XDG_DATA_HOME/reverse-engineer/tools`; override with `REVERSE_ENGINEER_TOOLS`), without admin rights or a `PATH` change. The tools look there first, then on `PATH`, `GHIDRA_INSTALL_DIR` and the usual install folders.
 
 The package is not published to npm yet. Build it from a clone:
 
@@ -73,4 +73,4 @@ Tests against real targets are opt-in: set `RE_TARGETS` (a folder with `app.asar
 
 ## License
 
-MIT. Fuse names and the Go build-info layout follow the public formats documented by Electron and the Go toolchain; no code is copied from REA.
+MIT. The benchmark tasks and harness are adapted from leanrea, MIT-licensed; its notice is in [bench/LICENSE-leanrea](bench/LICENSE-leanrea). Fuse names and the Go build-info layout follow the public formats documented by Electron and the Go toolchain; no code is copied from REA.

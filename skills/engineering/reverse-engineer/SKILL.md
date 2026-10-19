@@ -5,7 +5,7 @@ description: Reverse engineer shipped software quickly with compact, cited evide
 
 # reverse-engineer
 
-The `reverse-engineer` MCP tools never run the target. They write only to their own cache, plus a private Ghidra work folder in the temp directory when the cache path contains a dot folder such as `~/.cache`. Every fact they return cites `file:line:col`, `file@0xoffset`, a symbol or a string. A long result ends with a cache file path: page it with `read` or filter it with `search` instead of calling the tool again. Installing this skill does not install the server (it is built from `tools/reverse-engineer` in https://github.com/Firzus/agent-skills): when its tools are not available, use [Without the MCP server](#without-the-mcp-server).
+The `reverse-engineer` MCP tools never run the target. They write only to their own cache, plus a private Ghidra work folder in the temp directory when the cache path contains a dot folder such as `~/.cache`; the third-party tools keep their own settings in the home folder. Every fact they return cites `file:line:col`, `file@0xoffset`, a symbol or a string. A long result ends with a cache file path: page it with `read` or filter it with `search` instead of calling the tool again. Installing this skill does not install the server (it is built from `tools/reverse-engineer` in https://github.com/Firzus/agent-skills): when its tools are not available, use [Without the MCP server](#without-the-mcp-server).
 
 ## Rules
 
@@ -42,13 +42,19 @@ With a build of `tools/reverse-engineer` (see its README), the same tools run as
 | Search extracted code | `rg -uu -o '.{0,150}NEEDLE.{0,150}' X --glob '!node_modules'` | same |
 | Strings of a binary | `rg -a -o '[ -~]{6,}' F` | `strings -a -n 6 F` |
 | Imports, exports | `dumpbin /imports /exports F` (Visual Studio) | `otool -L`, `nm -gU`, `nm -u`; `readelf -dW`, `nm -D` |
-| Go build info | `go version -m F`; without Go: `rg -a -o '(path\|mod\|dep)\t[^\t]+\t?[^\t]*' F` | same |
-| Decompile | Ghidra `analyzeHeadless` with a post script | same, or `r2 -qc 'aaa; pdc @ sym.X' F` |
+| Go build info | `go version -m F`; without Go, the `rg` line below | same |
+| Decompile | Ghidra `analyzeHeadless` with a post script that exports C, such as `tools/reverse-engineer/ghidra/ExportDecompiled.java` | same, or `r2 -qc 'aaa; pdc @ sym.X' F` |
 | .NET / APK | `ilspycmd -p -o X F` / `jadx -d X a.apk`, then search | same |
+
+```sh
+rg -a -o '(path|mod|dep)\t[^\t]+\t?[^\t]*' F   # Go build info without Go
+```
+
+Tools installed per user (see below) are not on `PATH`: call them by full path, such as `<tools root>/jadx/bin/jadx` or `<tools root>/ghidra_*/support/analyzeHeadless`, with `JAVA_HOME` set to `<tools root>/jdk-21*` (macOS: its `Contents/Home`).
 
 ## Missing third-party tools
 
-`decompile` needs Ghidra and JDK 21; `managed` needs jadx and JDK 21, or ilspycmd. When one of them reports a missing tool, install it with [references/install-tools.md](references/install-tools.md) (per-user, no admin rights, no restart), and meanwhile keep going with `triage`, `binary_inventory` and `search`.
+`decompile` needs Ghidra and JDK 21; `managed` needs jadx and JDK 21, or ilspycmd. When one of them reports a missing tool, or the shell route needs one, install it with [references/install-tools.md](references/install-tools.md) (per-user, no admin rights, no restart), and meanwhile keep going with `triage`, `binary_inventory` and `search`.
 
 ## Speed patterns
 

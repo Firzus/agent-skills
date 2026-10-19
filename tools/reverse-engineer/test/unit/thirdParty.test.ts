@@ -74,6 +74,8 @@ describe("missing tools", () => {
     isolateCache();
     const apk = join(root, "..", "app.apk");
     writeFileSync(apk, buildZip(["AndroidManifest.xml", "classes.dex"]));
-    await expect(managed(apk)).rejects.toThrow(/jadx not found\. Install it and JDK 21 into .*tools \(install\.md/);
+    await expect(managed(apk)).rejects.toThrow(
+      /jadx not found\. Install it and JDK 21 into .*tools \(references\/install-tools\.md/,
+    );
   });
 });

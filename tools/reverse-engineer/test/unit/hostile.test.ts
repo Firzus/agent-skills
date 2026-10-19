@@ -90,10 +90,10 @@ describe("hostile PE", () => {
     expect(names).toBeGreaterThan(0);
     expect(names).toBeLessThanOrEqual(100_000);
 
-    // The directory size bounds the descriptor count.
+    // An understated directory size hides no descriptor: the Windows loader ignores it too.
     setDirectory(buf, 1, rvaOf(importsAt), 3 * 20);
     setDirectory(buf, 13, 0, 0);
-    expect(within(() => loadBinary(buf))?.imports).toHaveLength(3);
+    expect(within(() => loadBinary(buf))?.imports.length).toBeGreaterThan(3);
   });
 
   test("export tables running past the end of the file", () => {

@@ -8,11 +8,28 @@ export interface RunResult {
   timedOut: boolean;
 }
 
-// Detached tools do not die with the server: stop the ones still running when it exits.
+// Detached tools do not die with the server: stop the ones still running when it exits or when a
+// signal stops it (on a signal, Node exits without running exit handlers unless one is installed).
 const running = new Set<number>();
-process.on("exit", () => {
-  for (const pid of running) killTree(pid, true);
-});
+let hooked = false;
+function stopRunningOnExit(): void {
+  if (hooked) return;
+  hooked = true;
+  const stopAll = () => {
+    for (const pid of running) killTree(pid, true);
+  };
+  process.on("exit", stopAll);
+  for (const [signal, number] of [
+    ["SIGINT", 2],
+    ["SIGTERM", 15],
+    ["SIGHUP", 1],
+  ] as const) {
+    process.once(signal, () => {
+      stopAll();
+      process.exit(128 + number);
+    });
+  }
+}
 
 /** Quotes one argument for `cmd.exe /s /c "..."`. */
 function quote(arg: string): string {
@@ -45,6 +62,7 @@ export function runTool(
   };
   child.stdout?.on("data", append);
   child.stderr?.on("data", append);
+  stopRunningOnExit();
   if (child.pid !== undefined) running.add(child.pid);
   return new Promise((resolve) => {
     let timedOut = false;
@@ -70,9 +88,10 @@ function killTree(pid: number | undefined, sync = false): void {
   if (pid === undefined) return;
   try {
     if (process.platform === "win32") {
+      const taskkill = join(process.env.SystemRoot ?? "C:\\Windows", "System32", "taskkill.exe");
       const args = ["/pid", String(pid), "/T", "/F"];
-      if (sync) spawnSync("taskkill", args, { windowsHide: true });
-      else spawn("taskkill", args, { windowsHide: true });
+      if (sync) spawnSync(taskkill, args, { windowsHide: true });
+      else spawn(taskkill, args, { windowsHide: true }).on("error", () => {});
     }
     // The child leads its own process group (detached), so the group id kills its descendants too.
     else process.kill(-pid, "SIGKILL");
