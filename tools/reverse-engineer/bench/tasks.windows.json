@@ -1,0 +1,84 @@
+[
+  {
+    "id": "electron",
+    "targets": ["app.asar", "app.asar.unpacked"],
+    "prompt": "app.asar in this folder is the Notion desktop app (Electron). Find out how Notion detects that another app is using the microphone (meeting detection). Report: (1) the native module file and the native function(s) it calls, (2) the main-process class that drives detection and its two modes, (3) the IPC channel a renderer sends to START detection, (4) the IPC channel main broadcasts when the process list changes. Keep the answer short; cite file paths.",
+    "key": {
+      "native fn": "getProcessesAccessingMicrophone(Debounced)?WithResult",
+      "module": "win_utils",
+      "class": "AudioController",
+      "modes": "poll[\\s\\S]*(emitter|microphone ?status)|(emitter|microphone ?status)[\\s\\S]*poll",
+      "start ch": "notion:initialize-running-input-audio-process-detection",
+      "event ch": "notion:running-input-audio-processes-changed"
+    },
+    "evidence": {
+      "module": "node_modules/@notionhq/desktop-native/module.js:88 require(\"bindings\")(\"win_utils.node\") when process.platform === \"win32\"",
+      "native fn": ".webpack/main/index.js:2:~69190 AudioController.pollRunningInputAudioProcesses awaits this.getProcessesAccessingMicrophoneDebouncedWithResult(); getRunningInputAudioProcesses is only reached through the separate notion:get-running-input-audio-processes request (index.js:2:548499)",
+      "class": ".webpack/main/index.js:2:63560 t.AudioController=class{...}",
+      "modes": ".webpack/main/index.js:2:63589 initialize(e,t): t ? this.startMicrophoneStatusEmitter(n) : this.startPolling(e)",
+      "start ch": ".webpack/main/index.js:2:548657 handleEventFromRenderer.addListener(\"notion:initialize-running-input-audio-process-detection\", ... audioController.initialize(t,n??!1))",
+      "event ch": "each poll calls both handleRunningInputAudioProcessesChangedLegacy (sends notion:running-input-audio-processes-changed, index.js:2:70071) and handleRunningInputAudioProcessesChangedV2 (sends notion:running-input-audio-processes-changed-v2, index.js:2:72584); both are correct"
+    },
+    "key_changes_from_macos": "The macOS key (Notion 7.35.1) required getRunningInputAudioProcesses and the v2 channel only. On Windows 7.39.0 the polling path calls getProcessesAccessingMicrophoneDebouncedWithResult, and both change channels are broadcast. The modes item was asked by the prompt but not graded before."
+  },
+  {
+    "id": "go",
+    "targets": ["gh.exe"],
+    "prompt": "gh.exe in this folder is a compiled binary. Without running it, report: the language/toolchain version it was built with, its main package path, and the exact versions of the dependencies github.com/cli/go-gh/v2 and golang.org/x/crypto. Keep the answer short.",
+    "key": {
+      "go ver": "go ?1\\.26\\.4",
+      "path": "github\\.com/cli/cli/v2/cmd/gh",
+      "go-gh": "v2\\.13\\.0",
+      "crypto": "v0\\.53\\.0"
+    },
+    "evidence": {
+      "all": "Go build info at file offset 0x2561a00 (va 0x142563000) of gh.exe (sha256 cfefbc73...): version go1.26.4; path github.com/cli/cli/v2/cmd/gh; mod github.com/cli/cli/v2 v2.95.0; dep github.com/cli/go-gh/v2 v2.13.0; dep golang.org/x/crypto v0.53.0. Read independently by reverse-engineer buildinfo and by REA inspect_go_binary (c/out/go.json); gh --version prints 2.95.0."
+    },
+    "key_changes_from_macos": "Different binary: Homebrew gh on macOS (go1.27.1, go-gh v2.16.1, crypto v0.57.0) versus gh 2.95.0 for Windows. The go version regex also accepts 'go 1.26.4' (the macOS grader produced one false negative on 'Go 1.27.1')."
+  },
+  {
+    "id": "native",
+    "targets": ["win_utils.node"],
+    "prompt": "win_utils.node in this folder is a Windows Node native addon from a desktop app. Report: (1) every JS-callable function name it exports, (2) exactly how getProcessesAccessingMicrophoneWithResult finds the processes that use the microphone (audio API, COM interfaces, and the test that marks a process as active), (3) how requestSingleInstanceLock works (mechanism and the names of the OS objects it creates). Keep the answer short.",
+    "key": {
+      "fn1": "getProcessesAccessingMicrophoneDebouncedWithResult",
+      "fn2": "getProcessesAccessingSpeakersWithResult",
+      "fn3": "installMSIXAndRestart",
+      "sessions": "IAudioSessionManager2|IAudioSessionEnumerator|GetSessionEnumerator|IAudioSessionControl2",
+      "active": "AudioSessionStateActive|GetState|session state[^.\\n]{0,30}active",
+      "capture": "eCapture|capture (endpoint|device)s?|EnumAudioEndpoints",
+      "mutex": "mutex",
+      "pipe": "named[ -]?pipe|\\\\\\.\\\\pipe|CreateNamedPipe",
+      "name": "com.notion.singleinstance"
+    },
+    "evidence": {
+      "source": "Ghidra 12.1.4 decompilation of win_utils.node (sha256 025eeba7...), decompiled.c from reverse-engineer decompile; line numbers below refer to it",
+      "exports": "napi_register_module_v1 (line 26801) -> init FUN_18000a430 (line 3269) sets 11 functions incl. getProcessesAccessingMicrophoneDebouncedWithResult, getProcessesAccessingSpeakersWithResult, installMSIXAndRestart; plus classes RemoteMeetingNotesProxy and AppSingleInstance (methods requestSingleInstanceLock, onSecondInstance, release)",
+      "microphone": "FUN_180025620: MMDeviceEnumerator, EnumAudioEndpoints(eCapture, DEVICE_STATE_ACTIVE) (line 12751), IAudioSessionManager2::GetSessionEnumerator, IAudioSessionControl2; keep pid != 0 and GetState == AudioSessionStateActive (lines 12860-12866); name via OpenProcess + QueryFullProcessImageNameW (FUN_180028ef0). Strings 'Failed to activate IAudioSessionManager2', 'Failed to get IAudioSessionEnumerator'",
+      "lock": "FUN_180019910: mutex 'Global\\' + name (line 33534), pipe '\\\\.\\pipe\\' + name (line 33588); name = 'com.notion.singleinstance.' + session id + '.' + FNV-1a-64(exe path) (FUN_1800188d0); CreateMutexW then GetLastError()==183 -> second instance (line 9575); first instance CreateNamedPipeW (line 9627) and a ConnectNamedPipe server thread (line 33999)"
+    },
+    "key_changes_from_macos": "Windows addon (win_utils.node) instead of mac_utils.node: item (2) asks about the WASAPI session scan instead of the TCC check, item (3) about the mutex and named pipe instead of the Unix socket. Exported names checked are Windows-only ones."
+  },
+  {
+    "id": "deep",
+    "targets": ["win_utils.node"],
+    "prompt": "win_utils.node in this folder is a Windows Node native addon. Reverse engineer its single-instance lock (requestSingleInstanceLock) precisely from the binary: (1) the exact named pipe and mutex name format and what each variable part is computed from, (2) the wire protocol a second instance uses to send its data, (3) how the first instance authenticates the connecting peer. Keep the answer short.",
+    "key": {
+      "prefix": "com.notion.singleinstance.",
+      "global": "Global\\\\",
+      "session": "session ?id|ProcessIdToSessionId",
+      "hash": "FNV|fnv-?1a|0xcbf29ce484222325",
+      "exe": "GetModuleFileNameW?|executable('s)? path|exe(cutable)? (file ?)?path|module (file ?)?(path|name)",
+      "len": "(4|four)[- ]byte[^.\\n]{0,40}(length|size)|length[- ]prefix|(uint32|dword)[^.\\n]{0,30}(length|size)",
+      "json": "JSON",
+      "peer": "no (peer |client |caller )?(authentication|verification|validation|identity check|checks?)|(does not|doesn't|never|not) (authenticate|verify|check|validate)|unauthenticated|without (any )?(authentication|verification|checks?)|(authenticat|verif)[^.]{0,40}\\bnone\\b"
+    },
+    "evidence": {
+      "source": "Ghidra 12.1.4 decompilation of win_utils.node (sha256 025eeba7...), decompiled.c from reverse-engineer decompile; line numbers below refer to it",
+      "name": "FUN_1800188d0 (line 8676): 'com.notion.singleinstance.' + ProcessIdToSessionId(GetCurrentProcessId()) (line 8708) + '.' + FNV-1a 64 (basis 0xcbf29ce484222325, prime 0x100000001b3, line 8717) over the UTF-8 path from GetModuleFileNameW(NULL) (FUN_180018690); decimal via ostream. Mutex 'Global\\'+name (line 33534 writes 'Glob'), pipe '\\\\.\\pipe\\'+name (line 33588)",
+      "wire": "second instance: CreateFileW(pipe, GENERIC_WRITE, ..., OPEN_EXISTING) with 40 retries x Sleep(50) (line 33280); WriteFile of a 4-byte length (line 33294) then the UTF-8 JSON.stringify payload (line 33303): the caller's object, plus activationUrl on protocol activation; receiver rejects lengths >= 16 MiB (line 34015), JSON.parse, adds type 'second-instance' (line 10952), calls onSecondInstance",
+      "peer": "none: no GetNamedPipeClientProcessId import or string, NULL SECURITY_ATTRIBUTES on mutex and pipe, no PIPE_REJECT_REMOTE_CLIENTS; only the length limit and the session-scoped name"
+    },
+    "key_changes_from_macos": "Windows named pipe and mutex instead of a Unix socket under /tmp; the peer item expects 'no authentication' because the Windows code performs none (the macOS addon used getpeereid)."
+  }
+]
