@@ -72,7 +72,7 @@ Publication to npm and the MCP Registry requires the maintainer's explicit appro
 
 1. Set the same version in `package.json`, `package-lock.json`, `server.json`, the pinned commands above and in the skill's `SKILL.md`; a unit test checks the first three. When `vp pack` reports a new bundled dependency, add its license to `THIRD_PARTY_NOTICES.md`.
 2. Run the [Develop](#develop) checks, then `npm pack` (it rebuilds `dist/`) and inspect the tarball: `LICENSE`, `README.md`, `THIRD_PARTY_NOTICES.md`, `dist/cli.mjs`, `ghidra/ExportDecompiled.java`, `package.json`.
-3. Recheck the name on npm (a 404 is not a reservation), then `npm publish <tarball>`. `publishConfig` applies the `alpha` tag and public access. In an empty folder, run `npx -y reverse-engineer@<version> --version`.
+3. Recheck the name on npm (a 404 is not a reservation), then `npm publish <tarball> --tag alpha`: publishing a tarball ignores `publishConfig.tag`, and without `--tag` a prerelease becomes `latest`. npm can hold a new version for review for a few minutes, showing only a `0.0.0-stage` placeholder; wait until `npm view reverse-engineer versions` lists the version, then run `npx -y reverse-engineer@<version> --version` in an empty folder.
 4. Run `mcp-publisher login github`, then `mcp-publisher publish` from this folder, and check the entry at `https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.Firzus/reverse-engineer`.
 
 Never overwrite or unpublish a version to hide a failed release; publish a new one.
