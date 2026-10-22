@@ -8,4 +8,4 @@ Use the real relevant boundary for rendering, physics, interaction, integration,
 
 Record commands or actions, configurations, input scale, observations, and limitations. Distinguish feasibility demonstrated in the experiment from reliability or capacity in an untested deployment.
 
-**Done when:** the agreed claim is supported, contradicted, or explicitly unresolved by reproducible measurements, and no broader performance promise is inferred.
+**Done when:** the agreed claim is supported, contradicted, or explicitly unresolved by reproducible measurements, and no broader performance promise is inferred. An unresolved claim ends the experiment without answering its question.

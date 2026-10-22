@@ -1,6 +1,6 @@
 ---
 name: interview
-description: Resolve open decisions through question rounds until the agreed scope and consequential edge cases are covered, then return accepted decisions to triage or an Interview issue run by implement.
+description: Resolve open decisions through question rounds until the agreed scope and consequential edge cases are covered, then return accepted decisions to triage, or to implement for an Interview issue or the issue it executes.
 disable-model-invocation: true
 ---
 
@@ -9,8 +9,9 @@ disable-model-invocation: true
 Explore every decision branch within the agreed scope, including consequential
 edge cases, until the user and agent share an understanding. A draftable result
 is not evidence that the interview is complete. Return the result to the caller.
-`triage` runs it to define new work; `implement` runs it for an Interview issue.
-The caller owns drafting, publication, and issue status.
+`triage` runs it to define new work; `implement` runs it for an Interview issue or
+for a decision inside the issue it executes. The caller records the result and owns
+issue status; only `triage` drafts executable issues.
 
 A question is for the user only when it asks a **consequential decision**: a choice
 whose answer changes an issue's type, scope, acceptance criteria, structure, or
@@ -77,8 +78,8 @@ not as a mandatory questionnaire for every request:
 Look up behavior already established by evidence. Ask only when the remaining
 choice meets the consequential-decision rule. Leave routine choices to
 implementation and record explicit exclusions as out of scope; neither needs extra
-questions. A newly discovered out-of-scope concern is returned as follow-up work,
-not silently added to this interview.
+questions. A newly discovered out-of-scope concern is returned as an out-of-scope
+finding, not silently added to this interview.
 
 ### Domain meaning
 
@@ -86,8 +87,11 @@ not silently added to this interview.
   ambiguous meaning with a scenario: does closing an account end access, billing, or both?
 - Separate current behavior from intended behavior; resolve conflicting pending
   changes with the user.
-- Keep one accepted term per concept **within its context**; preserve distinct meanings
-  across contexts and public names/contracts. Terminology agreement does not authorize
+- Keep one accepted term per concept **within its context**. When the project has
+  several contexts, establish which one each term belongs to. A term that means
+  something else in another context keeps both meanings; how they meet at the
+  boundary between the two contexts is a decision.
+- Preserve public names and contracts. Terminology agreement does not authorize
   code renaming.
 
 ### Design choices
@@ -137,9 +141,12 @@ partial result without claiming completion.
 ## 3. Return the result
 
 Return to the caller: accepted decisions and their consequences, accepted domain
-meanings, remaining open questions, research or observation needs, and follow-up
-work identified. `triage` puts them in its draft; `implement` records them in the
-Interview issue and carries them into its follow-up work.
+meanings, remaining open questions, research or observation needs, follow-up work
+the decisions inform, and out-of-scope findings kept apart from that follow-up
+work. `triage` puts the decisions and needs in its draft and reports out-of-scope
+findings as candidate requests. `implement` records them in the issue it executes
+and, for an Interview issue, in the existing issues they inform; it leaves work
+that no issue covers to a later `triage` run.
 
 **Handoff complete:** each branch has accepted decisions, an explicit open status,
 or a returned need. State whether the interview completed, is blocked by evidence,

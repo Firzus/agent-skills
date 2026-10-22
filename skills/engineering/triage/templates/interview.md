@@ -10,7 +10,7 @@
 - <Blocking Research or Prototype result, or other evidence the decision relies on.>
 
 ## Work informed
-- <Issue blocked by this decision, and what it needs from it.>
+- <Issue blocked by this decision, or follow-up work not drafted yet, and what it needs from the decision.>
 
 ## References
 - <Related decision, record, or conversation.>

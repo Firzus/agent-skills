@@ -1,6 +1,6 @@
 ---
 name: triage
-description: Turn a new request, a Need triage issue, or a Linear project to continue into approved Linear work by finding existing records, choosing the work type and structure, settling open decisions through interview, drafting with strict templates, and publishing in Backlog.
+description: Turn a new request, a Need triage issue, an Interview result, or a Linear project to continue into approved Linear work by finding existing records, choosing the work type and structure, settling open decisions through interview, drafting with strict templates, and publishing in Backlog.
 disable-model-invocation: true
 ---
 
@@ -9,8 +9,9 @@ disable-model-invocation: true
 Every request for work starts here, including small changes: `implement` executes
 only published Linear issues. Triage reads Linear and the repository, decides which
 issues are needed, runs `interview` for open decisions, drafts the issues, and
-publishes them after approval. `implement` re-enters this skill at step 3 to
-publish the follow-up work of an Interview issue.
+publishes them after approval. A new `triage` run also takes the work `implement`
+returns: the work an Interview result leaves to triage, and executable issues
+labeled Need triage.
 
 | Term | Meaning |
 | --- | --- |
@@ -30,13 +31,16 @@ publish the follow-up work of an Interview issue.
 
 ## 1. Establish the starting point
 
-1. Identify the entry:
+1. Identify the entry; the first matching row decides:
 
    | Invocation | Entry |
    | --- | --- |
    | New request | Continue with step 1.2 |
-   | Issue labeled Need triage | The outcome is that issue, rewritten ([Need triage](references/issue-contract.md#need-triage)) |
    | Project link or name | [Continue the project](references/large-work.md#continue-a-project) |
+   | Issue labeled only Need triage | The outcome is that issue, rewritten ([Need triage](references/issue-contract.md#need-triage)); continue with step 1.2 |
+   | Interview issue with an Interview result | [Continue after an interview](#continue-after-an-interview) |
+   | Executable issue labeled Need triage | Read its latest Need triage comment, which gives the reason. When it cites an Interview result, continue after an interview with that Interview issue; otherwise continue with step 1.2 to handle that reason |
+   | Existing executable issue the user asks to revise or cancel | Continue with step 1.2, reusing it |
 
 2. Read the request, project instructions, and relevant code and tests. Search Linear
    for issues, projects, and decisions about the same outcome, including their
@@ -71,8 +75,9 @@ only the preparation that depends on it.
    and the structure with [large work](references/large-work.md#choose-the-structure).
 2. List the consequential decisions still open. When the list is not empty, run
    `interview` with those decisions, the evidence gathered, and the resume point.
-   When it is empty, skip `interview`. It returns accepted decisions, remaining
-   questions, and needs for research or observation.
+   When it is empty, skip `interview`. When run, `interview` returns accepted
+   decisions, remaining questions, and needs for research or observation; report
+   its out-of-scope findings to the user as candidate requests.
 3. Turn each returned need into issues with
    [bound missing evidence](references/issue-contract.md#bound-missing-evidence).
 4. When the request depends on work that no issue covers, triage that prerequisite
@@ -93,7 +98,8 @@ accepted, or each open decision has its prepared issues.
    Write for a reader without this conversation, then run the
    [readiness review](references/issue-contract.md#readiness-review).
 3. Draft no issue whose content depends on a decision still open in an Interview
-   issue. That work is drafted when the Interview issue completes, through this step.
+   issue; describe that work in the Interview issue's Work informed section. A later
+   `triage` run drafts it from those entries once the decision is taken.
 4. Present every draft in full with its structure, labels, status, blocking
    relations, and destination, then ask for approval.
 5. Apply feedback only to the affected decisions and passages. When feedback opens a
@@ -101,7 +107,7 @@ accepted, or each open decision has its prepared issues.
    the approved version is published.
 
 **Done:** drafts and structure approved. Otherwise keep the draft. A Research or
-Prototype issue can be approved without the blocked work it informs.
+Prototype issue can be approved without the work that depends on its Interview decision.
 
 ## 4. Publish and hand over
 
@@ -109,11 +115,25 @@ Prototype issue can be approved without the blocked work it informs.
 2. Re-read each existing record before updating it; preserve concurrent and
    unrelated content.
 3. Publish in this order: the project (created, or its description updated), the
-   issues, the blocking relations, then the project description again to add the
-   new issue links to its user stories.
-4. Apply [labels, status, and relations](references/issue-contract.md#labels-status-and-relations).
-   Triage closes an issue only as Duplicate or Canceled, with approval;
-   `implement` closes executed issues.
+   issues, the blocking relations, the bodies that cite issues created later, then
+   the project description again to add the new issue links to its user stories.
+   Replace each Work informed entry this run settles with the new issue's link or
+   its disposition: declined, excluded by a decision, moved to another Interview
+   issue, recorded in the project description, or reported as a candidate request.
+   This edit is part of the approved draft.
+4. Apply [labels, status, and relations](references/issue-contract.md#labels-status-and-relations),
+   including the removal of Need triage from each executable issue this run
+   handles. Triage closes an issue only as Duplicate or Canceled, with approval;
+   `implement` closes executed issues. The same draft repairs what depended on a
+   closed issue:
+   - A duplicate's blocking relations move to the issue that covers it.
+   - The issues a canceled issue blocked are rewritten to remove or replace that
+     relation, or canceled. An Interview issue left without a blocker stays open for
+     `implement`, which takes its decision, unless the user cancels it.
+   - The open Research or Prototype issues that blocked a canceled Interview issue
+     are re-pointed to another Interview issue, or canceled.
+   - A canceled Interview issue's undrafted Work informed entries are drafted in
+     the same run or reported as candidate requests.
 5. Re-read every written record and verify content, labels, status, relations, and
    project membership.
 6. After a failed or uncertain write, re-read before retrying; list the confirmed
@@ -126,6 +146,26 @@ Prototype issue can be approved without the blocked work it informs.
 **Done:** publication verified and handoff returned.
 **Pending publication:** return the approved draft and the exact remaining
 operations; keep Linear as the destination rather than creating another backlog.
+
+## Continue after an interview
+
+Read the Interview result comment on the Interview issue; its accepted decisions are
+settled, and drafts cite the Interview issue in References. The request gathers:
+
+1. When the Interview issue carries Need triage, the reason its latest Need triage
+   comment gives. Evidence needs are prepared with step 2.3 to block the Interview
+   issue, or settled during this run.
+2. The issues labeled Need triage whose latest Need triage comment cites this
+   Interview result.
+3. For a completed result, the Work informed entries without an issue link or
+   disposition. Inside a project, an entry that none of those issues needs waits
+   for [continue the project](references/large-work.md#continue-a-project).
+4. A revision or cancellation of the Interview issue that the user asks for.
+
+Report its out-of-scope findings that have no captured issue to the user as
+candidate requests. Continue with step 1.2 for the request. When the request is
+empty, say so, name `implement` on that issue as the next run for a stopped
+result, and stop.
 
 ## Resume
 

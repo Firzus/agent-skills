@@ -19,9 +19,8 @@ A single factual lookup needs a direct answer, not this full workflow.
 3. Reuse an adequate authorized brief without another approval ceremony. For unresolved
    material scope or a request to discuss first, propose the plan and wait before
    substantive research. State safe assumptions; ask only consequential missing choices.
-4. Ask short independent questions, at most three per round, with the permitted native
-   tool. Keep async questions active with a supported interruptible wait; if unavailable,
-   ask in chat. Partial replies and timeouts leave unanswered choices open.
+4. Ask short independent questions directly in the conversation, numbered in one
+   message, then wait for the answers. Partial replies leave unanswered choices open.
 5. Define evidence needed to answer each question. Respect user budgets; without one,
    prioritize depth and coverage rather than inventing a short time/source quota.
    Explain the planned delegation and its resource implications.

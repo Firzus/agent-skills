@@ -18,7 +18,9 @@ the execution order. Reuse an existing prerequisite without changing its parent.
 Add a new issue to an existing grouping parent only when its stated outcome covers it.
 
 A Research or Prototype issue and the Interview issue it blocks are linked by the
-blocking relation only; they need no grouping parent.
+blocking relation only; they need neither a grouping parent nor a project, and the
+work depending on that decision stays in Work informed. Use a project only when the
+final goal needs successive current goals beyond that decision.
 
 Use the project's agreed delivery limits to decide whether one Task is too large.
 Without an agreed limit, or without code to estimate size, keep one Task per user
@@ -44,7 +46,7 @@ criteria and verification, not more structure.
 
    | Gap | Treatment |
    | --- | --- |
-   | Inside the current goal | Research, Prototype, or Interview issue, chosen with [routing](issue-contract.md#choose-the-next-work) |
+   | Inside the current goal | A decision the user can take now goes through `interview`; otherwise a Research, Prototype, or Interview issue, chosen with [routing](issue-contract.md#choose-the-next-work) |
    | Beyond the current goal | Entry in "Open decisions" of the project; no issue yet |
 
 5. Return findings to the same record, updating affected decisions; the final goal
@@ -82,19 +84,23 @@ whole ambition ready.
 
 A project advances one current goal at a time until its final goal is reached. When
 its open issues are closed, the user runs `triage` with the project link in a new
-conversation. If issues are still open, report them and stop; reframe the current
-goal only when the user asks.
+conversation. If issues are still open, report them and stop; an open issue labeled
+Need triage goes through `triage` with that issue's link first. A grouping parent
+whose sub-issues are all closed does not count as open. Reframe the current goal
+only when the user asks.
 
 1. Read the project description from "Resume here", then the closed issues' results,
    comments, and evidence. Done or Canceled status alone does not prove a result;
    missing evidence leaves that result unknown.
 2. Compare the results with the current goal and record them in the project
-   description:
+   description, as part of the draft approved in triage step 3; on the completion
+   branch, present them with the completion proposal:
 
    | Finding | Where it goes |
    | --- | --- |
    | Delivered story | Keep it in "User stories" with its issue link |
    | New accepted decision | "Accepted decisions" |
+   | Work informed entry without an issue link or disposition, in a closed Interview issue | "User stories", or "Open decisions" while it cannot be detailed; its entry then records that disposition |
    | Story excluded by a decision | Moved to "Out of scope" with the reason |
    | Unmet part of the current goal | Stays in the next current goal |
    | Success criterion without evidence | Stays unmet; name the missing evidence in "Resume here" |

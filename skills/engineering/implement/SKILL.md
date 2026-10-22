@@ -6,16 +6,19 @@ disable-model-invocation: true
 
 # Implement a verified change
 
-Deliver one coherent, reviewable outcome. Tests, context, and affected documentation
-belong to the change. This skill runs only on a published Linear issue; a request
-without an issue goes to `triage` first: say so and stop. Invoking this skill on a
-Linear issue authorizes, for that issue: status changes, commits, pushing a prototype
-branch, publishing a Research issue's report as a Linear document attached to it
-and closing the issue when its research completes, and closing a Prototype or
-Interview issue after the user validates its result. For a Task or
-Bug, ask the user to validate opening the PR once the work is verified; that
-validation authorizes the push and a non-draft PR. It does not authorize
-unrelated work, merge, or deployment.
+Deliver one coherent, reviewable outcome. Tests, context, and updates to affected
+documentation belong to the change; create a new document only when the issue or
+the user asks for it. This skill runs only on a published Linear issue; a request
+without an issue goes to `triage` first: say so and stop.
+
+Invoking this skill on a Linear issue authorizes, for that issue: status, label,
+description, and comment updates, including creating the Need triage label when
+missing; commits; pushing a prototype branch; publishing a Research issue's report as a Linear document attached to it and closing the issue when its
+research completes; closing a Prototype or Interview issue after the user validates
+its result; and updating, or returning to `triage`, the existing issues an accepted
+Interview decision informs. For a Task or Bug, ask the user to validate opening the
+PR once the work is verified; that validation authorizes the push and a non-draft
+PR. It does not authorize unrelated work, merge, or deployment.
 
 ## 1. Read the work and route it
 
@@ -32,11 +35,18 @@ unrelated work, merge, or deployment.
    rest of this workflow; a Bug goes through `debug` and resumes at step 4.
 3. Trace the affected behavior through callers, contracts, configuration, and tests.
    Separate unrelated local work and pre-existing failures.
-4. Resolve discoverable facts locally. For consequential open choices or conflicts,
-   resolve them with `interview` when they stay inside the issue's scope, otherwise
-   retain an out-of-scope finding in the conversation. Publish it as a Need triage
-   issue only with approval of its content and destination, or explicit existing
-   authorization covering that creation. Pause only the dependent work.
+4. Resolve discoverable facts locally. Resolve a consequential open choice or
+   conflict with `interview` when every option stays within the issue's outcome and
+   current scope; record the answer in Accepted decisions and the acceptance
+   criteria it refines, or in an issue comment for a type without those sections.
+   When an option would change that outcome or extend that scope, or answering
+   needs research or observation,
+   [return the issue to triage](references/intake-and-handoff.md#return-work-to-triage).
+   Treat follow-up work that `interview` returns here as an out-of-scope finding.
+   Retain any other out-of-scope finding in the conversation; capture it as a new
+   Need triage issue (labeled only Need triage, in Backlog, with the Observed and
+   Source sections) only with approval of its content and destination, or explicit
+   existing authorization covering that creation.
 
 **Done:** scope, prerequisites, authorization, and independent acceptance evidence
 are clear. Otherwise report the precise blocker and continue only independent,
@@ -76,8 +86,8 @@ For each production behavior:
 - Keep comments beside verified, non-obvious rationale or caller obligations.
   Explain workaround sources and removal conditions; update stale affected comments.
   Avoid narration, decorative labels, vague TODOs, and disabled code.
-- A new consequential decision returns to clarification; ordinary internal choices
-  remain with implementation. Research/prototype needs do not expand scope silently.
+- A consequential decision or a research or prototype need found while implementing
+  follows step 1.4; ordinary internal choices remain with implementation.
 
 **Done:** each behavior has failing/passing evidence or a justified substitute;
 code, context, contracts, and affected documentation agree.
@@ -116,8 +126,8 @@ Missing required verification remains a delivery limitation, not a claimed pass.
 3. Return the result, affected files, checks, limitations, and next owner/action.
    When video evidence was produced, include its supported preview or absolute local
    path, the demonstrated scenario and observed result, and any review limitations.
-   A newly prepared issue or broader goal needs a separate request, not automatic
-   continuation into the next feature.
+   Another issue or a broader goal needs its own run, not automatic continuation
+   into the next feature.
 
 **Done:** the agreed completion boundary is met and required updates are verified.
 Otherwise report the completed local work and exact pending delivery operations.

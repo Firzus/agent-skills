@@ -16,9 +16,9 @@ environment. A prototype produces evidence for a decision, not a production feat
    changes, and affected contracts. Resolve consequential conflicts; distinguish
    experimental assumptions from accepted meanings and implemented behavior.
    Missing conventions call for targeted clarification, not automatic project setup.
-3. Establish question, scope/exclusions, scenarios, constraints, decision owner,
-   stopping evidence, and the work it unblocks. Distinguish a measured fact
-   from a preference requiring the owner's judgment.
+3. Establish question, scope/exclusions, scenarios, constraints, stopping evidence,
+   the judgment criteria, and the decision or work it informs. Distinguish a measured
+   fact from a preference requiring the user's judgment.
 4. Verify execution authorization, access, and representative inputs. A prepared
    brief alone does not authorize building or external writes. When `implement`
    runs a Prototype issue, that invocation authorizes building, committing, and
@@ -28,10 +28,10 @@ environment. A prototype produces evidence for a decision, not a production feat
 | --- | --- |
 | Choice requires observing behavior | Prepare/run the bounded experiment within authorization |
 | Only source evidence is missing | Return a research prerequisite rather than build a demonstration |
-| Behavior already settled | Propose implementation; do not reopen design for ceremony |
+| Behavior already settled | Record the settling evidence as the result, for validation when `implement` runs the issue; otherwise propose a `triage` run. Do not reopen design for ceremony |
 | Preparation only, read-only mode, or unmet prerequisite | Retain the experiment brief and name what is pending |
 
-**Done:** question, stopping condition, owner, and execution scope established.
+**Done:** question, stopping condition, judgment criteria, and execution scope established.
 **Blocked:** preserve the missing decision/evidence and continue only independent,
 authorized preparation.
 
@@ -70,18 +70,20 @@ Unavailable tools or unsafe conditions remain blockers, not invented capabilitie
 **Unresolved:** observations are missing or inconclusive; name the gap rather than
 claim the question answered. Negative results are valid evidence.
 
-## 4. Review the evidence and obtain the decision
+## 4. Review the evidence and obtain the judgment
 
 1. Provide the runnable artifact or supported review surface and keep it available.
    Screenshots or video supplement interaction, not replace it when interaction is
    the question. Label simulation, assumptions, measured facts, and untested claims.
-2. Present observations and trade-offs to the decision owner. Ask only for open
-   judgments; do not ask the user to decide an already measured fact.
-3. Record accepted/rejected behavior and remaining uncertainty against the reviewed
-   version. Later changes require renewed validation of affected conclusions.
+2. Present observations and trade-offs to the user. Ask only for the open judgments
+   the experiment defines; do not ask the user to decide an already measured fact.
+   When an Interview issue holds the decision, this judgment validates the result
+   and the Interview issue takes the decision.
+3. Record the observed behavior, the user's acceptance of the result, and remaining
+   uncertainty against the reviewed version. Later changes require renewed validation of affected conclusions.
 
-**Done:** the question is answered by evidence and any required judgment is accepted.
-**Waiting:** owner judgment remains open; preserve the artifact and resume point.
+**Done:** the question is answered by evidence and any required judgment is given.
+**Waiting:** the user's judgment remains open; preserve the artifact and resume point.
 A demonstrated failure may conclude the experiment without authorizing a new design.
 
 ## 5. Preserve and return
@@ -94,7 +96,8 @@ and next action to `implement` or the originating task. Stop exploration at its
 evidence target. Product implementation needs its own request and ordinary verification;
 prototype approval does not establish production reliability.
 When `implement` ran the issue, return to it: it moves the issue to Done once the
-owner has validated the result and the reviewed commit is on the remote.
+user has validated the result and, when an experiment was built, the reviewed
+commit is on the remote.
 
 **Done:** evidence retained, required publication verified, and handoff usable.
 **Pending:** distinguish accepted decision, local artifact, remote availability, and

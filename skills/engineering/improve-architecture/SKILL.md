@@ -16,8 +16,10 @@ Linear. It does not authorize refactoring.
 ## 1. Scope the investigation
 
 1. Read the request, project instructions, repository state, existing Linear work,
-   and relevant design decisions. Use the project's actual glossary and document
-   locations; do not require or create CONTEXT.md or an ADR directory by default.
+   and relevant design decisions. Use the project's context documents as they
+   exist, under the project's own names when it uses others: a root `CONTEXT.md`,
+   or, with a root `CONTEXT-MAP.md`, the `CONTEXT.md` of each affected context.
+   Create no documentation.
 2. Follow the user's named pain point or subsystem. Without one, inspect recent
    changes and callers to find a bounded area where change is costly. Expand only
    when evidence identifies another affected boundary.
