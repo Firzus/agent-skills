@@ -4,7 +4,8 @@
 
 Resolve repository, remote/base branch, Linear issue, reviewer, and completion
 boundary from project evidence. Ask only for material gaps. Invoking `implement` on
-a Linear issue authorizes commits and Linear updates for that issue. For a Task or
+a Linear issue authorizes commits and Linear updates for that issue, and the
+dependent-issue updates that `SKILL.md` lists. For a Task or
 Bug, the push and PR wait for the user's validation at the end of the work. Merge
 and deployment always need separate authorization.
 
@@ -56,6 +57,7 @@ record acceptance, integration, and deployment as separate facts.
 | Done (Task, Bug) | The linked closing PR merged | Linear Git automation |
 | Done (Research) | Research completed; report published as a Linear document attached to the issue; answer, remaining uncertainty, and document link recorded in the issue | `implement` |
 | Done (Prototype, Interview) | The user validated the result, recorded in the issue | `implement` |
+| Need triage label added, status unchanged | The issue needs `triage` ([return work to triage](intake-and-handoff.md#return-work-to-triage)) | `implement` adds it; `triage` removes it |
 | Blocker (recorded in the issue, not an invented status) | A prerequisite stops progress; record cause, resolution owner, required outcome, and next action | `implement` |
 
 1. Re-read the affected record to preserve concurrent and unrelated content.

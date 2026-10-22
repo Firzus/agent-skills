@@ -16,8 +16,8 @@ As a <role>, I want <capability>, so that <benefit>.
 - <Relevant domain meaning, behavior, public contract, constraint, or rationale.>
 
 ## Context changes (accepted, not integrated)
-- <Target document or section, accepted addition/change/removal, and rationale;
-  or a link to the owning issue's delta.>
+- <Target document (a context's `CONTEXT.md`, or `CONTEXT-MAP.md`) and section,
+  accepted addition/change/removal, and rationale; or a link to the owning issue's delta.>
 
 ## Acceptance criteria
 - [ ] Given <initial state>, when <action>, then <observable result>.

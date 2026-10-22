@@ -11,9 +11,11 @@ authoritative definitions, decisions, and evidence rather than copying them.
   implementation. Reuse existing issues; a decision settled during triage needs no
   extra issue.
 - Create an Interview issue only for a decision that waits on a Research or Prototype
-  result, or that a person other than the current user must take.
-- A decision the user left to the agent keeps its mark in "Accepted decisions":
-  `Agent recommendation (delegated by the user): <choice>, because <reason>.`
+  result, or that the current user cannot take now, for example because another
+  person must take it.
+- A decision the user left to the agent keeps the agent-recommendation mark that
+  `interview` gives it, in "Accepted decisions" or, in a template without that
+  section, beside the decision it marks.
 - Use [large work](large-work.md) for work that needs more than one issue.
 
 | What must happen next | Type label | Expected result |
@@ -25,8 +27,7 @@ authoritative definitions, decisions, and evidence rather than copying them.
 | Deliver new or changed behavior, or documentation | Task | A verified change merged through a linked PR |
 
 Choose the missing result, not size, risk, or UI presence. Prepare prerequisites
-first; these are alternatives, not mandatory stages. Work whose content depends on
-an open Interview decision is drafted after that decision, not before.
+first; these are alternatives, not mandatory stages.
 A Research or Prototype issue can be ready while the Interview issue it informs,
 and the work depending on that decision, stay blocked. `implement` executes every
 type and selects the matching skill from the Type label.
@@ -39,14 +40,17 @@ type and selects the matching skill from the Type label.
 | Disputed external fact needing substantial research | Prepare a Research issue stating the question and required evidence |
 | Behavior requiring observation | Prepare a Prototype issue stating the question and how its result will be judged |
 | Domain intent or preference | Run `interview` |
+| Decision the current user cannot take now | Prepare an Interview issue |
 | Access or external prerequisite | Name the required action and owner |
 
 A Prototype issue is justified when an important choice needs observed behavior,
 such as an interactive UI comparison or a simulation of ambiguous domain rules;
 UI or critical logic alone does not require one. For a Research or Prototype issue,
-also prepare an Interview issue blocked by it, holding the decision its result
-informs, and block dependent work on that Interview issue. When `implement` runs
-the Interview issue, the decision is taken with the recorded result. Report missing
+also prepare or reuse the Interview issue it blocks, holding the decision its result
+informs. Existing issues that depend on the decision are blocked by that Interview
+issue; work not drafted yet is described in its Work informed section (triage
+step 3.3). When `implement` runs the Interview issue, the decision is taken with the
+recorded result. Report missing
 capabilities instead of inventing them or provisioning services.
 
 ## Labels, status, and relations
@@ -56,7 +60,8 @@ capabilities instead of inventing them or provisioning services.
 | Executable issue | Exactly one Type label | Task, Bug, Prototype, Research, Interview |
 | Grouping parent | No labels | None |
 | Project | Exactly one Product label | The product the project serves, such as Huzounet App or Atelier |
-| Captured work awaiting triage | Only the standalone Need triage label | Need triage |
+| Executable issue returned to triage | Its Type label and Need triage | Need triage |
+| Captured work | Only the standalone Need triage label | Need triage |
 
 - Resolve Type labels in the issue-label catalog and Product labels in the
   project-label catalog. Match the catalog, parent group, and active state, not
@@ -69,7 +74,8 @@ capabilities instead of inventing them or provisioning services.
   to projects, including when an issue-label catalog contains legacy product labels.
 - For every issue created or updated by triage, apply and verify the complete label
   set above rather than append a Type label to existing labels. Include removal of
-  legacy product or other extra labels in the approved draft; leave issues outside
+  legacy product or other extra labels in the approved draft; keep Need triage on
+  an issue whose returned work this run does not handle, and leave issues outside
   the approved publication scope unchanged.
 - Publish every new issue in **Backlog**. A reused issue keeps its status. The user
   moves selected issues to **Todo** for the week's work.
@@ -82,13 +88,29 @@ capabilities instead of inventing them or provisioning services.
 
 ### Need triage
 
-With approval of content and destination, record work captured outside triage,
-such as a quick note or an out-of-scope finding, as an issue labeled **Need triage** in Backlog, using the
-[Need triage template](../templates/need-triage.md). It is exempt from the issue
-template until triaged.
+The **Need triage** label marks work that waits for a `triage` run:
 
-A `triage` run processes it: resolve its decisions, rewrite it with its type template,
-apply the Type label, remove Need triage, and preserve its current status. Mark it
+- **Captured work:** with approval of content and destination, work captured
+  outside triage, such as a quick note or an out-of-scope finding, is recorded as an
+  issue labeled only Need triage in Backlog, using the
+  [Need triage template](../templates/need-triage.md). It is exempt from the issue
+  template until triaged.
+- **Returned work:** `implement` adds Need triage to an executable issue whose type,
+  outcome, structure, or blocking relations must change, whose scope must extend,
+  or that may no longer be needed. The issue keeps its Type label and status, and a comment gives
+  the reason, citing the Interview result when it comes from one.
+
+A `triage` run processes returned work as its reason requires: it revises,
+re-routes, or cancels the issue, or prepares the evidence a blocked Interview issue
+needs, and removes Need triage in the same approved draft.
+
+It processes captured work: resolve its decisions, rewrite it with its type template,
+apply the Type label, remove Need triage, and preserve its current status. When its
+work needs several issues or waits on a decision, it becomes one record of the
+prepared structure: the Interview issue, whose Work informed section describes the
+captured work, a grouping parent without labels, or an issue of a project's current
+goal. When an open Interview issue already holds the decision, add the captured
+work to its Work informed section and mark this issue Duplicate of it. Mark it
 Duplicate when another issue covers it, or Canceled when the user declines it.
 
 ## Issue templates
@@ -113,6 +135,8 @@ becomes several Tasks, each with its own story and scenarios; see
 ## Authoring rules
 
 - Express acceptance as behavior, not files to edit.
+- Scope updates to existing documentation. A new document, including a context
+  document, enters an issue's scope only when the user asks for it.
 - Use verified code locations as navigation hints. A small prototype fragment may
   clarify an accepted contract; identify its provenance and experimental status.
 - Name existing tests in Verification only when they are verified; otherwise
@@ -130,7 +154,8 @@ Read the draft without chat history, checking the selected work's scope:
 - [ ] Decisions needed to execute the selected work are accepted. Its intended
   research answer, experimental result, or interview decision may remain open.
 - [ ] [Integrated context and relevant pending deltas](domain-context.md) have
-  been checked; accepted changes have an accessible owner and delivery requirements.
+  been checked; each accepted change has an accessible owning issue and, for another
+  issue's delta, its required outcome.
 - [ ] Facts, accepted choices, and remaining uncertainty are distinguishable.
 - [ ] Success and relevant failure cases can be verified independently of the implementation.
 - [ ] Prerequisites are recorded as blocking relations and their required inputs
@@ -152,7 +177,7 @@ Routine internal choices stay with the implementer when outcome/contracts are un
 
 1. Propose additional issues only for independently verifiable outcomes,
    separate ownership, or real dependencies.
-2. Prefer end-to-end slices, each including its tests and necessary documentation.
+2. Prefer end-to-end slices, each including its tests and affected documentation.
    For a broad compatibility refactor, use a safe sequence instead: add the
    compatible form, migrate callers, then retire the old form. State where
    integration verification is required.

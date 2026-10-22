@@ -11,13 +11,16 @@ dedicated branch and the originating issue.
 
 1. Verify repository, base revision, existing work, and project Git conventions.
    Reuse a branch already dedicated to this experiment or create
-   `feature/prototype-<subject>`; do not repurpose unrelated work.
+   `feature/<identifier>-prototype-<subject>` for a Linear issue, such as
+   `feature/fir-12-prototype-checkout-flow`, otherwise `feature/prototype-<subject>`.
+   Do not repurpose unrelated work.
 2. Preserve the task's prepared checkout and uncommitted changes. Use a separate
    worktree when needed rather than switching an active checkout or stashing work
    without agreement. Include required task inputs deliberately, not all local changes.
-3. Keep code/scenes, authorized necessary assets, and launch instructions together.
-   Record prerequisites for assets that cannot be stored there; never commit secrets,
-   private data, or resources whose publication is not authorized.
+3. Keep code/scenes and authorized necessary assets together; launch instructions
+   go in the Prototype result, not in a new file. Record prerequisites for assets
+   that cannot be stored on the branch; never commit secrets, private data, or
+   resources whose publication is not authorized.
 
 **Done:** isolated versionable experiment and base identified. Missing repository or
 conflicting branch instructions require a decision, not automatic provisioning.
@@ -25,12 +28,10 @@ conflicting branch instructions require a decision, not automatic provisioning.
 ## Capture the reviewed version
 
 1. Identify exactly which files and configuration produced the reviewed behavior.
-   Commit that version and launch instructions only within the approved delivery
+   Commit that version only within the approved delivery
    scope, using project commit conventions. Without commit authorization, preserve
    the local files and review evidence; report the versioned handoff as pending.
-   Experiment authorization alone does not authorize a commit; an `implement` run
-   on the Prototype issue does.
-2. Associate observations and the owner's decision with that exact commit; a moving
+2. Associate observations and the user's judgment with that exact commit; a moving
    branch name alone is insufficient. Label an unaccepted or inconclusive result as
    such. Do not transfer approval to later changes without review.
 3. Push only when the action and remote are authorized. Verify the remote branch
@@ -38,14 +39,16 @@ conflicting branch instructions require a decision, not automatic provisioning.
 4. After an uncertain push, inspect remote state before retrying. Keep confirmed
    identifiers and report unavailable assets or publication separately.
 
-**Done:** reviewed commit and reproduction instructions available on the remote.
+**Done:** reviewed commit available on the remote, with its launch instructions
+recorded in the Prototype result.
 **Pending:** preserve local work and its evidence; name missing permission, access,
 or artifact. Local acceptance alone is not a remotely available handoff.
 
 ## Update the existing work record
 
 Use project tracking conventions and actual Linear schemas. Reuse the originating
-issue; publish a new issue only within an approved action.
+issue; `triage` drafts any new executable issue, and other new work is captured
+only with approval as a Need triage issue, labeled only Need triage, in Backlog, with the Observed and Source sections.
 Confirm destination and write scope, re-read before updating, preserve concurrent
 content, and verify the returned or re-read result. Git push approval is not Linear
 publication approval outside an `implement` run. On partial success, inspect before
@@ -59,9 +62,10 @@ Use this compact handoff, omitting empty optional fields:
 - Reviewed branch and exact commit:
 - Launch/reset instructions and prerequisites:
 - Observed scenarios or measurements:
-- Owner decision: accepted / rejected / pending.
+- Result: accepted / disputed / pending / ended without acceptance.
 - Outcome: supported / contradicted / unresolved.
 - Assumptions, simulations, and untested limits:
+- Input for the Interview decision: preference or choice stated, with its scope.
 - Remaining prerequisite and next question:
 - Publication: local / remote verified / tracker update pending or verified.
 ```
@@ -69,8 +73,7 @@ Use this compact handoff, omitting empty optional fields:
 Retain accepted domain changes as proposed deltas in their owning record under
 project conventions; an experiment does not authorize changing integrated context.
 An issue's completion requires its agreed evidence/delivery boundary, not merely
-a successful process or an attractive result. Leave the issue status to `implement`,
-which moves a Prototype issue to Done after owner validation and verified push.
+a successful process or an attractive result. Leave the issue status to `implement`.
 
 **Done:** verified record links the experiment, its outcome, and resume point.
 **Pending:** return the draft and last confirmed state in the conversation without
@@ -81,10 +84,10 @@ creating a competing backlog or claiming synchronization.
 | Artifact | Rule |
 | --- | --- |
 | Remote prototype branch and reviewed commits | Keep indefinitely, including rejected variants and after implementation; exclude from routine cleanup |
-| Launch instructions and useful evidence | Keep with the versioned experiment or owning issue; no duplicate archive required |
+| Launch instructions and useful evidence | Keep in the Prototype result of the owning issue; no duplicate archive required |
 | Task-owned processes, scratch outputs, temporary services | Stop or clean up only within authorized scope, after identifying targets and preserving required artifacts; preview deletions |
 | Implementation work | Consult the validated commit and reuse suitable parts selectively, not by automatic whole-branch merge |
 
-Keep the review surface available through owner review. Before releasing a worktree
+Keep the review surface available until the user's review ends. Before releasing a worktree
 or temporary resource, ensure it is not the only copy of required work. No cleanup
 may delete the retained branch or its necessary version history.

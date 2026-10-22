@@ -38,7 +38,8 @@ removing them: instructions do not replace sandbox or permission enforcement.
 Reuse accepted project conventions. If the following workflow is proposed, present
 it for approval rather than assume every project uses it:
 
-- Repository `CONTEXT.md` and mapped glossaries describe integrated meanings.
+- Repository context documents describe integrated meanings: a root `CONTEXT.md`,
+  or, with several contexts, a root `CONTEXT-MAP.md` linking one `CONTEXT.md` per context.
 - The owning Linear issue records accepted changes not yet integrated.
 - Before work depending on those meanings, consult both and resolve contradictions.
 

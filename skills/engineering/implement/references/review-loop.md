@@ -24,7 +24,8 @@ existing task record or conversation:
 | Unestablished claim | Inspect sources or run a focused safe check before editing |
 | Rejected claim | Record the evidence-based reason |
 | Optional improvement or unrelated existing issue | Report separately; keep out of the current diff |
-| Missing decision, unsafe action, or material scope expansion | Ask the owner and pause dependent changes |
+| Missing decision or material scope expansion | Follow step 1.4 of the main workflow and pause dependent changes |
+| Unsafe action | Ask the user and pause dependent changes |
 
 Re-run affected tests. Send the new checkpoint, findings, correction delta, and
 results to `code-review` for targeted follow-up. Review affected interactions when
@@ -35,7 +36,7 @@ scope changes, not just the edited lines.
 - Continue while confirmed in-scope problems remain and corrections make progress.
 - Finish when all confirmed in-scope findings have explicit dispositions, no blocking
   finding remains, acceptance holds, and required checks pass. Deferring a non-blocking
-  finding requires an accepted project triage rule or owner agreement; report its risk.
+  finding requires an accepted project triage rule or user agreement; report its risk.
 - Missing review evidence is pending, not a clean pass. Review does not replace
   runtime checks, designated acceptance, or delivery authorization.
 - After two attempts at the same failure without new evidence or a changed approach,

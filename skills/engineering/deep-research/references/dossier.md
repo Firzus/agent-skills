@@ -46,9 +46,10 @@ their reason. Preserve IDs and provenance instead of overwriting research histor
 
 ## Publish only when requested
 
-Research authorizes the local dossier, not an external write. Present proposed
-content, action, and destination for approval before publishing or updating a shared
-issue/document. Re-read existing records, preserve concurrent content, and verify
+Research authorizes the local dossier, not an external write. When `implement` runs
+a Research issue, that invocation authorizes `implement` to publish the report on
+that issue. Otherwise present proposed content, action, and destination for approval
+before publishing or updating a shared issue/document. Re-read existing records, preserve concurrent content, and verify
 returned state. Inspect partial success before retrying; report exact pending operations.
 
 Return a concise chat summary and an absolute link to `overview.md`. If sharing is
