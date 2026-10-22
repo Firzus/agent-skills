@@ -1,0 +1,26 @@
+chrome-devtools skill
+
+The files in references/ are adapted from skills and documentation in
+ChromeDevTools/chrome-devtools-mcp version 1.12.0
+(https://github.com/ChromeDevTools/chrome-devtools-mcp), Copyright Google LLC,
+licensed under the Apache License, Version 2.0. A copy of that license is in
+LICENSE.chrome-devtools-mcp.
+
+Sources and changes:
+
+- references/commands.md: from skills/chrome-devtools-cli/SKILL.md; reorganized
+  by category and checked against the 1.12.0 `--help` output.
+- references/performance.md: from skills/debug-optimize-lcp (SKILL.md and
+  references/); condensed and rewritten for CLI syntax.
+- references/network-cookies.md: from skills/cookie-debugging/SKILL.md; rewritten
+  for CLI syntax.
+- references/accessibility.md: from skills/a11y-debugging (SKILL.md and
+  references/a11y-snippets.md); rewritten for CLI syntax.
+- references/memory.md: from skills/memory-leak-debugging (SKILL.md and
+  references/common-leaks.md); rewritten for CLI syntax.
+- references/troubleshooting.md: from skills/troubleshooting/SKILL.md and
+  docs/troubleshooting.md; MCP configuration steps replaced by CLI daemon
+  diagnostics.
+
+In every adapted file, MCP tool calls were replaced by `chrome-devtools` commands
+and references to MCP configuration files were removed.
