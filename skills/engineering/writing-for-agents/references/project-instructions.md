@@ -22,14 +22,14 @@ narrow updates rather than force a cosmetic rewrite.
 | Category | Include when useful | Keep elsewhere |
 | --- | --- | --- |
 | Project and scope | Purpose, affected area, meaningful local boundaries | Full repository tour or persona |
-| Sources of truth | Where authoritative context, pending decisions, and system docs live; when to consult them | Glossary, backlog, copied specifications |
+| Sources of truth | Where authoritative context and pending decisions live; when to consult them | Glossary, backlog, copied specifications |
 | Project constraints | Non-obvious architecture, compatibility, generated-file rules, risky boundaries | Generic language/style tutorials; linter configuration copies |
 | Validation | Required checks, unusual commands, prerequisites, working directory, known limits | Entire command manual or invented commands |
 | Tracking and delivery | Verified tracker/repo identifiers, linking conventions, acceptance responsibilities | Volatile progress or universal skill procedures |
 | Conditional references | Trigger, exact document, purpose | An unconditional instruction to load all documentation |
 
 Personal preferences usually belong in user instructions; team-specific agreements
-may belong in the project. Place subsystem-only guidance at the smallest reliably
+may belong in the project. Place guidance for a single area at the smallest reliably
 loaded scope. Preserve necessary safety restrictions even when brevity suggests
 removing them: instructions do not replace sandbox or permission enforcement.
 
@@ -41,9 +41,6 @@ it for approval rather than assume every project uses it:
 - Repository `CONTEXT.md` and mapped glossaries describe integrated meanings.
 - The owning Linear issue records accepted changes not yet integrated.
 - Before work depending on those meanings, consult both and resolve contradictions.
-- System documentation provides brief orientation and explanations not adequately
-  conveyed by code and comments. Implementation details remain with their sources;
-  task methods belong to skills.
 
 Record verified destinations, not guessed identifiers. Establishing these agreements
 does not authorize creating context files, provisioning Linear, or migrating existing

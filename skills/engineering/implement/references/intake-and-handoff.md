@@ -98,9 +98,9 @@ context; root `CONTEXT.md` applies only where that convention is adopted. Reuse
 existing locations rather than introducing a parallel document. The owning issue
 holds the accepted delta until integration.
 
-1. Read relevant definitions, pending deltas, and affected system explanations.
-   Use their links to locate sources and verify the current behavior on which
-   the task depends; do not load all documentation or treat prose as proof.
+1. Read relevant definitions and pending deltas. Use their links to locate sources
+   and verify the current behavior on which the task depends; do not load all
+   documentation or treat prose as proof.
 2. Reconcile intervening changes. Resolve consequential conflicts with the decision
    owner, preserving public names/contracts and distinct meanings across contexts.
 3. Implement this issue's accepted additions, changes, or removals in the owning
@@ -113,7 +113,7 @@ holds the accepted delta until integration.
 
 | Special case | Treatment |
 | --- | --- |
-| New term within accepted scope | Define meaning, context, and useful distinctions; keep detailed system rules with their owner |
+| New term within accepted scope | Define meaning, context, and useful distinctions; keep detailed behavior rules with their owning source |
 | Missing context document, creation in scope | Create the accepted domain description and definitions at the agreed location |
 | Missing document outside narrow scope | Report the gap; do not turn the task into project setup |
 | No specialist vocabulary | State this briefly instead of inventing terms |
