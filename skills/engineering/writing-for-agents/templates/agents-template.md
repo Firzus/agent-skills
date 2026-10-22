@@ -13,7 +13,7 @@ the proposal. Present the complete text/diff for approval before writing the tar
 
 | Need | Authoritative source | When to consult |
 | --- | --- | --- |
-| <Integrated context, pending decisions, system behavior, etc.> | <Verified path or approved destination> | <Concrete trigger> |
+| <Integrated context, pending decisions, etc.> | <Verified path or approved destination> | <Concrete trigger> |
 
 ## Project constraints
 

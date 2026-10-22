@@ -13,7 +13,7 @@ environment. A prototype produces evidence for a decision, not a production feat
 1. Read the request, project instructions, and existing issue record,
    including accepted choices, prerequisites, and evidence. Reuse settled framing.
 2. Follow project conventions to consult relevant domain definitions, pending accepted
-   changes, and system contracts. Resolve consequential conflicts; distinguish
+   changes, and affected contracts. Resolve consequential conflicts; distinguish
    experimental assumptions from accepted meanings and implemented behavior.
    Missing conventions call for targeted clarification, not automatic project setup.
 3. Establish question, scope/exclusions, scenarios, constraints, decision owner,
