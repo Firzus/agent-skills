@@ -83,6 +83,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | --- | --- |
 | Independent reviews and delegated research | An agent with subagent support |
 | Figma or Linear workflows | The relevant integration, account access, and approval for external writes |
+| Chrome debugging and automation | Google Chrome and the `chrome-devtools` CLI from the npm package `chrome-devtools-mcp`; the skill proposes the global install and waits for approval |
 | Video reports | FFmpeg and access to the application being recorded |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
 | Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
@@ -135,6 +136,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 
 | Skill | Purpose |
 | --- | --- |
+| [chrome-devtools](./skills/engineering/chrome-devtools/SKILL.md) | Debug and automate Chrome from the shell: console, network, cookies, performance, accessibility, and memory. |
 | [code-review](./skills/engineering/code-review/SKILL.md) | Independent read-only review of a scoped change. |
 | [debug](./skills/engineering/debug/SKILL.md) | Evidence-led diagnosis and verification of authorized bug fixes. |
 | [deep-research](./skills/engineering/deep-research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
