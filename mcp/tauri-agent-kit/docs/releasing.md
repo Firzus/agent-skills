@@ -3,7 +3,7 @@
 Only reviewed alpha releases are supported. Nothing publishes on push or merge. First publication requires the maintainer's explicit approval and registry authentication. Never paste tokens into issues, source, logs or chat.
 
 The source and release workflow are maintained in `Firzus/agent-skills` under
-`tools/tauri-agent-kit/`. Run the local commands in this document from that
+`mcp/tauri-agent-kit/`. Run the local commands in this document from that
 directory. Migration to this repository does not authorize a release.
 
 The kit check workflow (`.github/workflows/tauri-agent-kit-check.yml` at the
@@ -14,7 +14,7 @@ must not require this workflow for merging.
 
 ## Public-content gate
 
-Review `git ls-files tools/tauri-agent-kit` from the repository root and the
+Review `git ls-files mcp/tauri-agent-kit` from the repository root and the
 exact npm/Cargo package inventories. Only the kit's `docs/media/fixture.png`
 and `docs/media/fixture-results.json` are approved public demo evidence. Do
 not attach the entire artifacts directory. Private integrations, backups and

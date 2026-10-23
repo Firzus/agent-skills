@@ -5,7 +5,7 @@ description: Reverse engineer shipped software quickly with compact, cited evide
 
 # reverse-engineer
 
-The `reverse-engineer` MCP tools never run the target. They write only to their own cache, plus a private Ghidra work folder in the temp directory when the cache path contains a dot folder such as `~/.cache`; the third-party tools keep their own settings in the home folder. Every fact they return cites `file:line:col`, `file@0xoffset`, a symbol or a string. A long result ends with a cache file path: page it with `read` or filter it with `search` instead of calling the tool again. Installing this skill does not install the server (the npm package `reverse-engineer`, source in `tools/reverse-engineer` of https://github.com/Firzus/agent-skills): when its tools are not available, use [Without the MCP server](#without-the-mcp-server).
+The `reverse-engineer` MCP tools never run the target. They write only to their own cache, plus a private Ghidra work folder in the temp directory when the cache path contains a dot folder such as `~/.cache`; the third-party tools keep their own settings in the home folder. Every fact they return cites `file:line:col`, `file@0xoffset`, a symbol or a string. A long result ends with a cache file path: page it with `read` or filter it with `search` instead of calling the tool again. Installing this skill does not install the server (the npm package `reverse-engineer`, source in `mcp/reverse-engineer` of https://github.com/Firzus/agent-skills): when its tools are not available, use [Without the MCP server](#without-the-mcp-server).
 
 ## Rules
 
@@ -43,7 +43,7 @@ With Node.js 24.11+, the same tools run as a CLI: `npx -y reverse-engineer@0.1.0
 | Strings of a binary | `rg -a -o '[ -~]{6,}' F` | `strings -a -n 6 F` |
 | Imports, exports | `dumpbin /imports /exports F` (Visual Studio) | `otool -L`, `nm -gU`, `nm -u`; `readelf -dW`, `nm -D` |
 | Go build info | `go version -m F`; without Go, the `rg` line below | same |
-| Decompile | Ghidra `analyzeHeadless` with a post script that exports C, such as `tools/reverse-engineer/ghidra/ExportDecompiled.java` | same, or `r2 -qc 'aaa; pdc @ sym.X' F` |
+| Decompile | Ghidra `analyzeHeadless` with a post script that exports C, such as `mcp/reverse-engineer/ghidra/ExportDecompiled.java` | same, or `r2 -qc 'aaa; pdc @ sym.X' F` |
 | .NET / APK | `ilspycmd -p -o X F` / `jadx -d X a.apk`, then search | same |
 
 ```sh

@@ -5,7 +5,7 @@
   "repository": {
     "url": "https://github.com/Firzus/agent-skills",
     "source": "github",
-    "subfolder": "tools/reverse-engineer"
+    "subfolder": "mcp/reverse-engineer"
   },
   "version": "0.1.0-alpha.1",
   "packages": [

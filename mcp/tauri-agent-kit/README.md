@@ -3,7 +3,7 @@
 Independent, unofficial MCP diagnostics and automation for Tauri 2 on Windows.
 
 This application is maintained inside [Firzus/agent-skills](https://github.com/Firzus/agent-skills)
-at `tools/tauri-agent-kit/`. It is not an installable agent skill. Run the build,
+at `mcp/tauri-agent-kit/`. It is not an installable agent skill. Run the build,
 test, and packaging commands below from this directory.
 
 The TypeScript server speaks MCP over stdio. The Rust plugin addresses the application's own WebView2 controllers over authenticated local named pipes. No Chrome instance, external DevTools MCP, remote-debugging port, or frontend framework is required.

@@ -116,7 +116,7 @@ before choosing this skill.
 ### Tauri companion tooling
 
 The [tauri](./skills/web/tauri/SKILL.md) skill remains the agent-facing entry
-point. Its optional Windows diagnostic application, [tauri-agent-kit](./tools/tauri-agent-kit/README.md),
+point. Its optional Windows diagnostic application, [tauri-agent-kit](./mcp/tauri-agent-kit/README.md),
 is maintained in this repository but is not an installable skill. Installing the
 skill does not install the MCP server or Rust plugin: the skill proposes the
 integration when a compatible project lacks it, and installs it only after
@@ -127,7 +127,7 @@ it into an application.
 
 The [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) skill works
 with shell commands alone, but it is faster and more economical with its read-only
-MCP server, [tools/reverse-engineer](./tools/reverse-engineer/README.md). Installing
+MCP server, [mcp/reverse-engineer](./mcp/reverse-engineer/README.md). Installing
 the skill does not install the server: register its npm package, `reverse-engineer`
 (alpha), with your agent, as described in its README.
 

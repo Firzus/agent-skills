@@ -10,4 +10,4 @@ Without arguments, starts an MCP stdio server. It does not launch or install the
 
 Snapshots, real WebView pixels, interactions, exact instance targeting and bounded diagnostic metadata. No remote-debugging port, telemetry or automatic elevation. Windows input requires the correct foreground window. Observe the UI after each action.
 
-[Installation and security](https://github.com/Firzus/agent-skills/blob/main/tools/tauri-agent-kit/README.md#integrate-an-application). MIT licensed. Alpha software; not an official Tauri project.
+[Installation and security](https://github.com/Firzus/agent-skills/blob/main/mcp/tauri-agent-kit/README.md#integrate-an-application). MIT licensed. Alpha software; not an official Tauri project.

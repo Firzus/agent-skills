@@ -13,4 +13,4 @@ Add this call to the application's existing Tauri builder. Start with `TAURI_AGE
 
 The optional `agent-kit:allow-record-ipc` permission allows explicit frontend instrumentation. The core bridge needs no guest JavaScript initialization. Tauri's unstable child-WebView API is required. Other operating systems are not supported by this release.
 
-[Installation, tools and security](https://github.com/Firzus/agent-skills/tree/main/tools/tauri-agent-kit).
+[Installation, tools and security](https://github.com/Firzus/agent-skills/tree/main/mcp/tauri-agent-kit).

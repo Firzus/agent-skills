@@ -19,7 +19,7 @@ jobs:
     if: vars.TAURI_AGENT_KIT_RELEASE_ENABLED == 'true'
     defaults:
       run:
-        working-directory: tools/tauri-agent-kit
+        working-directory: mcp/tauri-agent-kit
     needs: check
     runs-on: windows-latest
     environment: release

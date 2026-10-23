@@ -14,7 +14,7 @@
     "pe",
     "reverse-engineering"
   ],
-  "homepage": "https://github.com/Firzus/agent-skills/tree/main/tools/reverse-engineer",
+  "homepage": "https://github.com/Firzus/agent-skills/tree/main/mcp/reverse-engineer",
   "bugs": {
     "url": "https://github.com/Firzus/agent-skills/issues"
   },
@@ -23,7 +23,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Firzus/agent-skills.git",
-    "directory": "tools/reverse-engineer"
+    "directory": "mcp/reverse-engineer"
   },
   "bin": {
     "reverse-engineer": "dist/cli.mjs"
