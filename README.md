@@ -85,6 +85,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Figma or Linear workflows | The relevant integration, account access, and approval for external writes |
 | Chrome debugging and automation | Google Chrome and the `chrome-devtools` CLI from the npm package `chrome-devtools-mcp`; the skill proposes the global install and waits for approval |
 | Video reports | FFmpeg and access to the application being recorded |
+| Runbooks | Bash to run them (Git Bash on Windows); an authenticated GitHub CLI to set secrets and variables, otherwise the runbook lists them to set by hand |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
 | Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
 | Reverse engineering | The reverse-engineer MCP server for the fast route (Node.js 24.11+); the skill installs Ghidra, jadx or ilspycmd per user when a task needs them |
@@ -148,6 +149,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
 | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) | Explain shipped software (Electron apps, native binaries and Node addons, Go/Rust, .NET, APK) from its files, with cited evidence and an optional read-only MCP server. |
+| [runbook](./skills/engineering/runbook/SKILL.md) | Write an interactive bash runbook that guides a person through manual setup, credentials, or a cutover. |
 | [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Set up reviewed personal instructions for selected harnesses without backups or system-prompt replacement. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
