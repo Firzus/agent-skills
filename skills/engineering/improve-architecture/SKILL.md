@@ -15,7 +15,7 @@ Linear. It does not authorize refactoring.
 
 ## 1. Scope the investigation
 
-1. Read the request, project instructions, repository state, existing Linear work,
+1. Read the request, repository state, existing Linear work,
    and relevant design decisions. Use the project's context documents as they
    exist, under the project's own names when it uses others: a root `CONTEXT.md`,
    or, with a root `CONTEXT-MAP.md`, the `CONTEXT.md` of each affected context.
@@ -24,9 +24,8 @@ Linear. It does not authorize refactoring.
    changes and callers to find a bounded area where change is costly. Expand only
    when evidence identifies another affected boundary.
 3. Record the revision being examined and unrelated local changes.
-4. Delegate independent scan questions when useful and supported. Give each worker
-   a read-only scope, inputs, expected evidence, and stopping condition. No fixed
-   agent quota, duplicate whole-repository scans, or recursive delegation.
+4. Delegate independent scan questions when useful and supported, without a fixed
+   agent quota or duplicate whole-repository scans.
 
 Use established project terms, including component, service, API, or module where
 appropriate. For each candidate, ask:

@@ -34,8 +34,8 @@ Leading words for this skill:
 
 ## Hard rules
 
-- Stay **clean**: optimized files land in kept public/assets paths; remove old unoptimized sources once unreferenced; delete unused variants, experimental output dirs, and ffmpeg `-passlogfile` logs before finishing.
-- Optimize referenced assets first; unused archives only if the user asks (or delete them when clearly safe).
+- Stay **clean**: optimized files land in kept public/assets paths; propose removing old unoptimized sources once unreferenced (Step 7); delete the variants, experimental output dirs, and ffmpeg `-passlogfile` logs this task created before finishing.
+- Optimize referenced assets first; unused archives only if the user asks.
 - Detect the framework before patching markup; prefer framework-native primitives already in use.
 - Do not add a package manager or root tooling to documentation-only repositories; in target apps, prefer existing package managers and scripts.
 - Never lazy-load an LCP candidate — including video posters and CSS background LCP images.
@@ -154,7 +154,7 @@ Done when: no runtime reference still points at an unoptimized original that has
 
 ### Step 7 — Delete old assets
 
-Remove unreferenced heavy originals (rasters, videos, GIFs, legacy font formats), unused generated variants, and any temp output directory. Keep SVG sources and any source files the user asked to retain.
+List unreferenced heavy originals (rasters, videos, GIFs, legacy font formats) and unused generated variants, and delete them once the user approves that list. Remove the temp output directories this task created. Keep SVG sources and any source files the user asked to retain.
 
 Done when: the tree is **clean** — only referenced optimized assets, intentional vectors, and documented kept sources remain.
 

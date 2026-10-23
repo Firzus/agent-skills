@@ -17,7 +17,7 @@ of content.
 ## 1. Inspect the document and its authority
 
 1. Identify the requested outcome, audience, file paths, scope, and existing owners.
-   Read applicable instructions and surrounding documents; preserve unrelated work.
+   Read surrounding documents.
 2. Inspect sources supporting facts, paths, commands, and conventions. Separate
    observed behavior, accepted policy, proposed policy, and unknowns.
 3. Choose the relevant procedure:
@@ -29,7 +29,7 @@ of content.
    | Other agent-facing documentation | Apply the editorial rules below and preserve its owning format |
 
 4. For a narrow correction, inspect its dependencies without turning it into a full
-   setup or reorganization. Ask only about consequential gaps not discoverable locally.
+   setup or reorganization.
 
 **Done:** destinations, authority, relevant facts, and missing decisions identified.
 

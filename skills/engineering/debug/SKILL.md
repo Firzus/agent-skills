@@ -11,7 +11,7 @@ information that prevents the next useful check. Feature work is outside this sk
 
 ## 1. Establish the failure
 
-- Read applicable instructions, relevant code, callers, tests, and recent changes.
+- Read relevant code, callers, tests, and recent changes.
   Record expected versus actual behavior, affected inputs, environment, and versions.
 - Confirm scope: diagnosis permits inspection, not source edits. A fix request permits
   local implementation and verification, not deployment or production experiments.

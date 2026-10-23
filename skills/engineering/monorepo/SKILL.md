@@ -20,8 +20,8 @@ fit the explicitly authorized scope.
 
 ## 1. Discover the workspace and requested change
 
-1. Read applicable project instructions, repository state, existing architecture
-   decisions, and relevant CI workflows. Preserve unrelated local work.
+1. Read repository state, existing architecture decisions, and relevant CI
+   workflows.
 2. Identify actual workspace roots and members from manifests and tool discovery,
    not folder names alone. Record package/project identifiers, paths, owners,
    deployable applications, reusable libraries, tooling, and generated artifacts.
@@ -199,8 +199,7 @@ Deployment bundles likewise need their actual runtime files and dependencies,
 not merely a successful workspace build.
 
 **Done:** selected CI work covers the affected contracts and any release artifacts
-are verified. Publishing and deployment require explicit authorization; preparation
-does not imply delivery. After partial publication, inspect actual registry state
+are verified. After partial publication, inspect actual registry state
 before retrying.
 
 ## 6. Verify and hand over

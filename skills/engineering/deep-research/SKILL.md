@@ -18,7 +18,7 @@ A single factual lookup needs a direct answer, not this full workflow.
    source permissions, output destination, and explicit resource limits.
 3. Reuse an adequate authorized brief without another approval ceremony. For unresolved
    material scope or a request to discuss first, propose the plan and wait before
-   substantive research. State safe assumptions; ask only consequential missing choices.
+   substantive research. State safe assumptions.
 4. Ask short independent questions directly in the conversation, numbered in one
    message, then wait for the answers. Partial replies leave unanswered choices open.
 5. Define evidence needed to answer each question. Respect user budgets; without one,
@@ -26,7 +26,7 @@ A single factual lookup needs a direct answer, not this full workflow.
    Explain the planned delegation and its resource implications.
 
 **Done:** scope, authorization, answer conditions, and any limits explicit.
-A plan does not authorize external writes. Read-only restrictions remain in force;
+Read-only restrictions remain in force;
 if required dossier writes are prohibited, retain the plan and report the blocker.
 
 ## 2. Prepare the dossier and research map
@@ -41,7 +41,7 @@ Map each question to evidence streams, prerequisites, and known gaps. Differenti
 
 Use [orchestration](references/orchestration.md) to size and assign work. Several
 agents are useful only when they add distinct coverage or independent checking.
-Many URLs repeating one origin are not independent sources; agent agreement is not proof.
+Many URLs repeating one origin are not independent sources.
 
 **Done:** durable dossier, question coverage map, and non-overlapping assignments ready.
 
