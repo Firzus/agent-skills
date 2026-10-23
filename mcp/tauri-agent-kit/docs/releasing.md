@@ -40,10 +40,10 @@ npm keeps `latest` on the first version it published. The workflow publishes alp
 
 Each registry must trust the workflow before the first automated release:
 
-| Registry | Package | Settings |
-| --- | --- | --- |
-| npm | `tauri-agent-kit`, `tauri-agent-kit-instrumentation` | Trusted publisher GitHub Actions: user `Firzus`, repository `agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment `release` |
-| crates.io | `tauri-plugin-agent-kit` | Trusted publishing: owner `Firzus`, repository `agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment `release` |
+| Registry  | Package                                              | Settings                                                                                                                                  |
+| --------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| npm       | `tauri-agent-kit`, `tauri-agent-kit-instrumentation` | Trusted publisher GitHub Actions: user `Firzus`, repository `agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment `release` |
+| crates.io | `tauri-plugin-agent-kit`                             | Trusted publishing: owner `Firzus`, repository `agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment `release`              |
 
 The MCP Registry needs no configuration: the GitHub OIDC login grants the `io.github.Firzus` namespace.
 
