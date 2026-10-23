@@ -1,6 +1,6 @@
 # Contributing
 
-Use Windows x64 with WebView2, Rust and the Windows C++ tools, Node 22+, pnpm 10.33.2 and Vite+ 0.3.2. Change to `tools/tauri-agent-kit/` and run `vp install` after cloning. Run all commands below from that directory.
+Use Windows x64 with WebView2, Rust and the Windows C++ tools, Node 22+, pnpm 10.33.2 and Vite+ 0.3.2. Change to `mcp/tauri-agent-kit/` and run `vp install` after cloning. Run all commands below from that directory.
 
 Use Conventional Commits and focused pull requests. Do not add explanatory source comments; put durable explanations in documentation. Never commit application screenshots, logs, credentials or machine-specific paths. Only the generic fixture may appear in public evidence.
 

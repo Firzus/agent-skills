@@ -2,7 +2,7 @@ name: Reverse-engineer check
 on:
   pull_request:
     paths:
-      - tools/reverse-engineer/**
+      - mcp/reverse-engineer/**
       - skills/engineering/reverse-engineer/scripts/**
       - .github/workflows/reverse-engineer-check.yml
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     defaults:
       run:
-        working-directory: tools/reverse-engineer
+        working-directory: mcp/reverse-engineer
         shell: bash
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -35,7 +35,7 @@ jobs:
         with:
           version: 1.3.0
           node-version: 24
-          working-directory: tools/reverse-engineer
+          working-directory: mcp/reverse-engineer
           run-install: false
       - run: vp install
       - run: vp check

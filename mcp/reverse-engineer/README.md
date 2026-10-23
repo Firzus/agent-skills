@@ -49,7 +49,7 @@ Claude Code MCP configuration (project `.mcp.json`):
 }
 ```
 
-On Windows, use `"command": "cmd"` with `"args": ["/c", "npx", "-y", "reverse-engineer@0.1.0-alpha.1", "mcp"]`. To run an unreleased build from a clone, run the [Develop](#develop) commands, then point the configuration at `node <checkout>/tools/reverse-engineer/dist/cli.mjs mcp`.
+On Windows, use `"command": "cmd"` with `"args": ["/c", "npx", "-y", "reverse-engineer@0.1.0-alpha.1", "mcp"]`. To run an unreleased build from a clone, run the [Develop](#develop) commands, then point the configuration at `node <checkout>/mcp/reverse-engineer/dist/cli.mjs mcp`.
 
 Install the skill with `npx skills add Firzus/agent-skills --skill reverse-engineer`.
 
