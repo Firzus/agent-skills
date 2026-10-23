@@ -36,13 +36,11 @@ scratch location or the project's `scripts/` folder, as they prefer.
      references name values the runbook must produce;
    - a migration or cutover: where the system stands, where it must end up,
      and every irreversible command on the way.
-2. Present the ordered stages, the value each produces, its destination
-   (env file, GitHub secret or variable, a command, or none), and whether it
-   is secret. Wait for the user to approve or adjust the plan.
+2. Order the stages by dependency, and settle for each the value it produces,
+   its destination (env file, GitHub secret or variable, a command, or none),
+   and whether it is secret. Ask the user only what the project cannot settle.
 
-**Done:** the user approved the stage list, and every value has a source, a
-destination, and a secrecy decision.
-**Waiting:** without approval, keep the plan and write no script.
+**Done:** every value has a source, a destination, and a secrecy decision.
 
 ## 2. Trace each stage
 
