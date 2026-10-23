@@ -64,7 +64,7 @@ for supported agents, installation modes, and troubleshooting.
 | Review an existing change without modifying it | [code-review](./skills/engineering/code-review/SKILL.md) |
 | Diagnose a bug or verify an authorized fix | [debug](./skills/engineering/debug/SKILL.md) |
 | Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) |
-| Investigate a question across multiple sources | [deep-research](./skills/engineering/deep-research/SKILL.md) |
+| Investigate a question across multiple sources | [research](./skills/engineering/research/SKILL.md) |
 | Turn a new request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) |
 | Execute a prepared Linear issue | [implement](./skills/engineering/implement/SKILL.md) |
 | Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
@@ -140,7 +140,6 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [chrome-devtools](./skills/engineering/chrome-devtools/SKILL.md) | Debug and automate Chrome from the shell: console, network, cookies, performance, accessibility, and memory. |
 | [code-review](./skills/engineering/code-review/SKILL.md) | Independent read-only review of a scoped change. |
 | [debug](./skills/engineering/debug/SKILL.md) | Evidence-led diagnosis and verification of authorized bug fixes. |
-| [deep-research](./skills/engineering/deep-research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
 | [implement](./skills/engineering/implement/SKILL.md) | Execute a published Linear issue by work type, with tests and documentation. |
@@ -148,6 +147,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve decisions through question rounds until the agreed scope and consequential edge cases are covered. |
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
+| [research](./skills/engineering/research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
 | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) | Explain shipped software (Electron apps, native binaries and Node addons, Go/Rust, .NET, APK) from its files, with cited evidence and an optional read-only MCP server. |
 | [runbook](./skills/engineering/runbook/SKILL.md) | Write an interactive bash runbook that guides a person through manual setup, credentials, or a cutover. |
 | [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Set up reviewed personal instructions for selected harnesses without backups or system-prompt replacement. |
