@@ -197,7 +197,4 @@ and validation. A skill lives at `skills/<section>/<name>/SKILL.md`; supporting
 references and helpers stay in its folder. Keep the README catalog and
 [marketplace manifest](./.claude-plugin/marketplace.json) aligned with skill folders.
 
-The [documentary knowledge base](./doc/README.md) contains source material,
-not installable skills. It is separate from the skill catalog.
-
 Licensed under [MIT](./LICENSE).

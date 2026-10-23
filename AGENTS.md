@@ -9,7 +9,6 @@ This repository distributes agent skills through `Firzus/agent-skills`. It is do
 - `README.md` is the newcomer-facing guide: choose a skill, install it, understand its prerequisites, and find the full catalog. Keep maintenance details out of the getting-started path.
 - `skills/<section>/<name>/SKILL.md` owns each skill's public workflow. Supporting references and scripts belong in the same folder.
 - `.claude-plugin/marketplace.json` owns installation groups. Add or remove a skill there and in the README together; keep each skill in its appropriate section.
-- `doc/<subject>/overview.md` introduces a documentary corpus, and `doc/README.md` indexes the corpora. Add or remove a corpus and its index entry together. Corpora are not skills: they have no `SKILL.md` and are excluded from the marketplace.
 - `tools/tauri-agent-kit/CONTRIBUTING.md` owns the kit's prerequisites and development checks, `tools/tauri-agent-kit/docs/releasing.md` owns its publication gates, and `.github/workflows/tauri-agent-kit-check.yml` is its complete CI check sequence.
 - `tools/reverse-engineer/README.md` owns the reverse-engineer server's usage and development checks, and `.github/workflows/reverse-engineer-check.yml` is its CI check sequence.
 
@@ -37,7 +36,7 @@ This repository distributes agent skills through `Firzus/agent-skills`. It is do
 
 ## Validation
 
-For documentation changes, check affected claims, local links and anchors, frontmatter, line counts, and consistency between README entries, skill folders, and the marketplace, and between `doc/README.md` and corpus folders. Exclude code examples from literal link checks. Run `git diff --check` and inspect the scoped diff, including untracked files.
+For documentation changes, check affected claims, local links and anchors, frontmatter, line counts, and consistency between README entries, skill folders, and the marketplace. Exclude code examples from literal link checks. Run `git diff --check` and inspect the scoped diff, including untracked files.
 
 | Changed area | Required checks | Working directory / prerequisite |
 | --- | --- | --- |
