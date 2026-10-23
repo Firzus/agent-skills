@@ -1,9 +1,9 @@
 ---
-name: deep-research
+name: research
 description: Investigate a question across sources with delegated research, adversarial verification, and a reusable evidence dossier. Use for explicit deep research, substantial comparisons, evidence accumulation, or updating a research dossier.
 ---
 
-# Deep research with checked evidence
+# Research with checked evidence
 
 Accept a direct question, brief, document, issue, or existing dossier. No preceding
 skill or tracker is required. Return findings to the requester; research authorizes
