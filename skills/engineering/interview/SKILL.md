@@ -43,7 +43,7 @@ prerequisites are settled; an empty frontier can mean blocked branches, not comp
    and ask all of them in the same round. There is no minimum or maximum
    number per round; ask one at a time only when the user asks for it. Resolve
    outcome and scope before the behavior and design choices that depend on them.
-2. Ask using the style and delivery rules below; wait for answers.
+2. Ask them as described in [Questions](#questions); wait for answers.
 3. Retain partial answers and keep unanswered decisions open. Trace each answer's
    consequences and newly reachable branches, then recompute the frontier. Revisit
    accepted choices only when new evidence affects them.
@@ -100,34 +100,44 @@ finding, not silently added to this interview.
   contracts: inputs, results, errors, ordering, invariants, in project vocabulary.
 - Prefer small interfaces containing complexity; justify a new abstraction by a
   concrete variation or constraint.
-- Compare alternatives only when outcome, compatibility, testability, or reversal
-  cost could change. Ask consequential choices in plain language; leave routine
-  choices to implementation.
+- Compare design alternatives only when outcome, compatibility, testability, or
+  reversal cost could differ; these differences become the options' tradeoffs.
+  Leave routine choices to implementation.
 
-### Question style
+### Questions
 
-These rules cover questions, choices, and accompanying explanations only:
+Present the questions directly in the conversation. Number the independent
+questions of a round in one message, then wait for the user's answers. Keep a
+question whose answer depends on another unanswered question for a later round.
+If the user answers only some, keep the rest open for the next round.
+
+These rules apply to what the user reads: questions, options, and their explanations.
 
 - Use the user's language, everyday words, and one short question per decision.
   Split distinct choices (such as player experience and platform) into separate
   questions, even when they fit in one sentence.
 - Ask about behavior and consequences, keeping implementation mechanisms in analysis.
-- Keep choices short and neutral. Add an example or a term explanation when the
-  question needs it. Never add a recommendation or mark a preferred option: a
-  question the agent could settle by research is a fact to look up, not a decision.
-  A recommendation appears only after the user delegates the decision (step 2.4).
+- List the options under the question, each with its tradeoff: what it provides and
+  what it costs the user or the project, such as effort, speed, maintenance,
+  compatibility, reversal cost, or the choices it closes. Base each consequence on
+  the evidence gathered and mark an uncertain one as such.
+- Describe the options at the same depth and leave the choice to the user without
+  ranking them: an option the agent could prove best by research makes the question
+  a fact to look up, not a decision. A recommendation appears only after the user
+  delegates the decision (step 2.4).
+- Add an example or a term explanation when the question needs it.
 - Test contradictions and consequential failures with concrete situations.
 - Rephrase an unclear question before advancing.
 - Treat user preferences as decisions; silence is not an answer.
 
-Example: "If you delete a task by mistake, should you be able to restore it?"
+Example:
 
-### Question delivery
-
-Present the questions directly in the conversation. Number independent questions
-in one message, then wait for the user's answers. Keep a question whose answer
-depends on another unanswered question for a later round. If the user answers
-only some, keep the rest open for the next round.
+```text
+1. If you delete a task by mistake, should you be able to restore it?
+   - Yes: a mistake costs nothing, but deleted tasks stay stored and need a
+     place in the interface where they can be found.
+   - No: deletion stays simple and frees the data at once, but a mistake is final.
+```
 
 **Done:** all in-scope branches and relevant consequential edge cases are reviewed,
 their choices are accepted, and the user confirms the shared understanding.
