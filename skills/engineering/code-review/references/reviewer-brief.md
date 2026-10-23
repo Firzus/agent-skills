@@ -31,5 +31,3 @@ Separate hypotheses requiring checks from established evidence. There is no find
 For follow-up: mark findings resolved, open, or unverifiable; report new regressions.
 Finish with coverage, missing inputs, and inspected versus executed checks.
 ```
-
-The coordinating reviewer verifies these claims before returning them to implementation.

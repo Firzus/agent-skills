@@ -30,7 +30,7 @@ requested behavior needs them and reuse cannot provide it.
   trigger and purpose; avoid burying mandatory rules behind optional wording.
 - Name explicit inputs, actions, output, stopping evidence, and missing-capability
   behavior. Use actual tool discovery rather than hard-coded session tool names.
-- Keep one owner for shared rules. A cross-skill dependency must be intentionally
+- A cross-skill dependency must be intentionally
   available or have an explicit unavailable path; avoid duplicated fallback policies.
 - For delegation, define inputs, outputs, write boundaries, and completion evidence.
   Explicitly prevent recursive delegation when reviewers should be leaf workers.
@@ -47,7 +47,6 @@ requested behavior needs them and reuse cannot provide it.
 - For behavior-sensitive changes, compare representative before/after outputs when
   authorized. Report simulations, isolated trials, and installed-host tests distinctly.
 - Keep test records outside runtime instructions unless the project explicitly wants
-  them included. A successful documentary check is not proof of reliable behavior.
+  them included.
 
 **Done:** contract readable, references reachable, tested coverage and limits stated.
-Installation and publication remain separate authorized actions.

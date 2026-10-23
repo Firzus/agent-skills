@@ -3,11 +3,10 @@
 ## Establish the boundary
 
 Resolve repository, remote/base branch, Linear issue, reviewer, and completion
-boundary from project evidence. Ask only for material gaps. Invoking `implement` on
-a Linear issue authorizes commits and Linear updates for that issue, and the
-dependent-issue updates that `SKILL.md` lists. For a Task or
-Bug, the push and PR wait for the user's validation at the end of the work. Merge
-and deployment always need separate authorization.
+boundary from project evidence. Invoking `implement` on a Linear issue authorizes
+commits and Linear updates for that issue, and the dependent-issue updates that
+`SKILL.md` lists. For a Task or Bug, the push and PR wait for the user's validation
+at the end of the work. Merge and deployment always need separate authorization.
 
 | Evidence | What it establishes |
 | --- | --- |
@@ -18,27 +17,19 @@ and deployment always need separate authorization.
 
 ## Prepare Git delivery
 
-1. Preserve the task's branch/worktree and unrelated changes. If a new user-facing
-   branch is needed, use `<type>/<kebab-case-subject>` with feature, bugfix, hotfix,
-   release, or chore. For a Linear issue, start the subject with its identifier,
+1. For a Linear issue, start a new branch's subject with the issue identifier,
    such as `bugfix/fir-31-market-sidebar-ad-slot`, so Linear links the branch.
    Keep implementation separate from retained prototype branches.
 2. Inspect the diff and staged paths. Commit only within the approved delivery
-   scope, using Conventional Commits; mark breaking changes with `!` or a
-   `BREAKING CHANGE:` footer. Without commit approval, preserve the local changes
-   and verification evidence and report Git delivery as pending.
+   scope. Without commit approval, preserve the local changes and verification
+   evidence and report Git delivery as pending.
 3. Once work and required checks are complete, present the result and ask the user
-   to validate opening the PR. After validation, push and open a non-draft PR; use a
-   draft only if the user or project requests it.
+   to validate opening the PR. After validation, push and open the PR.
    Include outcome, scope, checks, limitations, and `Fixes <issue-id>` (for example
    `Fixes FIR-31`) so Linear treats the PR as closing the issue. A Markdown link
-   alone does not. If targeting the default branch, repeat
-   `Closes #<number>` for each intended GitHub issue closure.
-4. Verify the PR state. Mark a draft ready only after work and required checks are
-   complete and the action is authorized; report missing runtime checks.
+   alone does not.
 
-Merge and deploy only within their separately authorized scope. Preserve prototype
-branches; never discard unrelated work. Force-push only with both
+Never discard unrelated work. Force-push only with both
 `--force-with-lease --force-if-includes` when history rewriting is authorized.
 
 **Done:** artifacts satisfy the agreed boundary, or the exact pending Git action is named.

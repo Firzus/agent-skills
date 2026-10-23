@@ -22,9 +22,9 @@ PR. It does not authorize unrelated work, merge, or deployment.
 
 ## 1. Read the work and route it
 
-1. Read the request, project instructions, current repository state, and existing
-   work record. For a Linear issue, include comments, linked decisions, acceptance
-   criteria, and native blocking relations.
+1. Read the request, current repository state, and existing work record. For a
+   Linear issue, include comments, linked decisions, acceptance criteria, and
+   native blocking relations.
    For a Task or Bug, record the starting revision and scoped local changes before
    any skill handoff or edits, so later review can distinguish this task's changes
    from existing work.
@@ -35,9 +35,8 @@ PR. It does not authorize unrelated work, merge, or deployment.
    rest of this workflow; a Bug goes through `debug` and resumes at step 4.
 3. Trace the affected behavior through callers, contracts, configuration, and tests.
    Separate unrelated local work and pre-existing failures.
-4. Resolve discoverable facts locally. Resolve a consequential open choice or
-   conflict with `interview` when every option stays within the issue's outcome and
-   current scope; record the answer in Accepted decisions and the acceptance
+4. Resolve a consequential open choice or conflict with `interview` when every
+   option stays within the issue's outcome and current scope; record the answer in Accepted decisions and the acceptance
    criteria it refines, or in an issue comment for a type without those sections.
    When an option would change that outcome or extend that scope, or answering
    needs research or observation,
@@ -54,16 +53,14 @@ authorized work. In read-only or planning mode, retain a plan rather than edit.
 
 ## 2. Prepare the change and verification
 
-1. Preserve the prepared branch/worktree and unrelated changes. Identify existing
-   components and dependencies to reuse; avoid speculative restructuring.
-2. Establish the relevant baseline and map each acceptance criterion to a focused
+1. Establish the relevant baseline and map each acceptance criterion to a focused
    check, including consequential adverse cases for security, privacy, money,
    destructive operations, or public compatibility.
-3. Choose the smallest coherent implementation sequence and the agreed delivery
+2. Choose the smallest coherent implementation sequence and the agreed delivery
    boundary. Read [delivery](references/delivery.md) before Git publication or
    Linear updates.
 
-**Done:** baseline and checks identified, work isolated, delivery expectations explicit.
+**Done:** baseline and checks identified, delivery expectations explicit.
 
 ## 3. Implement with tests and documentation
 
@@ -72,7 +69,7 @@ For each production behavior:
 1. Write a focused test at an existing caller-facing boundary.
 2. Run it and inspect the failure: it must demonstrate the missing behavior,
    not a broken fixture, dependency, or command.
-3. Make the smallest correct change using established components and contracts.
+3. Make the test pass.
 4. Run the test again; refactor while green, then move to the next behavior.
 
 | Work shape | Verification |
@@ -84,7 +81,7 @@ For each production behavior:
 
 - Deliver the accepted context delta using [intake and handoff](references/intake-and-handoff.md#deliver-context-with-the-change).
 - Keep comments beside verified, non-obvious rationale or caller obligations.
-  Explain workaround sources and removal conditions; update stale affected comments.
+  Give each workaround its removal condition; update stale affected comments.
   Avoid narration, decorative labels, vague TODOs, and disabled code.
 - A consequential decision or a research or prototype need found while implementing
   follows step 1.4; ordinary internal choices remain with implementation.
@@ -96,9 +93,8 @@ code, context, contracts, and affected documentation agree.
 
 1. Run [the review-correction loop](references/review-loop.md) using `code-review`.
    Reviewers inspect; implement verifies findings, corrects confirmed problems,
-   and requests targeted follow-up. Keep optional cleanup out of the change.
-2. Run focused checks and required project checks. Fix failures caused by the
-   change; report pre-existing failures without broadening the task.
+   and requests targeted follow-up.
+2. Run focused checks and required project checks.
 3. For user-visible behavior, exercise the ordinary integrated entry point,
    interactions, and relevant narrow or target-device layout. Keep the review
    surface available through supported tools.

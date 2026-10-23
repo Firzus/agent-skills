@@ -27,8 +27,7 @@ Choose the team from the question map:
   recursive fan-out; do not change model/cost settings without applicable authorization.
 
 No universal minimum beyond the delegated-research requirement, no fixed panel per
-claim, and no agent count as a completion criterion. Independent contexts improve
-separation but do not guarantee independent reasoning or independent sources.
+claim, and no agent count as a completion criterion.
 
 ## Dispatch contract
 
@@ -66,8 +65,8 @@ After initial independent checks, share contradictory evidence for reconciliatio
   failed/stopped with explicit coverage gaps. Confirm none can still write the inputs.
   Assign the canonical files explicitly to one writer; stop coordinator writes until
   that writer returns. Otherwise retain a checkpoint rather than race active workers.
-- Inspect partial failures before retrying, preserve confirmed results, and reassign
-  only missing work. An unavailable worker does not invalidate unrelated evidence.
+- After a partial failure, preserve confirmed results and reassign only missing
+  work. An unavailable worker does not invalidate unrelated evidence.
 - Report phase, coverage progress, meaningful gaps, and the next decision when useful;
   avoid narrating unchanged status. Save a checkpoint before interruption.
 

@@ -5,8 +5,8 @@ skill supplies independent read-only findings; implement owns edits and test run
 
 ## Prepare the checkpoint
 
-1. Record the task's base before edits, or recover its verified baseline. Separate
-   task-owned changes from unrelated local work.
+1. Use the starting revision recorded in step 1.1 of the main workflow, or recover
+   its verified baseline.
 2. Supply base/head, committed and uncommitted scope including untracked files,
    requirements, accepted prototype commit where relevant, and check evidence.
    A commit is not required just to make local work reviewable.
@@ -45,4 +45,3 @@ scope changes, not just the edited lines.
 
 Return to final integrated checks and reporting. If those checks require another
 code change, repeat targeted review of the affected scope before completion.
-Preserve the prototype branch throughout.

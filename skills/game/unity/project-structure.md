@@ -77,8 +77,8 @@ renaming is safe exactly as long as the pair travels together.
 - Use `git mv`, so history is preserved, LFS tracking stays intact, and the diff reads as a rename rather than delete-plus-add.
 - After each batch, refresh Unity and clear the console to zero new errors and warnings before the next one. C# renames need a green compile before moving on.
 
-Sequence a large restructure from least to most risky, one checkpoint commit and
-console check per step — content moves are GUID-safe, code moves break
+Sequence a large restructure from least to most risky, with a console check per
+step and a checkpoint commit when commits are authorized — content moves are GUID-safe, code moves break
 compilation:
 
 ```

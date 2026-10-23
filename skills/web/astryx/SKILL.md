@@ -74,5 +74,3 @@ Load on demand:
 | Import conventions, `xstyle`, cascade layers, `data-*` targeting, Tailwind & library interop | [styling-components.md](./styling-components.md) |
 | `<Theme>`, `defineTheme`, dark mode, theme packages, the design-token catalog | [theming-tokens.md](./theming-tokens.md) |
 | Design principles, layout primitives (AppShell/Layout), migration path, i18n | [migration-layout-i18n.md](./migration-layout-i18n.md) |
-</content>
-</invoke>

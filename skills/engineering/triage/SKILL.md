@@ -42,7 +42,7 @@ labeled Need triage.
    | Executable issue labeled Need triage | Read its latest Need triage comment, which gives the reason. When it cites an Interview result, continue after an interview with that Interview issue; otherwise continue with step 1.2 to handle that reason |
    | Existing executable issue the user asks to revise or cancel | Continue with step 1.2, reusing it |
 
-2. Read the request, project instructions, and relevant code and tests. Search Linear
+2. Read the request and relevant code and tests. Search Linear
    for issues, projects, and decisions about the same outcome, including their
    comments and linked evidence. Treat each match by its relation to the request:
 

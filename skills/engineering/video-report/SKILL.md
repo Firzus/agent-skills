@@ -92,7 +92,7 @@ covering the initial state, each action and result, and the final state. Disclos
 frame-based review: it cannot establish smooth motion or rule out brief defects.
 If the claim depends on those properties, report the verification gap.
 
-Retry unusable capture only after identifying and correcting its cause. Withhold
+Withhold
 unsafe recordings from delivery and request intervention for safe handling.
 
 Deliver the local video through a supported preview or attachment, otherwise

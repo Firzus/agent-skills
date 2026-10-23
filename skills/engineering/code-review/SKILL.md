@@ -11,7 +11,7 @@ tests, and delivery. Review does not authorize publication or product execution.
 
 ## 1. Fix the review scope
 
-1. Read the request and project instructions. Identify repository, authoritative
+1. Read the request. Identify repository, authoritative
    issue/spec, delivery boundary, and task-owned changes. Prefer supplied requirements,
    then verified links in the work record or commits; never infer intent from code.
 2. Resolve the base to a commit ID and state the comparison:
@@ -51,7 +51,6 @@ Use [the reviewer brief](references/reviewer-brief.md) for each applicable axis:
   author's reasoning or another reviewer's findings. Follow-up receives the relevant
   verified findings and correction evidence. The user stays in the same conversation.
 - Review surrounding code only as needed for impact, not as a whole-repository audit.
-  Reviewers never edit, invoke this skill recursively, or spawn additional agents.
 - Reviewers inspect sources by default; they propose checks to the caller rather
   than running application/test commands with persistent effects.
 - If isolated delegation is unavailable, inspect axes separately and disclose the

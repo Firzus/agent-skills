@@ -24,8 +24,8 @@ with implementation.
 1. Read the caller's input: open questions, evidence gathered, the issue when there
    is one, and the resume point. Read relevant code, tests, and linked records.
 2. Separate discoverable facts from decisions that need the user. Inspect facts
-   directly; when useful, delegate a bounded read-only question with required
-   evidence and verify the result while continuing independent questions.
+   directly, or delegate a bounded lookup when useful, while continuing
+   independent questions.
 3. Map the decisions and their dependencies within the agreed scope. Treat the
    caller's initial questions as a starting point, not a complete inventory. Mark
    branches still to explore and assumptions that could hide a consequential choice.

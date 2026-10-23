@@ -164,8 +164,7 @@ When commits are authorized, land each logical deletion as its **own commit**,
 with a message recording which searches ran and what they returned. Without
 commit authorization, preserve the local changes and verification evidence;
 report Git delivery as pending rather than committing or discarding the work.
-Delete outright rather than commenting out; preserve a recoverable copy of any
-uncommitted content before removal.
+Preserve a recoverable copy of any uncommitted content before removal.
 
 Independent candidates with disjoint files may run as parallel sub-agents, each
 given the candidate's evidence, the ladder rungs required, and the instruction that
@@ -173,9 +172,9 @@ everything outside its files is out of bounds. Overlapping scopes run in
 sequence.
 
 Verify from the main thread before reporting a candidate done: re-read the diff,
-re-run the build and tests, and confirm the scope held. A sub-agent's claim is
-not the evidence. Failed checks, scope drift, or pending required delivery leave
-the candidate open with its reason; re-dispatch within scope or surface the decision.
+re-run the build and tests, and confirm the scope held. Failed checks, scope drift,
+or pending required delivery leave the candidate open with its reason; re-dispatch
+within scope or surface the decision.
 
 **Done when** every approved candidate meets its verification and agreed delivery
 conditions, and the closing message gives a one-line outcome per numbered
