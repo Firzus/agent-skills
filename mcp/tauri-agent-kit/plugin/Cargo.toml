@@ -1,6 +1,6 @@
 [package]
 name = "tauri-plugin-agent-kit"
-version = "0.1.0-alpha.1"
+version = "0.1.0-alpha.2"
 edition = "2021"
 license = "MIT"
 links = "tauri-plugin-agent-kit"

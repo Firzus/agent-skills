@@ -32,8 +32,8 @@ Requirements: Node.js 24.11 or later. Optional: Ghidra 11+ with JDK 21 for `deco
 The package is published to npm as an alpha prerelease, [`reverse-engineer`](https://www.npmjs.com/package/reverse-engineer), and listed in the MCP Registry as `io.github.Firzus/reverse-engineer`. Pin the exact version:
 
 ```sh
-npx -y reverse-engineer@0.1.0-alpha.1 triage ./some.exe
-npx -y reverse-engineer@0.1.0-alpha.1 electron_surface "C:\Program Files\App" --focus audio,microphone
+npx -y reverse-engineer@0.1.0-alpha.2 triage ./some.exe
+npx -y reverse-engineer@0.1.0-alpha.2 electron_surface "C:\Program Files\App" --focus audio,microphone
 ```
 
 Claude Code MCP configuration (project `.mcp.json`):
@@ -43,13 +43,13 @@ Claude Code MCP configuration (project `.mcp.json`):
   "mcpServers": {
     "reverse-engineer": {
       "command": "npx",
-      "args": ["-y", "reverse-engineer@0.1.0-alpha.1", "mcp"]
+      "args": ["-y", "reverse-engineer@0.1.0-alpha.2", "mcp"]
     }
   }
 }
 ```
 
-On Windows, use `"command": "cmd"` with `"args": ["/c", "npx", "-y", "reverse-engineer@0.1.0-alpha.1", "mcp"]`. To run an unreleased build from a clone, run the [Develop](#develop) commands, then point the configuration at `node <checkout>/mcp/reverse-engineer/dist/cli.mjs mcp`.
+On Windows, use `"command": "cmd"` with `"args": ["/c", "npx", "-y", "reverse-engineer@0.1.0-alpha.2", "mcp"]`. To run an unreleased build from a clone, run the [Develop](#develop) commands, then point the configuration at `node <checkout>/mcp/reverse-engineer/dist/cli.mjs mcp`.
 
 Install the skill with `npx skills add Firzus/agent-skills --skill reverse-engineer`.
 
@@ -68,14 +68,14 @@ Tests against real targets are opt-in: set `RE_TARGETS` (a folder with `app.asar
 
 ## Release
 
-Publication to npm and the MCP Registry requires the maintainer's explicit approval. From a clean checkout of the reviewed commit on `main`:
+`.github/workflows/reverse-engineer-publish.yml` publishes to npm and the MCP Registry. Merging a version change to `main` publishes it, so treat the merge as the release decision. In the release pull request:
 
 1. Set the same version in `package.json`, `package-lock.json`, `server.json`, the pinned commands above and in the skill's `SKILL.md`; a unit test checks the first three. When `vp pack` reports a new bundled dependency, add its license to `THIRD_PARTY_NOTICES.md`.
 2. Run the [Develop](#develop) checks, then `npm pack` (it rebuilds `dist/`) and inspect the tarball: `LICENSE`, `README.md`, `THIRD_PARTY_NOTICES.md`, `dist/cli.mjs`, `ghidra/ExportDecompiled.java`, `package.json`.
-3. Recheck the name on npm (a 404 is not a reservation), then `npm publish <tarball> --tag alpha`: publishing a tarball ignores `publishConfig.tag`, and without `--tag` a prerelease becomes `latest`. npm can hold a new version for review for a few minutes, showing only a `0.0.0-stage` placeholder; wait until `npm view reverse-engineer versions` lists the version, then run `npx -y reverse-engineer@<version> --version` in an empty folder.
-4. Run `mcp-publisher login github`, then `mcp-publisher publish` from this folder, and check the entry at `https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.Firzus/reverse-engineer`.
 
-Never overwrite or unpublish a version to hide a failed release; publish a new one.
+The workflow stops when the version is already on npm and the MCP Registry. Otherwise it runs the check workflow, builds the tarball in a job without publishing rights, then publishes in the `release` environment, from a job that runs no project or dependency code. npm uses trusted publishing, with a prerelease published under its own dist-tag (`alpha`), never `latest`; the MCP Registry uses its GitHub OIDC login. A last job runs the published `--version`. When a run fails, fix the cause and use **Re-run all jobs** on that run: each publication step rechecks its registry and skips what already exists. Never overwrite or unpublish a version to hide a failed release; publish a new one.
+
+npm must trust the workflow before the first automated release: in the `reverse-engineer` package settings, add a GitHub Actions trusted publisher with user `Firzus`, repository `agent-skills`, workflow `reverse-engineer-publish.yml` and environment `release`.
 
 ## Benchmark
 

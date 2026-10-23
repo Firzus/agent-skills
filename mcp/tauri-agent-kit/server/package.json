@@ -1,6 +1,6 @@
 {
   "name": "tauri-agent-kit",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Unofficial Windows WebView2 diagnostics and automation MCP server for Tauri 2.",
   "keywords": [
     "diagnostics",

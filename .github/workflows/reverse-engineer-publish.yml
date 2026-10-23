@@ -1,0 +1,129 @@
+name: Publish reverse-engineer
+# Publishes the version in package.json to npm and the MCP Registry when it is not there yet.
+# Each publication step rechecks its registry, so rerunning all jobs of a failed run publishes only what is missing.
+# Only the publish job can request an OIDC token, and it runs no project or dependency code.
+on:
+  push:
+    branches: [main]
+    paths:
+      - mcp/reverse-engineer/package.json
+      - mcp/reverse-engineer/server.json
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: reverse-engineer-publish
+  cancel-in-progress: false
+env:
+  MCP_PUBLISHER_URL: https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
+jobs:
+  plan:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp/reverse-engineer
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      missing: ${{ steps.plan.outputs.missing }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: plan
+        run: |
+          v=$(node -p "require('./package.json').version")
+          node -e '
+            const v = process.argv[1], s = require("./server.json");
+            if (s.version !== v || s.packages.some((p) => p.version !== v)) throw new Error("server.json version differs from package.json");
+          ' "$v"
+          missing=false
+          [ "$(npm view "reverse-engineer@$v" version)" = "$v" ] || missing=true
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.Firzus%2Freverse-engineer/versions/$v")
+          case "$code" in 200) ;; 404) missing=true ;; *) echo "MCP Registry answered $code"; exit 1 ;; esac
+          echo "version=$v missing=$missing"
+          { echo "version=$v"; echo "missing=$missing"; } >> "$GITHUB_OUTPUT"
+  check:
+    needs: plan
+    if: needs.plan.outputs.missing == 'true'
+    uses: ./.github/workflows/reverse-engineer-check.yml
+  build:
+    needs: [plan, check]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp/reverse-engineer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
+        with:
+          version: 1.3.0
+          node-version: 24
+          working-directory: mcp/reverse-engineer
+          run-install: false
+      - run: vp install
+      - run: npm pack
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reverse-engineer
+          path: mcp/reverse-engineer/reverse-engineer-${{ needs.plan.outputs.version }}.tgz
+          if-no-files-found: error
+  publish:
+    needs: [plan, build]
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: mcp/reverse-engineer
+    env:
+      VERSION: ${{ needs.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: reverse-engineer
+          path: ${{ runner.temp }}/package
+      # Trusted publishing needs npm 11.5.1+: npm exchanges the OIDC token, no secret is stored.
+      # A prerelease gets its own dist-tag (alpha for 0.1.0-alpha.2), never latest.
+      - name: Publish to npm
+        run: |
+          node -e 'const [a, b, c] = process.argv[1].split(".").map(Number); if (a < 11 || (a === 11 && (b < 5 || (b === 5 && c < 1)))) throw new Error("npm 11.5.1+ is required for trusted publishing")' "$(npm --version)"
+          if [ "$(npm view "reverse-engineer@$VERSION" version)" = "$VERSION" ]; then echo "Already on npm"; exit 0; fi
+          tag=latest
+          case "$VERSION" in *-*) pre="${VERSION#*-}"; tag="${pre%%.*}" ;; esac
+          npm publish "$RUNNER_TEMP/package/reverse-engineer-$VERSION.tgz" --tag "$tag" --provenance --ignore-scripts
+      # npm can hold a new version for review for a few minutes; the MCP Registry checks the npm package.
+      - name: Wait until npm serves the version
+        run: |
+          for _ in $(seq 1 40); do
+            [ "$(npm view "reverse-engineer@$VERSION" version)" = "$VERSION" ] && exit 0
+            sleep 30
+          done
+          echo "npm does not serve reverse-engineer@$VERSION yet; rerun all jobs later"; exit 1
+      - name: Publish to the MCP Registry
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.Firzus%2Freverse-engineer/versions/$VERSION")
+          if [ "$code" = 200 ]; then echo "Already on the MCP Registry"; exit 0; fi
+          curl -fsSL "$MCP_PUBLISHER_URL" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
+  verify:
+    needs: [plan, publish]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run the published CLI
+        env:
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          cd "$RUNNER_TEMP"
+          [ "$(npx -y "reverse-engineer@$VERSION" --version)" = "$VERSION" ]

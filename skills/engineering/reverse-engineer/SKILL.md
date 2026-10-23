@@ -34,7 +34,7 @@ Tool notes:
 
 ## Without the MCP server
 
-With Node.js 24.11+, the same tools run as a CLI: `npx -y reverse-engineer@0.1.0-alpha.1 <tool> <path> --pattern X --glob '*.js'`. Otherwise use the shell (batch independent probes in one call with `echo '--- name'` markers and cap output with `head`):
+With Node.js 24.11+, the same tools run as a CLI: `npx -y reverse-engineer@0.1.0-alpha.2 <tool> <path> --pattern X --glob '*.js'`. Otherwise use the shell (batch independent probes in one call with `echo '--- name'` markers and cap output with `head`):
 
 | Need | Windows (Git Bash or PowerShell) | macOS / Linux |
 |---|---|---|

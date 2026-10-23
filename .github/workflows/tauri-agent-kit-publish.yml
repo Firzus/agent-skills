@@ -1,70 +1,185 @@
-name: Publish Tauri agent kit alpha
+name: Publish Tauri agent kit
+# Publishes the version in the kit's manifests to npm, crates.io, the MCP Registry and a GitHub prerelease
+# when it is not there yet. Publications across registries are not atomic: each publication step rechecks
+# its registry, so rerunning all jobs of a failed run publishes only what is missing.
+# Only the publish job can request an OIDC token, and it runs no project or dependency code.
 on:
+  push:
+    branches: [main]
+    paths:
+      - mcp/tauri-agent-kit/server/package.json
+      - mcp/tauri-agent-kit/instrumentation/package.json
+      - mcp/tauri-agent-kit/plugin/Cargo.toml
+      - mcp/tauri-agent-kit/server.json
   workflow_dispatch:
-    inputs:
-      version:
-        description: Exact reviewed alpha version
-        required: true
-        type: string
 permissions:
   contents: read
 concurrency:
-  group: tauri-agent-kit-publish-alpha
+  group: tauri-agent-kit-publish
   cancel-in-progress: false
+env:
+  MCP_PUBLISHER_URL: https://github.com/modelcontextprotocol/registry/releases/download/v1.8.1/mcp-publisher_linux_amd64.tar.gz
 jobs:
-  check:
+  plan:
     if: github.ref == 'refs/heads/main'
-    uses: ./.github/workflows/tauri-agent-kit-check.yml
-  publish:
-    if: vars.TAURI_AGENT_KIT_RELEASE_ENABLED == 'true'
+    runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: mcp/tauri-agent-kit
-    needs: check
-    runs-on: windows-latest
-    environment: release
-    permissions:
-      contents: write
-      id-token: write
-    env:
-      RELEASE_VERSION: ${{ inputs.version }}
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      missing: ${{ steps.plan.outputs.missing }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          v=$(node -p "require('./server/package.json').version")
+          echo "$v" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$' || { echo "Only alpha releases are supported: $v"; exit 1; }
+          node -e '
+            const v = process.argv[1], s = require("./server.json");
+            if (require("./instrumentation/package.json").version !== v) throw new Error("instrumentation version differs");
+            if (s.version !== v || s.packages.some((p) => p.version !== v)) throw new Error("server.json version differs");
+          ' "$v"
+          [ "$(sed -n 's/^version = "\(.*\)"$/\1/p' plugin/Cargo.toml | head -n 1)" = "$v" ] || { echo "plugin/Cargo.toml version differs"; exit 1; }
+          missing=false
+          for p in tauri-agent-kit tauri-agent-kit-instrumentation; do
+            [ "$(npm view "$p@$v" version)" = "$v" ] || missing=true
+          done
+          code=$(curl -s -o /dev/null -w '%{http_code}' -A 'Firzus/agent-skills release workflow' "https://crates.io/api/v1/crates/tauri-plugin-agent-kit/$v")
+          case "$code" in 200) ;; 404) missing=true ;; *) echo "crates.io answered $code"; exit 1 ;; esac
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.Firzus%2Ftauri-agent-kit/versions/$v")
+          case "$code" in 200) ;; 404) missing=true ;; *) echo "MCP Registry answered $code"; exit 1 ;; esac
+          gh release view "v$v" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || missing=true
+          echo "version=$v missing=$missing"
+          { echo "version=$v"; echo "missing=$missing"; } >> "$GITHUB_OUTPUT"
+  check:
+    needs: plan
+    if: needs.plan.outputs.missing == 'true'
+    uses: ./.github/workflows/tauri-agent-kit-check.yml
+  build:
+    needs: [plan, check]
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: mcp/tauri-agent-kit
+    env:
+      VERSION: ${{ needs.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: voidzero-dev/setup-vp@68f39c78aaf39be468cabd2afb09c162574c84af # v1.21.2
         with:
           version: 0.3.2
           node-version: 24
           run-install: false
       - run: vp install
-      - name: Verify reviewed version
-        shell: pwsh
-        run: |
-          $v = $env:RELEASE_VERSION
-          if ($v -notmatch '^\d+\.\d+\.\d+-alpha\.\d+$') { throw 'Only alpha releases are supported' }
-          foreach ($path in @('server/package.json', 'instrumentation/package.json', 'server.json')) {
-            if ((Get-Content $path -Raw | ConvertFrom-Json).version -ne $v) { throw "Version mismatch: $path" }
-          }
-          $metadata = cargo metadata --no-deps --format-version 1 | ConvertFrom-Json
-          if (($metadata.packages | Where-Object name -eq 'tauri-plugin-agent-kit').version -ne $v) { throw 'Rust version mismatch' }
       - run: vp pack
       - run: cargo build -p agent-kit-fixture --locked
       - run: pwsh -File scripts/package-test.ps1
-      - name: Publish npm packages with OIDC
-        shell: pwsh
+      - run: cargo package -p tauri-plugin-agent-kit --locked
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: tauri-agent-kit
+          path: |
+            mcp/tauri-agent-kit/artifacts/packages/tauri-agent-kit-${{ env.VERSION }}.tgz
+            mcp/tauri-agent-kit/artifacts/packages/tauri-agent-kit-instrumentation-${{ env.VERSION }}.tgz
+            mcp/tauri-agent-kit/target/package/tauri-plugin-agent-kit-${{ env.VERSION }}.crate
+          if-no-files-found: error
+  publish:
+    needs: [plan, build]
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
+    defaults:
+      run:
+        working-directory: mcp/tauri-agent-kit
+    env:
+      VERSION: ${{ needs.plan.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tauri-agent-kit
+          path: ${{ runner.temp }}/packages
+      # Trusted publishing needs npm 11.5.1+: npm exchanges the OIDC token, no secret is stored.
+      - name: Publish both packages to npm
         run: |
-          npm publish "artifacts/packages/tauri-agent-kit-$env:RELEASE_VERSION.tgz" --tag alpha --access public --provenance
-          if ($LASTEXITCODE -ne 0) { throw 'Server publication failed; do not overwrite a version' }
-          npm publish "artifacts/packages/tauri-agent-kit-instrumentation-$env:RELEASE_VERSION.tgz" --tag alpha --access public --provenance
-          if ($LASTEXITCODE -ne 0) { throw 'Instrumentation publication failed; inspect partial publication' }
-      - uses: rust-lang/crates-io-auth-action@v1
+          node -e 'const [a, b, c] = process.argv[1].split(".").map(Number); if (a < 11 || (a === 11 && (b < 5 || (b === 5 && c < 1)))) throw new Error("npm 11.5.1+ is required for trusted publishing")' "$(npm --version)"
+          for p in tauri-agent-kit tauri-agent-kit-instrumentation; do
+            if [ "$(npm view "$p@$VERSION" version)" = "$VERSION" ]; then echo "$p already on npm"; continue; fi
+            npm publish "$(find "$RUNNER_TEMP/packages" -name "$p-$VERSION.tgz" | head -n 1)" --tag alpha --access public --provenance --ignore-scripts
+          done
+      - id: crate
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' -A 'Firzus/agent-skills release workflow' "https://crates.io/api/v1/crates/tauri-plugin-agent-kit/$VERSION")
+          case "$code" in 200) echo "missing=false" ;; 404) echo "missing=true" ;; *) echo "crates.io answered $code" >&2; exit 1 ;; esac >> "$GITHUB_OUTPUT"
+      - uses: rust-lang/crates-io-auth-action@3268eb413133e2960fa4ae0e963ca76380c54cd9 # v1.0.6
+        if: steps.crate.outputs.missing == 'true'
         id: crates
-      - run: cargo publish -p tauri-plugin-agent-kit --locked
+      # --no-verify packages the source without compiling it or running build scripts; the build job already did.
+      - name: Publish the plugin to crates.io
+        if: steps.crate.outputs.missing == 'true'
+        run: cargo publish -p tauri-plugin-agent-kit --locked --no-verify
         env:
           CARGO_REGISTRY_TOKEN: ${{ steps.crates.outputs.token }}
-      - name: Create draft prerelease for post-publication verification
+      # npm can hold a new version for review for a few minutes; the MCP Registry checks the npm package.
+      - name: Wait until npm serves both packages
+        run: |
+          for _ in $(seq 1 40); do
+            [ "$(npm view "tauri-agent-kit@$VERSION" version)" = "$VERSION" ] &&
+              [ "$(npm view "tauri-agent-kit-instrumentation@$VERSION" version)" = "$VERSION" ] && exit 0
+            sleep 30
+          done
+          echo "npm does not serve version $VERSION yet; rerun all jobs later"; exit 1
+      - name: Publish to the MCP Registry
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.Firzus%2Ftauri-agent-kit/versions/$VERSION")
+          if [ "$code" = 200 ]; then echo "Already on the MCP Registry"; exit 0; fi
+          curl -fsSL "$MCP_PUBLISHER_URL" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
+  verify:
+    needs: [plan, publish]
+    runs-on: windows-latest
+    steps:
+      - name: Run the published CLI
         env:
-          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.plan.outputs.version }}
         shell: pwsh
         run: |
-          gh release create "v$env:RELEASE_VERSION" --target $env:GITHUB_SHA --draft --prerelease --title "v$env:RELEASE_VERSION" --notes-file docs/release-notes.md "artifacts/packages/tauri-agent-kit-$env:RELEASE_VERSION.tgz" "artifacts/packages/tauri-agent-kit-instrumentation-$env:RELEASE_VERSION.tgz" "target/package/tauri-plugin-agent-kit-$env:RELEASE_VERSION.crate"
-          if ($LASTEXITCODE -ne 0) { throw 'Draft creation failed; packages may already be public' }
+          Set-Location $env:RUNNER_TEMP
+          $actual = npx --yes "tauri-agent-kit@$env:VERSION" --version
+          if ($LASTEXITCODE -ne 0 -or $actual -ne $env:VERSION) { throw "Published CLI reports '$actual'" }
+  release:
+    needs: [plan, verify]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.plan.outputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: tauri-agent-kit
+          path: ${{ runner.temp }}/packages
+      - name: Create the GitHub prerelease
+        run: |
+          if gh release view "v$VERSION" >/dev/null 2>&1; then echo "Release v$VERSION already exists"; exit 0; fi
+          gh release create "v$VERSION" --target "$GITHUB_SHA" --prerelease --title "v$VERSION" \
+            --notes-file mcp/tauri-agent-kit/docs/release-notes.md $(find "$RUNNER_TEMP/packages" -type f -name "*-$VERSION.*")
