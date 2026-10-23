@@ -117,10 +117,11 @@ These rules apply to what the user reads: questions, options, and their explanat
   Split distinct choices (such as player experience and platform) into separate
   questions, even when they fit in one sentence.
 - Ask about behavior and consequences, keeping implementation mechanisms in analysis.
-- List the options under the question, each with its tradeoff: what it provides and
-  what it costs the user or the project, such as effort, speed, maintenance,
-  compatibility, reversal cost, or the choices it closes. Base each consequence on
-  the evidence gathered and mark an uncertain one as such.
+- Letter the options under the question as an indented sublist (a, b, c), so the
+  user can answer with references such as `1b`. Give each option its tradeoff:
+  what it provides and what it costs the user or the project, such as effort,
+  speed, maintenance, compatibility, reversal cost, or the choices it closes. Base
+  each consequence on the evidence gathered and mark an uncertain one as such.
 - Describe the options at the same depth and leave the choice to the user without
   ranking them: an option the agent could prove best by research makes the question
   a fact to look up, not a decision. A recommendation appears only after the user
@@ -134,9 +135,9 @@ Example:
 
 ```text
 1. If you delete a task by mistake, should you be able to restore it?
-   - Yes: a mistake costs nothing, but deleted tasks stay stored and need a
-     place in the interface where they can be found.
-   - No: deletion stays simple and frees the data at once, but a mistake is final.
+   a. Yes: a mistake costs nothing, but deleted tasks stay stored and need a
+      place in the interface where they can be found.
+   b. No: deletion stays simple and frees the data at once, but a mistake is final.
 ```
 
 **Done:** all in-scope branches and relevant consequential edge cases are reviewed,
