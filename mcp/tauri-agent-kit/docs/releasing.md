@@ -1,16 +1,16 @@
 # Release procedure
 
-Only reviewed alpha releases are supported. Nothing publishes on push or merge. First publication requires the maintainer's explicit approval and registry authentication. Never paste tokens into issues, source, logs or chat.
+Only alpha releases are supported. Releases are published by `.github/workflows/tauri-agent-kit-publish.yml` at the repository root; never paste tokens into issues, source, logs or chat.
 
-The source and release workflow are maintained in `Firzus/agent-skills` under
-`mcp/tauri-agent-kit/`. Run the local commands in this document from that
-directory. Migration to this repository does not authorize a release.
+## Prepare a release
 
-The kit check workflow (`.github/workflows/tauri-agent-kit-check.yml` at the
-repository root) runs only on manual dispatch or when called by the manual
-publication workflow. Pushes and pull requests do not trigger CI. A standalone
-manual run does not satisfy a required PR status check; repository branch rules
-must not require this workflow for merging.
+Open a pull request that:
+
+1. Sets the same version in `server/package.json`, `instrumentation/package.json`, `plugin/Cargo.toml`, `Cargo.lock` and both version fields of `server.json`, and updates the pinned versions in the README, `server/README.md` and the `tauri` skill.
+2. Adds the version to `CHANGELOG.md` and rewrites `docs/release-notes.md`, which becomes the GitHub release text.
+3. Passes the public-content gate below and the checks in CONTRIBUTING.md.
+
+Merging a version change to `main` publishes it. Treat the merge as the release decision.
 
 ## Public-content gate
 
@@ -20,53 +20,31 @@ and `docs/media/fixture-results.json` are approved public demo evidence. Do
 not attach the entire artifacts directory. Private integrations, backups and
 original reports belong outside the repository, not just in gitignore. Search
 the staged text for private application names, personal paths and credentials
-before the first commit.
+before the first commit. Review dependency licenses and security advisories;
+the current findings are recorded in `docs/dependencies.md`.
 
-## Local release gate
+## What the workflow does
 
-1. Align server, instrumentation, crate and `server.json` versions. Update the changelog and release notes.
-2. Run all checks from CONTRIBUTING.md, `cargo check -p tauri-plugin-agent-kit --release --locked`, `pwsh -File scripts/package-test.ps1`, `cargo package -p tauri-plugin-agent-kit --locked` and `cargo publish -p tauri-plugin-agent-kit --dry-run --locked` from a clean checkout.
-3. Inspect the archives, including licenses and Rust embedded assets. Compile a separate consumer against the unpacked crate.
-4. Reserve a Windows desktop and run `node scripts/live-test.mjs --require-native`. Require observed click, text and Backspace effects; a safe rejection does not satisfy this gate.
-5. Review dependency licenses and security advisories. The current findings are recorded in `docs/dependencies.md`; acknowledge the informational warnings before publication. Do not silently waive findings.
+On a push to `main` that changes a manifest above, or on manual dispatch from `main`, the workflow:
 
-## First publication
+1. Checks that all manifests carry the same alpha version and stops when the npm packages, the crate, the MCP Registry entry and the `v<version>` GitHub prerelease all exist.
+2. Runs `.github/workflows/tauri-agent-kit-check.yml`, then builds the two npm tarballs and the crate in a job without publishing rights.
+3. In the `release` environment, which deploys only from `main`, publishes the missing artifacts through npm and crates.io trusted publishing and the MCP Registry's GitHub OIDC login. This job runs no project or dependency code.
+4. Runs the published CLI's `--version`, then creates the GitHub prerelease with the two tarballs and the crate.
 
-After approval, confirm the `Firzus/agent-skills` repository's private
-vulnerability reporting, branch checks, and `release` environment. The
-environment must require maintainer approval and restrict deployment to main.
-Review the preparation through the repository's normal PR process. Do not
-create a separate kit repository. GitHub and registry configuration are
-separate authorized operations, not effects of this migration.
+Publications across registries are not atomic. When a run fails, fix the cause and use **Re-run all jobs** on that run: each publication step rechecks its registry and skips what already exists. Never overwrite or unpublish a version to hide a failed release; publish a new one.
 
-Authenticate with npm and crates.io using the maintainer's accounts. Recheck ownership/availability of all names immediately before publication. A 404 is not a reservation. Stop on a collision. The initial version can be published locally from the reviewed, clean checkout:
+npm keeps `latest` on the first version it published. The workflow publishes alphas under the `alpha` dist-tag only; moving `latest` is a manual `npm dist-tag add` by the package owner.
 
-```powershell
-npm publish artifacts/packages/tauri-agent-kit-0.1.0-alpha.1.tgz --tag alpha --access public
-npm publish artifacts/packages/tauri-agent-kit-instrumentation-0.1.0-alpha.1.tgz --tag alpha --access public
-cargo publish -p tauri-plugin-agent-kit --locked
-```
+## Trusted publishing configuration
 
-Check each command's exit status before continuing. Local bootstrap publications do not claim GitHub OIDC provenance. Create a draft prerelease from the reviewed commit and attach only those two tarballs and the matching crate. Do not upload screenshots, backups or raw logs as release attachments.
+Each registry must trust the workflow before the first automated release:
 
-## Subsequent releases
+| Registry | Package | Settings |
+| --- | --- | --- |
+| npm | `tauri-agent-kit`, `tauri-agent-kit-instrumentation` | Trusted publisher GitHub Actions: user `Firzus`, repository `agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment `release` |
+| crates.io | `tauri-plugin-agent-kit` | Trusted publishing: owner `Firzus`, repository `agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment `release` |
 
-Configure trusted publishing for both npm packages and the crate, scoped to
-`Firzus/agent-skills`, workflow `tauri-agent-kit-publish.yml`, environment
-`release`. npm requires a sufficiently recent npm CLI and Node; the workflow
-uses Node 24. Use GitHub-hosted runners. The publishing job remains disabled
-until the repository variable `TAURI_AGENT_KIT_RELEASE_ENABLED` is set to
-`true`. Set it only after explicit release approval, environment protection,
-and publisher configuration are verified. This migration does not set it.
-
-Manually dispatch Publish Tauri agent kit alpha on main with the exact reviewed version. It reruns checks and packaging before entering the approval-gated publishing job. The output remains a draft prerelease. No automatic version bump or stable dist-tag is applied.
-
-Publications across registries are not atomic. If any step fails, stop, inspect which versions already exist, and publish only missing components after checking ownership and the reviewed artifacts. Do not rerun the entire workflow blindly, overwrite a version, or unpublish to hide a failed launch.
-
-## Public installation and visibility gate
-
-In a fresh Windows folder, install the exact npm versions from the public registry, run the installed CLI's `--version`, and run the live test using `AGENT_KIT_SERVER_ENTRY` pointing to the installed entry. Create a new Tauri consumer using the exact crates.io version and exercise its plugin. Do not use path overrides or workspace links for this final check.
-
-Only after these checks pass, mark the GitHub prerelease visible and update the changelog status. Validate `server.json` against its referenced schema, then authenticate with `mcp-publisher login github` and run `mcp-publisher publish`. The server package's `mcpName` identifies the same GitHub namespace. Verify the resulting registry entry and exact package version. Do not describe an unregistered candidate as listed.
+The MCP Registry needs no configuration: the GitHub OIDC login grants the `io.github.Firzus` namespace.
 
 Sources: [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/), [crates.io trusted publishing](https://crates.io/docs/trusted-publishing), [MCP Registry publishing](https://modelcontextprotocol.io/registry/quickstart).
