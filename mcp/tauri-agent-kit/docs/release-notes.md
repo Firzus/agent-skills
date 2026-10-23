@@ -1,12 +1,8 @@
-# tauri-agent-kit 0.1.0-alpha.1
+# tauri-agent-kit 0.1.0-alpha.2
 
-First public alpha: independent, unofficial MCP automation and diagnostics for Tauri 2.12 development builds on Windows x64.
+Maintenance alpha with no functional change from 0.1.0-alpha.1.
 
-- Authenticated local named pipes; no public debugging port.
-- Exact instance and WebView identity, snapshots, native viewport screenshots and zoom.
-- WebView actions and explicitly requested native Windows input.
-- Bounded Rust/console metadata and optional payload-free IPC instrumentation.
+- The source now lives in `mcp/tauri-agent-kit/` of `Firzus/agent-skills`; the package homepage, repository and README links point there.
+- Published by GitHub Actions through npm and crates.io trusted publishing.
 
-Requires WebView2 and Node 22+. Advanced tools are opt-in in both processes. Native input depends on foreground state; an acknowledgement is not a verified effect. Other operating systems and Tauri versions are not supported by this alpha. No production/release bridge is enabled.
-
-See the README for installation and the generic fixture demonstration. APIs may change before 1.0.
+Windows x64, WebView2, Tauri 2.12 and Node 22+ only. Native input depends on foreground state; an acknowledgement is not a verified effect. APIs may change before 1.0. See the README for installation.

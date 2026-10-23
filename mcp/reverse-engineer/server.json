@@ -7,12 +7,12 @@
     "source": "github",
     "subfolder": "mcp/reverse-engineer"
   },
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "reverse-engineer",
-      "version": "0.1.0-alpha.1",
+      "version": "0.1.0-alpha.2",
       "transport": { "type": "stdio" },
       "packageArguments": [{ "type": "positional", "value": "mcp" }]
     }

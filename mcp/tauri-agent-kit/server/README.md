@@ -3,7 +3,7 @@
 Independent, unofficial MCP diagnostics and automation for Tauri 2 development builds on Windows x64. Requires Node 22+, WebView2, and the companion `tauri-plugin-agent-kit` Rust plugin in the target application. Requires Tauri 2.12.4 or a later 2.12 patch.
 
 ```powershell
-npx --yes tauri-agent-kit@0.1.0-alpha.1 --help
+npx --yes tauri-agent-kit@0.1.0-alpha.2 --help
 ```
 
 Without arguments, starts an MCP stdio server. It does not launch or install the target application. Use `--advanced` only for explicitly authorized JavaScript evaluation and IPC; the application must independently enable it.

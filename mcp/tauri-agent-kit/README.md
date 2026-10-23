@@ -15,7 +15,7 @@ The TypeScript server speaks MCP over stdio. The Rust plugin addresses the appli
 - Node 22 or newer, pnpm 10.33.2, and Vite+ 0.3.2.
 - Rust/Cargo and the Windows C++ build tools.
 
-Version 0.1.0-alpha.1 is a public alpha published on npm, crates.io and the MCP Registry. APIs may change before 1.0.
+Version 0.1.0-alpha.2 is a public alpha published on npm, crates.io and the MCP Registry. APIs may change before 1.0.
 
 ## Build and test
 
@@ -39,7 +39,7 @@ Add the plugin dependency to the application's Cargo manifest:
 
 ```toml
 [dependencies]
-tauri-plugin-agent-kit = "=0.1.0-alpha.1"
+tauri-plugin-agent-kit = "=0.1.0-alpha.2"
 ```
 
 Register the plugin before the application runs:
@@ -60,13 +60,13 @@ Configure your MCP client to run the pinned npm package. On Windows, clients tha
   "mcpServers": {
     "tauri-agent-kit": {
       "command": "cmd",
-      "args": ["/d", "/s", "/c", "npx --yes tauri-agent-kit@0.1.0-alpha.1"]
+      "args": ["/d", "/s", "/c", "npx --yes tauri-agent-kit@0.1.0-alpha.2"]
     }
   }
 }
 ```
 
-Run `npx --yes tauri-agent-kit@0.1.0-alpha.1 --help` to inspect the CLI.
+Run `npx --yes tauri-agent-kit@0.1.0-alpha.2 --help` to inspect the CLI.
 
 The client process must inherit `LOCALAPPDATA`. Advanced tools additionally require the server argument `--advanced` and the application's `advanced: true` setting. Treat this as privileged code execution inside the selected WebView, not a sandbox.
 
@@ -95,7 +95,7 @@ Each new snapshot invalidates earlier references. Detached elements, changed sem
 
 ## Optional IPC instrumentation
 
-Grant `agent-kit:allow-record-ipc` only to the WebViews that will report IPC diagnostics. Install `tauri-agent-kit-instrumentation@0.1.0-alpha.1` and import `instrumentInvoke` from `tauri-agent-kit-instrumentation` and wrap the application's existing `invoke` function. The wrapper preserves arguments, results and failures; reporting failures do not change the application result.
+Grant `agent-kit:allow-record-ipc` only to the WebViews that will report IPC diagnostics. Install `tauri-agent-kit-instrumentation@0.1.0-alpha.2` and import `instrumentInvoke` from `tauri-agent-kit-instrumentation` and wrap the application's existing `invoke` function. The wrapper preserves arguments, results and failures; reporting failures do not change the application result.
 
 Only command name, duration, outcome and WebView identity are recorded. Payloads and results are not collected. This does not intercept calls made through other wrappers and is not a complete command registry.
 

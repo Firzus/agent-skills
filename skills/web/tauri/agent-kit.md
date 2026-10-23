@@ -26,7 +26,7 @@ and the installed tool schemas as the contract. Check the selected release's
 platform support, Tauri constraint, runtime prerequisites, and publication
 status before proposing dependency or client configuration changes.
 
-The reviewed baseline is `0.1.0-alpha.1`: Windows x64, WebView2 Evergreen,
+The reviewed baseline is `0.1.0-alpha.2`: Windows x64, WebView2 Evergreen,
 Tauri 2.12.4 or a later 2.12 patch with the unstable feature, and Node 22+.
 It is published on npm, crates.io and the MCP Registry as an alpha; APIs may
 change before 1.0. Recheck these constraints rather than assuming

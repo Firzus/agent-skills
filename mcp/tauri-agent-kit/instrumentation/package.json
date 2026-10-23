@@ -1,6 +1,6 @@
 {
   "name": "tauri-agent-kit-instrumentation",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Optional payload-free IPC instrumentation for tauri-agent-kit.",
   "keywords": [
     "diagnostics",

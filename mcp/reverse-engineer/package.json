@@ -1,6 +1,6 @@
 {
   "name": "reverse-engineer",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Fast, compact reverse engineering for coding agents: a short skill plus a small read-only MCP server.",
   "keywords": [
     "agent-skill",

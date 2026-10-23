@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0-alpha.2 — 2026-10-23
+
+- Source moved from `tools/` to `mcp/` in `Firzus/agent-skills`; package links point to the new location.
+- Published automatically by GitHub Actions with npm and crates.io trusted publishing.
+
+No functional change.
+
 ## 0.1.0-alpha.1 — 2026-10-15
 
 - MCP v2 stdio server and authenticated debug-only Windows named-pipe plugin.
