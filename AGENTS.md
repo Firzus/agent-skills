@@ -14,7 +14,7 @@ This repository publishes agent skills as `Firzus/agent-skills`. Each skill live
 
 - Keep each application's manifests, lockfile, dependencies, build, and tests inside its `mcp/<name>/` workspace, with generated output, dependencies, and logs untracked. Install dependencies only when the task works on that application.
 - Tauri agent kit: publish only generic fixture evidence. Private application captures, logs, and integration backups stay outside the repository and release artifacts. Before native-input tests, reserve the Windows desktop and target only fixture processes you launched; a dispatch acknowledgement or a safe rejection does not prove an observed UI effect.
-- Publishing either application to a registry requires explicit approval. For the Tauri kit, npm and crates.io publication is not atomic: inspect partial results before resuming, as described in `mcp/tauri-agent-kit/docs/releasing.md`.
+- Merging a version change to `main` publishes the application through `.github/workflows/<name>-publish.yml`, so change a version only with explicit approval. After a failed run, use **Re-run all jobs**: each publication step publishes only what is missing.
 
 ## Boundaries
 
