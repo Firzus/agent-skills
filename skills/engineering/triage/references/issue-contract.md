@@ -77,14 +77,15 @@ capabilities instead of inventing them or provisioning services.
   legacy product or other extra labels in the approved draft; keep Need triage on
   an issue whose returned work this run does not handle, and leave issues outside
   the approved publication scope unchanged.
-- Publish every new issue in **Backlog**. A reused issue keeps its status. The user
-  moves selected issues to **Todo** for the week's work.
+- Publish every new issue in **Todo**. A reused issue keeps its status, except
+  captured work in **Backlog** that this run triages and keeps open: it moves to
+  Todo.
 - Record each prerequisite as a native Linear blocking relation. Blocking is the only
   native relation triage creates; cite other related issues in References.
 - When triage changes the content or relations of a reused issue, rewrite its body
   to the template of its type, even when only a relation changes. Preserve its
-  existing information and status; include the rewritten body in the draft for
-  approval. An issue only cited in References stays unchanged.
+  existing information; include the rewritten body in the draft for approval. An
+  issue only cited in References stays unchanged.
 
 ### Need triage
 
@@ -105,13 +106,13 @@ re-routes, or cancels the issue, or prepares the evidence a blocked Interview is
 needs, and removes Need triage in the same approved draft.
 
 It processes captured work: resolve its decisions, rewrite it with its type template,
-apply the Type label, remove Need triage, and preserve its current status. When its
-work needs several issues or waits on a decision, it becomes one record of the
-prepared structure: the Interview issue, whose Work informed section describes the
-captured work, a grouping parent without labels, or an issue of a project's current
-goal. When an open Interview issue already holds the decision, add the captured
-work to its Work informed section and mark this issue Duplicate of it. Mark it
-Duplicate when another issue covers it, or Canceled when the user declines it.
+apply the Type label, and remove Need triage. When its work needs several issues or
+waits on a decision, it becomes one record of the prepared structure: the Interview
+issue, whose Work informed section describes the captured work, a grouping parent
+without labels, or an issue of a project's current goal. When an open Interview
+issue already holds the decision, add the captured work to its Work informed section
+and mark this issue Duplicate of it. Mark it Duplicate when another issue covers it,
+or Canceled when the user declines it.
 
 ## Issue templates
 
