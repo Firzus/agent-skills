@@ -24,14 +24,14 @@ Route by the Type label:
 | Task | Continue this workflow | Linear moves the issue to Done when the linked PR merges |
 | Bug | Run `debug` to reproduce, diagnose, and fix, then continue at step 4 of this workflow | Linear moves the issue to Done when the linked PR merges |
 | Prototype | Run `prototype` on the issue's question | User validates the result; push the reviewed commit when an experiment was built, record the handoff, move to Done |
-| Research | Run `deep-research` on the issue's question | Research complete; publish the report as a Linear document, record the answer, remaining uncertainty, and document link, move to Done |
+| Research | Run `research` on the issue's question | Research complete; publish the report as a Linear document, record the answer, remaining uncertainty, and document link, move to Done |
 | Interview | Run `interview` on the issue's decision, with the results of its blocking issues | `interview` completes with the user's confirmation; record the Interview result and update the existing issues it informs, move to Done |
 
 Every Linear write in these routes, including updates to dependent issues, follows
 [Update Linear at meaningful transitions](delivery.md#update-linear-at-meaningful-transitions).
 Findings that answer the decision of the Interview issue a Research or Prototype
 issue blocks go in this issue's result, for that Interview issue's run. Other
-findings that `debug`, `prototype`, or `deep-research` return follow step 1.4 of the
+findings that `debug`, `prototype`, or `research` return follow step 1.4 of the
 main workflow; a sub-skill settles no choice outside the issue's question.
 
 When a Research or Prototype issue closes, name the Interview issue it unblocks as
@@ -59,7 +59,7 @@ it.
 
 ### Research
 
-A Research issue closes when `deep-research` completes, without waiting for the
+A Research issue closes when `research` completes, without waiting for the
 user. Teammates cannot open the local dossier, so publish its `overview.md` as a
 Linear document attached to the issue, titled from its heading; on a rerun, update
 the issue's existing report document instead of adding another. Replace links to
