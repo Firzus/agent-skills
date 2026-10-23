@@ -83,8 +83,8 @@ out of Linear.
 ## 4. Publish and hand over
 
 Publish with the [triage publication rules](../triage/SKILL.md#4-publish-and-hand-over):
-parent first, then sub-issues attached to it, all in Backlog, with native blocking
-relations. Verify content, labels, parent membership, status, and relations.
+parent first, then sub-issues attached to it, with native blocking relations.
+Verify content, labels, parent membership, status, and relations.
 
 The parent is complete when all its sub-issues are Done; Linear closes it
 automatically when the team enables Parent auto-close. Return the named links,

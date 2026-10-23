@@ -1,6 +1,6 @@
 ---
 name: triage
-description: Turn a new request, a Need triage issue, an Interview result, or a Linear project to continue into approved Linear work by finding existing records, choosing the work type and structure, settling open decisions through interview, drafting with strict templates, and publishing in Backlog.
+description: Turn a new request, a Need triage issue, an Interview result, or a Linear project to continue into approved Linear work by finding existing records, choosing the work type and structure, settling open decisions through interview, drafting with strict templates, and publishing in Todo.
 disable-model-invocation: true
 ---
 
