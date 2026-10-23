@@ -1,40 +1,100 @@
 # agent-skills
 
-Practical workflows for your coding agent: review a change, explore a design,
-investigate a question, or implement a scoped feature.
+An opinionated development method for coding agents: every change starts as an
+approved Linear issue, ships test-first, passes an independent review, and reaches
+a pull request only when you say so.
 
 [![skills.sh](https://skills.sh/b/Firzus/agent-skills)](https://skills.sh/Firzus/agent-skills)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](./LICENSE)
 
-A skill is a folder of instructions, references, and optional helpers that your
-agent loads for a particular task. Start with one skill on a small project; you
-do not need to install the whole collection or replace your global instructions.
+The method is a set of skills that call each other. Next to it, the collection
+offers standalone skills for engineering, web, and game work that you can install
+one at a time. These are independent, community-maintained skills, not official
+vendor products.
 
-These are independent, community-maintained skills, not official vendor products.
+[The method](#the-method) · [How it works](#how-it-works) · [Get started](#get-started) · [Choose by task](#choose-by-task) · [Requirements](#requirements) · [All skills](#all-skills) · [Contribute](#contribute)
 
-[Try a skill](#try-a-skill) · [Choose by task](#choose-by-task) · [Requirements](#requirements) · [All skills](#all-skills) · [Contribute](#contribute)
+## The method
 
-## Try a skill
+Agents fail in predictable ways: they build before the decision is made, ask you
+what the repository already says, grade their own work, and publish without asking.
+The method answers each failure with a rule.
 
-You need a coding agent that supports skills, plus Node.js and npm for the installer.
+- **No issue, no code.** Every request, even a small one, goes through `triage`
+  and becomes a Linear issue. `implement` refuses to work without one.
+- **Facts are looked up; only decisions are asked.** The agent reads the
+  repository, Linear, and the documentation before asking you anything. You answer
+  only choices that change scope, acceptance, or structure.
+- **Decide before building.** When a decision needs evidence, triage plans a
+  Research or Prototype issue first, then an Interview issue that settles the
+  decision with that evidence.
+- **Tests first.** Each behavior starts with a failing test wherever a test
+  boundary exists.
+- **Evidence over claims.** Independent read-only reviewers check requirements,
+  standards, and correctness. Agreement between agents is not proof; the
+  implementing agent verifies every finding.
+- **You hold the keys.** Publishing issues, opening a pull request, merging, and
+  deploying each wait for your explicit approval.
+- **One policy, focused skills.** General rules (authorization, delegation,
+  verification, Git conventions, code comments) live once in a
+  [shared operating policy](./skills/engineering/setup-harness/references/operating-policy.md).
+  Skills hold only what is specific to their task.
 
-1. Open a terminal in the project where you want to use the skill.
-2. Install a focused review workflow:
+## How it works
+
+```mermaid
+flowchart LR
+    request([Your request]) --> triage
+    triage <-->|open decisions| interview
+    triage -->|after your approval| issue[(Linear issue)]
+    issue --> implement
+    implement -->|by issue type| route{{"debug · prototype<br/>research · interview"}}
+    implement --> review[code-review]
+    review --> pr([Pull request you approve])
+    implement -.->|Need triage| triage
+```
+
+`triage` finds existing work, picks the issue type, settles open decisions through
+`interview`, and publishes the issues in Todo once you approve the drafts.
+`implement` then runs one issue at a time and routes it by type:
+
+| Issue type | What `implement` runs | Done when |
+| --- | --- | --- |
+| Task | Test-first implementation, then the `code-review` loop | Its pull request merges |
+| Bug | `debug` to reproduce and fix, then the `code-review` loop | Its pull request merges |
+| Prototype | `prototype` to answer the question with an observable experiment | You validate the result |
+| Research | `research` with a reusable evidence dossier | The report is published on the issue |
+| Interview | `interview` with the results of the issues it waited for | You confirm the decisions |
+
+Work that would change an issue's outcome or scope goes back to `triage` with the
+**Need triage** label instead of growing inside the current issue.
+`improve-architecture` feeds the same loop: it publishes approved refactors as
+Task issues ready for `implement`.
+
+## Get started
+
+You need a coding agent that supports skills and subagents, Node.js and npm for
+the installer, and a Linear workspace your agent can reach.
+
+1. Open a terminal in your project and install the method:
 
    ```bash
-   npx skills add Firzus/agent-skills --skill code-review
+   npx skills add Firzus/agent-skills --skill setup-harness triage interview implement debug prototype research code-review improve-architecture
    ```
 
-3. Follow the installer's prompts to choose your agent and destination.
-   Installation defaults to project scope; use `-g` only if you want global installation.
-4. Select **code-review** through your agent's skill picker or supported invocation
-   syntax. If it is not discovered, check the installation location and restart the session.
-5. Ask it to review a small, clearly identified change. Provide the intended behavior,
-   the files or diff to review, and a read-only scope.
+   The installer asks for your agent and destination. It installs in the project
+   by default; add `-g` to install globally.
 
-The result should be findings and verification limits, not automatic edits or a
-published pull request. This workflow uses independent reviewers, so check that
-your agent supports subagents before trying it.
+2. Run **setup-harness** once. It installs the shared operating policy in your
+   personal instructions, after showing you the complete change. The method
+   relies on it.
+3. Run **triage** on a small request. Review the drafted issue and approve its
+   publication.
+4. Run **implement** on the published issue. It asks you to validate opening the
+   pull request once the work is verified.
+
+If an invoked skill is not found, check the installation location and restart the
+session.
 
 <details>
 <summary>Browse, update, or remove installed skills</summary>
@@ -48,8 +108,8 @@ npx skills add Firzus/agent-skills
 
 # Manage installed skills
 npx skills list
-npx skills update code-review
-npx skills remove code-review
+npx skills update implement
+npx skills remove implement
 ```
 
 See the [skills CLI documentation](https://github.com/vercel-labs/skills)
@@ -59,20 +119,21 @@ for supported agents, installation modes, and troubleshooting.
 
 ## Choose by task
 
-| I want to… | Start with |
-| --- | --- |
-| Review an existing change without modifying it | [code-review](./skills/engineering/code-review/SKILL.md) |
-| Diagnose a bug or verify an authorized fix | [debug](./skills/engineering/debug/SKILL.md) |
-| Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) |
-| Investigate a question across multiple sources | [research](./skills/engineering/research/SKILL.md) |
-| Turn a new request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) |
-| Execute a prepared Linear issue | [implement](./skills/engineering/implement/SKILL.md) |
-| Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) |
-| Explain how shipped software works from its files | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) |
+Some skills work on their own, without Linear or the rest of the method.
 
-Research, prototyping, preparation, and implementation are different entry points,
-not mandatory consecutive phases. Some workflows call other skills; install the
-ones referenced by the workflow you choose.
+| I want to… | Start with | Needs the method |
+| --- | --- | --- |
+| Turn a request into approved Linear work | [triage](./skills/engineering/triage/SKILL.md) | Yes |
+| Execute a published Linear issue | [implement](./skills/engineering/implement/SKILL.md) | Yes |
+| Find refactors worth planning | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Yes |
+| Review an existing change without modifying it | [code-review](./skills/engineering/code-review/SKILL.md) | No |
+| Diagnose a bug or verify an authorized fix | [debug](./skills/engineering/debug/SKILL.md) | No |
+| Compare interface ideas or test feasibility | [prototype](./skills/engineering/prototype/SKILL.md) | No |
+| Investigate a question across multiple sources | [research](./skills/engineering/research/SKILL.md) | No |
+| Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) | No |
+| Explain how shipped software works from its files | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) | No |
+
+Engineering skills still assume the shared operating policy, even when used alone.
 
 ## Requirements
 
@@ -81,8 +142,10 @@ every action they can perform. Check the selected skill's prerequisites first.
 
 | Workflow | Additional requirements |
 | --- | --- |
+| Engineering skills | The shared operating policy installed by [setup-harness](#personal-harness-instructions); these skills rely on it and repeat only its safety boundaries |
+| The method (triage, implement, improve-architecture) | A Linear workspace your agent can read and write, with approval for external writes |
 | Independent reviews and delegated research | An agent with subagent support |
-| Figma or Linear workflows | The relevant integration, account access, and approval for external writes |
+| Figma workflows | The Figma integration, account access, and approval for external writes |
 | Chrome debugging and automation | Google Chrome and the `chrome-devtools` CLI from the npm package `chrome-devtools-mcp`; the skill proposes the global install and waits for approval |
 | Video reports | FFmpeg and access to the application being recorded |
 | Runbooks | Bash to run them (Git Bash on Windows); an authenticated GitHub CLI to set secrets and variables, otherwise the runbook lists them to set by hand |
@@ -91,10 +154,11 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Reverse engineering | The reverse-engineer MCP server for the fast route (Node.js 24.11+); the skill installs Ghidra, jadx or ilspycmd per user when a task needs them |
 
 Host support for installing skills does not guarantee identical behavior or tool
-availability. Explicit-invocation workflows such as **triage**, **interview**, **implement**,
-**improve-architecture**, and **setup-harness** should be selected deliberately.
+availability. Explicit-invocation workflows such as **triage**, **interview**,
+**implement**, **improve-architecture**, and **setup-harness** run only when you
+select them.
 
-### Optional: personal harness instructions
+### Personal harness instructions
 
 [setup-harness](./skills/engineering/setup-harness/SKILL.md) asks which harnesses
 and languages to configure, previews the complete changes, and waits for approval.
@@ -110,8 +174,8 @@ creates no backups. Existing unrelated instructions are preserved.
 Cursor's project `AGENTS.md` is not a global substitute. See the
 [native destinations](./skills/engineering/setup-harness/references/harnesses.md)
 for loading limits, and review the
-[shared policy template](./skills/engineering/setup-harness/references/operating-policy.md)
-before choosing this skill.
+[shared operating policy](./skills/engineering/setup-harness/references/operating-policy.md)
+before running this skill.
 
 ### Tauri companion tooling
 
@@ -150,7 +214,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [research](./skills/engineering/research/SKILL.md) | Multi-source investigation with a reusable evidence dossier. |
 | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) | Explain shipped software (Electron apps, native binaries and Node addons, Go/Rust, .NET, APK) from its files, with cited evidence and an optional read-only MCP server. |
 | [runbook](./skills/engineering/runbook/SKILL.md) | Write an interactive bash runbook that guides a person through manual setup, credentials, or a cutover. |
-| [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Set up reviewed personal instructions for selected harnesses without backups or system-prompt replacement. |
+| [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Install the shared operating policy as reviewed personal instructions for selected harnesses. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
 | [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview, and continue a project goal by goal. |

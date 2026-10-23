@@ -11,9 +11,9 @@ tests, and delivery. Review does not authorize publication or product execution.
 
 ## 1. Fix the review scope
 
-1. Read the request. Identify repository, authoritative
-   issue/spec, delivery boundary, and task-owned changes. Prefer supplied requirements,
-   then verified links in the work record or commits; never infer intent from code.
+1. Read the request. Identify repository, authoritative issue/spec, delivery
+   boundary, and task-owned changes. Prefer supplied requirements, then verified
+   links in the work record or commits; never infer intent from code.
 2. Resolve the base to a commit ID and state the comparison:
 
    | Request | Comparison |

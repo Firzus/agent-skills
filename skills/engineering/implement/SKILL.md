@@ -36,8 +36,9 @@ PR. It does not authorize unrelated work, merge, or deployment.
 3. Trace the affected behavior through callers, contracts, configuration, and tests.
    Separate unrelated local work and pre-existing failures.
 4. Resolve a consequential open choice or conflict with `interview` when every
-   option stays within the issue's outcome and current scope; record the answer in Accepted decisions and the acceptance
-   criteria it refines, or in an issue comment for a type without those sections.
+   option stays within the issue's outcome and current scope; record the answer in
+   Accepted decisions and the acceptance criteria it refines, or in an issue comment
+   for a type without those sections.
    When an option would change that outcome or extend that scope, or answering
    needs research or observation,
    [return the issue to triage](references/intake-and-handoff.md#return-work-to-triage).
@@ -69,7 +70,7 @@ For each production behavior:
 1. Write a focused test at an existing caller-facing boundary.
 2. Run it and inspect the failure: it must demonstrate the missing behavior,
    not a broken fixture, dependency, or command.
-3. Make the test pass.
+3. Make a correct change that passes the test.
 4. Run the test again; refactor while green, then move to the next behavior.
 
 | Work shape | Verification |

@@ -26,8 +26,8 @@ A single factual lookup needs a direct answer, not this full workflow.
    Explain the planned delegation and its resource implications.
 
 **Done:** scope, authorization, answer conditions, and any limits explicit.
-Read-only restrictions remain in force;
-if required dossier writes are prohibited, retain the plan and report the blocker.
+Read-only restrictions remain in force; if required dossier writes are prohibited,
+retain the plan and report the blocker.
 
 ## 2. Prepare the dossier and research map
 

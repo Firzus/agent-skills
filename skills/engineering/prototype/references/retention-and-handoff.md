@@ -51,7 +51,8 @@ issue; `triage` drafts any new executable issue, and other new work is captured
 only with approval as a Need triage issue, labeled only Need triage, in Backlog, with the Observed and Source sections.
 Confirm destination and write scope, re-read before updating, preserve concurrent
 content, and verify the returned or re-read result. Git push approval is not Linear
-publication approval outside an `implement` run.
+publication approval outside an `implement` run. After an uncertain write, inspect
+for partial success before retrying to avoid duplicate records.
 
 Use this compact handoff, omitting empty optional fields:
 
