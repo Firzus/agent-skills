@@ -20,7 +20,7 @@ Optimize the assets the app actually ships: images, video, animated media, fonts
 Leading words for this skill:
 
 - **pipeline** — extend the project's existing asset tooling; do not replace a working optimizer.
-- **clean** — write final asset paths only; leave no temp folders, unused variants, orphaned heavy sources, or ffmpeg two-pass logs.
+- **clean** — write final asset paths only; leave no temp folders, task-created variants, or ffmpeg two-pass logs, and no orphaned heavy sources except those the user chose to keep.
 - **strategy** — every asset gets a deliberate decision from the matrix in Step 3 (importance x placement x loading context); no blanket policies.
 - **LCP** — treat LCP candidates (hero image, video poster, CSS background) as highest priority; never lazy-load them.
 
@@ -67,7 +67,7 @@ Track with this checklist (one item per step below):
 - [ ] 4. Plan per-type transforms and commands
 - [ ] 5. Generate optimized assets into final paths
 - [ ] 6. Replace references with optimized markup and loading attributes
-- [ ] 7. Delete old unoptimized assets and unused variants
+- [ ] 7. Delete the old unoptimized assets and unused variants the user approves
 - [ ] 8. Re-scan and verify references stay clean
 - [ ] 9. Verify visuals/build and report
 ```
@@ -154,9 +154,9 @@ Done when: no runtime reference still points at an unoptimized original that has
 
 ### Step 7 — Delete old assets
 
-List unreferenced heavy originals (rasters, videos, GIFs, legacy font formats) and unused generated variants, and delete them once the user approves that list. Remove the temp output directories this task created. Keep SVG sources and any source files the user asked to retain.
+List unreferenced heavy originals (rasters, videos, GIFs, legacy font formats) and unused variants that predate this task, and delete them once the user approves that list. Remove the temp output directories this task created. Keep SVG sources and any source files the user asked to retain.
 
-Done when: the tree is **clean** — only referenced optimized assets, intentional vectors, and documented kept sources remain.
+Done when: the tree is **clean** — only referenced optimized assets, intentional vectors, and documented kept sources remain, including originals the user chose to keep.
 
 ### Step 8 — Re-scan and verify cleanliness
 

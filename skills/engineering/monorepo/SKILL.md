@@ -21,7 +21,7 @@ fit the explicitly authorized scope.
 ## 1. Discover the workspace and requested change
 
 1. Read repository state, existing architecture decisions, and relevant CI
-   workflows.
+   workflows. Preserve unrelated local work.
 2. Identify actual workspace roots and members from manifests and tool discovery,
    not folder names alone. Record package/project identifiers, paths, owners,
    deployable applications, reusable libraries, tooling, and generated artifacts.

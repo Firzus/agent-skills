@@ -47,9 +47,11 @@ their reason. Preserve IDs and provenance instead of overwriting research histor
 ## Publish only when requested
 
 When `implement` runs a Research issue, that invocation authorizes `implement` to
-publish the report on that issue. Otherwise present proposed content, action, and destination for approval
-before publishing or updating a shared issue/document. Re-read existing records, preserve concurrent content, and verify
-returned state. Report exact pending operations.
+publish the report on that issue. Otherwise present proposed content, action, and
+destination for approval before publishing or updating a shared issue/document.
+Re-read existing records, preserve concurrent content, and verify returned state.
+After an uncertain write, inspect for partial success before retrying; report exact
+pending operations.
 
 Return a concise chat summary and an absolute link to `overview.md`. If sharing is
 requested, explain that teammates cannot use local paths; publish only approved safe

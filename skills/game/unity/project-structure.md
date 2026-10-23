@@ -78,8 +78,8 @@ renaming is safe exactly as long as the pair travels together.
 - After each batch, refresh Unity and clear the console to zero new errors and warnings before the next one. C# renames need a green compile before moving on.
 
 Sequence a large restructure from least to most risky, with a console check per
-step and a checkpoint commit when commits are authorized — content moves are GUID-safe, code moves break
-compilation:
+step and a checkpoint commit when commits are authorized — content moves are
+GUID-safe, code moves break compilation:
 
 ```
 1. Art assets   — flatten by feature, apply prefixes + texture suffixes
