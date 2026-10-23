@@ -60,9 +60,8 @@ with `warn` saying the interface may differ, and list it in the handoff.
    order its comment gives and each `\n`, write a literal `%` as `%%`, and
    phrase the string so it reads correctly whatever fills `%s`. Use the
    language's yes answer in `TXT_YES_NO` and the `TXT_YES` regex (French:
-   `[o/N]`, `^[OoYy]`), and an unambiguous term for "dry run" (French:
-   "simulation"). Keep `TXT_SECRETS` and `TXT_VARS` short: the summary aligns
-   on the longest label.
+   `[o/N]`, `^[OoYy]`). Keep `TXT_SECRETS` and `TXT_VARS` short: the summary
+   aligns on the longest label.
 3. Replace the example stages, in dependency order, with text in the same
    language. Quote third-party interface labels exactly as displayed, even in
    another language. `TOTAL_STAGES` must equal the count of `stage` calls; give
@@ -125,19 +124,19 @@ for the user.
 
 ## 5. Hand off
 
-Give the user, in their language, two complete commands to paste unchanged:
-a preview (`--dry-run`, named with the term used in `TEXT`) and the real run.
-Each command first moves to the project root, since the env file path is
-relative to it, then calls the script by absolute path. On Windows, call the
-Git Bash executable you verified rather than `bash`, which PowerShell often
-resolves to WSL, and stop if the folder change fails:
+Give the user, in their language, one complete command to paste unchanged: the
+real run, since your rehearsal already previewed every screen. The command
+first moves to the project root, since the env file path is relative to it,
+then calls the script by absolute path. On Windows, call the Git Bash
+executable you verified rather than `bash`, which PowerShell often resolves to
+WSL, and stop if the folder change fails:
 
 ```powershell
-Set-Location -LiteralPath "C:\path\to\project" -ErrorAction Stop; & "C:\Program Files\Git\bin\bash.exe" "C:\path\to\project\scripts\setup-runbook.sh" --dry-run
+Set-Location -LiteralPath "C:\path\to\project" -ErrorAction Stop; & "C:\Program Files\Git\bin\bash.exe" "C:\path\to\project\scripts\setup-runbook.sh"
 ```
 
 Also list any stage marked with `warn` in step 2. For a disposable runbook,
 tell the user to delete it after the real run, or offer to delete it once they
 confirm it is done. For a repeatable one, offer to link it from the README.
 
-**Done:** the user has both commands and the list of unverified stages.
+**Done:** the user has the command and the list of unverified stages.
