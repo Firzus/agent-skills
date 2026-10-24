@@ -84,7 +84,7 @@ For each production behavior:
   follows step 1.4; ordinary internal choices remain with implementation.
 
 **Done:** each behavior has failing/passing evidence or a justified substitute;
-code, context, and contracts agree.
+code, comments, context, and contracts agree.
 
 ## 4. Verify the complete result
 
@@ -93,8 +93,7 @@ code, context, and contracts agree.
    and requests targeted follow-up.
 2. Run focused checks and required project checks.
 3. For user-visible behavior, exercise the ordinary integrated entry point,
-   interactions, and relevant narrow or target-device layout. Keep the review
-   surface available through supported tools.
+   interactions, and relevant narrow or target-device layout.
 4. Identify prototype, simulation, or live data. Distinguish inspected behavior,
    executed checks, and unavailable runtime evidence.
 5. After a visual bug fix or when a recorded demo is requested, use the available
@@ -116,11 +115,16 @@ Missing required verification remains a delivery limitation, not a claimed pass.
    step 4 produced it, and remaining uncertainty.
 2. Preserve the existing record; link artifacts and evidence rather than creating
    another backlog. Report acceptance, integration, and deployment separately.
-3. Return the result, affected files, checks, limitations, and next owner/action.
-   When video evidence was produced, include its supported preview or absolute local
-   path, the demonstrated scenario and observed result, and any review limitations.
+3. Return the report in this format, omitting the Open line when nothing remains.
    Another issue or a broader goal needs its own run, not automatic continuation
    into the next feature.
+
+   ```text
+   Done: <outcome> (<issue identifier>)
+   Check: <the way to check it>
+   Open: <what remains open>
+   Next: <next action and its owner>
+   ```
 
 **Done:** the agreed completion boundary is met and required updates are verified.
 Otherwise report the completed local work and exact pending delivery operations.
