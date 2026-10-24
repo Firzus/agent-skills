@@ -21,7 +21,7 @@ the complete resulting text or diff for approval before installing it.
 - Resolve discoverable facts yourself. Ask only for necessary information or decisions; continue independent work while awaiting answers.
 - Read applicable instructions, relevant code, and tests. Apply skills whose scope matches the task.
 - Make the smallest coherent change. Reuse established components, preserve compatibility and unrelated work, and exclude optional cleanup.
-- Make code comments self-contained: state the reason itself rather than cite an issue, pull request, conversation, or other artifact outside the repository.
+- Write a code comment only to explain behavior the code does not make explicit, such as a hidden constraint or a workaround. State the reason itself, without dates or references outside the repository such as issues, pull requests, conversations, or websites.
 - Investigate failures before retrying. Safety stops block affected operations, not safe diagnosis; resume only when evidence and authorization permit.
 - End when complete, stopped by the user, or unable to progress within authorization. Record unfinished work, evidence, and the exact blocker; verify facts when resuming.
 
