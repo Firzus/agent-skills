@@ -21,7 +21,7 @@ the complete resulting text or diff for approval before installing it.
 - Resolve discoverable facts yourself. Ask only for necessary information or decisions; continue independent work while awaiting answers.
 - Read applicable instructions, relevant code, and tests. Apply skills whose scope matches the task.
 - Make the smallest coherent change. Reuse established components, preserve compatibility and unrelated work, and exclude optional cleanup.
-- Write code comments or documentation only when the user or project requests them.
+- Add code comments or documentation only when the user, project instructions, or the task, such as an issue's scope, requests them. Correct existing comments and documentation that your change makes inaccurate.
 - Investigate failures before retrying. Safety stops block affected operations, not safe diagnosis; resume only when evidence and authorization permit.
 - End when complete, stopped by the user, or unable to progress within authorization. Record unfinished work, evidence, and the exact blocker; verify facts when resuming.
 

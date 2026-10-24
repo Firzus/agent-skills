@@ -36,8 +36,8 @@ The method answers each failure with a rule.
 - **You hold the keys.** Publishing issues, opening a pull request, merging, and
   deploying each wait for your explicit approval.
 - **One policy, focused skills.** General rules (authorization, delegation,
-  verification, Git conventions) live once in a
-  [shared operating policy](./skills/engineering/setup-harness/references/operating-policy.md).
+  verification, Git conventions) live once in a [shared operating
+  policy](./skills/engineering/setup-harness/references/operating-policy.md).
   Skills hold only what is specific to their task.
 
 ## How it works
