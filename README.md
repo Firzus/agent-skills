@@ -36,7 +36,7 @@ The method answers each failure with a rule.
 - **You hold the keys.** Publishing issues, opening a pull request, merging, and
   deploying each wait for your explicit approval.
 - **One policy, focused skills.** General rules (authorization, delegation,
-  verification, Git conventions, code comments) live once in a
+  verification, Git conventions) live once in a
   [shared operating policy](./skills/engineering/setup-harness/references/operating-policy.md).
   Skills hold only what is specific to their task.
 
@@ -206,7 +206,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [debug](./skills/engineering/debug/SKILL.md) | Evidence-led diagnosis and verification of authorized bug fixes. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
-| [implement](./skills/engineering/implement/SKILL.md) | Execute a published Linear issue by work type, with tests and documentation. |
+| [implement](./skills/engineering/implement/SKILL.md) | Execute a published Linear issue by work type, with tests. |
 | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and publish approved refactors as Linear sub-issues. |
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve decisions through question rounds until the agreed scope and consequential edge cases are covered. |
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |

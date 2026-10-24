@@ -20,7 +20,7 @@ existing task record or conversation:
 
 | Finding | Action |
 | --- | --- |
-| Confirmed in-scope defect or requirement breach | Correct with the normal test-first loop and affected documentation |
+| Confirmed in-scope defect or requirement breach | Correct with the normal test-first loop |
 | Unestablished claim | Inspect sources or run a focused safe check before editing |
 | Rejected claim | Record the evidence-based reason |
 | Optional improvement or unrelated existing issue | Report separately; keep out of the current diff |

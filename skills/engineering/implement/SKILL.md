@@ -1,15 +1,14 @@
 ---
 name: implement
-description: Execute a published Linear issue by work type, with status tracking, test-first verification, current documentation, and a verified handoff.
+description: Execute a published Linear issue by work type, with status tracking, test-first verification, and a verified handoff.
 disable-model-invocation: true
 ---
 
 # Implement a verified change
 
-Deliver one coherent, reviewable outcome. Tests, context, and updates to affected
-documentation belong to the change; create a new document only when the issue or
-the user asks for it. This skill runs only on a published Linear issue; a request
-without an issue goes to `triage` first: say so and stop.
+Deliver one coherent, reviewable outcome. Tests and the issue's accepted context
+changes belong to the change. This skill runs only on a published Linear issue; a
+request without an issue goes to `triage` first: say so and stop.
 
 Invoking this skill on a Linear issue authorizes, for that issue: status, label,
 description, and comment updates, including creating the Need triage label when
@@ -63,7 +62,7 @@ authorized work. In read-only or planning mode, retain a plan rather than edit.
 
 **Done:** baseline and checks identified, delivery expectations explicit.
 
-## 3. Implement with tests and documentation
+## 3. Implement with tests
 
 For each production behavior:
 
@@ -81,14 +80,11 @@ For each production behavior:
 | Documentation only | Verify sources, claims, and links; no artificial code change or failing test |
 
 - Deliver the accepted context delta using [intake and handoff](references/intake-and-handoff.md#deliver-context-with-the-change).
-- Keep comments beside verified, non-obvious rationale or caller obligations.
-  Give each workaround its removal condition; update stale affected comments.
-  Avoid narration, decorative labels, vague TODOs, and disabled code.
 - A consequential decision or a research or prototype need found while implementing
   follows step 1.4; ordinary internal choices remain with implementation.
 
 **Done:** each behavior has failing/passing evidence or a justified substitute;
-code, context, contracts, and affected documentation agree.
+code, context, and contracts agree.
 
 ## 4. Verify the complete result
 
