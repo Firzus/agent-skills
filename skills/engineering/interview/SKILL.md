@@ -106,27 +106,35 @@ finding, not silently added to this interview.
 
 ### Questions
 
-Present the questions directly in the conversation. Number the independent
-questions of a round in one message, then wait for the user's answers. Keep a
-question whose answer depends on another unanswered question for a later round.
-If the user answers only some, keep the rest open for the next round.
+Present the questions directly in the conversation. Put the independent questions
+of a round in one message, then wait for the user's answers. Keep a question whose
+answer depends on another unanswered question for a later round. If the user
+answers only some, keep the rest open for the next round.
 
-These rules apply to what the user reads: questions, options, and their explanations.
+Write each question as three parts:
 
-- Use the user's language, everyday words, and one short question per decision.
-  Split distinct choices (such as player experience and platform) into separate
+1. `<n>.` then one short question, numbered within the round.
+2. `Context:`, labeled in the user's language, then a plain explanation, free of
+   technical terms, that lets someone outside the project understand the subject
+   and what is at stake: what each option provides and what it costs the user or
+   the project, such as effort, speed, maintenance, compatibility, reversal cost,
+   or the choices it closes. Add a concrete example when it makes the stakes
+   clearer. Omit the context only when the option labels make their consequences
+   evident.
+3. The options as a lettered list of short labels (a, b, c), so the user can
+   answer with references such as `1b` (question 1, option b).
+
+These rules apply to what the user reads: questions, context, and options.
+
+- Use the user's language, everyday words, and one question per decision. Split
+  distinct choices (such as player experience and platform) into separate
   questions, even when they fit in one sentence.
 - Ask about behavior and consequences, keeping implementation mechanisms in analysis.
-- Letter the options under the question as an indented sublist (a, b, c), so the
-  user can answer with references such as `1b`. Give each option its tradeoff:
-  what it provides and what it costs the user or the project, such as effort,
-  speed, maintenance, compatibility, reversal cost, or the choices it closes. Base
-  each consequence on the evidence gathered and mark an uncertain one as such.
+- Base each consequence on the evidence gathered and mark an uncertain one as such.
 - Describe the options at the same depth and leave the choice to the user without
   ranking them: an option the agent could prove best by research makes the question
   a fact to look up, not a decision. A recommendation appears only after the user
   delegates the decision (step 2.4).
-- Add an example or a term explanation when the question needs it.
 - Test contradictions and consequential failures with concrete situations.
 - Rephrase an unclear question before advancing.
 - Treat user preferences as decisions; silence is not an answer.
@@ -135,9 +143,13 @@ Example:
 
 ```text
 1. If you delete a task by mistake, should you be able to restore it?
-   a. Yes: a mistake costs nothing, but deleted tasks stay stored and need a
-      place in the interface where they can be found.
-   b. No: deletion stays simple and frees the data at once, but a mistake is final.
+
+Context: Restoring makes a mistake cost nothing, but deleted tasks stay stored and
+need a place in the interface where they can be found. Permanent deletion keeps
+the interface simple and frees the data at once, but a mistake is final.
+
+a. Allow restoring deleted tasks
+b. Delete tasks permanently
 ```
 
 **Done:** all in-scope branches and relevant consequential edge cases are reviewed,
