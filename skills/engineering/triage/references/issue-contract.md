@@ -136,8 +136,9 @@ becomes several Tasks, each with its own story and scenarios; see
 ## Authoring rules
 
 - Express acceptance as behavior, not files to edit.
-- Scope updates to existing documentation. A new document, including a context
-  document, enters an issue's scope only when the user asks for it.
+- Documentation work enters an issue's scope only when the user or project
+  instructions request it. Context changes follow
+  [the context delta](domain-context.md#prepare-the-context-delta) instead.
 - Use verified code locations as navigation hints. A small prototype fragment may
   clarify an accepted contract; identify its provenance and experimental status.
 - Name existing tests in Verification only when they are verified; otherwise
@@ -178,7 +179,7 @@ Routine internal choices stay with the implementer when outcome/contracts are un
 
 1. Propose additional issues only for independently verifiable outcomes,
    separate ownership, or real dependencies.
-2. Prefer end-to-end slices, each including its tests and affected documentation.
+2. Prefer end-to-end slices, each including its tests and any requested documentation.
    For a broad compatibility refactor, use a safe sequence instead: add the
    compatible form, migrate callers, then retire the old form. State where
    integration verification is required.
