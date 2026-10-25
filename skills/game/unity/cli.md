@@ -32,8 +32,10 @@ Installation and update traps:
 ## Build and test
 
 `unity build` and `unity test` launch a batch-mode Editor resolved from
-`ProjectVersion.txt`. Close the project's interactive Editor before running
-tests. Discover build options with `unity build --help`:
+`ProjectVersion.txt`, so `unity test` needs the project's interactive Editor
+closed. To test while the Editor stays open, run tests inside it as
+[iteration.md](./iteration.md#run-tests-in-the-open-editor) describes. Discover
+build options with `unity build --help`:
 
 ```bash
 unity build . --target StandaloneWindows64 --output-path ./Build/MyGame.exe
@@ -94,21 +96,22 @@ The first successful `eval` with an argument is the readiness proof. While the
 Editor is busy, the CLI keeps retrying a command until its `--timeout`, so size
 that timeout to the import: several minutes for a cold `Library`. If it still expires with `Server Busy` or `settling`, rerun it
 within a total time limit, then report the timeout rather than proceeding.
-Treat any other error as a real failure.
+`EDITOR_NOT_READY` quoting a dialog means the Editor waits for someone to
+answer it. Treat any other error as a real failure.
 
 `unity status` takes no positional project argument (unlike `test` and `close`);
-use its `--project-path` filter when needed. A modal dialog shows there as
-`STATUS_BLOCKED_BY_DIALOG`, naming the dialog in `blockedBy`.
+use its `--project-path` filter when needed. A modal dialog can show there as
+`STATUS_BLOCKED_BY_DIALOG`, naming the dialog in `blockedBy`. A dialog raised
+during a test run can leave it at `ready` instead, while main-thread commands
+fail with `EDITOR_NOT_READY` quoting the dialog.
 
-Reserve `-automated` (`unity open . --args -automated`, where `--args`
-forwards raw flags to the Editor) for unattended sessions such as tests or bulk
-operations. That Editor shows no dialog and answers each one with cancel:
+`unity open . --args -automated` (`--args` forwards raw flags to the Editor)
+opens an Editor that shows no dialog and answers each one with cancel:
 `EditorUtility.DisplayDialog` returns `false`, `DisplayDialogComplex` returns
 `1`. Tools that confirm before acting then abort silently, and quitting with
-unsaved changes stops at the hidden "Save changes?" prompt. Open the Editor
-without the flag whenever the user will work in it (manual review, in-scene
-trials, Play Mode checks); the CLI works either way. A running Editor
-auto-answers dialogs when this returns `false`:
+unsaved changes stops at the hidden "Save changes?" prompt. The CLI works with
+or without the flag. A running Editor auto-answers dialogs when this returns
+`false`:
 
 ```bash
 unity command eval --code "return UnityEditorInternal.InternalEditorUtility.isHumanControllingUs;" --result-only --timeout 60

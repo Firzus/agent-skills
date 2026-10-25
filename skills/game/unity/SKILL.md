@@ -7,8 +7,9 @@ description: >-
   Server, Unity CLI) and writes for the Unity 7 CoreCLR runtime.
   Use when writing, reviewing, or architecting Unity code, when building a
   custom Editor tool or inspector, when driving the Unity Editor from an
-  agent, when choosing between two Unity tools that do the same job, or when
-  the user mentions Unity, Unity 7, UI Toolkit, UGUI, Addressables, Content
+  agent, when iterating on a change the user tests in the Editor, when
+  choosing between two Unity tools that do the same job, or when the user
+  mentions Unity, Unity 7, UI Toolkit, UGUI, Addressables, Content
   Directories, URP, HDRP, DOTS, ECS, netcode, custom inspector,
   SerializeReference, CoreCLR, IL2CPP, Unity CLI, Unity MCP, or Unity build
   and performance questions.
@@ -65,6 +66,7 @@ Discussions posts: the 7000.0 manual still carries pages written for 6.7.
 | Per-platform build config | **Build Profiles** | hand-edited global Build Settings |
 | Build-time scene processing | **`AssetPostprocessor.OnProcessScene`** | `IProcessSceneWithReport`, `[PostProcessScene]` |
 | Tests | **Unity Test Framework**, edit-mode first | play-mode by default |
+| Tests while the Editor is open | **`unity command run_tests`** — [iteration.md](./iteration.md) | closing the Editor for `unity test` |
 | Release builds | **IL2CPP** | the CoreCLR player in shipping builds |
 | Driving the Editor from an agent | **Unity CLI** — [cli.md](./cli.md) | asking the user to click through the Editor |
 
@@ -77,6 +79,7 @@ Say which row you left and what made it worth leaving.
 | --- | --- |
 | CoreCLR runtime, static state, serialization, `EntityId` | [runtime.md](./runtime.md) |
 | Unity CLI, driving the Editor from an agent, screen captures, why not MCP | [cli.md](./cli.md) |
+| Iterating while the user tests in the Editor: tracked Editor, tests without closing it, trial preparation | [iteration.md](./iteration.md) |
 | UI Toolkit, design tokens, data binding, MVP, localization | [ui.md](./ui.md) |
 | Custom Editor tools, inspectors, `[SerializeReference]` | [editor-tools.md](./editor-tools.md) |
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS, profiling, allocations | [architecture.md](./architecture.md) |
