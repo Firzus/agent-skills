@@ -106,8 +106,9 @@ finding, not silently added to this interview.
 
 ### Questions
 
-Present the questions directly in the conversation. Put the independent questions
-of a round in one message, then wait for the user's answers. Keep a question whose
+Put the independent questions of a round in one message, inside a single `text`
+code block, with lines wrapped at about 80 characters so the block reads without
+horizontal scrolling, then wait for the user's answers. Keep a question whose
 answer depends on another unanswered question for a later round. If the user
 answers only some, keep the rest open for the next round.
 
