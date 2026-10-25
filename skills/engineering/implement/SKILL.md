@@ -115,16 +115,15 @@ Missing required verification remains a delivery limitation, not a claimed pass.
    step 4 produced it, and remaining uncertainty.
 2. Preserve the existing record; link artifacts and evidence rather than creating
    another backlog. Report acceptance, integration, and deployment separately.
-3. Return the report in this format, omitting the Open line when nothing remains.
-   Another issue or a broader goal needs its own run, not automatic continuation
-   into the next feature.
+3. End the reply with the report as a Markdown list rather than a code block, so
+   it wraps and renders like the rest of the reply. Omit the Open item when nothing
+   remains. Another issue or a broader goal needs its own run, not automatic
+   continuation into the next feature.
 
-   ```text
-   Done: <outcome> (<issue identifier>)
-   Check: <the way to check it>
-   Open: <what remains open>
-   Next: <next action and its owner>
-   ```
+   - **Done:** <outcome> (<issue identifier>)
+   - **Check:** <the way to check it>
+   - **Open:** <what remains open>
+   - **Next:** <next action and its owner>
 
 **Done:** the agreed completion boundary is met and required updates are verified.
 Otherwise report the completed local work and exact pending delivery operations.
