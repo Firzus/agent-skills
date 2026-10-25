@@ -147,6 +147,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Independent reviews and delegated research | An agent with subagent support |
 | Figma workflows | The Figma integration, account access, and approval for external writes |
 | Chrome debugging and automation | Google Chrome and the `chrome-devtools` CLI from the npm package `chrome-devtools-mcp`; the skill proposes the global install and waits for approval |
+| Cloudflare operations | The `cf` CLI from the npm package `cf` (open beta) and a Cloudflare account; the skill proposes the global install and waits for approval |
 | Video reports | FFmpeg and access to the application being recorded |
 | Runbooks | Bash to run them (Git Bash on Windows); an authenticated GitHub CLI to set secrets and variables, otherwise the runbook lists them to set by hand |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
@@ -229,6 +230,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | --- | --- |
 | [adsense](./skills/web/adsense/SKILL.md) | Publisher monetization, ad placement, policy, and performance. |
 | [astryx](./skills/web/astryx/SKILL.md) | Build interfaces with the Astryx design system. |
+| [cloudflare-cli](./skills/web/cloudflare-cli/SKILL.md) | Operate Cloudflare resources and Workers projects through the `cf` CLI. |
 | [dokploy-best-practices](./skills/web/dokploy-best-practices/SKILL.md) | Deploy and operate applications with Dokploy. |
 | [extract-theme](./skills/web/extract-theme/SKILL.md) | Extract a website's design tokens for Tailwind and shadcn/ui. |
 | [nextjs](./skills/web/nextjs/SKILL.md) | Build and migrate Next.js applications. |
