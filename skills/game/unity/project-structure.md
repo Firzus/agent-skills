@@ -62,7 +62,7 @@ layer suffix maps to the bootstrap / persistent / content split in
 
 ## C# conventions
 
-- One public type per file, `filename == type name`. Satellite enums, structs, and DTOs get their own files.
+- One public type per file, `filename == type name`. Satellite enums, structs, and DTOs get their own files. A family of small polymorphic types offered in one `[SerializeReference]` dropdown, such as the instructions of one subject, shares one file named after the family (`CameraInstructions.cs`): each is a few lines and they are read together. A `MonoBehaviour` or `ScriptableObject` always keeps its own file, because Unity binds the script asset to the file name.
 - Mirror the folder path in the namespace: `Code/Combat/Weapons/` → `Project.Combat.Weapons`.
 - Name each `.asmdef` file after its internal `name` field, and a test assembly after the assembly it targets — `Project.Combat.Weapons.Tests`.
 - Pick one namespace depth per subsystem and apply it uniformly. Acronyms stay uppercase: `HUD`, `VFX`, `HSM`.
