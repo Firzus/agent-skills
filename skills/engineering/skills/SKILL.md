@@ -46,7 +46,7 @@ Agent ids and their paths vary per agent (`claude-code` → `.claude/skills/`, `
 
 ## Authoring a skill repo
 
-A skill is a directory holding `SKILL.md` with YAML frontmatter — `name` (lowercase, hyphens) and `description` (what it does *and* when to fire it). Everything about writing the body well lives in the `writing-for-agents` reference; what the CLI adds is discovery.
+A skill is a directory holding `SKILL.md` with YAML frontmatter: `name` (lowercase, hyphens) and `description` (when a user or agent should select it, including manual-only skills). When creating or revising skill content, use `authoring` for the authoring procedure. If unavailable, report the missing dependency and leave content edits pending. This skill covers CLI discovery and management.
 
 Discovery walks known container directories — repo root if it holds `SKILL.md`, then `skills/`, `skills/.curated/`, `skills/.experimental/`, `skills/.system/`, plus each agent's own directory — up to three levels deep. Both `skills/<name>/SKILL.md` and the catalog layout `skills/<category>/<name>/SKILL.md` are found. A `SKILL.md` at a shallower level **shadows everything nested below it**, so a stray `SKILL.md` at a category root hides that whole category. `--full-depth` extends discovery outside the container directories (`examples/`, `tests/`).
 
@@ -55,7 +55,7 @@ Hide a work-in-progress skill with `metadata.internal: true` in the frontmatter;
 ```markdown
 ---
 name: my-skill
-description: What this skill does and when to use it
+description: Use when a specific request, situation, or input calls for this skill.
 metadata:
   internal: true
 ---

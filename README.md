@@ -202,6 +202,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 
 | Skill | Purpose |
 | --- | --- |
+| [authoring](./skills/engineering/authoring/SKILL.md) | Write and review skills, their invocation conditions, references, and templates. |
 | [chrome-devtools](./skills/engineering/chrome-devtools/SKILL.md) | Debug and automate Chrome from the shell: console, network, cookies, performance, accessibility, and memory. |
 | [code-review](./skills/engineering/code-review/SKILL.md) | Independent read-only review of a scoped change. |
 | [debug](./skills/engineering/debug/SKILL.md) | Evidence-led diagnosis and verification of authorized bug fixes. |
@@ -209,6 +210,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
 | [implement](./skills/engineering/implement/SKILL.md) | Execute a published Linear issue by work type, with tests. |
 | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and publish approved refactors as Linear sub-issues. |
+| [instructions](./skills/engineering/instructions/SKILL.md) | Write and review project instructions and other agent-facing documentation outside skills. |
 | [interview](./skills/engineering/interview/SKILL.md) | Resolve decisions through question rounds until the agreed scope and consequential edge cases are covered. |
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |
 | [prototype](./skills/engineering/prototype/SKILL.md) | Answer a design or feasibility question through an experiment. |
@@ -221,7 +223,6 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [triage](./skills/engineering/triage/SKILL.md) | Turn a request into approved Linear issues or projects, clarified through interview, and continue a project goal by goal. |
 | [unslop](./skills/engineering/unslop/SKILL.md) | Propose evidenced dead-code and slop removals in the conversation, then apply the accepted ones. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
-| [writing-for-agents](./skills/engineering/writing-for-agents/SKILL.md) | Write useful skills and project instructions. |
 | [youtube-transcript](./skills/engineering/youtube-transcript/SKILL.md) | Turn video speech and visual evidence into a learning report. |
 
 ### Web and app development

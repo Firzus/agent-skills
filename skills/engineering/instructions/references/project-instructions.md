@@ -60,6 +60,7 @@ only safe permitted checks; installs, deployments, data changes, and credential
 operations are not justified merely by a documentation check.
 
 **Ready for approval:** full text/diff, destinations, material rationale, and gaps
-are presented. Follow the main skill's approval gate before any instruction write.
+are presented. Follow the [main skill's approval gate](../SKILL.md#3-draft-or-revise-then-obtain-required-approval)
+before any project-instruction write.
 **Done:** approved changes applied and documentary/loading checks reported separately;
 unknown facts and untested runtime behavior remain explicit.

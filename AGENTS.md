@@ -6,7 +6,8 @@ This repository publishes agent skills as `Firzus/agent-skills`. Each skill live
 
 ## Skills
 
-- Write and revise skills with `skills/engineering/writing-for-agents/SKILL.md`. Its approval gate also applies to changes to this file.
+- Write and revise skills with `skills/engineering/authoring/SKILL.md`.
+- Write and revise project instructions with `skills/engineering/instructions/SKILL.md`, including its approval gate for changes to this file.
 - Engineering skills assume that `skills/engineering/setup-harness/references/operating-policy.md` is installed. A general rule lives only in that policy; a skill states its task-specific actions and keeps its own safety boundaries (commit, merge, deployment, force-push, external writes, secrets).
 - When adding, renaming, moving, or removing a skill, update together its folder, its section's group in `.claude-plugin/marketplace.json`, and its row in the matching section of the `README.md` "All skills" catalog. Edit "Choose by task" or "Requirements" only when the skill changes them.
 - `README.md` serves newcomers: choosing, installing, and prerequisites. Keep maintenance details out of it.

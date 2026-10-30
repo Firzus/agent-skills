@@ -45,6 +45,7 @@
       "source": "./",
       "description": "Cross-cutting engineering skills \u2014 browser automation, code health.",
       "skills": [
+        "./skills/engineering/authoring",
         "./skills/engineering/chrome-devtools",
         "./skills/engineering/code-review",
         "./skills/engineering/debug",
@@ -52,6 +53,7 @@
         "./skills/engineering/imagegen",
         "./skills/engineering/implement",
         "./skills/engineering/improve-architecture",
+        "./skills/engineering/instructions",
         "./skills/engineering/interview",
         "./skills/engineering/monorepo",
         "./skills/engineering/prototype",
@@ -64,7 +66,6 @@
         "./skills/engineering/triage",
         "./skills/engineering/unslop",
         "./skills/engineering/video-report",
-        "./skills/engineering/writing-for-agents",
         "./skills/engineering/youtube-transcript"
       ]
     }

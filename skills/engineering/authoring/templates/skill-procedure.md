@@ -1,6 +1,6 @@
 ---
 name: <skill-name>
-description: <Outcome and distinct invocation cases; human summary if manual-only.>
+description: <Use when concrete requests, situations, or inputs call for this skill; add useful exclusions, including for manual-only skills.>
 ---
 
 # <Outcome>
