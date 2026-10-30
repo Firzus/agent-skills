@@ -1,6 +1,6 @@
 ---
 name: <skill-name>
-description: <What this reference governs and when it should be consulted.>
+description: <Use when concrete requests, situations, or inputs require consulting these rules; add useful exclusions, including for manual-only skills.>
 ---
 
 # <Reference topic>

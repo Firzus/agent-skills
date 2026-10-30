@@ -1,18 +1,15 @@
 ---
-name: writing-for-agents
-description: Create, update, and review AGENTS.md files, skills, and their references. Propose project-instruction changes for approval before writing.
+name: instructions
+description: Use when creating, revising, or reviewing project AGENTS.md files, scoped rules, or other agent-facing documentation outside skills. Use setup-harness for personal harness instructions and authoring for skill files.
 ---
 
 # Write useful agent instructions
 
-Make behavior explicit with the smallest sufficient document. Treat every change
-as a rewrite of the whole document: reread it with the new requirement, then
-rewrite the affected passages so the result reads as if written in one pass.
-Rules, exceptions, and clarifications stacked on existing text make a document
-hard to follow. A prohibition is the usual symptom: a "do not" added beside the
-instruction that already says what to do. Correct that instruction instead. A
-justified no-change result is valid; a template is a coverage check, not a quota
-of content.
+Make behavior explicit with the smallest sufficient document. Read the whole
+document with the new requirement, then rewrite affected passages so the result
+reads as if written in one pass. Correct the owning instruction instead of stacking
+rules, exceptions, or prohibitions beside it. A justified no-change result is valid;
+a template is a coverage check, not a quota of content.
 
 ## 1. Inspect the document and its authority
 
@@ -20,15 +17,11 @@ of content.
    Read surrounding documents.
 2. Inspect sources supporting facts, paths, commands, and conventions. Separate
    observed behavior, accepted policy, proposed policy, and unknowns.
-3. Choose the relevant procedure:
-
-   | Document | Procedure |
-   | --- | --- |
-   | Create or update project instructions or scoped rules | [Project instructions](references/project-instructions.md) |
-   | Create or update a skill or its references | [Skill authoring](references/skill-authoring.md) |
-   | Other agent-facing documentation | Apply the editorial rules below and preserve its owning format |
-
-4. For a narrow correction, inspect its dependencies without turning it into a full
+3. For project instructions or scoped rules, read
+   [Project instructions](references/project-instructions.md) for discovery,
+   selective template coverage, and maintenance. For other agent-facing documentation,
+   apply the editorial rules below and preserve its owning format.
+4. For a narrow correction, inspect dependencies without turning it into a full
    setup or reorganization.
 
 **Done:** destinations, authority, relevant facts, and missing decisions identified.
@@ -76,17 +69,17 @@ manufacturing a proposal or requesting unnecessary approval.
 | Unverified claim or command | Verify safely or expose the gap in the proposal; never invent a requirement |
 
 **Project-instruction gate:** before creating, editing, moving, or deleting an
-`AGENTS.md` or scoped rule, present the full
-proposed text or complete diff, exact destinations, reasons for material removals,
-and unresolved assumptions. Wait for explicit approval of that content and action.
-Show the proposal in chat or a supported preview, not by writing target files first.
+`AGENTS.md` or scoped rule, present the full proposed text or complete diff, exact
+destinations, reasons for material removals, and unresolved assumptions. Wait for
+explicit approval of that content and action. Show the proposal in chat or a
+supported preview, not by writing target files first.
 
 A general request to create/update instructions, approval of a plan, or unrelated
 implementation approval is not approval of unseen text. If the user already supplied
 and explicitly approved the exact text/diff and destination, reuse that approval.
 Changed policy or scope requires renewed approval. Silence is not approval.
 
-For other documents, act within the existing edit authorization and any user-requested
+For other documents, act within existing edit authorization and any user-requested
 approval gate. In planning/read-only mode, retain proposals without writes.
 
 **Done:** draft complete and applicable approval obtained.
@@ -96,8 +89,8 @@ approval gate. In planning/read-only mode, retain proposals without writes.
 
 1. Re-read targets before writing. Preserve concurrent changes; if they invalidate
    an approved proposal, reconcile and obtain approval for the revised content.
-2. Apply only the authorized changes. Update affected links/registration when in
-   scope; do not install skills, configure services, or publish as a side effect.
+2. Apply only authorized changes. Update affected links/registration when in scope;
+   do not configure services or publish as a side effect.
 3. Verify statements against their sources, paths/links/anchors, metadata, and
    consistency with applicable parent or scoped rules. Run only safe authorized
    checks; report unexecuted commands as unverified rather than successful.
