@@ -21,8 +21,8 @@ The first session turns an idea into a project and its first units.
    work beyond the current goal.
 4. Propose the project record below and the list of issues: for each, its title,
    type, what it delivers or asks, and what blocks it; for a Research issue,
-   whether it is a direct lookup or a delegated investigation and its expected
-   cost. Ask whether the granularity and the blocking relations are right.
+   whether it is a direct lookup or a delegated investigation. Ask whether the
+   granularity and the blocking relations are right.
 5. On the user's yes, create the project with its Product label and the record
    as its description (not its summary), the issues in Todo with their content
    (see [linear](linear.md#issue-content)), then the blocking relations, and
@@ -77,7 +77,7 @@ that would exceed it is split before it starts.
 | Type | Run it with | Needs the user |
 | --- | --- | --- |
 | Task, Bug | [Steps 4 to 6](../SKILL.md#4-build-test-first) of the workflow, after reading the context it touches; a Bug whose cause is not established goes through `debug` first. The project's agreement covers its build | For review, shipping, and any human check |
-| Research | A direct lookup, or [`../../research/SKILL.md`](../../research/SKILL.md) for a delegated investigation within the cost agreed for it; a delegated investigation without an agreed cost waits for the user's yes | Only to agree a delegated investigation's cost |
+| Research | A direct lookup, or [`../../research/SKILL.md`](../../research/SKILL.md) for a delegated investigation; one the user has not agreed to as delegated waits for their yes | Only to agree a delegated investigation |
 | Prototype | [`../../prototype/SKILL.md`](../../prototype/SKILL.md) | For the judgment the experiment defines |
 | Interview | [`../../interview/SKILL.md`](../../interview/SKILL.md) | Yes |
 

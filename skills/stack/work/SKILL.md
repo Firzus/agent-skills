@@ -58,7 +58,7 @@ it for the part named below, then come back here with its result:
 | The request needs | Read | Use it to |
 | --- | --- | --- |
 | The cause of a bug, failure, or regression | [`../debug/SKILL.md`](../debug/SKILL.md) | Reproduce and find the cause; stop at its "Ready to fix" and bring back the cause and the proposed fix |
-| A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question; announce the planned delegation and its cost first, and wait for the user's yes |
+| A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question; announce the planned delegation first, without estimating its time or tokens, and wait for the user's yes |
 | A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment, after the user agrees to it |
 
 A single fact from outside the repository (a version, an API detail) needs a
