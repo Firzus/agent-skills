@@ -30,11 +30,15 @@ describe how they usually play out.
 5. **Linear holds the work.** Every Small change is a Linear issue and every
    Project a Linear project, written so that any session can continue from it
    alone.
-6. **One unit at a time.** A unit is what one session can finish, check with a
-   test it can run (or a check named for the user), and hand over as one change
-   the user can review in one sitting, a few hundred changed lines without tests
-   and generated files. Larger work becomes several units, planned only as far
-   as current knowledge allows.
+6. **One unit per session.** A unit is what one session can finish, check with
+   a test it can run (or a check named for the user), and hand over as one
+   change the user can review in one sitting, a few hundred changed lines
+   without tests and generated files. A session, one conversation, does one
+   thing: a unit (a task, a fix, an investigation, an experiment, or an
+   interview), the shaping of a project, or one take-stock. It stops at its
+   handoff and the next starts from Linear, so each starts with a fresh context
+   and the user judges one result at a time. Larger work becomes several units,
+   planned only as far as current knowledge allows.
 7. **Tests first.** Each behavior starts with a failing test at a boundary a
    caller uses, wherever such a boundary exists.
 8. **Evidence over claims.** A change is done when its checks ran and the user
@@ -61,10 +65,13 @@ it for the part named below, then come back here with its result:
 | A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question; announce the planned delegation first, without estimating its time or tokens, and wait for the user's yes |
 | A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment, after the user agrees to it |
 
-A single fact from outside the repository (a version, an API detail) needs a
-direct lookup, not `research`. When a skill this stack names is not installed
-next to this one, say so and treat its step as pending instead of improvising
-it.
+`debug` serves the fix of the same session, and `interview` the decisions of
+its unit. A delegated investigation or an experiment is a unit of its own: the
+session's unit when the request asks for it, otherwise a separate unit, which
+makes the work a Project. A single fact from outside the repository (a version,
+an API detail) needs a direct lookup, not `research`. When a skill this stack
+names is not installed next to this one, say so and treat its step as pending
+instead of improvising it.
 
 ## 2. Size the work
 
@@ -73,7 +80,7 @@ Tell the user the size in one sentence with its reason. They can override it.
 | Size | When | In Linear | What follows |
 | --- | --- | --- | --- |
 | Quick | The request says everything that matters, the change is small and easy to undo, and no decision is open | Nothing | Build, verify, show |
-| Small | One unit: fits one session, one check, and one reviewable change | One issue, Task or Bug | Settle decisions, agree in one message, build, verify, show |
+| Small | One unit: fits one session, one check, and one reviewable change | One issue: Task or Bug, or the Research or Prototype the request asks for | Settle decisions, agree in one message, build, verify, show |
 | Project | More than one unit, or open questions that this session cannot settle before the work can be detailed | One project | Follow [project](references/project.md) |
 
 A bug fix is Quick when its correct behavior is evident and the fix is local; a
@@ -135,7 +142,9 @@ While building:
 
 - A decision the user owns pauses the work that depends on it: settle it as in
   step 3 and continue the rest.
-- A need for research or an experiment goes through the table in step 1.
+- A need for a delegated investigation or an experiment is a separate unit, as
+  step 1 states: stop the part that depends on it and propose the change of
+  size.
 - A change the agreed outcome cannot do without needs a new agreement; tell the
   user what changed. Work that outgrows one unit becomes a Project.
 - Anything else you notice is captured as
@@ -179,7 +188,8 @@ screenshot, a recording, or the command output. Then report:
   give a command only to someone who runs commands.
 - **Decisions:** the notable choices you made, with their reason.
 - **Open:** what remains, including checks you could not run. Omit when empty.
-- **Next:** the next action and who owns it.
+- **Next:** the next action and who owns it; work that follows starts in a new
+  session with `/work` and its issue or project.
 
 Then ask whether to ship. Shipping means pushing the branch and opening a pull
 request that closes the issue, if any, following [ship](references/ship.md); the

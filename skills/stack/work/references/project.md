@@ -27,8 +27,8 @@ The first session turns an idea into a project and its first units.
    as its description (not its summary), the issues in Todo with their content
    (see [linear](linear.md#issue-content)), then the blocking relations, and
    read them back.
-6. Continue with [Drive the project](#drive-the-project) in the same session,
-   unless the user stops there.
+6. Write "Resume here" with the first unit, and stop: each unit runs in a
+   session of its own, as [Drive the project](#drive-the-project) describes.
 
 The yes to the project, and to each later take-stock, also covers the routine
 Linear writes of its current goal: claiming and updating its issues and
@@ -87,34 +87,34 @@ leads to a decision and the user is present, take that decision in the same
 session rather than wait for an Interview issue; an Interview issue exists only
 for a decision deferred to later or to someone else. Record each result as
 [linear](linear.md#results) describes and add each decision to "Decisions so
-far". A finished Task or Bug waits for the user's review and yes to ship: it
-stays In Progress, listed in "Resume here", and its ship request joins the next
-message to the user.
+far". A finished Task or Bug asks to ship in its own session; until the user
+answers, it stays In Progress, listed in "Resume here".
 
 ## Drive the project
 
-When the user runs `/work` on the project:
+When the user runs `/work` on the project or one of its issues, the session
+runs one unit or one take-stock:
 
 1. Reconcile the record with Linear and Git (statuses, merged pull requests,
    open branches, results not yet recorded, Linear updates listed in
-   `chore(wip)` commits) and correct it; take stock when a trigger below
-   applies.
-2. Resume first the project's In Progress issues, unless the user says another
-   session is working on one. Uncommitted changes in a unit's branch or worktree
-   are its unverified work: inspect and verify them rather than discard them.
-   Then find the frontier: the project's Todo issues whose blockers are all
-   Done, Canceled, or Duplicate, or In Review when you branch from the
-   prerequisite as the table below describes. Backlog issues, including captured
-   ones, wait for a take-stock.
-3. Run the frontier units one after another, without asking before each. Run
-   units in parallel only when they share no files and no open decision, each in
-   its own worktree and branch, and never more at once than the user can review.
-4. While a question to the user waits for an answer, run only units that need no
-   one (research, code with a runnable check) and queue the others.
-5. After each unit, update its issue, "Decisions so far", and "Resume here".
-6. Come back to the user for decisions, judgments, reviews, shipping and merges,
-   and take-stock agreements, gathered in one message when they can wait
-   together.
+   `chore(wip)` commits) and correct it. When a trigger below applies, the
+   session takes stock instead of running a unit.
+2. Choose the unit: the issue the user named; otherwise an In Progress issue of
+   the project, unless the user says another session is working on it;
+   otherwise the first issue of the frontier, the project's Todo issues whose
+   blockers are all Done, Canceled, or Duplicate, or In Review when you branch
+   from the prerequisite as the table below describes. Uncommitted changes in a
+   unit's branch or worktree are its unverified work: inspect and verify them
+   rather than discard them. Backlog issues, including captured ones, wait for a
+   take-stock.
+3. Claim the unit and run it as [Units](#units) describes. Parallel work means
+   several sessions, each on its own unit, worktree, and branch, only for units
+   that share no files and no open decision, and never more at once than the
+   user can review.
+4. When the unit ends, done or stopped, update its issue, "Decisions so far",
+   and "Resume here" with the next unit or the take-stock due, then stop. The
+   closing message gathers what the user must act on: decisions, judgments, the
+   review and ship request, and the issue to start the next session with.
 
 ## Take stock
 
@@ -143,7 +143,7 @@ Then:
    including what happens to the branches and pull requests of canceled work
    (rebase onto the new approach, or close), and make them only after the user's
    yes.
-7. Write "Resume here".
+7. Write "Resume here" with the unit the next session starts with, and stop.
 
 ## When the way is blocked
 
