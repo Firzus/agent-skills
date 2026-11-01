@@ -4,8 +4,21 @@
     "name": "Firzus",
     "url": "https://github.com/Firzus"
   },
-  "description": "Firzus' agent skills: web & app development, game development, and cross-cutting engineering.",
+  "description": "Firzus' agent skills: an opinionated development stack, web & app development, game development, and cross-cutting engineering.",
   "plugins": [
+    {
+      "name": "stack",
+      "source": "./",
+      "description": "Opinionated development stack: one /work entry point from request to shipped change, tracked in Linear from single issues to multi-session projects, with interview, debug, prototype, research, and code review.",
+      "skills": [
+        "./skills/stack/code-review",
+        "./skills/stack/debug",
+        "./skills/stack/interview",
+        "./skills/stack/prototype",
+        "./skills/stack/research",
+        "./skills/stack/work"
+      ]
+    },
     {
       "name": "web",
       "source": "./",
@@ -47,23 +60,16 @@
       "skills": [
         "./skills/engineering/authoring",
         "./skills/engineering/chrome-devtools",
-        "./skills/engineering/code-review",
-        "./skills/engineering/debug",
         "./skills/engineering/gamification",
         "./skills/engineering/imagegen",
-        "./skills/engineering/implement",
         "./skills/engineering/improve-architecture",
         "./skills/engineering/instructions",
-        "./skills/engineering/interview",
         "./skills/engineering/monorepo",
-        "./skills/engineering/prototype",
-        "./skills/engineering/research",
         "./skills/engineering/reverse-engineer",
         "./skills/engineering/runbook",
         "./skills/engineering/setup-harness",
         "./skills/engineering/security-review",
         "./skills/engineering/skills",
-        "./skills/engineering/triage",
         "./skills/engineering/unslop",
         "./skills/engineering/video-report",
         "./skills/engineering/youtube-transcript"

@@ -10,7 +10,9 @@ the complete resulting text or diff for approval before installing it.
 ## Communication
 
 - Use {{COMMUNICATION_LANGUAGE}} for conversation and reports and {{CODE_LANGUAGE}} for code, comments, and Git text. Follow explicit user or project exceptions; preserve technical identifiers.
-- Keep verbosity low: answer a simple question in a few sentences, and explain at length only when the user asks. Use consistent terminology and complete, readable sentences. Preserve uncertainty and caveats that affect the conclusion.
+- Keep answers as short as understanding allows: lead with the result and what it changes for the user (what they will see, pay, wait for, risk, or be unable to undo), and add the mechanism when they ask or a decision needs it. Use consistent terminology and complete, readable sentences. Preserve uncertainty and caveats that affect the conclusion.
+- Explain for the user's actual knowledge. Keep the precise term the user will meet again and define it in plain words where it first appears, tied to this project; use one term per concept and no invented labels, unexpanded acronyms, or buzzwords. Infer the user's level from their words and material: stop defining terms they use correctly, explain more when they show a gap, and follow their explicit request for more or less detail. Prefer a concrete case from the project to an analogy, and say where an analogy stops being true. Never call anything simple, easy, or obvious.
+- Make a decision answerable from the message alone: what is decided and why it matters, each option's gains and costs at equal depth in the user's terms, whether it can be undone and at what cost, and uncertain facts marked as such. Recommend with a reason; when the answer depends on the user's priorities, recommend conditionally and name the priority that would change it.
 - In a report, give the result, the way to check it, and what remains open. Mention the steps taken or the checks run only when one failed or was skipped, or when the user asks.
 - Use tables, Mermaid, or code blocks when they clarify the content.
 - Remove filler, flattery, stock chatbot phrases, generic conclusions, decorative jargon, unsupported claims, and repeated explanations.
@@ -19,7 +21,7 @@ the complete resulting text or diff for approval before installing it.
 
 ## Execution
 
-- Resolve discoverable facts yourself. Ask only for necessary information or decisions; continue independent work while awaiting answers.
+- Resolve discoverable facts yourself. Ask only for information you cannot find and for decisions the user owns; take routine and technical choices yourself and report the notable ones with their reason. Continue independent work while awaiting answers.
 - Read applicable instructions, relevant code, and tests. Apply skills whose scope matches the task.
 - Make the smallest coherent change. Reuse established components, preserve compatibility and unrelated work, and exclude optional cleanup.
 - Add documentation only when the user, project instructions, or the task, such as an issue's scope, requests it. Correct existing documentation that your change makes inaccurate.
