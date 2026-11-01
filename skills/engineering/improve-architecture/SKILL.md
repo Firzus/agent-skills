@@ -1,92 +1,47 @@
 ---
 name: improve-architecture
-description: Find evidenced architecture improvements and publish the approved ones as a Linear parent issue with one Task sub-issue per refactor, ready for implement.
+description: Find places where the code is costly to change and propose evidenced refactors that hide complexity behind smaller interfaces. Use when the user asks for an architecture review, refactoring candidates, or where to reduce friction in a codebase.
 disable-model-invocation: true
 ---
 
 # Improve architecture
 
-Identify architectural friction and turn the improvements the user approves into
-Linear work. Prefer changes that hide implementation complexity behind a smaller,
-clearer interface while preserving behavior. A review publishes one parent issue
-and one Task sub-issue per refactor; `implement` delivers each sub-issue. The
-request authorizes investigation and, after the user's approval, publication in
-Linear. It does not authorize refactoring.
+Find architectural friction and propose refactors the user can choose from. This
+skill investigates and recommends; it changes no code.
 
-## 1. Scope the investigation
+## 1. Investigate
 
-1. Read the request, repository state, existing Linear work,
-   and relevant design decisions. Use the project's context documents as they
-   exist, under the project's own names when it uses others: a root `CONTEXT.md`,
-   or, with a root `CONTEXT-MAP.md`, the `CONTEXT.md` of each affected context.
-   Create no documentation.
-2. Follow the user's named pain point or subsystem. Without one, inspect recent
-   changes and callers to find a bounded area where change is costly. Expand only
-   when evidence identifies another affected boundary.
-3. Record the revision being examined and unrelated local changes.
-4. Delegate independent scan questions when useful and supported, without a fixed
-   agent quota or duplicate whole-repository scans.
+Start from the user's pain point or subsystem. Without one, look at recent changes
+and their callers for an area where a simple change touched many places. Read the
+project's design decisions and context documents first, and expand only where the
+evidence leads.
 
-Use established project terms, including component, service, API, or module where
-appropriate. For each candidate, ask:
+For each candidate, ask:
 
-- Which concrete change requires understanding or editing too many places?
-- Does an abstraction hide complexity, or merely forward calls and expose details?
-- Can removing or merging a layer improve clarity without losing useful behavior?
-- Are tests coupled to internal details instead of the caller-visible contract?
-- Which existing callers, checks, or incidents support the proposed improvement?
+- Which concrete change needed understanding or editing too many places?
+- Does this layer hide complexity, or only forward calls and leak details?
+- Would removing or merging a layer make the code clearer without losing behavior?
+- Are tests tied to internals instead of the behavior callers rely on?
 
-Names, file counts, and unfamiliar style alone are not defects. A speculative
-benefit stays a hypothesis, not a promised performance or reliability gain.
+Unfamiliar names, file counts, or style are not defects. Keep a candidate only
+with evidence that it costs something today and a reason to prefer the change over
+leaving the code alone. If none survives, say so.
 
-**Done:** each retained candidate has affected paths, observed friction, a scoped
-proposal, a reason to prefer it over leaving the code alone, and acceptance checks.
-If no candidate survives, report that result without manufacturing work.
+## 2. Recommend
 
-## 2. Present the recommendations
+Present the candidates as a numbered list. For each: what is costly today and the
+evidence, the proposed interface and the behavior it must preserve, what it
+excludes, its dependencies on other candidates, and the checks that prove behavior
+is unchanged. Add a before/after diagram only where the relationships need one.
+Recommend where to start and why, then ask which ones to pursue.
 
-Present the candidates in the conversation as a numbered list, in the user's
-language. For each one give a short title, affected paths, the observed friction
-and its evidence, the proposed change (target interface, behavior to preserve,
-exclusions), dependencies on other recommendations, and acceptance checks.
-Add a Mermaid before/after diagram only where relationships need explanation.
-Separate illustrative designs from observed implementation, and ask before
-reopening an accepted design decision that conflicts with a recommendation.
+## 3. Hand over
 
-Recommend where to start, then ask which recommendations to keep.
+Write each chosen refactor as a request that stands on its own: the change and its
+target interface, the behavior it must preserve, its exclusions, and the checks
+that prove behavior is unchanged, starting with a passing baseline of
+characterization tests where that behavior is not covered yet. Order dependent
+refactors so each one leaves the code working.
 
-**Done:** the user has selected the recommendations to publish; the others stay
-out of Linear.
-
-## 3. Draft the issues and obtain approval
-
-1. Draft the parent issue with the [review template](templates/review.md). It
-   carries no Type label: it groups the review's sub-issues and is delivered
-   through them.
-2. Draft one sub-issue per selected recommendation with the
-   [Task template](../triage/templates/task.md) and the Task label:
-   - **User story:** as a maintainer of the area, the change and the concrete
-     work it makes cheaper.
-   - **Context:** observed friction, evidence, affected paths, and revision.
-   - **Scope** and **Out of scope:** the target interface, the change, and its exclusions.
-   - **Acceptance criteria:** Given/When/Then scenarios on the caller-visible
-     behavior that stays the same and on the new interface.
-   - **Verification:** the passing behavioral baseline to preserve, and the
-     characterization tests to add first where that behavior is not covered.
-3. Express each dependency between recommendations as a blocking relation between
-   sub-issues.
-4. Present the drafts and obtain approval of their content and publication.
-
-**Done:** drafts approved. Otherwise keep them in the conversation.
-
-## 4. Publish and hand over
-
-Publish with the [triage publication rules](../triage/SKILL.md#4-publish-and-hand-over):
-parent first, then sub-issues attached to it, with native blocking relations.
-Verify content, labels, parent membership, status, and relations.
-
-The parent is complete when all its sub-issues are Done; Linear closes it
-automatically when the team enables Parent auto-close. Return the named links,
-the recommended first sub-issue, and point to `implement` to deliver it.
-
-**Done:** publication verified and each sub-issue ready for `implement`.
+**Done:** the user chose the refactors to pursue and has their requests, or none
+survived the evidence.

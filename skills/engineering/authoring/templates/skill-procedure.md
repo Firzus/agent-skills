@@ -7,6 +7,8 @@ description: <Use when concrete requests, situations, or inputs call for this sk
 
 <Responsibility, inputs, and scope boundary. Set invocation metadata deliberately.>
 
+<When the skill carries a method: its opinions as short principles, each with its reason.>
+
 ## 1. <Establish scope>
 
 1. <Inspect authoritative inputs and existing work.>

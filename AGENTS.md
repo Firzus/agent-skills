@@ -2,13 +2,14 @@
 
 ## Project
 
-This repository publishes agent skills as `Firzus/agent-skills`. Each skill lives in `skills/<section>/<name>/`, where the section is `engineering`, `web`, or `game`. Two skills rely on an application kept in its own workspace: `mcp/tauri-agent-kit/` (Windows diagnostics for the `tauri` skill) and `mcp/reverse-engineer/` (MCP server for the `reverse-engineer` skill).
+This repository publishes agent skills as `Firzus/agent-skills`. Each skill lives in `skills/<section>/<name>/`, where the section is `stack`, `engineering`, `web`, or `game`. `stack` holds the development stack entered through `/work`; the other sections hold standalone skills. Two skills rely on an application kept in its own workspace: `mcp/tauri-agent-kit/` (Windows diagnostics for the `tauri` skill) and `mcp/reverse-engineer/` (MCP server for the `reverse-engineer` skill).
 
 ## Skills
 
 - Write and revise skills with `skills/engineering/authoring/SKILL.md`.
 - Write and revise project instructions with `skills/engineering/instructions/SKILL.md`, including its approval gate for changes to this file.
-- Engineering skills assume that `skills/engineering/setup-harness/references/operating-policy.md` is installed. A general rule lives only in that policy; a skill states its task-specific actions and keeps its own safety boundaries (commit, merge, deployment, force-push, external writes, secrets).
+- Stack and engineering skills assume that `skills/engineering/setup-harness/references/operating-policy.md` is installed. A general rule lives only in that policy; a skill states its task-specific actions and keeps its own safety boundaries (commit, merge, deployment, force-push, external writes, secrets).
+- Stack skills call each other by relative path (`../<name>/SKILL.md`), so they stay siblings in `skills/stack/` and keep names unique in the repository. A change to a handoff (what a skill returns, or where it stops) updates the skill on both sides.
 - When adding, renaming, moving, or removing a skill, update together its folder, its section's group in `.claude-plugin/marketplace.json`, and its row in the matching section of the `README.md` "All skills" catalog. Edit "Choose by task" or "Requirements" only when the skill changes them.
 - `README.md` serves newcomers: choosing, installing, and prerequisites. Keep maintenance details out of it.
 

@@ -43,11 +43,17 @@ requested behavior needs them and reuse cannot provide it.
 
 ## 2. Draft or revise the instructions
 
-For each clause, identify the concrete mistake or ambiguity it prevents, its
-verified source, and its appropriate home. Retain non-obvious constraints, useful
-exceptions, and necessary safety boundaries. Prefer conditional links to copied
-explanations. A short command is useful when it identifies a required check.
+Keep a clause only when it changes what a capable agent would otherwise do: an
+opinion it would not hold by default, a fact it cannot discover, or a boundary it
+must not cross. State the invariant that must hold rather than the bookkeeping
+that maintains it, and leave to the agent's judgment what follows from the
+opinions, the invariants, and the code. Give each clause a verified source.
+Prefer conditional links to copied explanations. A short command is useful when
+it identifies a required check.
 
+- When a skill carries a method, state its opinions first as short principles,
+  each with the reason it exists, and let the steps show how they usually play
+  out. Steps that contradict an opinion are a defect in one of them.
 - Keep common actions in the entry point. Link specialized references with both
   the condition for reading and what the reader will obtain. Keep mandatory rules
   reachable without optional wording.
@@ -55,8 +61,9 @@ explanations. A short command is useful when it identifies a required check.
   for missing capabilities. Use actual tool discovery rather than session tool names.
 - Give each rule one authoritative home. Group related rules and exceptions;
   use lists for actions, tables for comparable choices, and code blocks for exact formats.
-- End procedural phases with checkable completion conditions and a pending or
-  blocked path where relevant. Reference documents need rules, not artificial steps.
+- End a procedural phase with a checkable completion condition when the next
+  phase or the handoff depends on it, and give a pending or blocked path where
+  one is likely. Reference documents need rules, not artificial steps.
 - Define delegation inputs, outputs, write boundaries, and completion evidence.
   Prevent recursive delegation when reviewers should be leaf workers.
 - Make cross-skill dependencies intentionally available or provide an explicit
