@@ -96,9 +96,8 @@ Done:
 - **Answer:** the decision or finding, in one or two sentences.
 - **Evidence:** what supports it, readable by anyone with access to Linear and
   the repository. Summarize a local research dossier rather than link its local
-  path; give a prototype's branch and exact commit, how to run it, and what was
-  observed, and say when the branch is local because the user has not agreed to
-  push it.
+  path; give a prototype's pushed branch and exact commit, how to run it, and
+  what was observed, and say when the branch stayed local and why.
 - **Remaining uncertainty:** what is still unknown or untested.
 - **Consequences:** the issues created, changed, or unblocked by the answer.
 

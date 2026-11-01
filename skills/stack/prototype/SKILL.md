@@ -41,13 +41,14 @@ available during their review. Present the observations and trade-offs, then ask
 only for the judgments the experiment defines. A negative result is a valid answer.
 
 With the user's agreement to the experiment, commit the reviewed version and
-record the question, the exact commit, how to run it, what was observed, the
-user's judgment, and what remains untested. When `/work` runs it as a Linear
-issue, return this record and `/work` posts it on the issue; otherwise keep it in
-the conversation.
+push its branch, so the recorded commit can be reached from any session; the
+agreement covers this push, never a pull request. Without a remote, or when the
+push fails, the branch stays local and the record says so. Record the question,
+the exact commit, how to run it, what was observed, the user's judgment, and
+what remains untested. When `/work` runs it as a Linear issue, return this
+record and `/work` posts it on the issue; otherwise keep it in the conversation.
 Keep the prototype branch after the decision; the implementation reuses parts of
 it deliberately, never by merging it whole.
-Push the branch only when the user agrees.
 
 **Done:** the question is answered by observed evidence and the judgments it needed
 are given. **Waiting:** the user's judgment is open; keep the experiment running.
