@@ -34,8 +34,10 @@ opinion.
   agreed to.
 - **Linear holds the work.** Each feature or fix is a Linear issue and each large
   effort a Linear project, written so that any later session continues from it.
-- **One unit at a time.** Large work advances in units that one session can
-  finish, check, and hand over as a change you can review in one sitting. The
+- **One unit per session.** Large work advances in units that one session can
+  finish, check, and hand over as a change you can review in one sitting. Each
+  conversation does one thing (a task, a fix, an investigation, an experiment,
+  an interview, or a take-stock), then stops; the next starts from Linear. The
   agent plans only as far as what is known, and takes stock with you whenever a
   result changes the way ahead.
 - **Tests first.** Each behavior starts with a failing test wherever a test
@@ -77,7 +79,7 @@ the work:
 | --- | --- | --- |
 | Quick | The request says everything that matters and is easy to undo | Check the result, then say whether to ship |
 | Small | One unit: fits one session and one reviewable change | Answer the decisions, agree on the Linear issue, check the result, say whether to ship |
-| Project | Several units, or questions that need research, an experiment, or a later decision first | Agree on a Linear project and its first issues; then run `/work` on the project: the agent works through the units, comes back for your decisions and reviews, and takes stock with you when results change the plan |
+| Project | Several units, or questions that need research, an experiment, or a later decision first | Agree on a Linear project and its first issues; then start a new conversation for each unit with `/work` on the project or one of its issues: the agent runs that unit, asks for your decisions and review, names the next one, and takes stock with you when results change the plan |
 
 Small and Project work need Linear: when the agent cannot reach it, it stops and
 tells you how to reconnect. Quick work does not use Linear.
