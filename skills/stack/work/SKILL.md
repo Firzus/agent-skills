@@ -26,7 +26,8 @@ describe how they usually play out.
    deserves: a typo needs no issue, a feature needs one, a large effort needs a
    project.
 4. **No agreement, no code.** Build only what the user agreed to. A Quick
-   request is its own agreement; otherwise agree first.
+   request and a ready Linear issue are their own agreement; otherwise agree
+   first.
 5. **Linear holds the work.** Every Small change is a Linear issue and every
    Project a Linear project, written so that any session can continue from it
    alone.
@@ -62,8 +63,8 @@ it for the part named below, then come back here with its result:
 | The request needs | Read | Use it to |
 | --- | --- | --- |
 | The cause of a bug, failure, or regression | [`../debug/SKILL.md`](../debug/SKILL.md) | Reproduce and find the cause; stop at its "Ready to fix" and bring back the cause and the proposed fix |
-| A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question; announce the planned delegation first, without estimating its time or tokens, and wait for the user's yes |
-| A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment, after the user agrees to it |
+| A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question once it is agreed as step 3 describes; announce the planned delegation without estimating its time or tokens |
+| A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment once it is agreed as step 3 describes |
 
 `debug` serves the fix of the same session, and `interview` the decisions of
 its unit. A delegated investigation or an experiment is a unit of its own: the
@@ -92,6 +93,12 @@ Small and Project need Linear: check that it responds before anything else, as
 not.
 
 ## 3. Settle decisions and agree
+
+A ready issue is already agreed: it is in Todo or In Progress, its text
+follows the format of [linear](references/linear.md#issue-content), it leaves no
+decision open, and its work fits one unit. Tell the user in one short message
+what you will do and the Linear updates you will make, then start the work
+without waiting. Otherwise, settle and agree as below.
 
 When decisions the user owns are open, read
 [`../interview/SKILL.md`](../interview/SKILL.md) and follow it. It returns

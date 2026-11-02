@@ -78,7 +78,7 @@ that would exceed it is split before it starts.
 | Type | Run it with | Needs the user |
 | --- | --- | --- |
 | Task, Bug | [Steps 4 to 6](../SKILL.md#4-build-test-first) of the workflow, after reading the context it touches; a Bug whose cause is not established goes through `debug` first. The project's agreement covers its build | For review, shipping, and any human check |
-| Research | A direct lookup, or [`../../research/SKILL.md`](../../research/SKILL.md) for a delegated investigation; one the user has not agreed to as delegated waits for their yes | Only to agree a delegated investigation |
+| Research | A direct lookup, or [`../../research/SKILL.md`](../../research/SKILL.md) for a delegated investigation | No |
 | Prototype | [`../../prototype/SKILL.md`](../../prototype/SKILL.md) | For the judgment the experiment defines |
 | Interview | [`../../interview/SKILL.md`](../../interview/SKILL.md) | Yes |
 
