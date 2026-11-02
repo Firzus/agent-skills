@@ -103,8 +103,9 @@ Then ask for agreement in one message:
 Only an explicit yes to the latest version is agreement; silence or a yes to an
 earlier version is not. Agreement, or a Quick request itself, authorizes, within
 its scope: a work branch, local commits on it, file edits, dependency installs
-it names, local runs of the project, and the Linear writes it lists. It does not
-authorize pushing, other external writes, merging, or deploying.
+it names, local runs of the project, the Linear writes it lists, and the push of
+an agreed prototype's branch. It does not authorize pushing other branches,
+other external writes, merging, or deploying.
 
 **Waiting:** the agreement, or a decision it depends on, is unanswered.
 

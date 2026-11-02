@@ -34,7 +34,8 @@ The yes to the project, and to each later take-stock, also covers the routine
 Linear writes of its current goal: claiming and updating its issues and
 statuses, result and progress comments, updates to the record, and, inside the
 current goal, the Research, Prototype, or Interview issues and blocking
-relations an unknown requires, and the split of a unit that turns out too large.
+relations an unknown requires, the split of a unit that turns out too large, and
+the push of each Prototype issue's branch.
 Changing the current goal, adding work beyond it, and canceling or retyping an
 issue wait for the next take-stock.
 
