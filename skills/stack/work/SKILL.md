@@ -26,7 +26,8 @@ describe how they usually play out.
    deserves: a typo needs no issue, a feature needs one, a large effort needs a
    project.
 4. **No agreement, no code.** Build only what the user agreed to. A Quick
-   request is its own agreement; otherwise agree first.
+   request and a ready Linear issue are their own agreement; otherwise agree
+   first.
 5. **Linear holds the work.** Every Small change is a Linear issue and every
    Project a Linear project, written so that any session can continue from it
    alone.
@@ -58,8 +59,8 @@ it for the part named below, then come back here with its result:
 | The request needs | Read | Use it to |
 | --- | --- | --- |
 | The cause of a bug, failure, or regression | [`../debug/SKILL.md`](../debug/SKILL.md) | Reproduce and find the cause; stop at its "Ready to fix" and bring back the cause and the proposed fix |
-| A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question; announce the planned delegation first, without estimating its time or tokens, and wait for the user's yes |
-| A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment, after the user agrees to it |
+| A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question once it is agreed as step 3 describes; announce the planned delegation without estimating its time or tokens |
+| A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment once it is agreed as step 3 describes |
 
 A single fact from outside the repository (a version, an API detail) needs a
 direct lookup, not `research`. When a skill this stack names is not installed
@@ -86,6 +87,12 @@ not.
 
 ## 3. Settle decisions and agree
 
+A ready issue is already agreed: it is in Todo or In Progress, its text
+follows the format of [linear](references/linear.md#issue-content), it leaves no
+decision open, and its work fits one unit. Tell the user in one short message
+what you will do and the Linear updates you will make, then start the work
+without waiting. Otherwise, settle and agree as below.
+
 When decisions the user owns are open, read
 [`../interview/SKILL.md`](../interview/SKILL.md) and follow it. It returns
 accepted decisions; do not reopen them.
@@ -101,10 +108,11 @@ Then ask for agreement in one message:
   [project](references/project.md#shape-the-project) describes.
 
 Only an explicit yes to the latest version is agreement; silence or a yes to an
-earlier version is not. Agreement, or a Quick request itself, authorizes, within
-its scope: a work branch, local commits on it, file edits, dependency installs
-it names, local runs of the project, and the Linear writes it lists. It does not
-authorize pushing, other external writes, merging, or deploying.
+earlier version is not. Agreement, a ready issue, or a Quick request itself
+authorizes, within its scope: a work branch, local commits on it, file edits,
+dependency installs it names, local runs of the project, and the Linear writes
+it lists. It does not authorize pushing, other external writes, merging, or
+deploying.
 
 **Waiting:** the agreement, or a decision it depends on, is unanswered.
 

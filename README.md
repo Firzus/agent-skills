@@ -30,8 +30,8 @@ opinion.
 - **Ceremony matches the work.** The agent sizes each request as Quick, Small, or
   Project and tells you why. A typo needs no issue; a feature gets one; a large
   effort gets a project.
-- **No agreement, no code.** Beyond a Quick fix, the agent builds only what you
-  agreed to.
+- **No agreement, no code.** Beyond a Quick fix or a Linear issue that is
+  ready to start, the agent builds only what you agreed to.
 - **Linear holds the work.** Each feature or fix is a Linear issue and each large
   effort a Linear project, written so that any later session continues from it.
 - **One unit at a time.** Large work advances in units that one session can
