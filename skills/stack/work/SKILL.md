@@ -108,11 +108,10 @@ Then ask for agreement in one message:
   [project](references/project.md#shape-the-project) describes.
 
 Only an explicit yes to the latest version is agreement; silence or a yes to an
-earlier version is not. Agreement, a ready issue, or a Quick request itself
-authorizes, within its scope: a work branch, local commits on it, file edits,
-dependency installs it names, local runs of the project, and the Linear writes
-it lists. It does not authorize pushing, other external writes, merging, or
-deploying.
+earlier version is not. Agreement, or a Quick request itself, authorizes, within
+its scope: a work branch, local commits on it, file edits, dependency installs
+it names, local runs of the project, and the Linear writes it lists. It does not
+authorize pushing, other external writes, merging, or deploying.
 
 **Waiting:** the agreement, or a decision it depends on, is unanswered.
 
