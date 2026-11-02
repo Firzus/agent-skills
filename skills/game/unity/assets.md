@@ -42,9 +42,21 @@ label. Where a project already uses `Loadable<T>`:
 - Test unloads in a Player build. In Editor Play Mode, content comes from the AssetDatabase without reference counting, so a missing release only shows in the Player.
 - Keep `Loadable<T>` fields out of content built into the Player or into AssetBundles: there the reference is set to null and the build logs an error.
 
+### Settings needed before the first scene
+
 `Resources/` assets are always built into the player and stay resident until
 manually unloaded, which is why startup and memory both suffer. Addressables
-covers the bootstrap case too.
+covers the bootstrap case too, except for settings read before the first scene
+loads: a synchronous Addressables load is discouraged there, and WebGL has none.
+
+Deliver such a settings asset through the Preloaded Assets, as Unity
+Localization and the Input System do. The player loads them at startup, so the
+asset is available from `AfterAssembliesLoaded`.
+
+- Register the asset as an `EditorBuildSettings` config object, so Editor code and tests find it without a path.
+- Add it to the `PlayerSettings` Preloaded Assets in `IPreprocessBuildWithReport` and remove it in `IPostprocessBuildWithReport`. `SetPreloadedAssets` marks PlayerSettings dirty: when they were clean before, clear the flag after each edit, or the next project save writes the temporary list into `ProjectSettings.asset`.
+- Record in `SessionState`, which survives a domain reload, that the build added the asset: a failed build skips the postprocess and leaves it in the list, and the next build removes it. Leave PlayerSettings dirty after that removal, so a list saved in the meantime is rewritten clean.
+- Keep the asset to plain values and Addressables keys such as `AssetReference`. A preloaded asset that references an asset also in an Addressables group ships that asset twice, each copy with its own identity.
 
 ## Import settings
 
