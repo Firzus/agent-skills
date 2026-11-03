@@ -106,11 +106,12 @@ accepted decisions; do not reopen them.
 
 Then ask for agreement in one message:
 
-- **Small:** the issue you will create or update, keeping an existing issue's
-  text under its own heading, in the format of
-  [linear](references/linear.md#issue-content), the approach, the decisions
-  taken (including the ones you made), and the Linear updates you will make
-  along the way.
+- **Small:** in a few lines, the outcome and the check that will show it, the
+  decisions taken (yours with their reason), any step that departs from this
+  stack's usual course, and the Linear updates you will make along the way. The
+  issue you create or update holds the full text in the format of
+  [linear](references/linear.md#issue-content), keeping an existing issue's
+  text under its own heading; show that text only when the user asks for it.
 - **Project:** the project and its first issues, as
   [project](references/project.md#shape-the-project) describes.
 
@@ -194,7 +195,8 @@ screenshot, a recording, or the command output. Then report:
 - **Done:** the outcome, in the user's terms.
 - **Check:** how the user can see it working with the tools they already use;
   give a command only to someone who runs commands.
-- **Decisions:** the notable choices you made, with their reason.
+- **Decisions:** the notable choices you made that the agreement did not
+  cover, with their reason. Omit when empty.
 - **Open:** what remains, including checks you could not run. Omit when empty.
 - **Next:** the next action and who owns it; work that follows starts in a new
   session with `/work` and its issue or project.
