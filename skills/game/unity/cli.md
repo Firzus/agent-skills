@@ -165,6 +165,8 @@ Use `--runtime <player-name>` for a development Player rather than the Editor.
 Default to `capture_editor_element` for Editor UI. Read the project's capture
 policy first: full-screen restrictions belong in its `AGENTS.md`, not in the
 CLI's capabilities. Discover the selector and output arguments from the schema.
+An Editor capture follows the screen's scaling (a 22px row measures 27px at
+125%), so compare it with a mockup rendered at the same scale.
 
 An Inspector can report `No element matched selector` despite the correct
 selection and selector because its UI Toolkit tree has not been built yet.
