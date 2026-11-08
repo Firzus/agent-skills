@@ -80,7 +80,7 @@ Say which row you left and what made it worth leaving.
 | CoreCLR runtime, static state, serialization, `EntityId` | [runtime.md](./runtime.md) |
 | Unity CLI, driving the Editor from an agent, screen captures, why not MCP | [cli.md](./cli.md) |
 | Iterating while the user tests in the Editor: tracked Editor, tests without closing it, trial preparation | [iteration.md](./iteration.md) |
-| UI Toolkit, design tokens, data binding, MVP, localization | [ui.md](./ui.md) |
+| UI Toolkit, USS versus CSS, design tokens, data binding, MVP, localization | [ui.md](./ui.md) |
 | Custom Editor tools, inspectors, `[SerializeReference]` | [editor-tools.md](./editor-tools.md) |
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS, profiling, allocations | [architecture.md](./architecture.md) |
 | Exceptions, nullability, `async void`, the `UnityEngine.Object` null trap | [code-standards.md](./code-standards.md) |

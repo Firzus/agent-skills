@@ -36,6 +36,22 @@ item's properties on the right.
 This is what production authoring tools actually look like — a list, a detail
 pane, and a custom strip — rather than a node canvas.
 
+## Matching a mockup
+
+`MultiColumnTreeView`, `Toolbar`/`ToolbarToggle` and `Foldout` draw the
+Editor's own look: USS does not reshape their headers, arrows or row chrome.
+Keep them where that look is wanted. When a mockup sets the look, build those
+parts from plain `VisualElement`s, and re-add what the stock control handled:
+make the element focusable, give it a `:focus` style, and handle the arrow keys.
+
+For a monospaced font, set
+`-unity-font-definition: resource("Fonts/RobotoMono/RobotoMono-Regular.ttf")`.
+The Editor resolves this path only with its extension; without it, it logs
+"Font not found".
+
+Check the mockup's CSS against
+[From a CSS mockup to USS](./ui.md#from-a-css-mockup-to-uss) before matching it.
+
 ## Polymorphic lists
 
 `[SerializeReference]` is what lets one list hold different concrete types —

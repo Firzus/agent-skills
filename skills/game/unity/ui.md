@@ -1,4 +1,4 @@
-# UI: UI Toolkit, design tokens, data binding, MVP, localization
+# UI: UI Toolkit, USS versus CSS, design tokens, data binding, MVP, localization
 
 UI Toolkit is the UI system: menus, HUD, data-heavy screens, and world-space.
 It is retained-mode, renders textureless through a dynamic atlas, and receives
@@ -36,6 +36,39 @@ Order overlapping elements with **`z-index`** (7.0), in USS or through
 - Set it on the overlapping siblings themselves: the popup, tooltip, or overlay that must sit on top, as a child of the parent it shares with what it covers.
 - An element with `z-index` forms a stacking context: its descendants never draw above its later siblings, whatever their own `z-index`.
 - A descendant's `z-index` set under an ancestor without one draws above that ancestor's later siblings, but hit-testing (`panel.Pick`) does not follow it: the element shows on top and the click reaches the sibling underneath.
+
+## From a CSS mockup to USS
+
+USS implements a subset of CSS and drops part of the rest without a warning, so
+check an HTML/CSS mockup against it before the mockup is validated. This section
+was measured by importing stylesheets into a 7000.0 Editor window; the
+[USS properties reference](https://docs.unity.com/en-us/engine/7000.0/manual/uitoolkits/uielements/uie-uss/properties/reference)
+is the documented list.
+
+- Use what USS draws rather than a workaround: `box-shadow`, `text-shadow`, `-unity-text-outline`, `gap`, `aspect-ratio`, `letter-spacing`, `white-space: pre-wrap`, `linear-gradient()` in `background-image`, `filter: blur()`, `scale`, `translate`, `padding` in %, `var(--name, fallback)`, and `overflow: hidden`, which clips children to rounded corners. `z-index` follows [Stacking order](#stacking-order).
+- The manual keeps `display: grid` off until **Project Settings → UI Toolkit → Enable Grid Layout** is on, yet an Editor window laid out a grid with the setting off. Turn it on before using grid rather than trusting an Editor capture.
+- Selectors are type, class, name, `*`, descendant, child `>`, compound selectors and selector lists, with the pseudo-classes `:hover`, `:active`, `:inactive`, `:focus`, `:disabled`, `:enabled`, `:checked` and `:root`. `:nth-child`, `:not`, `:is`, `:has` and the `+` and `~` combinators fail the import. `:selected` (use `:checked`), `:first-child`, `[attr]`, `::before`, `:focus-visible`, `!important` and `@media` import without a warning and do nothing: toggle a USS class from C# for those states.
+- Draw icons rather than typing Unicode symbols: ⚠, ⛔ or ✅ in an Editor label render as colour emoji. [editor-tools.md](./editor-tools.md#icons) gives the order to reach for icons.
+
+| CSS in a mockup | In USS |
+| --- | --- |
+| `line-height` | Absent. `-unity-paragraph-spacing` spaces paragraphs, not lines. |
+| `font-weight` | `-unity-font-style`: `normal`, `bold`, `italic`, `bold-and-italic`. A numeric weight needs another font file. |
+| `font-family`, `text-align`, `vertical-align` | `-unity-font-definition`, `-unity-text-align`, `align-items` |
+| `text-transform` | Set the case in C#. |
+| `text-decoration` | Rich text `<s>` and `<u>` in the text. |
+| `transform` | `rotate`, `scale`, `translate`, `transform-origin` |
+| `border` and `background` shorthands, `border-style`, `outline` | Per-side `border-width` and `border-color`, `background-color`, `background-image`. Dashes are drawn with `painter2D`; a box outline does not exist. |
+| `calc()`, `min()`, `em`, `rem`, `vw`, `fit-content` | px, % or `auto` |
+| `position: fixed` or `sticky`, `inset`, `overflow: auto` | `position: absolute` with `top`, `right`, `bottom`, `left`; a `ScrollView` for scrolling. |
+| `display: inline` or `inline-block` | `flex-direction: row` on the parent, with `flex-wrap: wrap` for flowing items. |
+| `@keyframes` | An Animation clip through `animation-name`, see [Animated UI](#animated-ui). |
+| `cubic-bezier()` | Named easings such as `ease-in-out-cubic`. |
+| `hsl()`, `currentColor` | A hex or `rgb()` colour, or a variable. |
+| CSS cursors such as `pointer` | Unity keywords such as `link` or `move-arrow`, which work only in the Editor; runtime UI takes a cursor texture. |
+| `border-radius` above half a side | Draws an ellipse: a pill takes a radius of exactly half its height. |
+| `text-overflow: ellipsis` over several lines | One truncated line only, with `white-space: nowrap` and `overflow: hidden`. |
+| A transition on `display`, or on an element's first frame | Neither plays: `display` switches at once, and a transition starts only after the first frame. |
 
 ## Design tokens
 
