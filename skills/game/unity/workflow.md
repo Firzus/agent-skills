@@ -7,7 +7,7 @@ Gameplay, UI, Vehicle, Menus — and switch maps when context changes. Action ma
 are what make rebinding, control schemes, and device pairing work; device polling
 in gameplay code bypasses all three.
 
-The Input System is a core package (6.7) whose version follows the Editor; it
+The Input System is a core package whose version follows the Editor; it
 needs no version pin of its own.
 
 - Wire single-player through the generated C# wrapper class or action references, enabling and disabling explicitly.
@@ -26,7 +26,7 @@ ducking, exposed parameters — covers most game mixing.
 
 - Drive audio through a thin service layer with an event-style API, so a later middleware swap touches one module.
 - Budget voice counts per platform (priorities, max real and virtual voices) and add instance limiting or cooldowns for stacking SFX.
-- Reach for the **scriptable audio pipeline** (Burst-compiled C# signal units, 6.3) and `AudioClip.CreateInstance` generators (6.5) for adaptive sequencing, blending, and looping in-engine. Since 6.7 it adds Scriptable Effects, seeking in processors and generators, and real-time messaging through `ControlContext`.
+- Reach for the **scriptable audio pipeline** (Burst-compiled C# signal units) and `AudioClip.CreateInstance` generators for adaptive sequencing, blending, and looping in-engine, with Scriptable Effects, seeking in processors and generators, and real-time messaging through `ControlContext`.
 - Select the **Enhanced Audio Foundation** in the project's audio settings (Classic stays the default) to move device enumeration and start off the main thread, removing audio-related frame hitches on Windows and macOS.
 - **FMOD or Wwise** is the supported step off this row: take it for genuinely adaptive music, parameter-driven sound design, or a dedicated sound-designer workflow — and decide before production, since the integration reaches into every audio call site.
 
@@ -45,13 +45,13 @@ ducking, exposed parameters — covers most game mixing.
 - Build on every PR (GameCI `unity-builder` on GitHub Actions, or Unity Build Automation), caching `Library/` and the Bee cache (`BEE_CACHE_DIRECTORY`) — that cache is the difference between a ten-minute and a ninety-minute build.
 - Ship releases with **IL2CPP**: the only backend on mobile, consoles, and the Web, faster, and harder to reverse. Configure `link.xml` or `[Preserve]` for reflection-reached code so stripping keeps it. Desktop development builds can use the CoreCLR player for faster iteration.
 - Run IL2CPP jobs on runners matching the target OS, since it needs that platform's native toolchain.
-- Configure per-target settings, defines, scene lists, and output paths (Build Destination Override, 6.7) in **Build Profiles**. Script them with `BuildProfile.CreateBuildProfile` (6.5), which auto-installs platform packages for reproducible CI setup; its `onProfileReady` callback must be static or live on a serialized `UnityEngine.Object`, because the package install reloads code. Pass per-build extra defines through `BuildPlayerWithProfileOptions` (6.7).
+- Configure per-target settings, defines, scene lists, and output paths (Build Destination Override) in **Build Profiles**. Script them with `BuildProfile.CreateBuildProfile`, which auto-installs platform packages for reproducible CI setup; its `onProfileReady` callback must be static or live on a serialized `UnityEngine.Object`, because the package install reloads code. Pass per-build extra defines through `BuildPlayerWithProfileOptions`.
 - Manage conditional compilation through asmdef Define Constraints and build profiles, keeping `#if` blocks out of gameplay code as a feature-flag system.
 - Set explicit graphics APIs, development-build flags, and company and product names in shipping configs.
-- Read build size and per-step timing in the **Build Analysis** window (Window → Analysis → Build Analysis, 6.6), which keeps a build history.
+- Read build size and per-step timing in the **Build Analysis** window (Window → Analysis → Build Analysis), which keeps a build history.
 - Scope warnings-as-errors gates to the project's own assemblies: compiler warnings from registry packages appear in the Console and `Editor.log`. `Editor.log` is per project.
 
-Build hosts and targets for 7.0:
+Build hosts and targets:
 
 | Area | Requirement |
 | --- | --- |
@@ -79,7 +79,7 @@ or `Debug.isDebugBuild`, not on `DEVELOPMENT_BUILD`.
 
 ## Testing
 
-**Unity Test Framework**, a core package since 6.2, with separate test asmdefs.
+**Unity Test Framework**, a core package, with separate test asmdefs.
 Edit-mode tests are the default — they run in milliseconds. Play-mode tests are
 for behaviour that genuinely needs the player loop, physics, or scene lifecycle.
 
@@ -87,10 +87,10 @@ for behaviour that genuinely needs the player loop, physics, or scene lifecycle.
 - Keep production code in custom asmdefs. Test assemblies cannot reference `Assembly-CSharp`, which is the single most common reason a codebase "can't be tested".
 - Write `[Test]` unless the case must skip frames, which is what `[UnityTest]` is for.
 - Run tests headless in CI on every PR (`-runTests`, GameCI test-runner) and gate merges on them.
-- Automate UI Toolkit interaction tests with the **UI Test Framework** (6.3) — clicks, keyboard, and scroll against UXML — which closes the coverage gap on presenters and views.
+- Automate UI Toolkit interaction tests with the **UI Test Framework** — clicks, keyboard, and scroll against UXML — which closes the coverage gap on presenters and views.
 - Keep play-mode tests deterministic with fixed seeds, controlled `Time.timeScale`, and scene fixtures, so CI results mean something.
 - Measure coverage with the **Code Coverage** package on critical assemblies rather than chasing a headline total; it covers the CoreCLR Editor and players and IL2CPP builds.
-- Guard performance-critical paths with **Performance Testing** (`Unity.PerformanceTesting`, a core package) in CI, and mark custom spans with `TestRunProfiler` (6.7).
+- Guard performance-critical paths with **Performance Testing** (`Unity.PerformanceTesting`, a core package) in CI, and mark custom spans with `TestRunProfiler`.
 - Enforce **Roslyn analyzers** (Microsoft.Unity.Analyzers with `.editorconfig` severities) as build-breaking, to catch Unity footguns mechanically — allocations in `Update`, null-comparison on `UnityEngine.Object`. Keep the serialization analyzer build-breaking too (see [runtime.md](./runtime.md)).
 - Run **Project Auditor** (Window → Analysis → Project Auditor) in review, and in CI through batch mode (`-batchmode -quit -executeMethod` calling `new ProjectAuditor().Audit()`), for performance, memory, and obsolete-API findings. Its rules ship in `com.unity.project-auditor-rules`.
 - Log through a leveled wrapper and strip verbose logs from release builds. A per-frame `Debug.Log` allocates a string and captures a stack trace even with the console closed.

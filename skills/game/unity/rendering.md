@@ -1,8 +1,8 @@
 # Rendering: pipeline, lighting, GPU-driven drawing
 
-URP is Unity 7's render pipeline, on every target from mobile to high-end PC
+URP is Unity's render pipeline, on every target from mobile to high-end PC
 and console. Unity's rendering work lands there: Surface Cache GI, Screen Space
-Reflections, GTAO, and the URP lighting additions of the 7.x cycle.
+Reflections, GTAO, and URP's lighting additions.
 
 Set the pipeline at project start. Pipelines are not interchangeable
 mid-project: materials, shaders, lighting setup, and custom passes are all
@@ -14,7 +14,7 @@ entire visual content.
 Write custom passes as **Render Graph** passes; it is URP's only custom-pass
 path. Reset pooled pass data through `IRenderGraphPassData.Reset`, and read
 texture orientation with `GetTextureUVOrigin` rather than assuming it. Read
-pass merging on player builds with the on-device **Render Graph Viewer** (6.3),
+pass merging on player builds with the on-device **Render Graph Viewer**,
 which jumps from a pass to its source.
 
 ## Lighting
@@ -24,9 +24,9 @@ Pick the lighting model from how much the scene moves.
 | Scene | Reach for |
 | --- | --- |
 | Static geometry and lights | Baked lightmaps + **Adaptive Probe Volumes** |
-| Moving lights, destructible or procedural geometry, day/night | **Surface Cache GI** (6.7) |
-| Specular, under either | Reflection Probes, or **SSR** (6.7) |
-| Ambient occlusion | **GTAO** (6.7) |
+| Moving lights, destructible or procedural geometry, day/night | **Surface Cache GI** |
+| Specular, under either | Reflection Probes, or **SSR** |
+| Ambient occlusion | **GTAO** |
 
 ### Adaptive Probe Volumes
 
@@ -50,8 +50,7 @@ baked workflows alongside SCGI.
 
 SCGI is fully dynamic real-time global illumination for URP, with no baking.
 Indirect light responds to moving and destroyed geometry, changing lights, and
-day/night cycles. It ships with 6.7 (release targeted for 6.7 LTS) and 7.0;
-Unity publishes no maturity label for it yet.
+day/night cycles. Unity publishes no maturity label for it yet.
 
 - Set Project Settings → Graphics → **Default Mesh Buffer Target → Raw**; SCGI requires it.
 - SCGI uses hardware ray tracing where Unity supports it and a compute path elsewhere. Metal and Vulkan run the compute path, and Unity has not committed to a mobile minimum spec: measure on the weakest target device.
@@ -64,7 +63,7 @@ Unity publishes no maturity label for it yet.
 
 - **SSR** needs both its renderer feature on the URP Renderer and its Volume override. It reflects only what is on screen and falls back to Reflection Probes and the skybox, without ray tracing.
 - **GTAO** is a mode of URP's SSAO, selected in the SSAO Volume override; Volume overrides win at runtime. Its temporal filter needs motion vectors, and the advanced filters need the compute path.
-- Tonemap with Neutral, ACES, or **AgX** (6.7), which adds Contrast and Mid Gray controls for SDR and HDR output.
+- Tonemap with Neutral, ACES, or **AgX**, which adds Contrast and Mid Gray controls for SDR and HDR output.
 
 ## Light baking
 
@@ -81,19 +80,19 @@ interactive lightmap preview, so judge a bake from its result.
 - Cull occlusion with **GPU occlusion culling**, which runs through GRD; no baked occlusion data is authored.
 - Re-profile after enabling GRD. It shifts load to the GPU, so GPU-bound low-end mobile can lose from it; that measurement decides, not the default.
 - Keep shaders and materials SRP Batcher-compatible (per-material CBUFFER layout), and use GPU instancing for repeated meshes GRD does not cover.
-- Vary per-instance data through **per-renderer shader user value** (6.3): `SetShaderUserValue` with `unity_RendererUserValue` feeds colour or atlas index through one material while staying GRD-compatible. `MaterialPropertyBlock` silently drops objects out of the SRP Batcher and GRD paths.
-- The **Rendering Statistics** window (6.4) breaks down SRP Batcher, GRD, BatchRendererGroup, and instancing.
+- Vary per-instance data through **per-renderer shader user value**: `SetShaderUserValue` with `unity_RendererUserValue` feeds colour or atlas index through one material while staying GRD-compatible. `MaterialPropertyBlock` silently drops objects out of the SRP Batcher and GRD paths.
+- The **Rendering Statistics** window breaks down SRP Batcher, GRD, BatchRendererGroup, and instancing.
 
 ## Shaders
 
-- Author in Shader Graph or URP HLSL. Shader Graph sets stencil and depth overrides per material (6.7) and targets Light 2D, Shadow 2D, and UI Toolkit filters.
+- Author in Shader Graph or URP HLSL. Shader Graph sets stencil and depth overrides per material and targets Light 2D, Shadow 2D, and UI Toolkit filters.
 - Configure shader compilation per Build Profile in its Graphics settings: **Fast Build** turns keywords into dynamic branching for iteration builds, and DXC is selectable for Direct3D 12 (FXC remains its default).
 
-## Levers by version
+## Platform and performance levers
 
-- **Mesh LOD** (6.2) generates LODs at import into a single mesh: less memory than external LOD tools, and compatible with Entities Graphics in 6.5. Particle Systems, VFX Graph, and static batching always draw LOD0.
-- **On-tile post-processing** with Tile-Only Mode (6.5) runs colour grading, tonemapping, vignette, dithering, and film grain in one GPU-tile pass with no system-memory readback, on the forward and (6.7) deferred renderers. It requires URP's integrated post-processing disabled. Large bandwidth and thermal wins on Vulkan and Metal.
-- Upscale through URP's **Upscaler Priority List** (6.7) when rendering below native resolution: DLSS on NVIDIA GPUs, FSR on AMD GPUs, the platform's own upscaler on console, and **STP** (Spatial-Temporal Post-Processing) everywhere else and as the fallback. Unity announced DLSS 4.5 and FSR for URP in 6.7, but the 7.0 alphas expose only STP and FSR1: ship STP until a 7.0 release lists them, and do not unlock them through hidden scripting defines.
-- **WebGPU** (supported since 6.6) unlocks GRD, GPU occlusion culling, STP, VFX Graph, APV, and compute skinning on the Web. Choose it when a Web build needs those: disable Auto Graphics API and order WebGPU above WebGL2, which stays the default; the page must be served over HTTPS.
-- **DirectStorage** (6.4, PC and Xbox) cuts load times for textures, meshes, and ECS data on NVMe. The Windows `AsyncReadManager` rewrite (6.5) extends that to custom reads.
+- **Mesh LOD** generates LODs at import into a single mesh: less memory than external LOD tools, and compatible with Entities Graphics. Particle Systems, VFX Graph, and static batching always draw LOD0.
+- **On-tile post-processing** with Tile-Only Mode runs colour grading, tonemapping, vignette, dithering, and film grain in one GPU-tile pass with no system-memory readback, on the forward and deferred renderers. It requires URP's integrated post-processing disabled. Large bandwidth and thermal wins on Vulkan and Metal.
+- Upscale through URP's **Upscaler Priority List** when rendering below native resolution: DLSS on NVIDIA GPUs, FSR on AMD GPUs, the platform's own upscaler on console, and **STP** (Spatial-Temporal Post-Processing) everywhere else and as the fallback. Unity announced DLSS 4.5 and FSR for URP, but the Editor exposes only STP and FSR1: ship STP until a release lists the others, and do not unlock them through hidden scripting defines.
+- **WebGPU** unlocks GRD, GPU occlusion culling, STP, VFX Graph, APV, and compute skinning on the Web. Choose it when a Web build needs those: disable Auto Graphics API and order WebGPU above WebGL2, which stays the default; the page must be served over HTTPS.
+- **DirectStorage** (PC and Xbox) cuts load times for textures, meshes, and ECS data on NVMe. The Windows `AsyncReadManager` rewrite extends that to custom reads.
 - Target **ASTC** on mobile and **BC** on desktop and console.

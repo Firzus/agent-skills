@@ -55,10 +55,10 @@ Check the mockup's CSS against
 
 ## Dropdown menus
 
-`GenericDropdownMenu` opens a context or overflow menu. Its sizing and styling
-were measured in 7000.0 a12 and may change in a later alpha:
+`GenericDropdownMenu` opens a context or overflow menu. Size and style it as
+follows:
 
-- `DropDown(Rect, VisualElement, bool anchored)` and the other `bool` overloads are obsolete in 7000.0. Call the overload that takes a `DropdownMenuSizeMode`, with `Auto`: it sizes the menu to its items under the anchor. `Fixed` sizes it to the anchor, so a small ••• button gives a 16 px menu with unreadable text; `Content` spreads it across the whole panel at x = 0.
+- `DropDown(Rect, VisualElement, bool anchored)` and the other `bool` overloads are obsolete. Call the overload that takes a `DropdownMenuSizeMode`, with `Auto`: it sizes the menu to its items under the anchor. `Fixed` sizes it to the anchor, so a small ••• button gives a 16 px menu with unreadable text; `Content` spreads it across the whole panel at x = 0.
 - The menu attaches to the panel's root, outside the window's styled tree, so the window's stylesheets do not reach it. Before calling `DropDown`, walk up from `menu.contentContainer` to the root and add the stylesheets and a class there.
 - Unity computes the menu's width from its labels as measured, the label's own padding included. Pad the label: padding on the row cuts the text.
 - The menu's scroll viewport keeps `flex-grow: 0` and stays as wide as its rows, short of the menu card, so a highlighted row stops before the card's edge. A USS `flex-grow: 1` or `min-width: 100%` is measured first and stretches the menu across the whole panel. Instead, once Unity has sized the menu, set the viewport's `style.minWidth` to its parent's width in a `GeometryChangedEvent` callback.
@@ -121,8 +121,7 @@ Separate the icon's shape from its colour, so one drawn shape covers many
 states through tinting rather than shipping a file per variant.
 
 For an imported PNG: Sprite (2D and UI), Single mode, Alpha Is Transparency on,
-Full Rect, mipmaps off, square at 64, 128, or 256. SVG is a core module from
-6.3, so vector files are an option without adding a package dependency.
+Full Rect, mipmaps off, square at 64, 128, or 256. SVG is a core module, so vector files are an option without adding a package dependency.
 
 `[Icon("path")]` on a `MonoBehaviour` or `ScriptableObject` sets the script's
 icon in the Project window and Inspector, which is what gives authored assets a
@@ -139,8 +138,8 @@ but ships no execution backend, so the project writes the runtime that walks
 them. Budget that runtime as part of the tool.
 
 - Use the built-in Editor module namespace (`Unity.GraphToolkit.Editor`); no package is needed.
-- Build state machines on its state-machine authoring API (6.7): `StateMachine`, `State`, transitions, conditions, and variables, defined from Editor scripts as serialized graph assets.
-- Model a port without data as `typeof(Untyped)`, set its capacity with `IPortBuilder.WithCapacity`, and define valid connections in `Graph.IsConnectionAllowed`. A port accepting several data types declares them with `WithDataTypes` (6.7).
+- Build state machines on its state-machine authoring API: `StateMachine`, `State`, transitions, conditions, and variables, defined from Editor scripts as serialized graph assets.
+- Model a port without data as `typeof(Untyped)`, set its capacity with `IPortBuilder.WithCapacity`, and define valid connections in `Graph.IsConnectionAllowed`. A port accepting several data types declares them with `WithDataTypes`.
 - Show the project runtime's execution flow inside the graph through the `GraphVisualization` API.
 
 Keep the data model independent of the authoring UI: serialized types that know

@@ -7,7 +7,7 @@ Unity's UI investment.
 ## Animated UI
 
 Animate state changes with **USS transitions**, and anything keyframed with
-**Animation clips** (6.7) played on a `VisualElement`, without an Animator
+**Animation clips** played on a `VisualElement`, without an Animator
 component.
 
 - Author clips in the Animation window; one clip can animate visual elements and GameObjects together.
@@ -17,7 +17,7 @@ component.
 
 ## Panel Renderer
 
-Panel Renderer (6.5) binds a UXML document to a GameObject and is what makes
+Panel Renderer binds a UXML document to a GameObject and is what makes
 world-space UI native. `UIDocument` remains valid for screen-space overlays.
 
 - Add via `GameObject → UI Toolkit → Panel Renderer`; configure Panel Settings, Source Asset, Sort Order, and World-Space Dimensions.
@@ -25,12 +25,12 @@ world-space UI native. `UIDocument` remains valid for screen-space overlays.
 - Size modes: **Dynamic** derives size from explicitly sized content; **Fixed** takes a manual container size and suits content that flexes.
 - Interaction requires a Panel Input Configuration — event cameras, interaction layers, maximum interaction distance.
 - World-space root panels sort by camera distance first; Sort Order breaks ties among nested and sibling panels.
-- 2D sorting layers do not apply to world-space panels in 6.5. Order diegetic UI by camera distance.
-- Pin a screen-space element to a 3D target with **Track Screen Space Position** (6.7) rather than projecting its position from script every frame.
+- 2D sorting layers do not apply to world-space panels. Order diegetic UI by camera distance.
+- Pin a screen-space element to a 3D target with **Track Screen Space Position** rather than projecting its position from script every frame.
 
 ## Stacking order
 
-Order overlapping elements with **`z-index`** (7.0), in USS or through
+Order overlapping elements with **`z-index`**, in USS or through
 `style.zIndex`, rather than reordering the hierarchy.
 
 - Set it on the overlapping siblings themselves: the popup, tooltip, or overlay that must sit on top, as a child of the parent it shares with what it covers.
@@ -41,7 +41,7 @@ Order overlapping elements with **`z-index`** (7.0), in USS or through
 
 USS implements a subset of CSS and drops part of the rest without a warning, so
 check an HTML/CSS mockup against it before the mockup is validated. This section
-was measured by importing stylesheets into a 7000.0 Editor window; the
+was measured by importing stylesheets into an Editor window; the
 [USS properties reference](https://docs.unity.com/en-us/engine/7000.0/manual/uitoolkits/uielements/uie-uss/properties/reference)
 is the documented list.
 
@@ -75,10 +75,10 @@ is the documented list.
 
 - Declare every visual constant as a USS variable in one tokens file: `--color-primary`, `--space-2`, `--font-size-body`.
 - Compose tokens into theme style sheets: import the default theme (`@import url("unity-theme://default")`), override per theme, and swap the TSS at runtime to change themes.
-- Theme style sheets rank above Unity's built-in styles regardless of selector specificity (7.0). Import a theme only from another theme style sheet: imported into a regular USS, it loses that priority.
+- Theme style sheets rank above Unity's built-in styles regardless of selector specificity. Import a theme only from another theme style sheet: imported into a regular USS, it loses that priority.
 - Reference tokens from element styles, so a value changes in one place.
 - Let UI authors own UXML and USS in UI Builder; keep layout out of C#.
-- Reach for USS filters (blur, grayscale, sepia, tint, invert, opacity — 6.3, URP) and UI Shader Graph materials for visual effects, over pre-rendered textures or per-frame C# tinting.
+- Reach for USS filters (blur, grayscale, sepia, tint, invert, opacity, URP) and UI Shader Graph materials for visual effects, over pre-rendered textures or per-frame C# tinting.
 
 ## Showing data
 
@@ -99,18 +99,18 @@ own line-breaking and fitting, and give it the dynamic font assets it expects.
 
 ## Localization
 
-Localize through the **Localization module** (built in since 6.7), with string
+Localize through the **Localization module**, with string
 and asset tables edited in its table editor, rather than the Localization
 package or hand-rolled tables.
 
 - Format pluralized and parameterized strings with the **Smart Strings** module rather than concatenation in code.
 - Load localized assets through the module's asset provider that matches the project's loading: Addressables, direct references, or `Resources`.
-- Switch fonts with the locale through `LocalizedFontAsset` (7.0).
+- Switch fonts with the locale through `LocalizedFontAsset`.
 
 ## Performance
 
 - Virtualize long lists with `ListView` rather than instantiating thousands of elements.
 - Update changing text with the non-allocating `TextElement.SetText` overloads (`ReadOnlySpan<char>`, `StringBuilder`, numbers with a format) rather than assigning a new string each frame.
 - Toggle USS classes and let transitions animate, rather than writing `style.*` per frame — direct style writes trigger layout and repaint.
-- Keep hierarchies shallow and selectors simple on large screens; `:hover`-heavy selectors over long lists are costly. The USS Stats Profiler (Project Settings → UI Toolkit, 6.5) shows per-panel selector cost.
+- Keep hierarchies shallow and selectors simple on large screens; `:hover`-heavy selectors over long lists are costly. The USS Stats Profiler (Project Settings → UI Toolkit) shows per-panel selector cost.
 - Route UI input through the Input System UI module, and keep a single input backend active so events fire once.

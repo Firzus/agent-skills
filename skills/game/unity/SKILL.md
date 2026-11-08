@@ -4,12 +4,12 @@ description: >-
   Picks the Unity tool for the job and applies it. Routes each need to one
   chosen default (UI Toolkit, Awaitable, Addressables, Input System, URP,
   Localization, Netcode for GameObjects, Multiplayer Services, Dedicated
-  Server, Unity CLI) and writes for the Unity 7 CoreCLR runtime.
+  Server, Unity CLI) and writes for the CoreCLR runtime.
   Use when writing, reviewing, or architecting Unity code, when building a
   custom Editor tool or inspector, when driving the Unity Editor from an
   agent, when iterating on a change the user tests in the Editor, when
   choosing between two Unity tools that do the same job, or when the user
-  mentions Unity, Unity 7, UI Toolkit, UGUI, Addressables, Content
+  mentions Unity, UI Toolkit, UGUI, Addressables, Content
   Directories, URP, HDRP, DOTS, ECS, netcode, custom inspector,
   SerializeReference, CoreCLR, IL2CPP, Unity CLI, Unity MCP, or Unity build
   and performance questions.
@@ -20,27 +20,22 @@ description: >-
 Ship on the **default stack** below. Each row names the one tool to reach for,
 so the choice is already made — spend the thinking on the feature instead.
 
-Baseline: **Unity 7.0** (7000.0, in alpha). It continues the Unity 6
-architecture on CoreCLR: the Editor and desktop players run on CoreCLR, every
-other platform on IL2CPP. Code targets C# 9 and .NET Standard 2.1 until Unity
-ships .NET 10 and C# 14 within the 7.0 cycle; [runtime.md](./runtime.md) owns
-what the runtime changes for your code.
+This skill describes the latest Unity version the team uses, and nothing
+older. The Editor and desktop players run on CoreCLR, every other platform on
+IL2CPP. Code targets C# 9 and .NET Standard 2.1 until Unity ships .NET 10 and
+C# 14; [runtime.md](./runtime.md) owns what the runtime changes for your code.
 
-7.0 aims at parity with 6.7 LTS and is not itself an LTS: the next LTS stream
-starts towards the end of 2027, so a project that must ship on long-term
-support stays on 6.7 LTS.
-
-For what a 7.0 build actually ships, read its release notes and Unity's
-Discussions posts: the 7000.0 manual still carries pages written for 6.7.
+For what a build actually ships, read its release notes and Unity's
+Discussions posts: the manual still carries pages written for earlier versions.
 
 ## The default stack
 
 | Need | Reach for | Instead of |
 | --- | --- | --- |
 | Any new UI | **UI Toolkit** — [ui.md](./ui.md) | UGUI |
-| World-space / diegetic UI | **Panel Renderer** (6.5) | UGUI world canvas, render texture |
-| Text | **Advanced Text Generator** (default 6.5) | hand-rolled layout |
-| Player-facing text in several languages | **Localization module** + Smart Strings (6.7), see [ui.md](./ui.md#localization) | the Localization package, hand-rolled string tables |
+| World-space / diegetic UI | **Panel Renderer** | UGUI world canvas, render texture |
+| Text | **Advanced Text Generator** | hand-rolled layout |
+| Player-facing text in several languages | **Localization module** + Smart Strings, see [ui.md](./ui.md#localization) | the Localization package, hand-rolled string tables |
 | Authoring UI for a custom tool | **UI Toolkit** — [editor-tools.md](./editor-tools.md) | Odin, IMGUI, a node canvas |
 | Heterogeneous items in one authored list | **`[SerializeReference]`** + `AdvancedDropdown` | one list per type |
 | Tool icons | **Built-in Editor icons**, then `painter2D` | shipping PNG variants per state |
@@ -53,7 +48,7 @@ Discussions posts: the 7000.0 manual still carries pages written for 6.7.
 | Custom render passes | **Render Graph** | `ScriptableRenderPass.Execute` |
 | Lighting, static scenes | **Adaptive Probe Volumes** + baked lightmaps | Light Probe Groups |
 | Light baking | **Unity Compute Light Baker**, set as the Default Light Baker | every other light-baking backend |
-| Lighting, dynamic scenes | **Surface Cache GI** (6.7) | baking a scene that moves |
+| Lighting, dynamic scenes | **Surface Cache GI** | baking a scene that moves |
 | Draw-call reduction and occlusion | **GPU Resident Drawer** + GPU occlusion culling | static batching |
 | Pooling | **`UnityEngine.Pool`** | hand-rolled pools |
 | Object identity | **`EntityId`** (64-bit) | `GetInstanceID()`, `int` ids |

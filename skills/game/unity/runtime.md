@@ -1,17 +1,14 @@
 # Runtime: CoreCLR, static state, serialization, identity
 
-Unity 7 runs the Editor and the desktop players (Windows, macOS on Apple
+Unity runs the Editor and the desktop players (Windows, macOS on Apple
 silicon, Linux) on **CoreCLR**; CoreCLR is the default there. Every other
 platform builds with **IL2CPP**, which also stays the release target on
 desktop. IL2CPP builds use the .NET 10 class libraries on Windows, macOS,
 Linux, and iOS, with the remaining platforms following, and keep the Boehm GC.
 
-7.0 targets parity with 6.7 LTS; runtime, JIT, and GC optimisation is planned
-for the LTS after it.
-
 ## Static state
 
-Unity 7 reloads code through AssemblyLoadContext. A code change reloads every
+Unity reloads code through AssemblyLoadContext. A code change reloads every
 project assembly: statics restart from their initializers, and
 `[InitializeOnLoad]` static constructors run again. Entering or leaving Play
 Mode reloads nothing, so statics keep the values the previous session left.
@@ -61,8 +58,8 @@ on each IL2CPP target.
 
 ## Serialization
 
-- `[SerializeField]` applies to fields only; auto-properties take `[field: SerializeField]`. Anything else is a compile error from 6.3.
-- Keep the serialization Roslyn analyzer (6.5) build-breaking: it turns silent runtime data loss (missing `[Serializable]`, malformed `[SerializeReference]`, unsupported collections) into compile errors.
+- `[SerializeField]` applies to fields only; auto-properties take `[field: SerializeField]`. Anything else is a compile error.
+- Keep the serialization Roslyn analyzer build-breaking: it turns silent runtime data loss (missing `[Serializable]`, malformed `[SerializeReference]`, unsupported collections) into compile errors.
 - Serialize dictionaries directly as `[SerializeField] Dictionary<TKey, TValue>`; both types follow Unity's serialization rules.
 - Collections are valid dictionary values, not keys. Wrap a dictionary nested directly inside a list or array in a serializable type.
 - Treat ScriptableObjects as assets: config and shared data, not per-run state. Their values persist across Play Mode sessions in the Editor and are shared by every consumer.
@@ -81,9 +78,9 @@ that confusion.
 
 ## Language level
 
-Unity 7.0 exposes C# 9 and .NET Standard 2.1. Write to that level until the
-project's Editor exposes more: Unity plans .NET 10 and C# 14 within the 7.0
-cycle, without a public date.
+Unity exposes C# 9 and .NET Standard 2.1. Write to that level until the
+project's Editor exposes more: Unity plans .NET 10 and C# 14, without a public
+date.
 
 - Keep precompiled plug-ins on `netstandard2.1`. Once Unity moves to .NET 10, that becomes the only target framework: `net10.0` assemblies do not load before then, and assemblies built for .NET Framework may break after.
 - Leave the experimental MSBuild compilation setting off in production projects; asmdefs remain the source of the compilation layout.

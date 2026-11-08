@@ -42,8 +42,7 @@ unity build . --target StandaloneWindows64 --output-path ./Build/MyGame.exe
 unity test . --mode EditMode
 ```
 
-`--execute-method` is optional: without it, the CLI uses a build profile on
-Unity 6+ or legacy desktop player flags. `--profile` supplies its own target.
+`--execute-method` is optional: without it, the CLI uses a build profile. `--profile` supplies its own target.
 `test` writes an NUnit XML report; keep generated reports out of version control.
 
 Create a project with `unity projects create <name> --path <parent>
@@ -225,7 +224,7 @@ Connect agents through the CLI, including `unity mcp`, rather than the MCP
 server inside `com.unity.ai.assistant`: Unity's AI Assistant documentation
 points MCP users to the CLI.
 
-A project keeping the AI Assistant package alongside the CLI on Unity 7 needs
+A project keeping the AI Assistant package alongside the CLI needs
 it at **2.20.0-pre.2 or later**: earlier versions conflict with the CLI or crash
 the CoreCLR Editor. Check the version in `Packages/manifest.json` before
 diagnosing anything else about a broken connection.
