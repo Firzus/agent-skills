@@ -163,6 +163,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Runbooks | Bash to run them (Git Bash on Windows); an authenticated GitHub CLI to set secrets and variables, otherwise the runbook lists them to set by hand |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
 | Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
+| Wordmark lettering | The image-generation setup above, and the `potrace` npm package as a project dev dependency, added after approval |
 | Reverse engineering | The reverse-engineer MCP server for the fast route (Node.js 24.11+); the skill installs Ghidra, jadx or ilspycmd per user when a task needs them |
 
 Host support for installing skills does not guarantee identical behavior or tool
@@ -248,6 +249,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [cloudflare-cli](./skills/web/cloudflare-cli/SKILL.md) | Operate Cloudflare resources and Workers projects through the `cf` CLI. |
 | [dokploy-best-practices](./skills/web/dokploy-best-practices/SKILL.md) | Deploy and operate applications with Dokploy. |
 | [extract-theme](./skills/web/extract-theme/SKILL.md) | Extract a website's design tokens for Tailwind and shadcn/ui. |
+| [lettering](./skills/web/lettering/SKILL.md) | Turn generated hand-drawn lettering into an animatable SVG wordmark. |
 | [nextjs](./skills/web/nextjs/SKILL.md) | Build and migrate Next.js applications. |
 | [payload-cms](./skills/web/payload-cms/SKILL.md) | Model content, access rules, and hooks with Payload CMS. |
 | [shaders](./skills/web/shaders/SKILL.md) | Add GPU-driven visual effects to React interfaces. |
