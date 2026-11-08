@@ -29,6 +29,7 @@
         "./skills/web/cloudflare-cli",
         "./skills/web/dokploy-best-practices",
         "./skills/web/extract-theme",
+        "./skills/web/lettering",
         "./skills/web/nextjs",
         "./skills/web/payload-cms",
         "./skills/web/shaders",
