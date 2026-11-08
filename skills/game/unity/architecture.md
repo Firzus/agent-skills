@@ -50,7 +50,7 @@ decouple systems without singletons. They are assets: see
 - Complete the job writing a `NativeArray` before passing it as an `AsyncGPUReadback` destination; a destination still in use fails through the readback callback.
 - Size `IJobParallelFor` batches to the work per item: large batches for cheap items, small for expensive ones.
 - Burst, Collections, and Mathematics are engine modules, and Entities and Entities Graphics ship with the Editor as core packages; all track Editor releases. Jobs, Burst, Collections, and Mathematics are therefore a default tool for hot paths, not an opt-in dependency.
-- Reserve **full ECS** for genuine scale (RTS hordes, large simulations, thousands of active entities), used hybrid alongside GameObjects. It costs iteration speed and ecosystem compatibility, which is the trade the scale has to justify. In 7.0 a GameObject is not an entity: SubScenes remain the ECS authoring and streaming unit.
+- Reserve **full ECS** for genuine scale (RTS hordes, large simulations, thousands of active entities), used hybrid alongside GameObjects. It costs iteration speed and ecosystem compatibility, which is the trade the scale has to justify. A GameObject is not an entity: SubScenes remain the ECS authoring and streaming unit.
 
 ## Profiling
 

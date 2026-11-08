@@ -18,7 +18,7 @@ For engine-agnostic replication theory and drop-in co-op session design, use the
 | Multi-peer testing | `com.unity.multiplayer.playmode` |
 
 **Netcode for GameObjects** is the default: `NetworkBehaviour`, `NetworkVariable`,
-and RPCs over GameObjects. Its 3.x line, the 7.0 default, installs Netcode for
+and RPCs over GameObjects. Its default 3.x line installs Netcode for
 Entities, Entities, Burst, and Collections as package dependencies; gameplay
 code still uses the GameObject API. Its time types (`NetworkTime`,
 `NetworkTimeSystem`, `NetworkTickSystem`) live in
@@ -65,8 +65,8 @@ a Unity Cloud project, and a session created `WithDistributedAuthorityNetwork()`
 with a higher-level `sessions` API, which is why connection flows go through it
 rather than the individual services or hand-rolled sockets.
 
-- Matchmaker (6.4) supports CEL OR-operator pools and filters, config history with diffs, dashboard log access, and third-party hosting hooks.
-- Cloud Code gained an experimental stateful mode with a local server (6.5) for per-player and per-session state, which prototypes persistence before dedicated servers exist.
+- Matchmaker supports CEL OR-operator pools and filters, config history with diffs, dashboard log access, and third-party hosting hooks.
+- Cloud Code has an experimental stateful mode with a local server for per-player and per-session state, which prototypes persistence before dedicated servers exist.
 - Build session UI on **Unity Building Blocks**.
 - Host dedicated servers with a third-party provider, connected through the Matchmaker's hosting hooks.
 
@@ -92,6 +92,6 @@ scripting defines, and run them in CI like any other target — see
 
 **Multiplayer Play Mode** runs multiple virtual players in
 one Editor, so host-and-client behaviour is testable without several Editor
-installs or standalone builds. Its capabilities now live largely in the Play Mode
+installs or standalone builds. Its capabilities live largely in the Play Mode
 Framework and the engine's Multiplayer modules. Each developer's local player
-run mode is stored per developer (6.7), not in the shared scenario asset.
+run mode is stored per developer, not in the shared scenario asset.

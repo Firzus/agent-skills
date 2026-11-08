@@ -16,17 +16,16 @@ Pick each group's schema from how its content reaches the player:
 | Installed with the player | **Content Directory** (`ContentDirectoryGroupSchema`): asset-level dependencies, automatic de-duplication, granular unloads |
 | Remote catalog, DLC, post-install download | **AssetBundles**: groups sized around what loads and unloads together |
 
-Content Directories serve local content only in 7.0. Unity has announced
-remote Content Directories for later in the Unity 7 generation, and the 7.0
-documentation does not describe them yet; until a release ships them, remote
-content stays on AssetBundles. Switching a group's schema changes no loading
+Content Directories serve local content only. Unity has announced remote
+Content Directories, and the documentation does not describe them yet; until a
+release ships them, remote content stays on AssetBundles. Switching a group's schema changes no loading
 code. Keep the two dependency sets disjoint: an asset referenced by both is
 built twice.
 
 - Put content that shares dependencies in one Content Directory build. De-duplication works within a build, so two builds each carry their own copy of a shared asset.
 - Break circular references between assets: a cycle loads as one unit, logs a warning, and fails the build beyond 64 MB (`circularrefs.json` lists the cycles).
 - Keep an asset in one place: referencing it from both built-in scene data and an Addressables group duplicates it on disk and in memory.
-- Enable **Extract TypeTree Data** (6.5) on new projects to shrink AssetBundles. It rewrites every bundle, so it is a project-start decision.
+- Enable **Extract TypeTree Data** on new projects to shrink AssetBundles. It rewrites every bundle, so it is a project-start decision.
 
 ### Native Content Directories and `Loadable<T>`
 
@@ -62,9 +61,9 @@ asset is available from `AfterAssembliesLoaded`.
 
 - Enforce imports with **Presets plus folder-based preset rules** (or an `AssetPostprocessor`), committed to version control, so texture, audio, and mesh settings are deterministic across the team rather than drifting per developer.
 - Set platform-correct texture compression — ASTC on mobile, BC on desktop and console.
-- Leave Read/Write off on meshes and textures unless the CPU genuinely reads them. Enable it on meshes used by a Particle System Shape, Terrain Detail Mesh, or Mesh Collider; Unity no longer enables it during the build, and a missing required flag fails the build.
+- Leave Read/Write off on meshes and textures unless the CPU genuinely reads them. Enable it on meshes used by a Particle System Shape, Terrain Detail Mesh, or Mesh Collider; Unity does not enable it during the build, and a missing required flag fails the build.
 - Match audio load types to use: streaming for music and long ambiences, compressed-in-memory for mid-length clips, decompress-on-load for short frequent SFX. Force mono where stereo adds nothing.
-- Expect far fewer redundant reimports on 6.4, where a dependent reimports only when its dependency's *result* changes. In custom importers, declare `DependsOnSourceAsset` and `DependsOnArtifact` so the reimports you do need still fire.
+- A dependent asset reimports only when its dependency's *result* changes. In custom importers, declare `DependsOnSourceAsset` and `DependsOnArtifact` so the reimports you do need still fire.
 - Make an object added in an `AssetPostprocessor` the main object explicitly with `AssetImportContext.SetMainObject`; `AddObjectToAsset` alone leaves the importer's object as the main one.
 
 ## Scenes
@@ -78,7 +77,7 @@ up all three.
 A persistent managers scene is the home for long-lived systems, in place of
 scattering `DontDestroyOnLoad` calls.
 
-Forced GC and asset unload on scene load is opt-in since 6.2
+Forced GC and asset unload on scene load is opt-in
 (`EditorSettings.forceAssetUnloadAndGCOnSceneLoad`). With additive streaming,
 drive unloads deliberately with `Resources.UnloadUnusedAssets` at moments you
 choose.
