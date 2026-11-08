@@ -20,6 +20,7 @@ foreign license behind it.
 | Timeline strips, curves, custom graphics | `generateVisualContent` + `painter2D` |
 | A control reused across tools | `[UxmlElement]` / `[UxmlAttribute]` |
 | A control in the main Editor toolbar | `MainToolbarCustomElement` |
+| A context or overflow menu | `GenericDropdownMenu`, see [Dropdown menus](#dropdown-menus) |
 | Data that is genuinely a graph: dialogue, state machines | **Graph Toolkit**, see [Node graphs](#node-graphs) |
 | An API with no UI Toolkit equivalent yet | `IMGUIContainer` |
 
@@ -51,6 +52,16 @@ The Editor resolves this path only with its extension; without it, it logs
 
 Check the mockup's CSS against
 [From a CSS mockup to USS](./ui.md#from-a-css-mockup-to-uss) before matching it.
+
+## Dropdown menus
+
+`GenericDropdownMenu` opens a context or overflow menu. Its sizing and styling
+were measured in 7000.0 a12 and may change in a later alpha:
+
+- `DropDown(Rect, VisualElement, bool anchored)` and the other `bool` overloads are obsolete in 7000.0. Call the overload that takes a `DropdownMenuSizeMode`, with `Auto`: it sizes the menu to its items under the anchor. `Fixed` sizes it to the anchor, so a small ••• button gives a 16 px menu with unreadable text; `Content` spreads it across the whole panel at x = 0.
+- The menu attaches to the panel's root, outside the window's styled tree, so the window's stylesheets do not reach it. Before calling `DropDown`, walk up from `menu.contentContainer` to the root and add the stylesheets and a class there.
+- Unity computes the menu's width from its labels as measured, the label's own padding included. Pad the label: padding on the row cuts the text.
+- The menu's scroll viewport keeps `flex-grow: 0` and stays as wide as its rows, short of the menu card, so a highlighted row stops before the card's edge. A USS `flex-grow: 1` or `min-width: 100%` is measured first and stretches the menu across the whole panel. Instead, once Unity has sized the menu, set the viewport's `style.minWidth` to its parent's width in a `GeometryChangedEvent` callback.
 
 ## Polymorphic lists
 

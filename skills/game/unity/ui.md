@@ -45,7 +45,7 @@ was measured by importing stylesheets into a 7000.0 Editor window; the
 [USS properties reference](https://docs.unity.com/en-us/engine/7000.0/manual/uitoolkits/uielements/uie-uss/properties/reference)
 is the documented list.
 
-- Use what USS draws rather than a workaround: `box-shadow`, `text-shadow`, `-unity-text-outline`, `gap`, `aspect-ratio`, `letter-spacing`, `white-space: pre-wrap`, `linear-gradient()` in `background-image`, `filter: blur()`, `scale`, `translate`, `padding` in %, `var(--name, fallback)`, and `overflow: hidden`, which clips children to rounded corners. `z-index` follows [Stacking order](#stacking-order).
+- Use what USS draws rather than a workaround: `box-shadow`, `text-shadow`, `-unity-text-outline`, `gap`, `aspect-ratio`, `letter-spacing`, `white-space: pre-wrap`, `linear-gradient()` in `background-image`, `filter: blur()`, `scale`, `translate`, `padding` in %, `var(--name, fallback)`, and `overflow: hidden` (its clipping to rounded corners has a limit, see the table below). `z-index` follows [Stacking order](#stacking-order).
 - The manual keeps `display: grid` off until **Project Settings → UI Toolkit → Enable Grid Layout** is on, yet an Editor window laid out a grid with the setting off. Turn it on before using grid rather than trusting an Editor capture.
 - Selectors are type, class, name, `*`, descendant, child `>`, compound selectors and selector lists, with the pseudo-classes `:hover`, `:active`, `:inactive`, `:focus`, `:disabled`, `:enabled`, `:checked` and `:root`. `:nth-child`, `:not`, `:is`, `:has` and the `+` and `~` combinators fail the import. `:selected` (use `:checked`), `:first-child`, `[attr]`, `::before`, `:focus-visible`, `!important` and `@media` import without a warning and do nothing: toggle a USS class from C# for those states.
 - Draw icons rather than typing Unicode symbols: ⚠, ⛔ or ✅ in an Editor label render as colour emoji. [editor-tools.md](./editor-tools.md#icons) gives the order to reach for icons.
@@ -67,6 +67,7 @@ is the documented list.
 | `hsl()`, `currentColor` | A hex or `rgb()` colour, or a variable. |
 | CSS cursors such as `pointer` | Unity keywords such as `link` or `move-arrow`, which work only in the Editor; runtime UI takes a cursor texture. |
 | `border-radius` above half a side | Draws an ellipse: a pill takes a radius of exactly half its height. |
+| A filled child clipped by its parent's `border-radius` and `overflow: hidden` | Clipped at large radii only: at a few pixels the child's fill stays square in the corner. Give the child the same corner radii as the parent. |
 | `text-overflow: ellipsis` over several lines | One truncated line only, with `white-space: nowrap` and `overflow: hidden`. |
 | A transition on `display`, or on an element's first frame | Neither plays: `display` switches at once, and a transition starts only after the first frame. |
 
