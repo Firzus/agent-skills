@@ -1,4 +1,17 @@
+---
+name: unity-rendering
+description: >-
+  Use when choosing or configuring a Unity render pipeline (URP, HDRP,
+  Built-In), writing custom render passes with Render Graph, setting up
+  lighting, light baking, Adaptive Probe Volumes, Surface Cache GI, the GPU
+  Resident Drawer, occlusion culling, or shaders, or investigating GPU
+  rendering performance.
+---
+
 # Rendering: pipeline, lighting, GPU-driven drawing
+
+Load the [`unity-core`](../unity-core/SKILL.md) skill with this one: its default
+stack and review pass apply here.
 
 URP is Unity's render pipeline, on every target from mobile to high-end PC
 and console. Unity's rendering work lands there: Surface Cache GI, Screen Space

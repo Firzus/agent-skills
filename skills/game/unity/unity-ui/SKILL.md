@@ -1,4 +1,17 @@
+---
+name: unity-ui
+description: >-
+  Use when building or reviewing Unity runtime UI with UI Toolkit: menus, HUD,
+  world-space or diegetic UI, UXML, USS or translating CSS to USS, design
+  tokens, data binding, MVP, text, localization, or UI performance, or when
+  weighing UGUI against UI Toolkit. For a Figma design use figma-to-unity; for
+  Editor authoring UI use unity-editor-tools.
+---
+
 # UI: UI Toolkit, USS versus CSS, design tokens, data binding, MVP, localization
+
+Load the [`unity-core`](../unity-core/SKILL.md) skill with this one: its default
+stack and review pass apply here.
 
 UI Toolkit is the UI system: menus, HUD, data-heavy screens, and world-space.
 It is retained-mode, renders textureless through a dynamic atlas, and receives
@@ -48,7 +61,7 @@ is the documented list.
 - Use what USS draws rather than a workaround: `box-shadow`, `text-shadow`, `-unity-text-outline`, `gap`, `aspect-ratio`, `letter-spacing`, `white-space: pre-wrap`, `linear-gradient()` in `background-image`, `filter: blur()`, `scale`, `translate`, `padding` in %, `var(--name, fallback)`, and `overflow: hidden` (its clipping to rounded corners has a limit, see the table below). `z-index` follows [Stacking order](#stacking-order).
 - The manual keeps `display: grid` off until **Project Settings → UI Toolkit → Enable Grid Layout** is on, yet an Editor window laid out a grid with the setting off. Turn it on before using grid rather than trusting an Editor capture.
 - Selectors are type, class, name, `*`, descendant, child `>`, compound selectors and selector lists, with the pseudo-classes `:hover`, `:active`, `:inactive`, `:focus`, `:disabled`, `:enabled`, `:checked` and `:root`. `:nth-child`, `:not`, `:is`, `:has` and the `+` and `~` combinators fail the import. `:selected` (use `:checked`), `:first-child`, `[attr]`, `::before`, `:focus-visible`, `!important` and `@media` import without a warning and do nothing: toggle a USS class from C# for those states.
-- Draw icons rather than typing Unicode symbols: ⚠, ⛔ or ✅ in an Editor label render as colour emoji. [editor-tools.md](./editor-tools.md#icons) gives the order to reach for icons.
+- Draw icons rather than typing Unicode symbols: ⚠, ⛔ or ✅ in an Editor label render as colour emoji. [unity-editor-tools](../unity-editor-tools/SKILL.md#icons) gives the order to reach for icons.
 
 | CSS in a mockup | In USS |
 | --- | --- |

@@ -22,7 +22,7 @@
     {
       "name": "web",
       "source": "./",
-      "description": "Développement web et applicatif : frameworks, ressources et déploiement.",
+      "description": "D\u00e9veloppement web et applicatif : frameworks, ressources et d\u00e9ploiement.",
       "skills": [
         "./skills/web/adsense",
         "./skills/web/astryx",
@@ -47,10 +47,15 @@
     {
       "name": "game",
       "source": "./",
-      "description": "Unity development skills \u2014 engine workflow and Figma UI.",
+      "description": "Unity development skills \u2014 engine defaults, UI, Editor tools, rendering, multiplayer, Editor automation, and Figma UI.",
       "skills": [
-        "./skills/game/figma-to-unity",
-        "./skills/game/unity"
+        "./skills/game/unity/figma-to-unity",
+        "./skills/game/unity/unity-cli",
+        "./skills/game/unity/unity-core",
+        "./skills/game/unity/unity-editor-tools",
+        "./skills/game/unity/unity-multiplayer",
+        "./skills/game/unity/unity-rendering",
+        "./skills/game/unity/unity-ui"
       ]
     },
     {

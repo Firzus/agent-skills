@@ -1,21 +1,16 @@
 ---
-name: unity
+name: unity-core
 description: >-
-  Picks the Unity tool for the job and applies it. Routes each need to one
-  chosen default (UI Toolkit, Awaitable, Addressables, Input System, URP,
-  Localization, Netcode for GameObjects, Multiplayer Services, Dedicated
-  Server, Unity CLI) and writes for the CoreCLR runtime.
-  Use when writing, reviewing, or architecting Unity code, when building a
-  custom Editor tool or inspector, when driving the Unity Editor from an
-  agent, when iterating on a change the user tests in the Editor, when
+  Use for any Unity task: writing, reviewing, or architecting Unity code,
   choosing between two Unity tools that do the same job, or when the user
-  mentions Unity, UI Toolkit, UGUI, Addressables, Content
-  Directories, URP, HDRP, DOTS, ECS, netcode, custom inspector,
-  SerializeReference, CoreCLR, IL2CPP, Unity CLI, Unity MCP, or Unity build
-  and performance questions.
+  mentions Unity, CoreCLR, IL2CPP, Awaitable, Addressables, Content
+  Directories, DOTS, ECS, Jobs, Burst, assembly definitions, Input System,
+  audio, project structure, CI, builds, tests, or performance. Load it
+  alongside the domain skills unity-ui, unity-editor-tools, unity-rendering,
+  unity-multiplayer, and unity-cli.
 ---
 
-# Unity
+# Unity Core
 
 Ship on the **default stack** below. Each row names the one tool to reach for,
 so the choice is already made — spend the thinking on the feature instead.
@@ -32,11 +27,11 @@ Discussions posts: the manual still carries pages written for earlier versions.
 
 | Need | Reach for | Instead of |
 | --- | --- | --- |
-| Any new UI | **UI Toolkit** — [ui.md](./ui.md) | UGUI |
+| Any new UI | **UI Toolkit** — [unity-ui](../unity-ui/SKILL.md) | UGUI |
 | World-space / diegetic UI | **Panel Renderer** | UGUI world canvas, render texture |
 | Text | **Advanced Text Generator** | hand-rolled layout |
-| Player-facing text in several languages | **Localization module** + Smart Strings, see [ui.md](./ui.md#localization) | the Localization package, hand-rolled string tables |
-| Authoring UI for a custom tool | **UI Toolkit** — [editor-tools.md](./editor-tools.md) | Odin, IMGUI, a node canvas |
+| Player-facing text in several languages | **Localization module** + Smart Strings, see [unity-ui](../unity-ui/SKILL.md#localization) | the Localization package, hand-rolled string tables |
+| Authoring UI for a custom tool | **UI Toolkit** — [unity-editor-tools](../unity-editor-tools/SKILL.md) | Odin, IMGUI, a node canvas |
 | Heterogeneous items in one authored list | **`[SerializeReference]`** + `AdvancedDropdown` | one list per type |
 | Tool icons | **Built-in Editor icons**, then `painter2D` | shipping PNG variants per state |
 | Async | **`Awaitable`** + `CancellationToken` | coroutines, raw `Task` |
@@ -44,7 +39,7 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Runtime loading | **Addressables** + `AssetReference`; Content Directory groups for installed content, AssetBundle groups for remote content until Unity ships remote Content Directories, see [assets.md](./assets.md#addressables); settings needed before the first scene go through the [Preloaded Assets](./assets.md#settings-needed-before-the-first-scene) | `Resources/`, `Loadable<T>` without Addressables |
 | Input | **Input System** action maps | legacy Input Manager |
 | Audio | **built-in AudioMixer** — [workflow.md](./workflow.md) | FMOD/Wwise |
-| Render pipeline | **URP** — [rendering.md](./rendering.md) | Built-In, HDRP |
+| Render pipeline | **URP** — [unity-rendering](../unity-rendering/SKILL.md) | Built-In, HDRP |
 | Custom render passes | **Render Graph** | `ScriptableRenderPass.Execute` |
 | Lighting, static scenes | **Adaptive Probe Volumes** + baked lightmaps | Light Probe Groups |
 | Light baking | **Unity Compute Light Baker**, set as the Default Light Baker | every other light-baking backend |
@@ -53,7 +48,7 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Pooling | **`UnityEngine.Pool`** | hand-rolled pools |
 | Object identity | **`EntityId`** (64-bit) | `GetInstanceID()`, `int` ids |
 | Hot paths | **Jobs + Burst** | a full ECS rewrite |
-| Netcode | **Netcode for GameObjects** | Netcode for Entities |
+| Netcode | **Netcode for GameObjects** — [unity-multiplayer](../unity-multiplayer/SKILL.md) | Netcode for Entities |
 | Authority | **client-server** | distributed authority |
 | Sessions, matchmaking, relay | **Multiplayer Services** | Lobby + Matchmaker + Relay separately |
 | Server builds | **Dedicated Server** + Multiplayer Roles | a hand-stripped client build |
@@ -61,9 +56,9 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Per-platform build config | **Build Profiles** | hand-edited global Build Settings |
 | Build-time scene processing | **`AssetPostprocessor.OnProcessScene`** | `IProcessSceneWithReport`, `[PostProcessScene]` |
 | Tests | **Unity Test Framework**, edit-mode first | play-mode by default |
-| Tests while the Editor is open | **`unity command run_tests`** — [iteration.md](./iteration.md) | closing the Editor for `unity test` |
+| Tests while the Editor is open | **`unity command run_tests`** — [unity-cli](../unity-cli/iteration.md) | closing the Editor for `unity test` |
 | Release builds | **IL2CPP** | the CoreCLR player in shipping builds |
-| Driving the Editor from an agent | **Unity CLI** — [cli.md](./cli.md) | asking the user to click through the Editor |
+| Driving the Editor from an agent | **Unity CLI** — [unity-cli](../unity-cli/SKILL.md) | asking the user to click through the Editor |
 
 Leave a default only where the linked reference gives that row an escape hatch.
 Say which row you left and what made it worth leaving.
@@ -73,20 +68,28 @@ Say which row you left and what made it worth leaving.
 | Topic | File |
 | --- | --- |
 | CoreCLR runtime, static state, serialization, `EntityId` | [runtime.md](./runtime.md) |
-| Unity CLI, driving the Editor from an agent, screen captures, why not MCP | [cli.md](./cli.md) |
-| Iterating while the user tests in the Editor: tracked Editor, tests without closing it, trial preparation | [iteration.md](./iteration.md) |
-| UI Toolkit, USS versus CSS, design tokens, data binding, MVP, localization | [ui.md](./ui.md) |
-| Custom Editor tools, inspectors, `[SerializeReference]` | [editor-tools.md](./editor-tools.md) |
 | Composition, asmdefs, `Awaitable`, Jobs/Burst/ECS, profiling, allocations | [architecture.md](./architecture.md) |
 | Exceptions, nullability, `async void`, the `UnityEngine.Object` null trap | [code-standards.md](./code-standards.md) |
 | Folder layout, naming, GUID-safe renames | [project-structure.md](./project-structure.md) |
 | Addressables, Content Directories, import settings, scenes, prefabs | [assets.md](./assets.md) |
-| Pipeline, lighting, GPU-driven rendering | [rendering.md](./rendering.md) |
 | Input, audio, version control, CI, builds, testing | [workflow.md](./workflow.md) |
-| Netcode, authority, sessions, dedicated server | [multiplayer.md](./multiplayer.md) |
 
-For Figma designs as UI Toolkit interfaces, use the `figma-to-unity` skill. For
-engine-agnostic replication theory, use `coop-session`.
+## Domain skills
+
+Each domain has its own skill, which applies this default stack and review pass.
+When the task touches a domain, load its skill; when that skill is not
+installed, say which one is missing and work from the rows above.
+
+| Domain | Skill |
+| --- | --- |
+| UI Toolkit, USS versus CSS, design tokens, data binding, MVP, localization | [unity-ui](../unity-ui/SKILL.md) |
+| Figma designs as UI Toolkit interfaces | [figma-to-unity](../figma-to-unity/SKILL.md) |
+| Custom Editor tools, inspectors, `[SerializeReference]` | [unity-editor-tools](../unity-editor-tools/SKILL.md) |
+| Pipeline, lighting, GPU-driven rendering | [unity-rendering](../unity-rendering/SKILL.md) |
+| Netcode, authority, sessions, dedicated server | [unity-multiplayer](../unity-multiplayer/SKILL.md) |
+| Unity CLI, driving the Editor from an agent, iterating while the user tests in the Editor | [unity-cli](../unity-cli/SKILL.md) |
+
+For engine-agnostic replication theory, use `coop-session`.
 
 ## Review pass
 

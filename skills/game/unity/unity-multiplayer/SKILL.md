@@ -1,4 +1,16 @@
+---
+name: unity-multiplayer
+description: >-
+  Use when adding or reviewing networking in a Unity game: choosing Netcode for
+  GameObjects or Netcode for Entities, the authority model, sessions,
+  matchmaking, relay, dedicated server builds, or testing several peers with
+  Multiplayer Play Mode.
+---
+
 # Multiplayer: netcode, authority, sessions, dedicated server
+
+Load the [`unity-core`](../unity-core/SKILL.md) skill with this one: its default
+stack and review pass apply here.
 
 Networking is decided before gameplay code exists: the netcode stack, the
 authority model, and the client/server split shape prediction, state ownership,
@@ -86,7 +98,7 @@ cheap to run.
 
 Drive server builds through Build Profiles with per-role scene lists and
 scripting defines, and run them in CI like any other target — see
-[workflow.md](./workflow.md).
+[workflow.md](../unity-core/workflow.md).
 
 ## Testing
 

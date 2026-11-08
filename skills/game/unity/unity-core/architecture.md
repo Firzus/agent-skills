@@ -59,7 +59,7 @@ and hides device-specific bottlenecks, so Editor numbers point at the wrong
 problem.
 
 - Compare captures with **Profile Analyzer**; chase memory with **Memory Profiler** snapshots.
-- For rendering-side instrumentation — Render Graph Viewer, Rendering Statistics — see [rendering.md](./rendering.md).
+- For rendering-side instrumentation — Render Graph Viewer, Rendering Statistics — see the [unity-rendering](../unity-rendering/SKILL.md) skill.
 
 ## Allocations
 
