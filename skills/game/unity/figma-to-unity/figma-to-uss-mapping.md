@@ -135,6 +135,6 @@ Alternatively set the slice values on the sprite import settings and let UI Tool
 
 ### Icons
 
-- **SVG** (Unity 6.2+ / com.unity.vectorgraphics): best for flat icons that scale across resolutions.
+- **SVG** (a core module, no package needed): best for flat icons that scale across resolutions.
 - **PNG at 2x** with Texture Type Sprite: safe default; set the PanelSettings reference resolution accordingly.
 - Tint monochrome icons with `-unity-background-image-tint-color: var(--icon-color);` instead of exporting color variants.

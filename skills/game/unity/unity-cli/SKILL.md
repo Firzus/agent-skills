@@ -1,4 +1,17 @@
+---
+name: unity-cli
+description: >-
+  Use when an agent drives the Unity Editor or a development Player from a
+  terminal: building, running tests, running C# in the live Editor, capturing
+  screenshots, exposing project commands, or iterating on a change the user
+  tests in an open Editor. Also when the user mentions the Unity CLI, a
+  `unity` command, or Unity MCP.
+---
+
 # Unity CLI: driving the Editor from an agent
+
+Load the [`unity-core`](../unity-core/SKILL.md) skill with this one: its default
+stack and review pass apply here.
 
 Use the **Unity CLI** to drive the Editor and development Player builds from a
 terminal, rather than asking the user to click through the Editor.
@@ -8,6 +21,10 @@ help before composing commands: they take precedence over examples here.
 
 The CLI is free and independent of Unity AI — no subscription, and it drives a
 local Editor offline. The paid in-Editor AI Assistant is a separate product.
+
+When the agent changes code while the user tests in the Editor, follow
+[iteration.md](./iteration.md): it tracks the open Editor, runs tests without
+closing it, and prepares the user's trial.
 
 ## Install
 

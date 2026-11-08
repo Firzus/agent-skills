@@ -266,8 +266,13 @@ the skill does not install the server: register its npm package, `reverse-engine
 
 | Skill | Purpose |
 | --- | --- |
-| [figma-to-unity](./skills/game/figma-to-unity/SKILL.md) | Implement Figma designs in Unity UI Toolkit. |
-| [unity](./skills/game/unity/SKILL.md) | Choose the appropriate tools for Unity development tasks. |
+| [figma-to-unity](./skills/game/unity/figma-to-unity/SKILL.md) | Implement Figma designs in Unity UI Toolkit. |
+| [unity-cli](./skills/game/unity/unity-cli/SKILL.md) | Drive the Unity Editor from an agent and iterate while you test in it. |
+| [unity-core](./skills/game/unity/unity-core/SKILL.md) | Choose the appropriate tools for Unity development tasks; the other Unity skills build on it. |
+| [unity-editor-tools](./skills/game/unity/unity-editor-tools/SKILL.md) | Build custom Unity Editor tools and inspectors. |
+| [unity-multiplayer](./skills/game/unity/unity-multiplayer/SKILL.md) | Add networking, sessions, and dedicated servers to a Unity game. |
+| [unity-rendering](./skills/game/unity/unity-rendering/SKILL.md) | Configure URP, lighting, and GPU-driven rendering in Unity. |
+| [unity-ui](./skills/game/unity/unity-ui/SKILL.md) | Build runtime UI with Unity UI Toolkit. |
 
 ## Contribute
 
@@ -276,7 +281,8 @@ with the skill name, agent and version, expected result, and actual result.
 Remove secrets and private project data from examples.
 
 For repository changes, read [AGENTS.md](./AGENTS.md) for contribution boundaries
-and validation. A skill lives at `skills/<section>/<name>/SKILL.md`; supporting
+and validation. A skill lives at `skills/<section>/<name>/SKILL.md`, or one
+level deeper for the Unity skills (`skills/game/unity/<name>/`); supporting
 references and helpers stay in its folder. Keep the README catalog and
 [marketplace manifest](./.claude-plugin/marketplace.json) aligned with skill folders.
 

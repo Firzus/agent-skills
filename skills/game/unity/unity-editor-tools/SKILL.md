@@ -1,4 +1,16 @@
+---
+name: unity-editor-tools
+description: >-
+  Use when building a custom Unity Editor window, inspector, or authoring tool
+  for project data (ability definitions, dialogue graphs, combo trees), a
+  polymorphic list with [SerializeReference], a node graph, or Editor icons,
+  or when the user mentions custom inspectors, IMGUI, or Odin.
+---
+
 # Editor tools: authoring UI for the gaps you fill yourself
+
+Load the [`unity-core`](../unity-core/SKILL.md) skill with this one: its default
+stack and review pass apply here.
 
 Some needs have no Unity tool, so the project builds one — animation notifies,
 ability definitions, combo trees, dialogue graphs. That tool needs an authoring
@@ -51,7 +63,7 @@ The Editor resolves this path only with its extension; without it, it logs
 "Font not found".
 
 Check the mockup's CSS against
-[From a CSS mockup to USS](./ui.md#from-a-css-mockup-to-uss) before matching it.
+[From a CSS mockup to USS](../unity-ui/SKILL.md#from-a-css-mockup-to-uss) before matching it.
 
 ## Dropdown menus
 
@@ -151,10 +163,10 @@ authoring view can change without a data migration.
 
 Editor code lives under `Editor/` folders or Editor asmdefs, and the runtime
 types it edits stay in runtime assemblies — see
-[project-structure.md](./project-structure.md). A tool meant to be reused ships
+[project-structure.md](../unity-core/project-structure.md). A tool meant to be reused ships
 as a UPM package with that split already in place.
 
 Register Editor callbacks, such as `EditorApplication.update` subscriptions, in
 an `[OnCodeLoaded]` method and remove them in the matching `[OnCodeUnloading]`
 method, so each code reload leaves exactly one subscription; see
-[runtime.md](./runtime.md#static-state).
+[runtime.md](../unity-core/runtime.md#static-state).

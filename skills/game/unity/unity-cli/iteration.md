@@ -3,14 +3,14 @@
 In this loop the agent changes code and the user tries the result in the Editor.
 The Editor stays open for the whole loop: tests run inside it rather than in a
 batch-mode Editor that would require closing it. Command names and arguments
-come from `unity list --json`, as [cli.md](./cli.md) requires.
+come from `unity list --json`, as [the Unity CLI skill](./SKILL.md) requires.
 
 ## Open and track the Editor
 
 1. When the project's Editor is already open but was not opened by the agent
    (by the user or an earlier session), connect to it and tell the user the
    harness does not track it. Run the `isHumanControllingUs` check from
-   [cli.md](./cli.md#connect-to-a-running-editor): when it returns `false`, the
+   [Connect to a running Editor](./SKILL.md#connect-to-a-running-editor): when it returns `false`, the
    Editor cancels every dialog, so tell the user and let them decide whether to
    reopen it without `-automated`.
 2. Otherwise open it with `unity open .`, without `-automated`: the user works in
@@ -24,7 +24,7 @@ come from `unity list --json`, as [cli.md](./cli.md) requires.
    When the harness cannot run background tasks, skip tracking and tell the
    user: run in the foreground, the wait blocks the agent until the Editor
    exits.
-4. Prove readiness as [cli.md](./cli.md#connect-to-a-running-editor) describes.
+4. Prove readiness as [Connect to a running Editor](./SKILL.md#connect-to-a-running-editor) describes.
 
 Stopping that task ends the tracking only: the Editor keeps running, and the
 user closes it from its window or asks the agent. When the task ends while the

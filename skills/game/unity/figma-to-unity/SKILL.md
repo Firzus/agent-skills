@@ -66,7 +66,7 @@ Download any images/icons returned by the Figma MCP server into the project's UI
 Asset rules:
 
 - If the MCP server returns a `localhost` source for an image or SVG, use that source directly. Do not substitute placeholders and do not import icon packages.
-- Prefer vector data (SVG, supported by UI Toolkit in Unity 6.2+) for icons when the project already imports SVGs; otherwise export PNG at 2x.
+- Prefer vector data (SVG, supported by UI Toolkit) for icons when the project already imports SVGs; otherwise export PNG at 2x.
 - After import, set Texture Type to **Sprite (2D and UI)**. For panels, frames, and bars that stretch, configure **9-slice borders** in the Sprite Editor and use `-unity-slice-*` / `-unity-background-image-tint-color` in USS as needed.
 - Decorative gradients and flat shapes usually do not need an asset — recreate them in USS (or a custom `VisualElement` with `generateVisualContent`) instead of exporting a bitmap.
 
@@ -112,4 +112,4 @@ If the user can run the Editor, ask them to confirm visually; otherwise list any
 ## Additional resources
 
 - Property-by-property translation tables and USS limitations: [figma-to-uss-mapping.md](./figma-to-uss-mapping.md)
-- For broader Unity UI Toolkit architecture guidance (design systems, MVP/MVVM, data binding), use the `unity` skill if available.
+- For broader Unity UI Toolkit architecture guidance (design systems, MVP/MVVM, data binding), use the [`unity-ui`](../unity-ui/SKILL.md) skill if available.
