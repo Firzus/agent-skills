@@ -157,7 +157,6 @@ every action they can perform. Check the selected skill's prerequisites first.
 | The stack | Git in the project; a Linear workspace the agent can read and write (for example through the Linear MCP server) for Small and Project work; GitHub CLI or another way to open pull requests to ship |
 | Independent reviews and delegated research | An agent with subagent support |
 | Figma workflows | The Figma integration, account access, and approval for external writes |
-| Chrome debugging and automation | Google Chrome and the `chrome-devtools` CLI from the npm package `chrome-devtools-mcp`; the skill proposes the global install and waits for approval |
 | Cloudflare operations | The `cf` CLI from the npm package `cf` (open beta) and a Cloudflare account; the skill proposes the global install and waits for approval |
 | Video reports | FFmpeg and access to the application being recorded |
 | Runbooks | Bash to run them (Git Bash on Windows); an authenticated GitHub CLI to set secrets and variables, otherwise the runbook lists them to set by hand |
@@ -225,7 +224,6 @@ the skill does not install the server: register its npm package, `reverse-engine
 | Skill | Purpose |
 | --- | --- |
 | [authoring](./skills/engineering/authoring/SKILL.md) | Write and review skills, their invocation conditions, references, and templates. |
-| [chrome-devtools](./skills/engineering/chrome-devtools/SKILL.md) | Debug and automate Chrome from the shell: console, network, cookies, performance, accessibility, and memory. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
 | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and propose evidenced refactors that preserve behavior. |
