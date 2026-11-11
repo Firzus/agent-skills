@@ -3,9 +3,9 @@ name: unity-cli
 description: >-
   Use when an agent drives the Unity Editor or a development Player from a
   terminal: building, running tests, running C# in the live Editor, capturing
-  screenshots, exposing project commands, or iterating on a change the user
-  tests in an open Editor. Also when the user mentions the Unity CLI, a
-  `unity` command, or Unity MCP.
+  screenshots, generating scenes or assets headless, exposing project
+  commands, or iterating on a change the user tests in an open Editor. Also
+  when the user mentions the Unity CLI, a `unity` command, or Unity MCP.
 ---
 
 # Unity CLI: driving the Editor from an agent
@@ -22,9 +22,21 @@ help before composing commands: they take precedence over examples here.
 The CLI is free and independent of Unity AI — no subscription, and it drives a
 local Editor offline. The paid in-Editor AI Assistant is a separate product.
 
-When the agent changes code while the user tests in the Editor, follow
-[iteration.md](./iteration.md): it tracks the open Editor, runs tests without
-closing it, and prepares the user's trial.
+## Choose who the Editor is for
+
+Every "Save changes?" or "Scene(s) Have Been Modified" dialog the user sees
+must come from their own work, never from the agent's. So split Unity work by
+who needs it:
+
+| Who needs Unity | How the agent runs it |
+| --- | --- |
+| The agent: compiling, EditMode and PlayMode tests, builds, generating scenes or assets, capturing evidence | Headless, as described in [Run Unity headless](#run-unity-headless): a batch-mode Editor that shows no window and no dialog |
+| The user: they will try something in the Editor, or ask for it to be opened | An interactive Editor tied to the harness session, as described in [iteration.md](./iteration.md), where the agent runs nothing on its own behalf without the user's agreement |
+
+A batch run needs the project's interactive Editor closed. When the user's
+Editor is open, the agent never closes it to make room: it asks, or waits until
+the user is done, as [iteration.md](./iteration.md#agent-work-while-the-editor-is-open)
+describes.
 
 ## Install
 
@@ -46,21 +58,44 @@ Installation and update traps:
   Identify and stop that helper, not unrelated Editor processes, then retry and
   verify `unity --version`.
 
-## Build and test
+## Run Unity headless
 
-`unity build` and `unity test` launch a batch-mode Editor resolved from
-`ProjectVersion.txt`, so `unity test` needs the project's interactive Editor
-closed. To test while the Editor stays open, run tests inside it as
-[iteration.md](./iteration.md#run-tests-in-the-open-editor) describes. Discover
-build options with `unity build --help`:
+`unity test`, `unity build`, and `unity run` each launch a batch-mode Editor
+resolved from `ProjectVersion.txt`, which exits when its work ends. They need
+the project's interactive Editor closed; `unity test` refuses to start with
+`already open in a running Editor (PID …)`. Discover options with each
+command's `--help`:
 
 ```bash
+unity test . --mode EditMode --output ../results/edit.xml
+unity test . --mode PlayMode --output ../results/play.xml
 unity build . --target StandaloneWindows64 --output-path ./Build/MyGame.exe
-unity test . --mode EditMode
+unity run . --no-tail -l ../logs/gen.log -- -executeMethod MyGame.EditorTools.Generate
 ```
 
-`--execute-method` is optional: without it, the CLI uses a build profile. `--profile` supplies its own target.
-`test` writes an NUnit XML report; keep generated reports out of version control.
+- **Tests.** `test` writes an NUnit XML report; read results from it and keep
+  reports out of version control. EditMode and PlayMode tests both run
+  headless, including physics and frame advance.
+- **Compile errors.** `unity test` reports only `TEST_RUN_ERROR` ("Unity exited
+  with code 1 before reporting results"); read the `error CS` lines from the
+  project's `Logs/Editor.log`. `unity run` prints them and exits non-zero.
+- **Generation.** `unity run -- -executeMethod <Class.Method>` runs a static
+  Editor method, for example one that builds a scene and saves it with
+  `EditorSceneManager.SaveScene`. The CLI adds `-batchmode -quit` itself and
+  rejects them after `--`. Confirm the result from a log line the method
+  writes and from the saved file, not from the exit code alone.
+- **Rendering.** Without `-nographics`, the batch Editor keeps a real graphics
+  device and renders cameras, so a camera rendered into a `RenderTexture`
+  gives usable pixels. With `-nographics` (`unity test . -- -nographics`, or
+  after `--` for `unity run`) the device is `Null`: logic tests pass, but
+  rendering silently returns meaningless pixels, so keep it off any run whose
+  result depends on an image.
+- **Builds.** `--execute-method` is optional: without it, the CLI uses a build
+  profile. `--profile` supplies its own target.
+- **Registered commands.** `unity run --command <name>` executes one Pipeline
+  command in a fresh batch Editor, with no scene open and no Game view, so
+  `game_view` fails there. Capture through an `-executeMethod` method that opens
+  the scene and renders its camera instead.
 
 Create a project with `unity projects create <name> --path <parent>
 --editor-version <version> --template <template-id>`. The parent directory must
@@ -94,10 +129,10 @@ earlier one.
 
 A first installation can be picked up by a running Editor; after a package
 version change, close and reopen it so the changed manifest is loaded. Open
-the Editor, then wait until it accepts commands:
+the Editor as [iteration.md](./iteration.md#open-the-editor-for-the-session)
+describes, then wait until it accepts commands:
 
 ```bash
-unity open .
 unity status --until-ready           # waits for the Editor to report ready
 unity command eval --code "return UnityEngine.Application.unityVersion;" --result-only --timeout 300
 ```
@@ -178,7 +213,9 @@ Use `--runtime <player-name>` for a development Player rather than the Editor.
 
 ## Capture visual evidence
 
-Default to `capture_editor_element` for Editor UI. Read the project's capture
+Capture for the agent's own evidence headless, as
+[Run Unity headless](#run-unity-headless) describes; the commands below need a
+running interactive Editor. Default to `capture_editor_element` for Editor UI. Read the project's capture
 policy first: full-screen restrictions belong in its `AGENTS.md`, not in the
 CLI's capabilities. Discover the selector and output arguments from the schema.
 An Editor capture follows the screen's scaling (a 22px row measures 27px at
@@ -191,16 +228,19 @@ then `Repaint()` on the target Inspector window. Allow an Editor repaint before
 retrying capture; if it still fails, inspect the tree and selector.
 
 Use scene/game captures for scene evidence, not as proof that overlay UI is
-visible: `capture_game_view` with `source=camera` renders the camera only and
+visible: `game_view` with `source=camera` renders the camera only and
 silently omits composited overlays, while its default `source=screen` keeps
 them. Where project policy permits,
 `UnityEngine.ScreenCapture.CaptureScreenshot` captures the rendered game
 buffer, not the desktop. It writes asynchronously; verify the file exists
 before inspecting it.
 
-Prefer absolute output paths outside `Assets`: `save_path` can resolve against
-the authoring root (`Temp/shot.png` becomes `Assets/Temp/` and gets imported),
-while `screenshot --output` resolves against the project root.
+`game_view --save_path` refuses paths outside the project, and resolves every
+other path, relative or absolute, under `Assets/` (`Temp/shot.png` becomes
+`Assets/Temp/shot.png`), where the file and its `.meta` get imported. Omit
+`save_path`, take the inline base64 PNG from the JSON result, and decode it to
+a file outside the project. `screenshot --output` resolves against the project
+root.
 
 ## Expose project commands
 
@@ -248,11 +288,12 @@ diagnosing anything else about a broken connection.
 
 ## Working against a project
 
-1. Check the compatibility gate before installing or upgrading Pipeline.
-2. `unity doctor` on connection failure; `unity status --until-ready` to identify the Editor, then the readiness `eval` to confirm it accepts commands with arguments.
-3. `unity list --json` to discover commands and their parameter schemas.
-4. Read-only `eval --code` calls to observe live state.
-5. A registered `[CliCommand]` for recurring operations; verify actual completion.
+1. Decide who needs Unity ([Choose who the Editor is for](#choose-who-the-editor-is-for)); for the agent's own work, stay headless.
+2. Check the compatibility gate before installing or upgrading Pipeline.
+3. `unity doctor` on connection failure; `unity status --until-ready` to identify the Editor, then the readiness `eval` to confirm it accepts commands with arguments.
+4. `unity list --json` to discover commands and their parameter schemas.
+5. Read-only `eval --code` calls to observe live state.
+6. A registered `[CliCommand]` for recurring operations; verify actual completion.
 
 Global flags cover JSON output and exit codes — see the
 [CLI reference](https://docs.unity.com/en-us/unity-cli/unity-cli-reference) — so
