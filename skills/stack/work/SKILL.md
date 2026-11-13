@@ -110,9 +110,9 @@ not.
 
 ## 3. Settle decisions and agree
 
-A ready issue is already agreed: it is in Todo or In Progress, its text
-follows the format of [linear](references/linear.md#issue-content), it leaves no
-decision open, and its work fits one unit. Tell the user in one short message
+A ready issue is already agreed: it is in Todo or In Progress, its text holds
+what the format of [linear](references/linear.md#issue-content) requires,
+whatever its headings, it leaves no decision open, and its work fits one unit. Tell the user in one short message
 what you will do and the Linear updates you will make, then start the work
 without waiting. Otherwise, settle and agree as below.
 
