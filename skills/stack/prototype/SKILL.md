@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: Answer a design or feasibility question with the smallest observable experiment, such as comparing interface variants, exercising domain rules, or measuring a technical limit. Use when a decision needs observed behavior rather than more discussion or source research; not for building the settled feature.
+description: Use when a design or feasibility decision needs observed behavior, such as comparing interface variants, exercising domain rules, or measuring a technical limit. Not for building the settled feature or for a question that sources can answer.
 ---
 
 # Prototype a decision

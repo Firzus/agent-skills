@@ -1,6 +1,6 @@
 ---
 name: research
-description: Investigate a question across many sources with delegated researchers, independent verification of the key claims, and a reusable evidence dossier. Use for explicit deep research, substantial comparisons, or updating an existing dossier; a single factual lookup needs a direct answer instead.
+description: Use for explicit deep research, a substantial comparison across many sources, or updating an existing research dossier. Not for a single factual lookup, which needs a direct answer.
 ---
 
 # Research with checked evidence

@@ -1,6 +1,6 @@
 ---
 name: debug
-description: Find the cause of a bug, failing test, crash, unexpected behavior, or performance regression from reproducible evidence, and fix it when asked. Use when asked to debug or diagnose, or when /work routes a bug here.
+description: Use when asked to debug, diagnose, or fix a bug, failing test, crash, unexpected behavior, or performance regression whose cause is not established, or when /work routes a bug here.
 ---
 
 # Debug with evidence

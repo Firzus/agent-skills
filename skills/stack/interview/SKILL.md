@@ -1,6 +1,6 @@
 ---
 name: interview
-description: Settle open decisions with the user through short rounds of questions until both share the same understanding of what will be built. Use when a request leaves product choices open, when the user asks to be interviewed or challenged on a plan, or when another skill hands over decisions to settle.
+description: Use when the user asks to be interviewed or to have a plan challenged, or when another skill hands over decisions the user owns. Not for choices the agent can take itself or that research or an experiment can settle.
 ---
 
 # Settle decisions by interview

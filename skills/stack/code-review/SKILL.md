@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Review a change with independent read-only reviewers on requirements, project standards, and correctness. Use for a branch, a pull request, uncommitted work, or the review step of /work.
+description: Use when asked to review a branch, a pull request, or uncommitted work, and for the review step of /work. Not for opening or updating a pull request; for a dedicated security audit, use security-review.
 ---
 
 # Review a change independently

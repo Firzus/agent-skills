@@ -1,6 +1,6 @@
 ---
 name: work
-description: Entry point of the stack. Use when the user runs /work with any development request (a feature, a fix, a change, a vague idea, a Linear issue, or a Linear project to start or continue) to take it from intent to a verified result ready to ship.
+description: Use when the user runs /work with a development request: a feature, a fix, a change, a vague idea, a Linear issue, or a Linear project to start or continue.
 disable-model-invocation: true
 ---
 
