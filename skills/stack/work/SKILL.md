@@ -163,7 +163,10 @@ While building:
   step 1 states: stop the part that depends on it and propose the change of
   size.
 - A change the agreed outcome cannot do without needs a new agreement; tell the
-  user what changed. Work that outgrows one unit becomes a Project.
+  user what changed. Direct work that meets an open decision, or stops being
+  small and easy to undo, becomes Issue size: reach Linear, agree on the issue
+  as in step 3, and rename the branch to carry its identifier. Work that
+  outgrows one unit becomes a Project.
 - Anything else you notice, such as a defect the change did not cause, is
   captured as
   [linear](references/linear.md#captured-work) describes, never part of this
