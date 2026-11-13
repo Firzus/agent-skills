@@ -13,10 +13,9 @@ the caller, or to the user when run on its own.
 
 A question is for the user only when its answer changes what gets built and the
 user owns it: behavior, scope, cost, what happens when things go wrong, or a step
-that is hard to undo. Look up anything the code, history, or documentation can
-tell you. Make routine and technical choices yourself and record them with their
-reason. A choice that an experiment or research could settle is a need for the
-caller, not a question.
+that is hard to undo. Record the choices you take yourself with their reason. A
+choice that an experiment or research could settle is a need for the caller, not
+a question.
 
 Before asking, walk through the normal case and the cases that matter for this
 work: empty or invalid input, failure halfway, repetition, two people acting at

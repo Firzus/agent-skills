@@ -188,9 +188,13 @@ note to the issue when Linear is reachable.
    from this machine only unless the user agrees to open it to their network,
    and stop it once the user no longer needs it. Note what you could not
    exercise.
-3. For any change to code behavior, read
+3. For every change that alters behavior, including a configuration value, read
    [`../code-review/SKILL.md`](../code-review/SKILL.md) and run its independent
-   review. Verify each finding before acting on it.
+   review. Text and documentation that change no behavior skip it; say so in
+   the report. Without subagents, run the review yourself, one axis at a time,
+   and report that it was not independent; when the policy requires an
+   independent reviewer for the change, the review stays pending under
+   **Open**.
 4. Sort every confirmed defect, whether the review, a check, or your own run
    found it, against the starting commit:
    - **Introduced:** it fails with the change and not before, including a case
@@ -208,12 +212,6 @@ note to the issue when Linear is reachable.
    then decides: accept the defect, or keep the work from shipping.
    **Waiting:** that decision is unanswered.
 
-Changes to text, documentation, or a configuration value may skip the review,
-unless they touch authentication, permissions, data, or money; say so in the
-report. Without subagents, run the review yourself, one axis at a time, and
-report that it was not independent; it stays pending only when the change is one
-the policy requires an independent reviewer for.
-
 ## 6. Show and ship
 
 Lead with the evidence the user can check themselves: the running result, a
@@ -226,8 +224,8 @@ screenshot, a recording, or the command output. Then report:
   cover, with their reason, and each introduced defect the user accepted.
   Omit when empty.
 - **Open:** only defects already there, each with its captured issue or the
-  user's refusal to capture it, and checks you could not run, with what they
-  would show. Omit when empty.
+  user's refusal to capture it, a pending review, and checks you could not run,
+  with what they would show. Omit when empty.
 - **Next:** the next action and who owns it; work that follows starts in a new
   session with `/work` and its issue or project.
 
