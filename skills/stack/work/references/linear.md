@@ -106,8 +106,9 @@ no later session repeats it.
 
 ## Captured work
 
-Work noticed outside the agreed scope is never built in the current change. Ask
-the user whether to capture it; on their yes, create an issue in Backlog with
+Work noticed outside the agreed scope is never built in the current change.
+Gather it, and ask once, in the final report, which items to capture; for each
+yes, create an issue in Backlog with
 the Need triage type, stating what was observed, where in the product, and
 why it may matter. Inside a project, captured issues belong to it and are sorted
 at the next [take-stock](project.md#take-stock); elsewhere, list them for the
