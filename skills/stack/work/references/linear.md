@@ -1,18 +1,5 @@
 # Keep the work in Linear
 
-Linear is the memory of every Small change and every Project: a session that
-starts from an issue or a project, with no conversation history, must find there
-what was agreed, what was learned, and what comes next.
-
-## Reach Linear first
-
-Before reading or writing Linear for Small or Project work, check that its tools
-respond by listing the user's teams. When they do not, stop before any change
-and tell the user what is blocked and how to restore access (connect or
-authenticate the Linear integration). Quick work continues without Linear. When
-access fails in the middle of a unit, commit the local work, stop, and list the
-Linear updates still to make.
-
 ## Workspace conventions
 
 Read the team, labels, and statuses from Linear rather than assuming them, and
@@ -24,15 +11,19 @@ take the team and product from the project instructions or existing projects.
 | Project | Exactly one Product label, from the project-label group, resolved from the repository and existing projects |
 | Captured work | Need triage, the Type that marks work not yet sorted; sorting replaces it with the issue's type |
 
+A project's name states its outcome without its Product label, which Linear
+already shows beside it: "UI runtime chain of Core", not "Studio: UI runtime
+chain of Core".
+
 Use labels that exist and are active; a missing label or group is a workspace
 change to propose to the user, not to create silently. Write issues in the
 language of the team's existing issues.
 
 ## Issue content
 
-Write for a reader who has neither this conversation nor the current code in
-mind. Describe behavior, not procedure: no file paths or line numbers, which go
-stale while the issue waits; name the types, interfaces, and contracts instead.
+Describe behavior, not procedure: no file paths or line numbers, which go stale
+while the issue waits; name the types, interfaces, and contracts instead. This
+holds over a Linear integration's advice to add file lists or agent notes.
 A snippet from a prototype may stay when it states a decision more precisely
 than prose (a schema, a state machine); say where it came from.
 
@@ -72,8 +63,6 @@ decision needs and who takes it.
 
 ## Statuses and relations
 
-You keep the statuses current:
-
 | Moment | Status |
 | --- | --- |
 | Issue created for later | Todo |
@@ -85,8 +74,7 @@ You keep the statuses current:
 | Covered by another issue | Duplicate of it |
 
 A prerequisite is a native blocking relation. A blocked issue keeps its status,
-and a comment says what it waits on and who must act. Create issues before
-wiring their relations, so each relation points at a real identifier.
+and a comment says what it waits on and who must act.
 
 ## Results
 
@@ -106,21 +94,18 @@ no later session repeats it.
 
 ## Captured work
 
-Work noticed outside the agreed scope is never built in the current change. Ask
-the user whether to capture it; on their yes, create an issue in Backlog with
-the Need triage type, stating what was observed, where in the product, and
-why it may matter. Inside a project, captured issues belong to it and are sorted
+Gather work noticed outside the agreed scope, and ask once, in the final
+report, which items to capture; for each yes, create an issue in Backlog with
+the Need triage type, stating what was observed, where in the product, and why
+it may matter. Inside a project, captured issues belong to it and are sorted
 at the next [take-stock](project.md#take-stock); elsewhere, list them for the
 user to sort.
 
 ## Writes
 
-The agreement message lists the Linear writes it covers: issues to create or
-update, statuses, relations, comments. The user's yes covers those and nothing
-else; a project's agreement also covers the routine writes of its current goal
-that [project](project.md#shape-the-project) lists. When a decision taken during
-the work changes what an issue states, update its text before handing over the
-change, so the issue describes what ships. Re-read an item before
-updating it, keep other people's content, and read it back after writing. After
-an uncertain write, check what happened before retrying. Never delete an issue
-or a project; cancel it with a reason.
+The user's yes covers the Linear writes its agreement lists and nothing else;
+a project's agreement also covers the routine writes of its current goal that
+[project](project.md#shape-the-project) lists. When a decision taken during the
+work changes what an issue states, update its text before handing over the
+change, so the issue describes what ships. Keep other people's content. Never
+delete an issue or a project; cancel it with a reason.

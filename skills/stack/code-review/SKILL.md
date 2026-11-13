@@ -1,21 +1,20 @@
 ---
 name: code-review
-description: Review a change with independent read-only reviewers on requirements, project standards, and correctness. Use for a branch, a pull request, uncommitted work, or the review step of /work.
+description: Use when asked to review a branch, a pull request, or uncommitted work, and for the review step of /work. Not for opening or updating a pull request; for a dedicated security audit, use security-review.
 ---
 
 # Review a change independently
 
-Return verified findings, not edits. The caller owns corrections, tests, and
-delivery; review authorizes no publication.
+Return verified findings, not edits; publish nothing.
 
 ## 1. Fix what is reviewed
 
-Identify the repository, the requirements (the Linear issue and the accepted
-decisions, including the project's), and the exact comparison: base commit, head,
-and any uncommitted or untracked files that belong to the change. Ask when the
-base or the change's ownership is ambiguous rather than assume `main`. Keep
-unrelated local work and secrets out of the review. Do not stage, commit, stash, or switch branches to obtain a diff, and
-pause edits until the review returns.
+Identify the requirements (the Linear issue and the accepted decisions,
+including the project's, or the user's request when there is no issue) and the
+exact comparison: base commit, head, and any uncommitted or untracked files that
+belong to the change. Ask when the base or the change's ownership is ambiguous
+rather than assume `main`. Do not stage, commit, stash, or switch branches to
+obtain a diff, and pause edits until the review returns.
 
 ## 2. Dispatch one reviewer per axis
 
@@ -40,15 +39,12 @@ suggestions apart; unfamiliar style is not a defect, and linters own formatting.
 
 Report one section per axis, each confirmed finding with its location, the rule
 or failure scenario, its impact, and a bounded fix. End each axis with its most
-serious finding, or "none found" with what was not covered. "None found" proves
-neither correctness nor passing tests.
+serious finding, or "none found" with what was not covered.
 
 ## 4. Re-review corrections
 
-Given the previous findings and the correction, check that each finding is
-resolved and that the correction broke nothing it touches. Do not turn a re-review
-into a fresh audit of unrelated code.
+Check that each previous finding is resolved and that the correction broke
+nothing it touches, without a fresh audit of unrelated code.
 
 **Done:** every dispatched axis returned or is reported unavailable, and every
-finding is verified. A review without independence is reported as such, never as
-an independent pass.
+finding is verified.

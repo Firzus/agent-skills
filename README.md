@@ -27,10 +27,10 @@ opinion.
   history, and documentation first. It asks only about choices you own (behavior,
   scope, cost, a step that is hard to undo) and takes the technical ones itself,
   telling you which it took and why.
-- **Ceremony matches the work.** The agent sizes each request as Quick, Small, or
-  Project and tells you why. A typo needs no issue; a feature gets one; a large
+- **Ceremony matches the work.** The agent sizes each request as Direct, Issue, or
+  Project, after what it needs in Linear, and tells you why. A typo needs no issue; a feature gets one; a large
   effort gets a project.
-- **No agreement, no code.** Beyond a Quick fix or a Linear issue that is
+- **No agreement, no code.** Beyond a Direct fix or a Linear issue that is
   ready to start, the agent builds only what you agreed to.
 - **Linear holds the work.** Each feature or fix is a Linear issue and each large
   effort a Linear project, written so that any later session continues from it.
@@ -61,9 +61,9 @@ flowchart LR
     request([Your request]) --> work
     work -.->|bug, research, experiment| specialist{{"debug · research · prototype"}}
     specialist -.-> work
-    work --> size{{Quick · Small · Project}}
-    size -->|Quick| build[Build test-first]
-    size -->|Small or Project| interview[interview, when decisions are open]
+    work --> size{{Direct · Issue · Project}}
+    size -->|Direct| build[Build test-first]
+    size -->|Issue or Project| interview[interview, when decisions are open]
     interview --> agree([You agree])
     agree --> build
     build --> review[code-review]
@@ -77,12 +77,12 @@ the work:
 
 | Size | When | What you do |
 | --- | --- | --- |
-| Quick | The request says everything that matters and is easy to undo | Check the result, then say whether to ship |
-| Small | One unit: fits one session and one reviewable change | Answer the decisions, agree on the Linear issue, check the result, say whether to ship |
+| Direct | The request says everything that matters and is easy to undo | Check the result, then say whether to ship |
+| Issue | One unit: fits one session and one reviewable change | Answer the decisions, agree on the Linear issue, check the result, say whether to ship |
 | Project | Several units, or questions that need research, an experiment, or a later decision first | Agree on a Linear project and its first issues; then start a new conversation for each unit with `/work` on the project or one of its issues: the agent runs that unit, asks for your decisions and review, names the next one, and takes stock with you when results change the plan |
 
-Small and Project work need Linear: when the agent cannot reach it, it stops and
-tells you how to reconnect. Quick work does not use Linear.
+Issue-size and Project-size work need Linear: when the agent cannot reach it, it stops and
+tells you how to reconnect. Direct work does not use Linear.
 
 ## Get started
 
@@ -154,7 +154,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Workflow | Additional requirements |
 | --- | --- |
 | Stack and engineering skills | The shared operating policy installed by [setup-harness](#personal-harness-instructions); these skills rely on it and repeat only its safety boundaries |
-| The stack | Git in the project; a Linear workspace the agent can read and write (for example through the Linear MCP server) for Small and Project work; GitHub CLI or another way to open pull requests to ship |
+| The stack | Git in the project; a Linear workspace the agent can read and write (for example through the Linear MCP server) for Issue-size and Project-size work; GitHub CLI or another way to open pull requests to ship |
 | Independent reviews and delegated research | An agent with subagent support |
 | Figma workflows | The Figma integration, account access, and approval for external writes |
 | Cloudflare operations | The `cf` CLI from the npm package `cf` (open beta) and a Cloudflare account; the skill proposes the global install and waits for approval |
