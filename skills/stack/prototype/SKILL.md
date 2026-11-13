@@ -40,10 +40,11 @@ Give the user the runnable experiment, with how to start and reset it, and keep 
 available during their review. Present the observations and trade-offs, then ask
 only for the judgments the experiment defines. A negative result is a valid answer.
 
-With the user's agreement to the experiment, commit the reviewed version and
-push its branch, so the recorded commit can be reached from any session; the
-agreement covers this push, never a pull request. Without a remote, or when the
-push fails, the branch stays local and the record says so. Record the question,
+Commit the reviewed version. Push its branch, so the recorded commit can be
+reached from any session, only when `/work`'s agreement covers the push or the
+user says yes to the push itself; neither covers a pull request. Without that
+yes or a remote, or when the push fails, the branch stays local and the record
+says so. Record the question,
 the exact commit, how to run it, what was observed, the user's judgment, and
 what remains untested. When `/work` runs it as a Linear issue, return this
 record and `/work` posts it on the issue; otherwise keep it in the conversation.
