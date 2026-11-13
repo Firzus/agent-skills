@@ -12,8 +12,8 @@ and deploying. Everything between is your responsibility.
 
 A Direct request (see [step 2](#2-size-the-work)) needs no Linear and no
 agreement round. Read what the request touches, state its size in one sentence
-and continue, build it test-first on a branch, verify and review it as step 5
-requires, and show it as step 6 describes.
+and continue, build it on a branch as step 4 describes, verify and review it as
+step 5 requires, and show it as step 6 describes.
 
 ## The stack
 
@@ -165,7 +165,8 @@ meaningful steps so any step can be undone.
 While building:
 
 - A decision the user owns pauses the work that depends on it: settle it as in
-  step 3 and continue the rest.
+  step 3 and continue the rest. In Direct work, it first makes the work Issue
+  size, as below.
 - A need for a delegated investigation or an experiment is a separate unit, as
   step 1 states: stop the part that depends on it and propose the change of
   size.
