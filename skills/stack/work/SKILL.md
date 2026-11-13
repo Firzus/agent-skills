@@ -38,8 +38,8 @@ describe how they usually play out.
    alone.
 6. **One unit per session.** A unit is what one session can finish, check with
    a test it can run (or a check named for the user), and hand over as one
-   change the user can review in one sitting, a few hundred changed lines
-   without tests and generated files. A session, one conversation, does one
+   change the user can review in one sitting, a few hundred changed lines not
+   counting tests and generated files. A session, one conversation, does one
    thing: a unit (a task, a fix, an investigation, an experiment, or an
    interview), the shaping of a project, or one take-stock. It stops at its
    handoff and the next starts from Linear, so each starts with a fresh context
