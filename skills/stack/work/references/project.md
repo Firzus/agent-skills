@@ -100,9 +100,8 @@ runs one unit or one take-stock:
    open branches, results not yet recorded, Linear updates listed in
    `chore(wip)` commits) and correct it. When a trigger below applies, the
    session takes stock instead of running a unit.
-2. Choose the unit: the issue the user named; otherwise an In Progress issue of
-   the project, unless the user says another session is working on it;
-   otherwise the first issue of the frontier, the project's Todo issues whose
+2. Choose the unit: the issue the user named; otherwise the unit "Resume here"
+   names; otherwise the first issue of the frontier, the project's Todo issues whose
    blockers are all Done, Canceled, or Duplicate, or In Review when you branch
    from the prerequisite as the table below describes. Uncommitted changes in a
    unit's branch or worktree are its unverified work: inspect and verify them
