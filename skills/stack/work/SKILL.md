@@ -25,11 +25,11 @@ describe how they usually play out.
 3. **Ceremony matches the work.** Size the work and spend the effort it
    deserves: a typo needs no issue, a feature needs one, a large effort needs a
    project.
-4. **No agreement, no code.** Build only what the user agreed to. A Quick
+4. **No agreement, no code.** Build only what the user agreed to. A Direct
    request and a ready Linear issue are their own agreement; otherwise agree
    first.
-5. **Linear holds the work.** Every Small change is a Linear issue and every
-   Project a Linear project, written so that any session can continue from it
+5. **Linear holds the work.** Issue-size work is one Linear issue and Project-size
+   work one Linear project, written so that any session can continue from it
    alone.
 6. **One unit per session.** A unit is what one session can finish, check with
    a test it can run (or a check named for the user), and hand over as one
@@ -85,15 +85,15 @@ Tell the user the size in one sentence with its reason. They can override it.
 
 | Size | When | In Linear | What follows |
 | --- | --- | --- | --- |
-| Quick | The request says everything that matters, the change is small and easy to undo, and no decision is open | Nothing | Build, verify, show |
-| Small | One unit: fits one session, one check, and one reviewable change | One issue: Task or Bug, or the Research or Prototype the request asks for | Settle decisions, agree in one message, build, verify, show |
+| Direct | The request says everything that matters, the change is small and easy to undo, and no decision is open | Nothing | Build, verify, show |
+| Issue | One unit: fits one session, one check, and one reviewable change | One issue: Task or Bug, or the Research or Prototype the request asks for | Settle decisions, agree in one message, build, verify, show |
 | Project | More than one unit, or open questions that this session cannot settle before the work can be detailed | One project | Follow [project](references/project.md) |
 
-A bug fix is Quick when its correct behavior is evident and the fix is local; a
-fix that changes what users can do, pay, or keep is at least Small. Work that
-starts from an existing Linear issue is at least Small, so the issue follows it.
+A bug fix is Direct when its correct behavior is evident and the fix is local; a
+fix that changes what users can do, pay, or keep is at least Issue size. Work that
+starts from an existing Linear issue is at least Issue size, so the issue follows it.
 
-Small and Project need Linear: check that it responds before anything else, as
+Issue and Project sizes need Linear: check that it responds before anything else, as
 [linear](references/linear.md#reach-linear-first) describes, and stop if it does
 not.
 
@@ -111,7 +111,7 @@ accepted decisions; do not reopen them.
 
 Then ask for agreement in one message:
 
-- **Small:** in a few lines, the outcome and the check that will show it, the
+- **Issue:** in a few lines, the outcome and the check that will show it, the
   decisions taken (yours with their reason), any step that departs from this
   stack's usual course, and the Linear updates you will make along the way. The
   issue you create or update holds the full text in the format of
@@ -121,7 +121,7 @@ Then ask for agreement in one message:
   [project](references/project.md#shape-the-project) describes.
 
 Only an explicit yes to the latest version is agreement; silence or a yes to an
-earlier version is not. Agreement, or a Quick request itself, authorizes, within
+earlier version is not. Agreement, or a Direct request itself, authorizes, within
 its scope: a work branch, local commits on it, file edits, dependency installs
 it names, local runs of the project, the Linear writes it lists, and the push of
 an agreed prototype's branch. It does not authorize pushing other branches,
@@ -139,7 +139,7 @@ first, temporary probes removed, measurements compared under the same
 conditions. Without Git in the project, explain what Git gives the user (every
 step can be undone) and ask before initializing it.
 
-For each behavior, including text the user sees (a Quick text correction only
+For each behavior, including text the user sees (a Direct text correction only
 needs the corrected text shown):
 
 1. Write a focused test at a boundary a caller uses.

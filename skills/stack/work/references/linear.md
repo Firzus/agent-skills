@@ -1,15 +1,15 @@
 # Keep the work in Linear
 
-Linear is the memory of every Small change and every Project: a session that
+Linear is the memory of all Issue-size and Project-size work: a session that
 starts from an issue or a project, with no conversation history, must find there
 what was agreed, what was learned, and what comes next.
 
 ## Reach Linear first
 
-Before reading or writing Linear for Small or Project work, check that its tools
+Before reading or writing Linear for Issue-size or Project-size work, check that its tools
 respond by listing the user's teams. When they do not, stop before any change
 and tell the user what is blocked and how to restore access (connect or
-authenticate the Linear integration). Quick work continues without Linear. When
+authenticate the Linear integration). Direct work continues without Linear. When
 access fails in the middle of a unit, commit the local work, stop, and list the
 Linear updates still to make.
 

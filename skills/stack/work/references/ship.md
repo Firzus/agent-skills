@@ -6,7 +6,7 @@ user's yes for this change; agreement on the plan is not enough.
 ## Branch and commits
 
 - Start the branch subject with the Linear issue identifier (for example
-  `fix/fir-31-double-charge`) so Linear links the branch. Quick work has no issue
+  `fix/fir-31-double-charge`) so Linear links the branch. Direct work has no issue
   and uses a plain subject.
 - Before shipping, review the full diff and the commit list. Keep only this
   change; unrelated local work stays out and untouched.
