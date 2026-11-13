@@ -1,8 +1,8 @@
 # Domain context
 
-Context documents hold the domain meanings the repository already implements, so
-an agent uses the project's words and rules rather than inventing its own. Use
-the project's existing names and locations; otherwise these conventions apply:
+Context documents hold the domain meanings the repository implements, so the
+work uses the project's words rather than new ones. Use the project's existing
+names and locations; otherwise these conventions apply:
 
 | Project state | Context documents |
 | --- | --- |

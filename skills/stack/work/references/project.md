@@ -1,14 +1,10 @@
 # Run a project in Linear
 
-A project cannot be planned to its end at once: unknowns surface, results change
-the plan, and the user is not always there to decide. It advances in units, from
-one current goal to the next, and returns to the project to take stock whenever
-what it learned changes the way ahead. The Linear project is its memory; every
-session starts from it, never from conversation memory.
+A project cannot be planned to its end at once: unknowns surface and results
+change the plan. It advances in units toward one current goal at a time, and
+takes stock whenever what it learned changes the way ahead.
 
 ## Shape the project
-
-The first session turns an idea into a project and its first units.
 
 1. Search Linear for projects and issues with the same outcome, and reuse them
    rather than duplicate them.
@@ -25,8 +21,7 @@ The first session turns an idea into a project and its first units.
    granularity and the blocking relations are right.
 5. On the user's yes, create the project with its Product label and the record
    as its description (not its summary), the issues in Todo with their content
-   (see [linear](linear.md#issue-content)), then the blocking relations, and
-   read them back.
+   (see [linear](linear.md#issue-content)), then the blocking relations.
 6. Write "Resume here" with the first unit, and stop: each unit runs in a
    session of its own, as [Drive the project](#drive-the-project) describes.
 
@@ -72,12 +67,11 @@ index that links to it.
 
 ## Units
 
-Every issue is one unit, sized as the stack's opinion on units states; a unit
-that would exceed it is split before it starts.
+Every issue is one unit; split one that would exceed a unit before it starts.
 
 | Type | Run it with | Needs the user |
 | --- | --- | --- |
-| Task, Bug | [Steps 4 to 6](../SKILL.md#4-build-test-first) of the workflow, after reading the context it touches; a Bug whose cause is not established goes through `debug` first. The project's agreement covers its build | For review, shipping, and any human check |
+| Task, Bug | [Steps 4 to 6](../SKILL.md#4-build-test-first) of the workflow, after `debug` for a Bug whose cause is not established. The project's agreement covers its build | For review, shipping, and any human check |
 | Research | A direct lookup, or [`../../research/SKILL.md`](../../research/SKILL.md) for a delegated investigation | No |
 | Prototype | [`../../prototype/SKILL.md`](../../prototype/SKILL.md) | For the judgment the experiment defines |
 | Interview | [`../../interview/SKILL.md`](../../interview/SKILL.md) | Yes |
@@ -101,8 +95,8 @@ runs one unit or one take-stock:
    `chore(wip)` commits) and correct it. When a trigger below applies, the
    session takes stock instead of running a unit.
 2. Choose the unit: the issue the user named; otherwise the unit "Resume here"
-   names; otherwise the first issue of the frontier, the project's Todo issues whose
-   blockers are all Done, Canceled, or Duplicate, or In Review when you branch
+   names; otherwise the first issue of the frontier, the project's Todo issues
+   whose blockers are all Done, Canceled, or Duplicate, or In Review when you branch
    from the prerequisite as the table below describes. Uncommitted changes in a
    unit's branch or worktree are its unverified work: inspect and verify them
    rather than discard them. Backlog issues, including captured ones, wait for a
@@ -112,13 +106,11 @@ runs one unit or one take-stock:
    that share no files and no open decision, and never more at once than the
    user can review.
 4. When the unit ends, done or stopped, update its issue, "Decisions so far",
-   and "Resume here" with the next unit or the take-stock due, then stop. The
-   closing message gathers what the user must act on: decisions, judgments, the
-   review and ship request, and the issue to start the next session with.
+   and "Resume here" with the next unit or the take-stock due, then stop.
 
 ## Take stock
 
-Taking stock replaces planning the whole project up front. Do it when:
+Take stock when:
 
 - every issue of the current goal is done;
 - a result changes a decision, the approach, or the current goal;
@@ -128,22 +120,21 @@ Taking stock replaces planning the whole project up front. Do it when:
 
 Then:
 
-1. Reconcile the record with Linear and Git; report and correct each difference.
-2. Gather the results, failed approaches, and decisions since the last
+1. Gather the results, failed approaches, and decisions since the last
    take-stock.
-3. Draft the issues for what is now precise enough, from "Not yet specified" and
+2. Draft the issues for what is now precise enough, from "Not yet specified" and
    from the results, and list the issues that became obsolete, with the reason.
-4. For each captured Need triage issue of the project, propose to rewrite it as
+3. For each captured Need triage issue of the project, propose to rewrite it as
    a typed issue in the format of [linear](linear.md#issue-content), leave it in
    Backlog for later, or cancel it as a duplicate or no longer needed.
-5. Report what the current goal cost since it was set (units done and added,
+4. Report what the current goal cost since it was set (units done and added,
    days elapsed) against the issues it started with, so a project that drags is
    visible.
-6. Propose these changes and the next current goal, or the revised one,
+5. Propose these changes and the next current goal, or the revised one,
    including what happens to the branches and pull requests of canceled work
    (rebase onto the new approach, or close), and make them only after the user's
    yes.
-7. Write "Resume here" with the unit the next session starts with, and stop.
+6. Write "Resume here" with the unit the next session starts with, and stop.
 
 ## When the way is blocked
 
@@ -151,8 +142,7 @@ Then:
 | --- | --- |
 | An unknown appears inside a Task | Stop only the part that depends on it; create the Research or Prototype issue in the current goal, block the Task on it, and continue the rest |
 | A decision the user cannot take now | An Interview issue blocks what depends on it; other units continue |
-| An external dependency (access, asset, tool version, another person) | The issue states what it waits on and who must act; no retry loop |
-| Every remaining unit is blocked | Stop, list what each block waits on and its owner, and write it in "Resume here" |
+| An external dependency (access, asset, tool version, another person) | The issue states what it waits on and who must act |
 | A result invalidates the approach | Record the negative result, pause every unit that depends on that approach, including those branched from its pull requests, and take stock with the user before any new work on that path |
 | A unit fails twice without new evidence | Stop it and record what was tried; the user decides as [step 5](../SKILL.md#5-verify-and-review) of the workflow describes, and keeping the work from shipping leads to a take-stock |
 | A unit turns out larger than one unit | Stop at a coherent point, offer to ship what stands alone, and put the rest in a new issue of the current goal |
@@ -160,7 +150,6 @@ Then:
 | Parallel units collide | Rebase the later one and rerun its checks; stop running those areas in parallel |
 | A result needs the user's eyes (feel, visuals, an editor) | Keep the unit small, mark the check as the user's, and gather such checks for them |
 | The user changes direction | Take stock: update the final goal and decisions, cancel what no longer applies and move what is postponed to Backlog, each with the reason, and keep history and branches |
-| The record disagrees with Linear or Git | Trust what is verified, correct the record, and say what changed |
 
 ## Finish or pause
 
