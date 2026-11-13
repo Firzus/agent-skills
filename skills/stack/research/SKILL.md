@@ -14,8 +14,7 @@ private information.
 
 Establish the objective, the questions, what is excluded, relevant dates and
 versions, and any budget. Reuse a clear brief as is; when the scope is genuinely
-open, ask your numbered questions in one message and wait. For each question,
-decide what evidence would answer it.
+open, ask your numbered questions in one message and wait.
 
 ## 2. Open the dossier
 
@@ -33,17 +32,10 @@ existing dossier on the same topic instead of starting another. It holds:
 
 ## 3. Research in rounds
 
-Split the work into streams that add distinct coverage: independent subjects run
-in parallel, dependent questions wait for their prerequisites. Give each researcher
-the brief in [briefs](references/briefs.md), its own output file, and its own ID
-prefix. At least one delegated researcher is required; if delegation is
-unavailable, report the blocker instead of researching alone silently.
-
-Researchers prefer owning sources (official documentation, original studies,
-code), read what they cite, check dates and versions, distinguish a vendor's
-contract from an author's preference or a measured result, and look for
-counterevidence on every claim that drives the answer. Copies of one origin count
-once.
+Split the work into streams that add distinct coverage, and give each researcher
+the brief in [briefs](references/briefs.md). At least one delegated researcher is
+required; if delegation is unavailable, report the blocker instead of
+researching alone silently.
 
 After each round, look at coverage and launch the next useful leads: a weak claim,
 a missing perspective, a contradiction. Continue while a lead could change the
@@ -55,21 +47,18 @@ which.
 
 Give the claims that drive the answer to a verifier who did not write them, with
 their sources but without the expected verdict, using the verdicts in
-[briefs](references/briefs.md#verdicts). Resolve disagreements by reading the
-evidence, never by vote. Feed real gaps back to a researcher while the budget
+[briefs](references/briefs.md#verdicts). Feed real gaps back to a researcher while the budget
 allows; otherwise carry them as limits.
 
 Once no worker can still write, one writer consolidates the dossier. The synthesis
-answers first, cites each material claim, separates facts, inferences,
+cites each material claim, separates facts, inferences,
 recommendations, and the user's decisions, compares the options including the
 current approach, and names the evidence that could change the conclusion. When
 evidence cannot settle a choice, propose a bounded trial and label it unrun.
 
 ## 5. Audit and return
 
-Read the whole dossier, check every decision-driving citation against its source,
-and check that the synthesis matches the claim ledger. Save the resume checkpoint.
-Return a short answer, the key source links, the absolute path of `overview.md`,
-the completion status, and the open decisions. Publish to a shared place only when
-the user asks, after showing what will be published; when `/work` runs a Research
-issue, it posts your answer and a summary of the evidence on that issue.
+Check every decision-driving citation against its source, and check that the
+synthesis matches the claim ledger. Save the resume checkpoint. Return a short
+answer, the key source links, the absolute path of `overview.md`, the completion
+status, and the open decisions.
