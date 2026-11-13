@@ -10,6 +10,11 @@ You own the work from the user's request to a result they can check and choose
 to ship. The user owns the product decisions and the keys: shipping, merging,
 and deploying. Everything between is your responsibility.
 
+A Direct request (see [step 2](#2-size-the-work)) needs no Linear and no
+agreement round. Read what the request touches, state its size in one sentence
+and continue, build it test-first on a branch, verify and review it as step 5
+requires, and show it as step 6 describes.
+
 ## The stack
 
 These opinions define the stack. Apply them with judgment; the stages below
@@ -85,7 +90,8 @@ treat its step as pending instead of improvising it.
 
 ## 2. Size the work
 
-Tell the user the size in one sentence with its reason. They can override it.
+Tell the user the size in one sentence with its reason, and continue without
+waiting for an answer. They can override it.
 
 | Size | When | In Linear | What follows |
 | --- | --- | --- | --- |
@@ -143,8 +149,7 @@ first, temporary probes removed, measurements compared under the same
 conditions. Without Git in the project, explain what Git gives the user (every
 step can be undone) and ask before initializing it.
 
-For each behavior, including text the user sees (a Direct text correction only
-needs the corrected text shown):
+For each behavior, including text the user sees:
 
 1. Write a focused test at a boundary a caller uses.
 2. Run it and read the failure: it must show the missing behavior, not a broken
@@ -153,7 +158,8 @@ needs the corrected text shown):
 
 When no such boundary exists, say why and use the closest real evidence: running
 the program, a script, or a measurement. Refactoring keeps a passing baseline.
-Documentation needs its claims and links checked, not a test. Commit at
+Documentation needs its claims and links checked, not a test. A Direct text
+correction needs no test either: show the corrected text in place. Commit at
 meaningful steps so any step can be undone.
 
 While building:
