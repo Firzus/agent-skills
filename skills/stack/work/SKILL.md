@@ -45,6 +45,11 @@ describe how they usually play out.
 8. **Evidence over claims.** A change is done when its checks ran and the user
    can see the result working. Behavior changes get an independent review.
 9. **Scope stays put.** Work discovered along the way is captured, not absorbed.
+10. **Nothing the change breaks ships as a limitation.** A defect the change
+    introduces is part of the change: it is fixed, or the user accepts it
+    knowingly. Only what the change did not cause, or a check that could not
+    run, remains open, because a known defect listed as a limitation ships
+    unnoticed.
 
 ## 1. Understand and route
 
@@ -156,7 +161,8 @@ While building:
   size.
 - A change the agreed outcome cannot do without needs a new agreement; tell the
   user what changed. Work that outgrows one unit becomes a Project.
-- Anything else you notice is captured as
+- Anything else you notice, such as a defect the change did not cause, is
+  captured as
   [linear](references/linear.md#captured-work) describes, never part of this
   change.
 
@@ -177,9 +183,22 @@ note to the issue when Linear is reachable.
    exercise.
 3. For any change to code behavior, read
    [`../code-review/SKILL.md`](../code-review/SKILL.md) and run its independent
-   review. Verify each finding before acting on it, correct the confirmed ones
-   test-first, and have the corrections re-reviewed. Stop a correction path
-   after two attempts without new evidence and report it.
+   review. Verify each finding before acting on it.
+4. Sort every confirmed defect, whether the review, a check, or your own run
+   found it, against the starting commit:
+   - **Introduced:** it fails with the change and not before, including a case
+     the change creates (a removed name still referenced, a new input left
+     unhandled), or an agreed requirement is unmet. Fix it test-first whatever
+     its priority, and have the corrections re-reviewed. A fix that needs more
+     than the agreement covers needs a new agreement, as
+     [step 4](#4-build-test-first) states.
+   - **Already there:** it fails the same way on the starting commit. Capture
+     it as [linear](references/linear.md#captured-work) describes; it stays out
+     of this change.
+
+   Stop a correction path after two attempts without new evidence. The user
+   then decides: accept the defect, or keep the work from shipping.
+   **Waiting:** that decision is unanswered.
 
 Changes to text, documentation, or a configuration value may skip the review,
 unless they touch authentication, permissions, data, or money; say so in the
@@ -196,14 +215,18 @@ screenshot, a recording, or the command output. Then report:
 - **Check:** how the user can see it working with the tools they already use;
   give a command only to someone who runs commands.
 - **Decisions:** the notable choices you made that the agreement did not
-  cover, with their reason. Omit when empty.
-- **Open:** what remains, including checks you could not run. Omit when empty.
+  cover, with their reason, and each introduced defect the user accepted.
+  Omit when empty.
+- **Open:** only defects already there, each with its captured issue or the
+  user's refusal to capture it, and checks you could not run, with what they
+  would show. Omit when empty.
 - **Next:** the next action and who owns it; work that follows starts in a new
   session with `/work` and its issue or project.
 
-Then ask whether to ship. Shipping means pushing the branch and opening a pull
-request that closes the issue, if any, following [ship](references/ship.md); the
-issue moves to In Review. Merge and deployment each need their own request.
+Then ask whether to ship, once every introduced defect is fixed or accepted.
+Shipping means pushing the branch and opening a pull request that closes the
+issue, if any, following [ship](references/ship.md); the issue moves to In
+Review. Merge and deployment each need their own request.
 After a merge, confirm the issue reached Done.
 
 **Done:** the user has the verified result and either shipped it or chose not
