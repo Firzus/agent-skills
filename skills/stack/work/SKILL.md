@@ -49,7 +49,8 @@ describe how they usually play out.
    caller uses, wherever such a boundary exists.
 8. **Evidence over claims.** A change is done when its checks ran and the user
    can see the result working. Behavior changes get an independent review.
-9. **Scope stays put.** Work discovered along the way is captured, not absorbed.
+9. **Scope stays put.** Work you discover along the way is captured, not
+   absorbed. Work the user adds is a new agreement, not a capture.
 10. **Nothing the change breaks ships as a limitation.** A defect the change
     introduces is part of the change: it is fixed, or the user accepts it
     knowingly. Only what the change did not cause, or a check that could not
