@@ -67,7 +67,7 @@ it for the part named below, then come back here with its result:
 
 | The request needs | Read | Use it to |
 | --- | --- | --- |
-| The cause of a bug, failure, or regression | [`../debug/SKILL.md`](../debug/SKILL.md) | Reproduce and find the cause; stop at its "Ready to fix" and bring back the cause and the proposed fix |
+| The cause of a bug, failure, or regression | [`../debug/SKILL.md`](../debug/SKILL.md) | Reproduce and find the cause; stop at its "Ready to fix" and bring back the cause and the proposed fix. Without an established cause, nothing is built: report what is ruled out and the evidence still needed, and wait for it |
 | A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question once it is agreed as step 3 describes; announce the planned delegation without estimating its time or tokens |
 | A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment once it is agreed as step 3 describes |
 
