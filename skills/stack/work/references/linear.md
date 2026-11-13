@@ -24,6 +24,10 @@ take the team and product from the project instructions or existing projects.
 | Project | Exactly one Product label, from the project-label group, resolved from the repository and existing projects |
 | Captured work | Need triage, the Type that marks work not yet sorted; sorting replaces it with the issue's type |
 
+A project's name states its outcome without its Product label, which Linear
+already shows beside it: "UI runtime chain of Core", not "Studio: UI runtime
+chain of Core".
+
 Use labels that exist and are active; a missing label or group is a workspace
 change to propose to the user, not to create silently. Write issues in the
 language of the team's existing issues.
