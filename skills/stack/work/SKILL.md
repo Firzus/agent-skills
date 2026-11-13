@@ -194,8 +194,9 @@ note to the issue when Linear is reachable.
    found it, against the starting commit:
    - **Introduced:** it fails with the change and not before, including a case
      the change creates (a removed name still referenced, a new input left
-     unhandled), or an agreed requirement is unmet. Fix it test-first whatever
-     its priority, and have the corrections re-reviewed. A fix that needs more
+     unhandled), an agreed requirement is unmet, or the change adds behavior
+     the agreement does not cover. Fix it test-first whatever its priority, or
+     remove the addition, and have the corrections re-reviewed. A fix that needs more
      than the agreement covers needs a new agreement, as
      [step 4](#4-build-test-first) states.
    - **Already there:** it fails the same way on the starting commit. Capture
