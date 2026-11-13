@@ -11,7 +11,8 @@ delivery; review authorizes no publication.
 ## 1. Fix what is reviewed
 
 Identify the repository, the requirements (the Linear issue and the accepted
-decisions, including the project's), and the exact comparison: base commit, head,
+decisions, including the project's, or the user's request when there is no
+issue), and the exact comparison: base commit, head,
 and any uncommitted or untracked files that belong to the change. Ask when the
 base or the change's ownership is ambiguous rather than assume `main`. Keep
 unrelated local work and secrets out of the review. Do not stage, commit, stash, or switch branches to obtain a diff, and
