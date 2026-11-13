@@ -59,8 +59,9 @@ Then restate, in the user's terms, what will change for whom and the check that
 will show it works. A request that needs no change (a question about the code, a
 behavior that already works) gets its answer and stops here.
 
-A Linear issue, a Linear project, or a work branch from an earlier session means
-a continuation: see [Resume](#resume).
+A Linear project or one of its issues, a standalone issue In Progress or In
+Review, or a work branch from an earlier session means a continuation: see
+[Resume](#resume). Any other issue is a request, with the issue as its text.
 
 Some requests need a specialist skill first. Read its `SKILL.md` completely, use
 it for the part named below, then come back here with its result:
@@ -250,5 +251,4 @@ continues under the project, with
 [project](references/project.md#drive-the-project); so does the project itself.
 A standalone issue already In Progress or In Review, with its work branch,
 continues where it stopped, applying any Linear update its last `chore(wip)`
-commit lists. Any other issue is a request: start at step 1 with the issue as
-its text.
+commit lists.
