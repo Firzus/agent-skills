@@ -74,10 +74,13 @@ it for the part named below, then come back here with its result:
 `debug` serves the fix of the same session, and `interview` the decisions of
 its unit. A delegated investigation or an experiment is a unit of its own: the
 session's unit when the request asks for it, otherwise a separate unit, which
-makes the work a Project. A single fact from outside the repository (a version,
-an API detail) needs a direct lookup, not `research`. When a skill this stack
-names is not installed next to this one, say so and treat its step as pending
-instead of improvising it.
+makes the work a Project. A unit that answers a question (a Research,
+Prototype, or Interview issue) changes no shipped code: once answered, it skips
+steps 4 to 6 and closes with its result, as
+[linear](references/linear.md#results) describes. A single fact from outside the
+repository (a version, an API detail) needs a direct lookup, not `research`.
+When a skill this stack names is not installed next to this one, say so and
+treat its step as pending instead of improvising it.
 
 ## 2. Size the work
 
@@ -86,7 +89,7 @@ Tell the user the size in one sentence with its reason. They can override it.
 | Size | When | In Linear | What follows |
 | --- | --- | --- | --- |
 | Direct | The request says everything that matters, the change is small and easy to undo, and no decision is open | Nothing | Build, verify, show |
-| Issue | One unit: fits one session, one check, and one reviewable change | One issue: Task or Bug, or the Research or Prototype the request asks for | Settle decisions, agree in one message, build, verify, show |
+| Issue | One unit: fits one session, one check, and one reviewable change | One issue: Task or Bug, or the Research, Prototype, or Interview the request asks for | Settle decisions, agree in one message, build, verify, show |
 | Project | More than one unit, or open questions that this session cannot settle before the work can be detailed | One project | Follow [project](references/project.md) |
 
 A bug fix is Direct when its correct behavior is evident and the fix is local; a
