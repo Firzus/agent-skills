@@ -1,6 +1,6 @@
 ---
 name: work
-description: Use when the user runs /work with a development request: a feature, a fix, a change, a vague idea, a Linear issue, or a Linear project to start or continue.
+description: "Use when the user runs /work with a development request: a feature, a fix, a change, a vague idea, a Linear issue, or a Linear project to start or continue."
 disable-model-invocation: true
 ---
 
