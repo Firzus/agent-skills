@@ -155,7 +155,7 @@ Then:
 | An external dependency (access, asset, tool version, another person) | The issue states what it waits on and who must act; no retry loop |
 | Every remaining unit is blocked | Stop, list what each block waits on and its owner, and write it in "Resume here" |
 | A result invalidates the approach | Record the negative result, pause every unit that depends on that approach, including those branched from its pull requests, and take stock with the user before any new work on that path |
-| A unit fails twice without new evidence | Stop it, record what was tried, and take stock |
+| A unit fails twice without new evidence | Stop it and record what was tried; the user decides as [step 5](../SKILL.md#5-verify-and-review) of the workflow describes, and keeping the work from shipping leads to a take-stock |
 | A unit turns out larger than one unit | Stop at a coherent point, offer to ship what stands alone, and put the rest in a new issue of the current goal |
 | A unit depends on an unmerged pull request | Branch from the prerequisite and say so in the pull request, or wait; ask for merges in dependency order |
 | Parallel units collide | Rebase the later one and rerun its checks; stop running those areas in parallel |
