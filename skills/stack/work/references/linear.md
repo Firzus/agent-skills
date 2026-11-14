@@ -106,7 +106,10 @@ unreachable, the final report names each item as not captured instead.
 
 The user's yes covers the Linear writes its agreement lists and the captures
 above, and nothing else; a project's agreement also covers the routine writes of its current goal that
-[project](project.md#shape-the-project) lists. When a decision taken during the
-work changes what an issue states, update its text before handing over the
-change, so the issue describes what ships. Keep other people's content. Never
-delete an issue or a project; cancel it with a reason.
+[project](project.md#shape-the-project) lists.
+
+An issue's text is never rewritten, so it keeps what was agreed: an update only
+adds to it, such as a result or a decision taken during the work, and any other
+change to what it states goes into a new issue, of which the original becomes a
+Duplicate. Keep other people's content, and never delete an issue or a project:
+cancel it with a reason.
