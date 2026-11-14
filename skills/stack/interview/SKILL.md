@@ -34,7 +34,9 @@ not already evident.
 
 Write each question to the decision format of the operating policy, with each
 option on its own line and lettered so the user can answer briefly (such as
-`1b`).
+`1b`). Ask in a plain message, never through a question tool the harness
+provides: its short labels and limited options cannot carry each option's
+gains, costs, and reversibility, nor the whole round in one place.
 
 ## Return
 
