@@ -22,9 +22,12 @@ step 5 requires, and show it as step 6 describes.
    the wrong thing confidently.
 2. **Ceremony matches the work.** Direct, Issue, or Project, as step 2 sizes
    it: effort follows what the work deserves.
-3. **No agreement, no code.** Build only what the user agreed to. A Direct
-   request and a ready Linear issue are their own agreement; otherwise agree
-   first.
+3. **No agreement, no code; the build trusts the plan.** Build only what the
+   user agreed to. A Direct request and a ready Linear issue are their own
+   agreement; otherwise agree first. Open decisions are settled before the
+   build, in a session of their own, and the build never reopens them: an agent
+   that redesigns the work while it builds it builds the wrong thing
+   confidently, and leaves the user waiting at the keyboard.
 4. **Linear holds the work.** Issue-size work is one Linear issue and Project-size
    work one Linear project, written so that any session can continue from it
    alone.
@@ -65,8 +68,9 @@ it for the part named below, then come back here with its result:
 | A substantial investigation across many outside sources | [`../research/SKILL.md`](../research/SKILL.md) | Answer the question once it is agreed as step 3 describes; announce the planned delegation without estimating its time or tokens |
 | A choice that only an observed experiment can settle | [`../prototype/SKILL.md`](../prototype/SKILL.md) | Build and show the experiment once it is agreed as step 3 describes |
 
-`debug` serves the fix of the same session, and `interview` the decisions of
-its unit. A delegated investigation or an experiment is a unit of its own: the
+`debug` serves the fix of the same session. `interview` settles the decisions
+of a Task or Bug in a session of its own, without an Interview issue, as step 3
+describes. A delegated investigation or an experiment is a unit of its own: the
 session's unit when the request asks for it, otherwise a separate unit, which
 makes the work a Project. A unit that answers a question (a Research,
 Prototype, or Interview issue) changes no shipped code: once answered, it skips
@@ -83,7 +87,7 @@ waiting for an answer. They can override it.
 | Size | When | In Linear | What follows |
 | --- | --- | --- | --- |
 | Direct | The request says everything that matters, the change is small and easy to undo, and no decision is open | Nothing | Build, verify, show |
-| Issue | One unit: fits one session, one check, and one reviewable change | One issue: Task or Bug, or the Research, Prototype, or Interview the request asks for | Settle decisions, agree in one message, build, verify, show |
+| Issue | One unit: fits one build session, one check, and one reviewable change | One issue: Task or Bug, or the Research, Prototype, or Interview the request asks for | Agree in one message, build, verify, show; open decisions are settled first, in a session that ends there |
 | Project | More than one unit, or open questions that this session cannot settle before the work can be detailed | One project | Follow [project](references/project.md) |
 
 A bug fix is Direct when its correct behavior is evident and the fix is local; a
@@ -104,15 +108,17 @@ will make, then start the work without waiting. Otherwise, settle and agree as
 below.
 
 When decisions the user owns are open, read
-[`../interview/SKILL.md`](../interview/SKILL.md) and follow it. It returns
-accepted decisions; do not reopen them.
+[`../interview/SKILL.md`](../interview/SKILL.md) and follow it, merging its
+summary into the agreement message below. It returns accepted decisions; do
+not reopen them. A need it reports for research or an experiment makes the
+work a Project; its out-of-scope findings are captured.
 
 Then ask for agreement in one message:
 
 - **Issue:** in a few lines, the outcome and the check that will show it, the
-  decisions taken (yours with their reason), any step that departs from this
-  stack's usual course, and the Linear updates you will make along the way. The
-  issue you create or update holds the full text in the format of
+  decisions you took, any step that departs from this stack's usual course, and
+  the Linear items and branch you will change, named without the changes'
+  content. The issue you create or update holds the full text in the format of
   [linear](references/linear.md#issue-content), keeping an existing issue's
   text under its own heading; show that text only when the user asks for it.
 - **Project:** the project and its first issues, as
@@ -121,11 +127,16 @@ Then ask for agreement in one message:
 Only an explicit yes to the latest version is agreement; silence or a yes to an
 earlier version is not. Agreement, or a Direct request itself, authorizes, within
 its scope: a work branch, local commits on it, file edits, dependency installs
-it names, local runs of the project, the Linear writes it lists, and the push of
+it names, local runs of the project, the Linear writes it lists, the captures
+of [linear](references/linear.md#captured-work), and the push of
 an agreed prototype's branch. It does not authorize pushing other branches,
 other external writes, merging, or deploying.
 
 **Waiting:** the agreement, or a decision it depends on, is unanswered.
+
+**Done, after an interview:** on the yes, write the issue with every decision,
+move it to Todo, and end the session; the build starts in a new session with
+`/work` and the issue.
 
 ## 4. Build test-first
 
@@ -143,11 +154,11 @@ corrected text in place.
 
 While building:
 
-- A decision the user owns pauses only the work that depends on it; settle it
-  as in step 3. A change the agreed outcome cannot do without needs a new
+- Any choice the agreement leaves open, including one the user would
+  otherwise own, is yours: take the one closest to the agreed outcome, add it
+  to the issue's decisions, if any, marked `(agent)`, and keep building. A change the agreed outcome cannot do without needs a new
   agreement.
-- Direct work that meets an open decision, or stops being small and easy to
-  undo, becomes Issue size: reach Linear, agree on the issue as in step 3, and
+- Direct work that stops being small and easy to undo becomes Issue size: reach Linear, agree on the issue as in step 3, and
   rename the branch to carry its identifier.
 - Work that outgrows one unit, or needs a delegated investigation or an
   experiment, becomes a Project: stop the part that depends on it and propose
@@ -194,9 +205,11 @@ note to the issue when Linear is reachable.
 
 Lead with the evidence the user can check themselves: the running result, a
 screenshot, a recording, or the command output. Report as the policy asks,
-with each introduced defect the user accepted among the decisions. Under
-**Open**, list only defects already there (each with its captured issue or the
-user's refusal to capture it), a pending review, and checks you could not run.
+with the choices you took while building and each introduced defect the user
+accepted among the decisions. Under **Open**, list only what keeps the change
+from shipping as verified: a pending review, checks you could not run, and an
+introduced defect awaiting the user's decision. Name in one line the issues
+you captured, or the items left uncaptured.
 Work that follows starts in a new session with `/work` and its issue or project.
 
 Then ask whether to ship, once every introduced defect is fixed or accepted.

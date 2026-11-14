@@ -94,17 +94,18 @@ no later session repeats it.
 
 ## Captured work
 
-Gather work noticed outside the agreed scope, and ask once, in the final
-report, which items to capture; for each yes, create an issue in Backlog with
-the Need triage type, stating what was observed, where in the product, and why
-it may matter. Inside a project, captured issues belong to it and are sorted
-at the next [take-stock](project.md#take-stock); elsewhere, list them for the
-user to sort.
+Capture work noticed outside the agreed scope, including defects already
+there, without asking: create an issue in Backlog with the Need triage type,
+stating what was observed, where in the product, and why it may matter, unless
+an open issue already covers it. Inside a project, captured issues belong to it
+and are sorted at the next [take-stock](project.md#take-stock); elsewhere, the
+final report names them for the user to sort. In Direct work, or when Linear is
+unreachable, the final report names each item as not captured instead.
 
 ## Writes
 
-The user's yes covers the Linear writes its agreement lists and nothing else;
-a project's agreement also covers the routine writes of its current goal that
+The user's yes covers the Linear writes its agreement lists and the captures
+above, and nothing else; a project's agreement also covers the routine writes of its current goal that
 [project](project.md#shape-the-project) lists. When a decision taken during the
 work changes what an issue states, update its text before handing over the
 change, so the issue describes what ships. Keep other people's content. Never

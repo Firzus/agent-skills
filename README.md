@@ -25,8 +25,8 @@ opinion.
   both know it works before it changes any code.
 - **Facts are looked up; only your decisions are asked.** The agent reads the code,
   history, and documentation first. It asks only about choices you own (behavior,
-  scope, cost, a step that is hard to undo) and takes the technical ones itself,
-  telling you which it took and why.
+  scope, cost, a step that is hard to undo) before the build starts, and takes
+  every other choice itself, telling you which it took and why.
 - **Ceremony matches the work.** The agent sizes each request as Direct, Issue, or
   Project, after what it needs in Linear, and tells you why. A typo needs no issue; a feature gets one; a large
   effort gets a project.
@@ -65,7 +65,7 @@ flowchart LR
     size -->|Direct| build[Build test-first]
     size -->|Issue or Project| interview[interview, when decisions are open]
     interview --> agree([You agree])
-    agree --> build
+    agree -->|new conversation after an interview| build
     build --> review[code-review]
     review --> show([Result shown working])
     show --> ship([Ship when you say yes])
@@ -78,8 +78,8 @@ the work:
 | Size | When | What you do |
 | --- | --- | --- |
 | Direct | The request says everything that matters and is easy to undo | Check the result, then say whether to ship |
-| Issue | One unit: fits one session and one reviewable change | Answer the decisions, agree on the Linear issue, check the result, say whether to ship |
-| Project | Several units, or questions that need research, an experiment, or a later decision first | Agree on a Linear project and its first issues; then start a new conversation for each unit with `/work` on the project or one of its issues: the agent runs that unit, asks for your decisions and review, names the next one, and takes stock with you when results change the plan |
+| Issue | One unit: fits one session and one reviewable change | Agree on the Linear issue (when decisions are open, you answer them in a first conversation that ends there), check the result, say whether to ship |
+| Project | Several units, or questions that need research, an experiment, or a later decision first | Agree on a Linear project and its first issues; then start a new conversation for each unit with `/work` on the project or one of its issues: the agent runs that unit, asks for your decisions in Interview units and for your review, names the next one, and takes stock with you when results change the plan |
 
 Issue-size and Project-size work need Linear: when the agent cannot reach it, it stops and
 tells you how to reconnect. Direct work does not use Linear.
