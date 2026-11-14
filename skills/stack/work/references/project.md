@@ -124,8 +124,8 @@ Then:
    take-stock.
 2. Draft the issues for what is now precise enough, from "Not yet specified" and
    from the results, and list the issues that became obsolete, with the reason.
-3. For each captured Need triage issue of the project, propose to rewrite it as
-   a typed issue in the format of [linear](linear.md#issue-content), leave it in
+3. For each captured Need triage issue of the project, propose to replace it
+   with a typed issue in the format of [linear](linear.md#issue-content), leave it in
    Backlog for later, or cancel it as a duplicate or no longer needed.
 4. Report what the current goal cost since it was set (units done and added,
    days elapsed) against the issues it started with, so a project that drags is

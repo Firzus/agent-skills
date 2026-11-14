@@ -118,9 +118,9 @@ Then ask for agreement in one message:
 - **Issue:** in a few lines, the outcome and the check that will show it, the
   decisions you took, any step that departs from this stack's usual course, and
   the Linear items and branch you will change, named without the changes'
-  content. The issue you create or update holds the full text in the format of
-  [linear](references/linear.md#issue-content), keeping an existing issue's
-  text under its own heading; show that text only when the user asks for it.
+  content. The issue you create holds the full text in the format of
+  [linear](references/linear.md#issue-content); show that text only when the
+  user asks for it.
 - **Project:** the project and its first issues, as
   [project](references/project.md#shape-the-project) describes.
 
