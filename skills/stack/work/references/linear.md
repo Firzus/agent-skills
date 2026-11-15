@@ -16,50 +16,29 @@ already shows beside it: "UI runtime chain of Core", not "Studio: UI runtime
 chain of Core".
 
 Use labels that exist and are active; a missing label or group is a workspace
-change to propose to the user, not to create silently. Write issues in the
-language of the team's existing issues.
+change to propose to the user, not to create silently. Write issues and
+projects in the language of the team's existing issues, section headings
+included; this stack names sections by their English headings. Reuse the
+headings the team's records already use, so each section keeps one name.
 
 ## Issue content
 
-Describe behavior, not procedure: no file paths or line numbers, which go stale
-while the issue waits; name the types, interfaces, and contracts instead. This
-holds over a Linear integration's advice to add file lists or agent notes.
-A snippet from a prototype may stay when it states a decision more precisely
-than prose (a schema, a state machine); say where it came from.
+Write a Task or Bug from [task-or-bug](../templates/task-or-bug.md), and a
+Research, Prototype, or Interview issue from [question](../templates/question.md).
+Drop a section that does not apply, such as Reproduction for a Task or an empty
+Agent notes.
 
-Task or Bug:
-
-```markdown
-## Current behavior
-What happens now: the faulty behavior for a Bug, the starting point for a Task.
-
-## Expected behavior
-What happens after the change, including edge cases and errors.
-
-## Decisions and key interfaces
-- <Decision or interface>: <choice>, because <reason>. (<user / agent>)
-
-## Acceptance criteria
-- [ ] <Independently verifiable criterion>
-
-## Out of scope
-- <Excluded behavior or work>
-```
-
-Research, Prototype, or Interview:
-
-```markdown
-## Question
-The one question this issue answers.
-
-## Decision it informs
-The decision or the work waiting on the answer.
-
-## How the answer is judged
-Research: the evidence that would settle it. Prototype: the scenarios to observe
-and the threshold or the user's judgment that ends it. Interview: the inputs the
-decision needs and who takes it.
-```
+- Describe behavior above Agent notes: name the types, interfaces, and contracts,
+  so the person who agrees to the issue can judge it. A snippet from a prototype
+  may stay when it states a decision more precisely than prose (a schema, a state
+  machine); say where it came from.
+- Each acceptance criterion names the test, command, or scenario that shows it,
+  so the build session can check it rather than stop when the work looks done.
+- Agent notes, the collapsible section at the end, holds starting points that a
+  session would otherwise spend time finding: a module, a symbol, a file path, a
+  test, or a command. They are hints the session checks before relying on them,
+  since paths move while the issue waits; no line numbers, and no criterion or
+  decision depends on them.
 
 ## Statuses and relations
 
