@@ -15,10 +15,11 @@ takes stock whenever what it learned changes the way ahead.
    issues; work that can be detailed becomes Task or Bug issues; what cannot be
    phrased as a precise question yet stays in "Not yet specified". Do not detail
    work beyond the current goal.
-4. Propose the project record below and the list of issues: for each, its title,
-   type, what it delivers or asks, and what blocks it; for a Research issue,
-   whether it is a direct lookup or a delegated investigation. Ask whether the
-   granularity and the blocking relations are right.
+4. Propose the project record, written from [project](../templates/project.md),
+   and the list of issues: for each, its title, type, what it delivers or asks,
+   and what blocks it; for a Research issue, whether it is a direct lookup or a
+   delegated investigation. Ask whether the granularity and the blocking
+   relations are right.
 5. On the user's yes, create the project with its Product label and the record
    as its description (not its summary), the issues in Todo with their content
    (see [linear](linear.md#issue-content)), then the blocking relations.
@@ -33,34 +34,6 @@ relations an unknown requires, the split of a unit that turns out too large, and
 the push of each Prototype issue's branch.
 Changing the current goal, adding work beyond it, and canceling or retyping an
 issue wait for the next take-stock.
-
-```markdown
-## Final goal
-What exists at the end, for whom, and why it matters.
-
-## Success criteria
-- <Observable signal that the final goal is reached>
-
-## Constraints
-Limits of time, resources, platform, or compatibility that every unit respects.
-
-## Current goal
-The result the open issues deliver together, how it will be shown, and when it
-was set with how many issues.
-
-## Decisions so far
-- <Gist of the decision> ([issue or source](link))
-
-## Not yet specified
-- <In-scope area or question not precise enough to become an issue yet>
-
-## Out of scope
-- <Excluded work, and why>
-
-## Resume here
-Where the next session starts, what it waits on, and who must act. Facts verified;
-anything inferred is marked as such.
-```
 
 A decision lives in one place, its issue or source; "Decisions so far" is an
 index that links to it.
