@@ -48,13 +48,14 @@
     {
       "name": "game",
       "source": "./",
-      "description": "Unity development skills \u2014 engine defaults, UI, Editor tools, rendering, multiplayer, Editor automation, and Figma UI.",
+      "description": "Unity development skills \u2014 engine defaults, UI, Editor tools, rendering, multiplayer, Editor automation, agent play, and Figma UI.",
       "skills": [
         "./skills/game/unity/figma-to-unity",
         "./skills/game/unity/unity-cli",
         "./skills/game/unity/unity-core",
         "./skills/game/unity/unity-editor-tools",
         "./skills/game/unity/unity-multiplayer",
+        "./skills/game/unity/unity-play",
         "./skills/game/unity/unity-rendering",
         "./skills/game/unity/unity-ui"
       ]
