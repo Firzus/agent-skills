@@ -7,7 +7,7 @@ description: >-
   Directories, DOTS, ECS, Jobs, Burst, assembly definitions, Input System,
   audio, project structure, CI, builds, tests, or performance. Load it
   alongside the domain skills unity-ui, unity-editor-tools, unity-rendering,
-  unity-multiplayer, and unity-cli.
+  unity-multiplayer, unity-cli, and unity-play.
 ---
 
 # Unity Core
@@ -88,6 +88,7 @@ installed, say which one is missing and work from the rows above.
 | Pipeline, lighting, GPU-driven rendering | [unity-rendering](../unity-rendering/SKILL.md) |
 | Netcode, authority, sessions, dedicated server | [unity-multiplayer](../unity-multiplayer/SKILL.md) |
 | Unity CLI, driving the Editor from an agent, iterating while the user tests in the Editor | [unity-cli](../unity-cli/SKILL.md) |
+| An agent playing the game in Play Mode, reproducing a gameplay bug by playing | [unity-play](../unity-play/SKILL.md) |
 
 For engine-agnostic replication theory, use `coop-session`.
 
