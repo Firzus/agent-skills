@@ -68,7 +68,7 @@
         "./skills/engineering/authoring",
         "./skills/engineering/gamification",
         "./skills/engineering/imagegen",
-        "./skills/engineering/improve-architecture",
+        "./skills/engineering/improve-codebase",
         "./skills/engineering/instructions",
         "./skills/engineering/monorepo",
         "./skills/engineering/reverse-engineer",
@@ -76,7 +76,6 @@
         "./skills/engineering/setup-harness",
         "./skills/engineering/security-review",
         "./skills/engineering/skills",
-        "./skills/engineering/unslop",
         "./skills/engineering/video-report",
         "./skills/engineering/youtube-transcript"
       ]
