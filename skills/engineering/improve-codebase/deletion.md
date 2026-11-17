@@ -12,7 +12,7 @@ Cheapest to strongest. Climb until the evidence matches the blast radius.
 | # | Rung | Proves | Still open |
 | --- | --- | --- | --- |
 | 1 | Static reachability / unused-symbol analysis | No statically resolved reference in the analyzed configuration | Everything dynamic, unbuilt configurations, everything outside the repo |
-| 2 | Whole-repo textual sweep, `git grep --untracked --no-exclude-standard`, including data, config, templates, serialized assets | The name appears nowhere in the corpus — subsumes rung 1 | Constructed names, generated names, external consumers |
+| 2 | Whole-repo textual sweep, `git grep --untracked --no-exclude-standard` (excluding build caches such as Unity's `Library/`, `Temp/`, `obj/`), including data, config, templates, serialized assets | The name appears nowhere in the corpus — subsumes rung 1 | Constructed names, generated names, external consumers |
 | 3 | String-literal and reflection sweep near the candidate's domain | No known reflective entry point names it | Name concatenation, database-driven dispatch |
 | 4 | Historical pickaxe: `git log -S'Sym'` and `-G'Sym'` | When the last call site disappeared, and whether the symbol was ever used at all | Usage that never existed in this repo, e.g. external consumers |
 | 5 | **Public-surface classification** | Whether repo-internal evidence is admissible at all — this rung gates the rest | Nothing: if public, switch to the deprecation path |
@@ -57,18 +57,50 @@ minimum of two years and forbids removal without notice between consecutive
 releases; Node.js forbids an API reaching end-of-life without a runtime
 deprecation cycle first.
 
+## Removing tests
+
+The ladder above measures whether production code is reachable; a test needs a
+different proof, that the suite still detects what it detected. Redundancy
+belongs to a set: two copies of one test each look redundant alone, and
+removing both loses what they protected. One sub-agent applies all the
+accepted test candidates of a module; they are never split across parallel
+worktrees. Because the checks below run against the final suite, one
+verification after the module's last change covers the whole set.
+
+Before the change, record the baseline; after it, confirm:
+
+- The whole suite passes.
+- Coverage of the affected production code is unchanged: branch coverage where
+  the tooling reports it, line coverage otherwise. Unity's Code Coverage package
+  always reports branch coverage as zero; its per-test coverage (Test Runner
+  References, `generateTestReferences`) helps find overlapping tests, not
+  verify a removal.
+- The mutation score over the modules the removed tests reached is unchanged.
+
+Without a mutation tool (Stryker.NET does not run Unity's test runner, for
+example), use manual mutation instead, both to find candidates and to verify
+them: in a scratch worktree, empty or return a default from each production
+method the suspect test covers, run the remaining tests, and record that
+another test fails each time. After the change, re-run the recorded mutations
+against the remaining suite: each must still fail a test. For a consolidation,
+the test that must fail is the new merged one, so check it once that test
+exists, before deleting the tests it replaces. The evidence stays
+grade C, so the candidate is presented as `Ask`, and the user's yes is what
+turns it into a removal. Without a coverage tool, report the coverage check as
+not run, and include that gap in the question.
+
+A test that only exercised removed code leaves in the same commit as that code.
+
 ## Landing the change
 
 - **One logical deletion per commit.** A revert is one command only when the
   deletion is not entangled with unrelated edits.
 - **Record the evidence in the commit body**: which searches ran, what they
-  returned, which rungs were climbed. The message also makes the deletion
+  returned, which rungs were climbed; for tests, which mutations ran and which
+  tests still fail on each. The message also makes the deletion
   findable by `git log -S` later.
 - **Keep the deletion diff pure.** Mixed with a refactor, it is neither
   reviewable by inspection nor revertible without side effects, and an incident
   revert re-introduces the unrelated change.
-- **Delete rather than comment out.** Git preserves the content permanently,
-  while a commented block keeps the reading cost, loses compiler checking, and
-  is invisible to tests.
 - **A feature flag is a staging mechanism with an expiry, not a resting place.**
   Flagged-off code still ships and still runs when the flag flips.

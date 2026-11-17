@@ -124,8 +124,9 @@ harnesses, helpers used by exactly one test.
 
 **Clears when** — excluded from the reachability query entirely. Production
 reachability is the wrong question here: test code is *supposed* to have no
-production caller. A genuinely dead test is one that asserts nothing or is
-unconditionally skipped, decided by reading it, never by a caller count.
+production caller. Whether a test earns its place is a separate question,
+answered by the test signals in [`signals.md`](signals.md#test-signals), never by
+a caller count.
 
 ## 9. Interface and protocol conformance — loud nominally, silent structurally
 
@@ -158,8 +159,10 @@ typed languages.
 
 ## 11. Vendored and third-party trees — churn
 
-`vendor/`, `node_modules/`, `third_party/`, `external/`, `Pods/`, and Unity's
-`Library/`, `Packages/`, `Assets/Plugins/`.
+`vendor/`, `node_modules/`, `third_party/`, `external/`, `Pods/`, Unity's
+`Library/` (including `Library/PackageCache`), and third-party plugins under
+`Assets/Plugins/`. Embedded packages under Unity's `Packages/` are first-party
+unless their `package.json` says otherwise.
 
 **Clears when** — excluded by policy. The analysis is correct and the answer is
 irrelevant: a vendored library legitimately ships a mostly-unused surface, and
@@ -189,40 +192,62 @@ day the path was written for.
 Unity defeats .NET static reachability comprehensively, and its failures are
 silent until play mode or a stripped player build.
 
+- **Text searches prove absence only under Force Text serialization**
+  (`m_SerializationMode: 2` in `ProjectSettings/EditorSettings.asset`). Under
+  Binary or Mixed, scenes and prefabs are not searchable text, an empty search
+  proves nothing, and every Unity candidate is `Ask`. Check this first.
 - **IDE0051 and IDE0052 only examine `private` members.** "The analyzer found
   nothing" for anything `internal` or `public` means the analyzer did not look.
+  Without the `Microsoft.Unity.Analyzers` suppressors, these rules also report
+  engine-invoked members; JetBrains InspectCode needs its Unity extension for
+  the same reason.
 - **Engine-invoked methods** (`Awake`, `Start`, `Update`, `OnEnable`,
   `OnTriggerEnter`, and the rest of the MonoBehaviour message set) have no C#
-  call site by design.
-- **`[SerializeField]`** assigns private fields through Unity's own serializer,
+  call site by design. So do editor entry points discovered by attribute or
+  type: `[InitializeOnLoadMethod]`, `[DidReloadScripts]`, `[CustomEditor]`,
+  `[CustomPropertyDrawer]`, `[CreateAssetMenu]`, `[OnOpenAsset]`,
+  `AssetPostprocessor` messages, and build callbacks such as
+  `IPreprocessBuildWithReport`.
+- **Unity serializes `public` fields and `[SerializeField]` fields alike**,
   outside the C# type system, so the compiler sees an unassigned field and the
   analyzer an unread one. **`[SerializeReference]`** instantiates a class with no
-  `new` expression anywhere in the codebase.
-- **UnityEvent binds by method-name string.** `GetPersistentMethodName` returns
-  a string: renaming or removing the method produces no compile error and the
-  wiring silently disappears.
+  `new` expression anywhere in the codebase, and stores its type by namespace,
+  class, and assembly name: renaming or moving it breaks saved data silently
+  unless `[MovedFrom]` records the old name.
+- **Names computed or stored as strings.** UnityEvent binds by method name
+  (`m_MethodName`, including property setters); `PlayerInput` in SendMessages or
+  BroadcastMessages mode calls `On<ActionName>`, a name assembled at runtime;
+  Visual Scripting graphs reference types and members by name.
 - **Scenes and prefabs reference scripts by `.meta` GUID, never by class name.**
   A `MonoBehaviour` attached to hundreds of prefabs looks entirely unreferenced
-  in C#. Grep the GUID, not the identifier.
+  in C#. Search the GUID for scripts and the identifier for everything stored
+  by name.
 - **Managed code stripping analyzes only build-time code**, which is why
-  `[Preserve]` and `link.xml` exist. Stripping failures surface as null
-  reference exceptions, missing types, or crashes in the Player.
+  `[Preserve]`, `[AlwaysLinkAssembly]`, and `link.xml` exist. Stripping failures
+  surface as null reference exceptions, missing types, or crashes in the Player.
 
-**Clears when** all of the following hold: the name is not a MonoBehaviour
-message; no engine-invocation attribute is present (`[SerializeField]`,
-`[SerializeReference]`, `[RuntimeInitializeOnLoadMethod]`, `[InitializeOnLoad]`,
-`[MenuItem]`, `[ContextMenu]`, `[Preserve]`); no engine-invoked interface such as
+**Clears statically**, during the audit, when all of the following hold: the
+project uses Force Text; the name is not a MonoBehaviour message or an editor
+entry point; it is not a `public` or `[SerializeField]` field of a serializable
+type, and no `[FormerlySerializedAs]` names it; no engine-invocation attribute
+is present (`[SerializeReference]`, `[RuntimeInitializeOnLoadMethod]`,
+`[InitializeOnLoad]`, `[MenuItem]`, `[ContextMenu]`, `[ContextMenuItem]`,
+`[Preserve]`, `[UsedImplicitly]`); no engine-invoked interface such as
 `ISerializationCallbackReceiver` is implemented; a whole-tree text search across
 `.cs`, `.unity`, `.prefab`, `.asset`, `.controller`, `.anim`, `.playable`,
 `.mat`, `.shader`, `.inputactions`, and `ProjectSettings/` finds nothing; the
 type's `.meta` GUID appears in no serialized asset; no matching string literal
 exists for `SendMessage`, `Invoke`, `StartCoroutine`, Animation Events,
-`Resources.Load`, or Addressables keys; no `link.xml` entry or suppression
-names it; it is unreferenced under every shipped platform define set; anything
-`public` in an `.asmdef` came back empty across runtime, Editor, and test
-assemblies; and a player build at the project's real stripping level succeeds
-**and the affected content was exercised in a run**. Play mode and a stripped
-build are not substitutes for each other.
+`PlayerInput` actions, `Resources.Load`, or Addressables keys; no `link.xml`
+entry or suppression names it; it is unreferenced under every shipped platform
+define set; and anything `public` in an `.asmdef` came back empty across
+runtime, Editor, and test assemblies.
+
+**Verifies after removal**, at rungs 6 and 7 of the deletion ladder: a player
+build at the project's real stripping level succeeds **and the affected content
+was exercised in a run**. Play mode and a stripped build are not substitutes for
+each other. When the agent cannot build or run the player, the candidate stays
+pending with that reason.
 
 ## Master table
 
@@ -240,7 +265,7 @@ build are not substitutes for each other.
 | Unused parameters (§10) | `_` prefix, `[[maybe_unused]]`, disable comments | Signature not imposed by a contract | Silent |
 | Vendored trees (§11) | `vendor/`, `node_modules/`, `Packages/`, lockfiles | Excluded by policy | Churn |
 | Documented reason (§12) | `@deprecated`, `[Obsolete]`, `legacy`, `rollback`, CHANGELOG, ADR | Dated statement that the window closed | Silent and catastrophic |
-| Unity engine wiring | `.meta` GUID, `[SerializeField]`, UnityEvent, messages, `link.xml` | The ten-point list above, in full | Silent, at play time |
+| Unity engine wiring | Serialization mode, `.meta` GUID, serialized fields, UnityEvent, messages, `link.xml` | The static clears above, then the post-removal build and run | Silent, at play time |
 
 Silent failures deserve a higher evidence bar than loud ones: a broken build
 costs one cycle, while a deleted migration path costs an incident whose cause

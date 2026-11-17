@@ -140,7 +140,7 @@ Some skills work on their own, without the rest of the stack.
 | Diagnose a bug or verify an authorized fix | [debug](./skills/stack/debug/SKILL.md) | No |
 | Compare interface ideas or test feasibility | [prototype](./skills/stack/prototype/SKILL.md) | No |
 | Investigate a question across multiple sources | [research](./skills/stack/research/SKILL.md) | No |
-| Find refactors worth doing | [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | No |
+| Remove dead code and useless tests, refactor, or replace a slow system | [improve-codebase](./skills/engineering/improve-codebase/SKILL.md) | No |
 | Audit security boundaries in a codebase | [security-review](./skills/engineering/security-review/SKILL.md) | No |
 | Explain how shipped software works from its files | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) | No |
 
@@ -167,7 +167,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Reverse engineering | The reverse-engineer MCP server for the fast route (Node.js 24.11+); the skill installs Ghidra, jadx or ilspycmd per user when a task needs them |
 
 Host support for installing skills does not guarantee identical behavior or tool
-availability. Explicit-invocation workflows such as **work**, **improve-architecture**, and
+availability. Explicit-invocation workflows such as **work**, **improve-codebase**, and
 **setup-harness** run only when you select them.
 
 ### Personal harness instructions
@@ -227,7 +227,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [authoring](./skills/engineering/authoring/SKILL.md) | Write and review skills, their invocation conditions, references, and templates. |
 | [gamification](./skills/engineering/gamification/SKILL.md) | Engagement mechanics, motivation, and ethical design checks. |
 | [imagegen](./skills/engineering/imagegen/SKILL.md) | Generate or edit raster images through Codex. |
-| [improve-architecture](./skills/engineering/improve-architecture/SKILL.md) | Find architectural friction and propose evidenced refactors that preserve behavior. |
+| [improve-codebase](./skills/engineering/improve-codebase/SKILL.md) | Orchestrate agents that remove dead code, slop, and redundant tests, refactor costly structures, and replace systems that miss a measured target. |
 | [instructions](./skills/engineering/instructions/SKILL.md) | Write and review project instructions and other agent-facing documentation outside skills. |
 | [monorepo](./skills/engineering/monorepo/SKILL.md) | Workspace structure, package boundaries, task graphs, caching, affected CI, and release verification. |
 | [reverse-engineer](./skills/engineering/reverse-engineer/SKILL.md) | Explain shipped software (Electron apps, native binaries and Node addons, Go/Rust, .NET, APK) from its files, with cited evidence and an optional read-only MCP server. |
@@ -235,7 +235,6 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [setup-harness](./skills/engineering/setup-harness/SKILL.md) | Install the shared operating policy as reviewed personal instructions for selected harnesses. |
 | [security-review](./skills/engineering/security-review/SKILL.md) | Investigate codebase security boundaries and report evidence-backed findings. |
 | [skills](./skills/engineering/skills/SKILL.md) | Discover, install, maintain, and author agent skills. |
-| [unslop](./skills/engineering/unslop/SKILL.md) | Propose evidenced dead-code and slop removals in the conversation, then apply the accepted ones. |
 | [video-report](./skills/engineering/video-report/SKILL.md) | Record video evidence of real application behavior. |
 | [youtube-transcript](./skills/engineering/youtube-transcript/SKILL.md) | Turn video speech and visual evidence into a learning report. |
 
