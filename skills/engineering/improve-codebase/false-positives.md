@@ -192,6 +192,10 @@ day the path was written for.
 Unity defeats .NET static reachability comprehensively, and its failures are
 silent until play mode or a stripped player build.
 
+- **Unity roots.** Add to the root set the scenes in
+  `EditorBuildSettings.asset`, `Resources/` folders, Addressables groups,
+  `StreamingAssets/`, types found through `TypeCache`, and the editor entry
+  points below.
 - **Text searches prove absence only under Force Text serialization**
   (`m_SerializationMode: 2` in `ProjectSettings/EditorSettings.asset`). Under
   Binary or Mixed, scenes and prefabs are not searchable text, an empty search
@@ -249,6 +253,21 @@ was exercised in a run**. Play mode and a stripped build are not substitutes for
 each other. When the agent cannot build or run the player, the candidate stays
 pending with that reason.
 
+### Running Unity
+
+- A project folder opens in one editor at a time, so the main thread owns every
+  Unity run, and a new worktree reimports the whole project on first open:
+  reuse one worktree per role (working branch, investigation, measurement)
+  rather than one per candidate, and copy `Library/` from the main checkout,
+  through the project's setup script when it has one. Sub-agents edit in plain
+  worktrees never opened in Unity and return unbuilt patches; the main thread
+  compiles and tests them in the role worktree and sends compile errors and
+  test results back to a sub-agent with the patch.
+- Run the baseline and every later suite in the same graphics mode:
+  `-nographics` fails tests that open windows.
+- Compare compiler warnings between full builds: an incremental build hides
+  the warnings of unchanged files.
+
 ## Master table
 
 | Class | Detect | Cleared by | Failure |
@@ -263,7 +282,7 @@ pending with that reason.
 | Tests and examples (§8) | `tests/`, `conftest.py`, `benches/`, `examples/`, `>>>` | Excluded from the reachability query | Silent, lost coverage |
 | Conformance (§9) | `override`, `impl Trait for`, `@abstractmethod`, dunders | Whole conformance removed, no interface-typed consumer | Loud nominal, silent structural |
 | Unused parameters (§10) | `_` prefix, `[[maybe_unused]]`, disable comments | Signature not imposed by a contract | Silent |
-| Vendored trees (§11) | `vendor/`, `node_modules/`, `Packages/`, lockfiles | Excluded by policy | Churn |
+| Vendored trees (§11) | `vendor/`, `node_modules/`, Unity `Library/PackageCache` and third-party `Packages/` entries, lockfiles | Excluded by policy | Churn |
 | Documented reason (§12) | `@deprecated`, `[Obsolete]`, `legacy`, `rollback`, CHANGELOG, ADR | Dated statement that the window closed | Silent and catastrophic |
 | Unity engine wiring | Serialization mode, `.meta` GUID, serialized fields, UnityEvent, messages, `link.xml` | The static clears above, then the post-removal build and run | Silent, at play time |
 

@@ -1,7 +1,7 @@
 # Signals
 
 What can be detected, what a hit actually proves, and the legitimate reason
-that must be ruled out before it becomes a finding.
+that must be ruled out before it becomes a candidate.
 
 Evidence grade: **A** quantified study · **B** codified in a linter, compiler,
 or analyzer rule · **C** catalogued but judged qualitatively · **D** aesthetic
@@ -14,7 +14,7 @@ than prove a removal; their grade says how far the ranking can be trusted.
 Run whatever the repository already has before proposing anything new: its
 linter, its compiler warnings, its analyzers, its coverage, its mutation tool,
 its profiler. Record the exact command and configuration next to every hit,
-because a finding is only ever "unused within the set I analyzed." Adding a tool
+because a candidate is only ever "unused within the set I analyzed." Adding a tool
 to the project is a proposal for the user. Alongside the tools, read for the
 shapes no tool encodes: a wrapper that only forwards, a second implementation of
 an existing repository utility, a path left wired after a mid-task change of
@@ -24,8 +24,10 @@ Two moves carry most of the weight when exonerating code, and both are free:
 
 - Search the symbol as a **bare string literal** across the whole repository,
   including untracked and ignored files, data, config, templates, and
-  serialized assets, but not build caches:
-  `git grep --untracked --no-exclude-standard 'Symbol' -- . ':!Library' ':!Temp' ':!obj' ':!Logs'`.
+  serialized assets, but not build caches or installed dependencies, which you
+  exclude by pathspec (Unity `Library/ Temp/ obj/ Logs/`; Node `node_modules/
+  dist/`; Python `.venv/ __pycache__/`):
+  `git grep --untracked --no-exclude-standard 'Symbol' -- . ':!<excluded path>'`.
 - Search the **mechanism**, not the symbol: `getattr(`, `importlib`,
   `Class.forName`, `Type.GetType`, `Activator.CreateInstance`, `obj[name]`,
   `.send(`, DI registrations, assembly scans. A name assembled at runtime from a

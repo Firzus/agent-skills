@@ -12,7 +12,7 @@ Cheapest to strongest. Climb until the evidence matches the blast radius.
 | # | Rung | Proves | Still open |
 | --- | --- | --- | --- |
 | 1 | Static reachability / unused-symbol analysis | No statically resolved reference in the analyzed configuration | Everything dynamic, unbuilt configurations, everything outside the repo |
-| 2 | Whole-repo textual sweep, `git grep --untracked --no-exclude-standard` (excluding build caches such as Unity's `Library/`, `Temp/`, `obj/`), including data, config, templates, serialized assets | The name appears nowhere in the corpus — subsumes rung 1 | Constructed names, generated names, external consumers |
+| 2 | Whole-repo textual sweep, `git grep --untracked --no-exclude-standard` [without build caches and installed dependencies](signals.md#before-collecting-suspects), including data, config, templates, serialized assets | The name appears nowhere in the corpus — subsumes rung 1 | Constructed names, generated names, external consumers |
 | 3 | String-literal and reflection sweep near the candidate's domain | No known reflective entry point names it | Name concatenation, database-driven dispatch |
 | 4 | Historical pickaxe: `git log -S'Sym'` and `-G'Sym'` | When the last call site disappeared, and whether the symbol was ever used at all | Usage that never existed in this repo, e.g. external consumers |
 | 5 | **Public-surface classification** | Whether repo-internal evidence is admissible at all — this rung gates the rest | Nothing: if public, switch to the deprecation path |
@@ -93,11 +93,13 @@ A test that only exercised removed code leaves in the same commit as that code.
 
 ## Landing the change
 
-- **One logical deletion per commit.** A revert is one command only when the
-  deletion is not entangled with unrelated edits.
-- **Record the evidence in the commit body**: which searches ran, what they
-  returned, which rungs were climbed; for tests, which mutations ran and which
-  tests still fail on each. The message also makes the deletion
+These rules apply to every accepted change, not only deletions.
+
+- **One logical change per commit.** A revert is one command only when the
+  change is not entangled with unrelated edits.
+- **Record the evidence in the commit body**: which searches and measurements
+  ran, what they returned, which rungs were climbed; for tests, which mutations
+  ran and which tests still fail on each. The message also makes a deletion
   findable by `git log -S` later.
 - **Keep the deletion diff pure.** Mixed with a refactor, it is neither
   reviewable by inspection nor revertible without side effects, and an incident
