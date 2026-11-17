@@ -49,7 +49,7 @@ Particles, and wrap the call in a Profiler sample to measure it.
 UnityLinker strips IL2CPP builds (Android, iOS, Web) from the Minimal level by
 default, and CoreCLR builds once their level is raised from Disabled, their
 default. It keeps only what is statically reachable at build time, so code
-reached only through reflection or only from AssetBundle content disappears
+reached only through reflection or only from content built and loaded outside Addressables disappears
 from the player while working in the Editor.
 [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/mukai-yuichiro-2.html)
 

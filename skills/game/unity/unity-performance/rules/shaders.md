@@ -48,15 +48,15 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Fix: Rewrite metadata only to restore device values an Editor script overwrote, or to rename the Quality Level when no PSO-relevant setting or shader varies by level; otherwise retrace on the target device. See [unity-rendering](../../unity-rendering/SKILL.md#shader-warmup).
 - Source: [Shader warmup with GraphicsStateCollection](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/amano-takuro-1.html)
 
-### SH05 Shader packed into several bundles on iOS
-- Level: Critical
+### SH05 Shader split across Content Directory catalogs on iOS
+- Level: Warning
 - Scope: any
 - When: ios,addressables
 - Files: *AssetGroups/*.asset
 - Code: any
 - Check: MANUAL
-- Reason: On Metal, a shader pulled into several AssetBundles as a dependency loads as several instances, and the warmup covers only the one the collection names; the others compile at first draw with no error, showing as `GpuProgramMetal.GetCachedPipeline` without `Shader.CreateGPUProgram`.
-- Fix: Check the Addressables Report for duplicated shaders and move shaders to a group of their own. See [unity-rendering](../../unity-rendering/SKILL.md#shader-warmup).
+- Reason: On Metal, a shader built into separately built content loads as several instances (measured outside Content Directories; confirm it applies to the project's catalogs), and the warmup covers only the one the collection names; the others compile at first draw with no error, showing as `GpuProgramMetal.GetCachedPipeline` without `Shader.CreateGPUProgram`.
+- Fix: Keep shared shaders under one Catalog Id, and check the Addressables Report for shaders that appear in several Content Directories. See [unity-rendering](../../unity-rendering/SKILL.md#shader-warmup).
 - Source: [Shader warmup with GraphicsStateCollection](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/amano-takuro-1.html)
 
 ### SH06 Subpass shaders on iOS

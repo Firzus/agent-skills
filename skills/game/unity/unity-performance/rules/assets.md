@@ -115,15 +115,15 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Fix: Use Keyframe Reduction or Optimal, and check the motion on the characters that show artifacts. See [assets.md](../../unity-core/assets.md#import-settings).
 - Source: [Unity Performance Tuning Bible](https://github.com/CyberAgentGameEntertainment/UnityPerformanceTuningBible)
 
-### AS12 Addressables groups mixing lifetimes or holding cycles
+### AS12 Addressables content holding reference cycles
 - Level: Warning
 - Scope: any
 - When: addressables
 - Files: *AddressableAssetsData/*.asset
 - Code: any
 - Check: MANUAL
-- Reason: A bundle holding assets of two lifetimes cannot unload half of itself, and a reference cycle loads as one unit and fails the build beyond 64 MB.
-- Fix: Group assets that load and unload together, use Content Directory groups for installed content, and break the cycles listed in `circularrefs.json`. See [assets.md](../../unity-core/assets.md#addressables).
+- Reason: A reference cycle between assets loads as one unit, logs a warning, and fails the build beyond 64 MB.
+- Fix: Break the cycles listed in `circularrefs.json`. See [assets.md](../../unity-core/assets.md#addressables).
 - Source: [Unity Performance Tuning Bible](https://github.com/CyberAgentGameEntertainment/UnityPerformanceTuningBible)
 
 ### AS13 Sprite Atlas that does not match its unit of use
@@ -170,16 +170,16 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Fix: Trace a `GraphicsStateCollection` per Quality Level on the target device and warm it up progressively during loading. See [unity-rendering](../../unity-rendering/SKILL.md#shader-warmup).
 - Source: [Unity Performance Tuning Tips 2026: shader warmup with GraphicsStateCollection](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/amano-takuro-1.html)
 
-### AS17 Shared asset copied into several AssetBundles
+### AS17 Shared asset split across Content Directory catalogs
 - Level: Critical
 - Scope: any
 - When: addressables
 - Files: *AddressableAssetsData/*.asset
 - Code: any
 - Check: MANUAL
-- Reason: In AssetBundle groups, an asset two bundles reference without being in a group itself is copied into each. The chapter's illustration, in uncompressed sizes: a 4 MB texture referenced by two prefabs in separate bundles made 10 MB of bundles, 6 MB once registered in its own group. Loaded together, both copies sit in memory. Content Directory groups de-duplicate on their own.
-- Fix: Register the shared asset in a group of its own, find the others with the Addressables Analyze rule `CheckBundleDupeDependencies`, and review the layout its fix proposes before applying it. See [assets.md](../../unity-core/assets.md#addressables).
-- Source: [Unity Performance Tuning Tips 2026: asset bloat and Project Auditor](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/zaitsu-hiromu-1.html)
+- Reason: Each Catalog Id builds as one Content Directory and de-duplication works only within it, so two catalogs each carry their own copy of an asset they share, on disk and, loaded together, in memory.
+- Fix: Give groups whose content shares dependencies the same Catalog Id. See [assets.md](../../unity-core/assets.md#addressables).
+- Source: [Unity Performance Tuning Tips 2026: asset bloat and Project Auditor](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/zaitsu-hiromu-1.html) for duplication; the per-catalog build comes from `ContentDirectoryGroupSchema.CatalogId` in Addressables 4.1
 
 ### AS18 No import automation
 - Level: Info
@@ -199,7 +199,7 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Files: *.cs
 - Code: any
 - Check: ABSENT `new\s+ProjectAuditor\s*\(|AssetRegulation`
-- Reason: No code runs Project Auditor or an asset regulation test. Assets that arrive with their `.meta` skip import-time defaults, and duplication across bundles or atlas grouping cannot be judged at import, so only a check before the build catches them.
+- Reason: No code runs Project Auditor or an asset regulation test. Assets that arrive with their `.meta` skip import-time defaults, and duplication across builds or atlas grouping cannot be judged at import, so only a check before the build catches them.
 - Fix: Run Project Auditor in CI, with `com.unity.project-auditor-rules` installed since the bundled core analyzes nothing without it, or add edit-mode tests on texture size, compression, and vertex count. Print the measured values in the build log. See [workflow.md](../../unity-core/workflow.md#testing).
 - Source: [Unity Performance Tuning Tips 2026: asset bloat and Project Auditor](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/zaitsu-hiromu-1.html)
 

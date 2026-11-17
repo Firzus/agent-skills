@@ -119,7 +119,7 @@ Warm up with **`GraphicsStateCollection`** (`UnityEngine.Rendering`).
 - At runtime, load the collection matching the current Quality Level after the shaders it references are loaded, and spread the work with `WarmUpProgressively(count)` across loading frames; `WarmUp` does it all in one spike.
 - End the loop when the requested count reaches `totalGraphicsStateCount`, not on `isWarmedUp`, which a warmup error can leave false forever.
 - Read the warmup log: `variant not found` means stripping removed the variant; a platform, graphics API, or Quality Level mismatch warning means the collection was traced elsewhere, and only a retrace on the target fixes it.
-- On iOS, put shaders in a group of their own: a shader packed into several AssetBundles exists as several instances, and the warmup covers only the one the collection names.
+- On iOS, keep shared shaders under a single Content Directory Catalog Id. A shader built into separately built content loads as several instances, and the warmup covers only the one the collection names; that was measured outside Content Directories, so confirm it in the Profiler (next item) before restructuring catalogs.
 - Hitches that persist show in the Profiler as `Shader.CreateGPUProgram` on the main thread, or as `GpuProgramMetal.GetCachedPipeline` (iOS) and `CreateGraphicsPipelineImpl` (Android) on the render thread.
 
 ## Device tiers

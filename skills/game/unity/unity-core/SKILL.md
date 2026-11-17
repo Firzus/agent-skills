@@ -37,7 +37,7 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Tool icons | **Built-in Editor icons**, then `painter2D` | shipping PNG variants per state |
 | Async | **`Awaitable`** + `CancellationToken` | coroutines, raw `Task` |
 | Static state across Play Mode entries | **`[AutoStaticsCleanup]`**, see [runtime.md](./runtime.md#static-state) | expecting a reload to reset it |
-| Runtime loading | **Addressables** + `AssetReference`; Content Directory groups for installed content, AssetBundle groups for remote content until Unity ships remote Content Directories, see [assets.md](./assets.md#addressables); settings needed before the first scene go through the [Preloaded Assets](./assets.md#settings-needed-before-the-first-scene) | `Resources/`, `Loadable<T>` without Addressables |
+| Runtime loading | **Addressables** + `AssetReference`, every group on the **Content Directory** schema; post-install content goes through a project system until Unity ships remote Content Directories, see [assets.md](./assets.md#addressables); settings needed before the first scene go through the [Preloaded Assets](./assets.md#settings-needed-before-the-first-scene) | `Resources/`, `Loadable<T>` without Addressables |
 | Input | **Input System** action maps | legacy Input Manager |
 | Audio | **built-in AudioMixer** — [workflow.md](./workflow.md) | FMOD/Wwise |
 | Render pipeline | **URP** — [unity-rendering](../unity-rendering/SKILL.md) | Built-In, HDRP |
