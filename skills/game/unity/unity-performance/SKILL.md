@@ -47,10 +47,9 @@ are read only for the rules that hit.
 6. **Settle ABSENT and MANUAL rules.** Read each listed rule and decide from the project whether it applies; most MANUAL rules apply only when the change does what they describe.
 7. **Flag what needs a measurement.** A suspicion that static reading cannot settle goes in the report as "profile recommended", with the symptom to look for from [references/diagnosis.md](./references/diagnosis.md).
 
-Before a release, also run Project Auditor and, for AssetBundle groups,
-Addressables Analyze, as [workflow.md](../unity-core/workflow.md#testing) and
-[assets.md](../unity-core/assets.md#addressables) describe; this review does
-not replace them.
+Before a release, also run Project Auditor as
+[workflow.md](../unity-core/workflow.md#testing) describes; this review does
+not replace it.
 
 ## Project settings file
 

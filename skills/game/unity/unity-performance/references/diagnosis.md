@@ -73,7 +73,7 @@ Markers that split a first-draw hitch:
 | `variant not found` in warmup log, no runtime compile | Variant stripped from the build | Check Shader Stripping; retrace after variant-affecting changes |
 | `variant not found`, runtime compile still happens | Variant recorded with zero graphics states | Fix the trace scenario so the content actually draws |
 | `WarmUp may be inaccurate due to ... mismatch` | Collection traced on another platform, API, or Quality Level | Retrace on the target device [SH04] |
-| iOS: `GetCachedPipeline` with no `CreateGPUProgram` and no error | Shader packed into several AssetBundles, so several instances | Shader-only group, or one collection per bundle [SH05] |
+| iOS: `GetCachedPipeline` with no `CreateGPUProgram` and no error | Shader built into several Content Directory catalogs, so several instances | Shared shaders under one Catalog Id, or one collection per catalog [SH05] |
 | iOS: PSO compiles in play despite a clean warmup | Shaders drawn inside a subpass (native render pass) do not warm up | Avoid the subpass for them, or pre-render once during loading [SH06] |
 
 ## Memory and lifetime
@@ -110,7 +110,7 @@ Markers that split a first-draw hitch:
 | Feature broken only in the player after raising the Managed Stripping Level | UnityLinker removed code unreachable from roots | Dump types and methods with Mono.Cecil, diff two levels; preserve with `link.xml`, `[Preserve]`, Require attributes [BD12]. See [Managed code stripping](../../unity-core/performance.md#managed-code-stripping) |
 | `Type.GetType` returns null in the player only | Type reached only through a non-constant name string | Preserve it; better, a Source Generator registry [BD12] |
 | `MissingMethodException: Default constructor not found` (DI resolve) | Type kept, constructor used only by reflection removed | Preserve the constructor or use source-generated injection [BD13, BD16] |
-| `The referenced script (X) on this Behaviour is missing!` from AssetBundle content, any level | Types used only by bundle content are not roots | `link.xml`, the Addressables-generated `link.xml`, or `IUnityLinkerProcessor` [BD14] |
+| `The referenced script (X) on this Behaviour is missing!` from content loaded at runtime, any level | Types used only by that content are not roots | Load through Content Directory groups; for content loaded another way, `link.xml` or `IUnityLinkerProcessor` [BD14] |
 | `[Preserve]` added, reflection call still fails | On a type it keeps the default constructor; on a method, that method only | Mark both type and method; `[RequireImplementors]` or `[RequireDerived]` for patterns [BD16] |
 | Android Link Time Optimization setting has no effect | Falls back to None unless IL2CPP, Strip Engine Code off, non-Development | Grep `LinkTimeOptimization` in `Library/Bee/Player*-inputdata.json` [BD11] |
 | CPU A/B of a few percent lost in noise | Session clock frequency drifts about 5% | Android: compare cycles from `/proc/<pid>/task/*/time_in_state`; reinstall each session |

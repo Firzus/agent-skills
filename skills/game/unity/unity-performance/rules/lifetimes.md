@@ -44,7 +44,7 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Check: `\.(LoadAssetAsync|LoadAssetsAsync|LoadResourceLocationsAsync)\b|(?<!Object)\.InstantiateAsync\b|(?<!SceneManager)\.LoadSceneAsync\b|\bAssetBundle\.LoadFrom\w*\(`
 - Reason: Loads scattered through feature code each own their release, so missed releases leave assets resident. Hits inside the project loader itself are expected.
 - Fix: Load through the project loader with the lifetime declared at the call site, or await with `ToAwaitable(destroyCancellationToken)` so cancellation releases the handle. See [assets.md](../../unity-core/assets.md#addressables).
-- Source: [Lifetime management of AssetBundles](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
+- Source: [Unity Performance Tuning Tips 2026, chapter III.1](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
 
 ### LT05 Loader API without a declared lifetime
 - Level: Warning
@@ -55,7 +55,7 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Check: MANUAL
 - Reason: When a load does not fix its lifetime, release depends on each caller remembering it, and assets stay resident.
 - Fix: Make every load take a lifetime (session, scene, screen or dialog, or a game-defined period), as a parameter or one method per lifetime, and release everything registered to a lifetime when it ends. See [assets.md](../../unity-core/assets.md#addressables).
-- Source: [Lifetime management of AssetBundles](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
+- Source: [Unity Performance Tuning Tips 2026, chapter III.1](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
 
 ### LT06 Load that completes after its lifetime ended
 - Level: Warning
@@ -66,7 +66,7 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Check: MANUAL
 - Reason: An async load still in flight when its screen or scene ends returns a handle nobody releases. An asset shared by several lifetimes needs a reference count.
 - Fix: Track each load from its start, and cancel it or release the result on completion when its lifetime has ended; release shared assets on the last user. See [assets.md](../../unity-core/assets.md#addressables).
-- Source: [Lifetime management of AssetBundles](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
+- Source: [Unity Performance Tuning Tips 2026, chapter III.1](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
 
 ### LT07 Lifetime scope component that accepts handles after destroy
 - Level: Warning
@@ -77,7 +77,7 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Check: MANUAL
 - Reason: A component that releases its handles in `OnDestroy` leaks any handle added later by a load that completes after the destroy.
 - Fix: Set a released flag in `OnDestroy` and dispose handles added after it at once; use one scope component per screen or dialog, not one per asset. See [assets.md](../../unity-core/assets.md#addressables).
-- Source: [Lifetime management of AssetBundles](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
+- Source: [Unity Performance Tuning Tips 2026, chapter III.1](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
 
 ### LT08 Awaitable wait without a cancellation token
 - Level: Warning

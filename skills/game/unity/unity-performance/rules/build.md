@@ -143,15 +143,15 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Fix: Preserve constructors of registered types, or switch the container to source-generated injection. See [performance.md](../../unity-core/performance.md#managed-code-stripping).
 - Source: [Unity Performance Tuning Tips 2026: Managed Code Stripping](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/mukai-yuichiro-2.html)
 
-### BD14 AssetBundle loaded outside Addressables
+### BD14 Content loaded outside Addressables
 - Level: Critical
 - Scope: any
 - When: -
 - Files: *.cs
 - Code: runtime
 - Check: `AssetBundle\.LoadFrom\w*\(`
-- Reason: Bundles built separately are not stripping roots, so a type only their content uses is removed. A Timeline asset in a bundle the player never referenced failed to load with "The referenced script (UnityEngine.Timeline.TimelineAsset) on this Behaviour is missing!", at Minimal and at High alike, so no stripping level fixes it.
-- Fix: Load through Addressables, whose content build generates the matching `link.xml`; otherwise preserve those assemblies in `link.xml` or from an `IUnityLinkerProcessor`. See [performance.md](../../unity-core/performance.md#managed-code-stripping).
+- Reason: Content built and loaded outside Addressables is not a stripping root, so a type only that content uses is removed. A Timeline asset in such content, never referenced by the player, failed to load with "The referenced script (UnityEngine.Timeline.TimelineAsset) on this Behaviour is missing!", at Minimal and at High alike, so no stripping level fixes it.
+- Fix: Load through Addressables Content Directory groups, whose build records the types their content uses for player stripping. For content a project system loads another way, such as post-install content, preserve those assemblies in `link.xml` or from an `IUnityLinkerProcessor`. See [performance.md](../../unity-core/performance.md#managed-code-stripping).
 - Source: [Unity Performance Tuning Tips 2026: Managed Code Stripping](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/mukai-yuichiro-2.html)
 
 ### BD15 Whole assembly preserved in link.xml
