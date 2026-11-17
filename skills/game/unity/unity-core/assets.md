@@ -8,6 +8,9 @@ validate the link.
 
 - Await a load through `ToAwaitable(destroyCancellationToken)`: cancelling the token releases the handle, so a load scoped to its component needs no manual release.
 - Release every other handle you load (`Addressables.Release`). Reference counting only frees memory when loads and releases pair up.
+- Decide each load's lifetime at the call site: the session, the scene, a screen or dialog, or a period the game defines such as a battle. Route loads through one project loader that takes that lifetime and releases everything registered to it when the lifetime ends; destroying a GameObject releases nothing it loaded. A load that completes after its lifetime ended is released on completion. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-2.html)
+- Group assets that share a lifetime in the same group: one bundle holding two lifetimes cannot unload half of itself.
+- Check releases with Memory Profiler snapshots before and after the same transition, repeated several times on a player build: assets or handles that keep growing are the leak. An asset that stays is not one by itself; read its referrers first.
 
 Pick each group's schema from how its content reaches the player:
 
@@ -26,6 +29,7 @@ built twice.
 - Break circular references between assets: a cycle loads as one unit, logs a warning, and fails the build beyond 64 MB (`circularrefs.json` lists the cycles).
 - Keep an asset in one place: referencing it from both built-in scene data and an Addressables group duplicates it on disk and in memory.
 - Enable **Extract TypeTree Data** on new projects to shrink AssetBundles. It rewrites every bundle, so it is a project-start decision.
+- In AssetBundle groups, register every asset that two groups reference in a group of its own. An unregistered dependency is copied into each bundle that references it. Find them with Addressables Analyze before each release, and review the group layout its fix proposes before applying it. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/zaitsu-hiromu-1.html)
 
 ### Native Content Directories and `Loadable<T>`
 
@@ -60,7 +64,8 @@ asset is available from `AfterAssembliesLoaded`.
 ## Import settings
 
 - Enforce imports with **Presets plus folder-based preset rules** (or an `AssetPostprocessor`), committed to version control, so texture, audio, and mesh settings are deterministic across the team rather than drifting per developer.
-- Set platform-correct texture compression — ASTC on mobile, BC on desktop and console.
+- Back import rules with a check before each build (an edit-mode test or a CI step) on maximum texture size, compression, and mesh vertex count, and print the measured values in the build log. Assets that arrive with an existing `.meta` skip import-time defaults, and an over-budget asset nobody sees gets shipped. The [`unity-performance`](../unity-performance/SKILL.md) Editor audit reads these values.
+- Set platform-correct texture compression — ASTC on mobile, BC on desktop.
 - Leave Read/Write off on meshes and textures unless the CPU genuinely reads them. Enable it on meshes used by a Particle System Shape, Terrain Detail Mesh, or Mesh Collider; Unity does not enable it during the build, and a missing required flag fails the build.
 - Match audio load types to use: streaming for music and long ambiences, compressed-in-memory for mid-length clips, decompress-on-load for short frequent SFX. Force mono where stereo adds nothing.
 - A dependent asset reimports only when its dependency's *result* changes. In custom importers, declare `DependsOnSourceAsset` and `DependsOnArtifact` so the reimports you do need still fire.

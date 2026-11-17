@@ -55,6 +55,7 @@
         "./skills/game/unity/unity-core",
         "./skills/game/unity/unity-editor-tools",
         "./skills/game/unity/unity-multiplayer",
+        "./skills/game/unity/unity-performance",
         "./skills/game/unity/unity-play",
         "./skills/game/unity/unity-rendering",
         "./skills/game/unity/unity-ui"

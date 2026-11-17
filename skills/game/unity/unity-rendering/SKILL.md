@@ -4,8 +4,8 @@ description: >-
   Use when choosing or configuring a Unity render pipeline (URP, HDRP,
   Built-In), writing custom render passes with Render Graph, setting up
   lighting, light baking, Adaptive Probe Volumes, Surface Cache GI, the GPU
-  Resident Drawer, occlusion culling, or shaders, or investigating GPU
-  rendering performance.
+  Resident Drawer, occlusion culling, shaders, shader warmup, or per-device
+  quality tiers, or investigating GPU rendering performance.
 ---
 
 # Rendering: pipeline, lighting, GPU-driven drawing
@@ -13,8 +13,8 @@ description: >-
 Load the [`unity-core`](../unity-core/SKILL.md) skill with this one: its default
 stack and review pass apply here.
 
-URP is Unity's render pipeline, on every target from mobile to high-end PC
-and console. Unity's rendering work lands there: Surface Cache GI, Screen Space
+URP is Unity's render pipeline, on every target from mobile to high-end PC.
+Unity's rendering work lands there: Surface Cache GI, Screen Space
 Reflections, GTAO, and URP's lighting additions.
 
 Set the pipeline at project start. Pipelines are not interchangeable
@@ -29,6 +29,10 @@ path. Reset pooled pass data through `IRenderGraphPassData.Reset`, and read
 texture orientation with `GetTextureUVOrigin` rather than assuming it. Read
 pass merging on player builds with the on-device **Render Graph Viewer**,
 which jumps from a pass to its source.
+
+Before writing or reviewing a pass, read [render-graph.md](./render-graph.md):
+attachment declarations that keep mobile GPUs in tile memory, when an unsafe
+pass is justified, and how a final custom pass skips URP's extra blit.
 
 ## Lighting
 
@@ -93,19 +97,45 @@ interactive lightmap preview, so judge a bake from its result.
 - Cull occlusion with **GPU occlusion culling**, which runs through GRD; no baked occlusion data is authored.
 - Re-profile after enabling GRD. It shifts load to the GPU, so GPU-bound low-end mobile can lose from it; that measurement decides, not the default.
 - Keep shaders and materials SRP Batcher-compatible (per-material CBUFFER layout), and use GPU instancing for repeated meshes GRD does not cover.
-- Vary per-instance data through **per-renderer shader user value**: `SetShaderUserValue` with `unity_RendererUserValue` feeds colour or atlas index through one material while staying GRD-compatible. `MaterialPropertyBlock` silently drops objects out of the SRP Batcher and GRD paths.
+- Vary per-instance data through **per-renderer shader user value**: `SetShaderUserValue` with `unity_RendererUserValue` feeds colour or atlas index through one material while staying GRD-compatible. `MaterialPropertyBlock` silently drops objects out of the SRP Batcher and GRD paths. Duplicated materials cost memory and a full upload on every change: on an iPhone 12, 10,000 renderers with their own material ran at 8 FPS when edited every frame, against 60 FPS with the user value. Past 32 bits, store records in a structured `GraphicsBuffer` set globally and pass each renderer's index through the user value. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/seto-noboru-1.html)
 - The **Rendering Statistics** window breaks down SRP Batcher, GRD, BatchRendererGroup, and instancing.
 
 ## Shaders
 
 - Author in Shader Graph or URP HLSL. Shader Graph sets stencil and depth overrides per material and targets Light 2D, Shadow 2D, and UI Toolkit filters.
 - Configure shader compilation per Build Profile in its Graphics settings: **Fast Build** turns keywords into dynamic branching for iteration builds, and DXC is selectable for Direct3D 12 (FXC remains its default).
+- Count transcendental functions (`sin`, `cos`, `tan`, `asin`, `acos`, `atan`, `exp`, `pow`, `log`) in mobile fragment shaders: each expands into many instructions and raises register pressure, and `tan` and `atan` cost the most. In a hot loop with a bounded input, replace `sin` with the parabola `(4/π)x − (4/π²)x·|x|` (valid for |x| ≤ π, error about 0.06) and `tan` with the Padé form `x(15 − x²)/(15 − 6x²)` (valid for |x| < π/2). Measured savings ranged from about 6% to 50% depending on the device. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/nagatome-ryouhei-1.html)
+- Keep global values out of the `UnityPerMaterial` constant buffer, which must stay identical across a shader's materials for the SRP Batcher.
+
+### Shader warmup
+
+The first draw of a shader variant in a new render state compiles a pipeline
+state object (PSO) in the driver, tens of milliseconds each on Vulkan and Metal.
+`ShaderVariantCollection` cannot prevent it, since it records no render state.
+Warm up with **`GraphicsStateCollection`** (`UnityEngine.Rendering`).
+[Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/amano-takuro-1.html)
+
+- Trace on the target device and graphics API, once per Quality Level, since MSAA and HDR change the PSO: `BeginTrace`, render the content, `EndTrace`, `SaveToFile`. Script the trace (load each scene, spawn each model and effect, play each Timeline) rather than playing by hand, and retrace after shader or asset changes.
+- At runtime, load the collection matching the current Quality Level after the shaders it references are loaded, and spread the work with `WarmUpProgressively(count)` across loading frames; `WarmUp` does it all in one spike.
+- End the loop when the requested count reaches `totalGraphicsStateCount`, not on `isWarmedUp`, which a warmup error can leave false forever.
+- Read the warmup log: `variant not found` means stripping removed the variant; a platform, graphics API, or Quality Level mismatch warning means the collection was traced elsewhere, and only a retrace on the target fixes it.
+- On iOS, put shaders in a group of their own: a shader packed into several AssetBundles exists as several instances, and the warmup covers only the one the collection names.
+- Hitches that persist show in the Profiler as `Shader.CreateGPUProgram` on the main thread, or as `GpuProgramMetal.GetCachedPipeline` (iOS) and `CreateGraphicsPipelineImpl` (Android) on the render thread.
+
+## Device tiers
+
+One rendering configuration for every phone crashes or overheats the low end and
+wastes the high end. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/sakuma-naoki-1.html)
+
+- Make each tier a Quality Level bound to its own URP asset, and switch with `QualitySettings.SetQualityLevel`. Set individual URP fields (`renderScale`, shadow cascades, shadow resolution, additional lights) at runtime only for player-facing options.
+- Tier iOS devices by `SystemInfo.deviceModel` and `graphicsDeviceName`, which follow consistent naming. Tier Android devices by `SystemInfo.systemMemorySize`, a table of known models, or a startup benchmark; model strings do not compare across vendors.
+- Give every custom renderer feature a low-tier path: smaller or lower-precision temporary targets, fewer blits, a cheaper shader variant.
 
 ## Platform and performance levers
 
 - **Mesh LOD** generates LODs at import into a single mesh: less memory than external LOD tools, and compatible with Entities Graphics. Particle Systems, VFX Graph, and static batching always draw LOD0.
 - **On-tile post-processing** with Tile-Only Mode runs colour grading, tonemapping, vignette, dithering, and film grain in one GPU-tile pass with no system-memory readback, on the forward and deferred renderers. It requires URP's integrated post-processing disabled. Large bandwidth and thermal wins on Vulkan and Metal.
-- Upscale through URP's **Upscaler Priority List** when rendering below native resolution: DLSS on NVIDIA GPUs, FSR on AMD GPUs, the platform's own upscaler on console, and **STP** (Spatial-Temporal Post-Processing) everywhere else and as the fallback. Unity announced DLSS 4.5 and FSR for URP, but the Editor exposes only STP and FSR1: ship STP until a release lists the others, and do not unlock them through hidden scripting defines.
+- Upscale through URP's **Upscaler Priority List** when rendering below native resolution: DLSS on NVIDIA GPUs, FSR on AMD GPUs, and **STP** (Spatial-Temporal Post-Processing) everywhere else and as the fallback. Unity announced DLSS 4.5 and FSR for URP, but the Editor exposes only STP and FSR1: ship STP until a release lists the others, and do not unlock them through hidden scripting defines.
 - **WebGPU** unlocks GRD, GPU occlusion culling, STP, VFX Graph, APV, and compute skinning on the Web. Choose it when a Web build needs those: disable Auto Graphics API and order WebGPU above WebGL2, which stays the default; the page must be served over HTTPS.
-- **DirectStorage** (PC and Xbox) cuts load times for textures, meshes, and ECS data on NVMe. The Windows `AsyncReadManager` rewrite extends that to custom reads.
-- Target **ASTC** on mobile and **BC** on desktop and console.
+- **DirectStorage** (Windows) cuts load times for textures, meshes, and ECS data on NVMe. The Windows `AsyncReadManager` rewrite extends that to custom reads.
+- Target **ASTC** on mobile and **BC** on desktop.

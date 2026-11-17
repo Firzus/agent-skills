@@ -43,7 +43,7 @@ ducking, exposed parameters — covers most game mixing.
 ## CI and builds
 
 - Build on every PR (GameCI `unity-builder` on GitHub Actions, or Unity Build Automation), caching `Library/` and the Bee cache (`BEE_CACHE_DIRECTORY`) — that cache is the difference between a ten-minute and a ninety-minute build.
-- Ship releases with **IL2CPP**: the only backend on mobile, consoles, and the Web, faster, and harder to reverse. Configure `link.xml` or `[Preserve]` for reflection-reached code so stripping keeps it. Desktop development builds can use the CoreCLR player for faster iteration.
+- Ship desktop releases on the **CoreCLR** player, and Android, iOS, and Web releases with **IL2CPP**, their only backend. Wherever managed stripping runs, preserve reflection-reached code so stripping keeps it, as [performance.md](./performance.md#managed-code-stripping) describes.
 - Run IL2CPP jobs on runners matching the target OS, since it needs that platform's native toolchain.
 - Configure per-target settings, defines, scene lists, and output paths (Build Destination Override) in **Build Profiles**. Script them with `BuildProfile.CreateBuildProfile`, which auto-installs platform packages for reproducible CI setup; its `onProfileReady` callback must be static or live on a serialized `UnityEngine.Object`, because the package install reloads code. Pass per-build extra defines through `BuildPlayerWithProfileOptions`.
 - Manage conditional compilation through asmdef Define Constraints and build profiles, keeping `#if` blocks out of gameplay code as a feature-flag system.
@@ -56,7 +56,7 @@ Build hosts and targets:
 | Area | Requirement |
 | --- | --- |
 | Editor hosts | Windows 10 21H1, macOS 13 on Apple silicon, Ubuntu 22.04 (the build backend needs glibc 2.35) |
-| Apple targets | iOS and tvOS 16 with Xcode 26; arm64 devices and Apple silicon simulators |
+| Apple targets | iOS 16 with Xcode 26; arm64 devices and Apple silicon simulators |
 | Android | API 26, ARMv7 or ARM64, OpenGL ES 3.1 or Vulkan (the default for new projects), AGP 9.1 |
 | Web | WebAssembly 2023 (Emscripten 4) by default |
 

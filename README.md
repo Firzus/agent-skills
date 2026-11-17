@@ -160,6 +160,7 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Cloudflare operations | The `cf` CLI from the npm package `cf` (open beta) and a Cloudflare account; the skill proposes the global install and waits for approval |
 | Video reports | FFmpeg and access to the application being recorded |
 | Agent play in Unity | The Unity CLI with `com.unity.pipeline` in the project, the Input System active, Python 3, and a host that can run the skill's play model as a subagent; FFmpeg to film a session |
+| Unity performance review | Python 3.11 or later and Git; the Unity CLI with `com.unity.pipeline` in the project to audit import and project settings |
 | Runbooks | Bash to run them (Git Bash on Windows); an authenticated GitHub CLI to set secrets and variables, otherwise the runbook lists them to set by hand |
 | YouTube transcription | Available captions, or the audio/transcription tools required by the selected route |
 | Image generation | An authenticated Codex CLI setup with the image-generation capability described by the skill |
@@ -271,6 +272,7 @@ the skill does not install the server: register its npm package, `reverse-engine
 | [unity-core](./skills/game/unity/unity-core/SKILL.md) | Choose the appropriate tools for Unity development tasks; the other Unity skills build on it. |
 | [unity-editor-tools](./skills/game/unity/unity-editor-tools/SKILL.md) | Build custom Unity Editor tools and inspectors. |
 | [unity-multiplayer](./skills/game/unity/unity-multiplayer/SKILL.md) | Add networking, sessions, and dedicated servers to a Unity game. |
+| [unity-performance](./skills/game/unity/unity-performance/SKILL.md) | Review a Unity diff or folder for performance problems. |
 | [unity-play](./skills/game/unity/unity-play/SKILL.md) | Let an agent play your Unity game in the Editor, turn by turn. |
 | [unity-rendering](./skills/game/unity/unity-rendering/SKILL.md) | Configure URP, lighting, and GPU-driven rendering in Unity. |
 | [unity-ui](./skills/game/unity/unity-ui/SKILL.md) | Build runtime UI with Unity UI Toolkit. |

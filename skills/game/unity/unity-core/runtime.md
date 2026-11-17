@@ -1,10 +1,10 @@
 # Runtime: CoreCLR, static state, serialization, identity
 
 Unity runs the Editor and the desktop players (Windows, macOS on Apple
-silicon, Linux) on **CoreCLR**; CoreCLR is the default there. Every other
-platform builds with **IL2CPP**, which also stays the release target on
-desktop. IL2CPP builds use the .NET 10 class libraries on Windows, macOS,
-Linux, and iOS, with the remaining platforms following, and keep the Boehm GC.
+silicon, Linux) on **CoreCLR**; CoreCLR is the default there and the release
+target. Android, iOS, and the Web build with **IL2CPP**, which uses the .NET 10
+class libraries on iOS, with Android and the Web following, and keeps the
+Boehm GC.
 
 ## Static state
 
