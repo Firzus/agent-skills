@@ -17,6 +17,10 @@ UI Toolkit is the UI system: menus, HUD, data-heavy screens, and world-space.
 It is retained-mode, renders textureless through a dynamic atlas, and receives
 Unity's UI investment.
 
+Where a project still carries UGUI, keep each screen in one system. UGUI and
+UI Toolkit share no sort order, neither embeds the other, and UI composited
+through a render texture receives no input.
+
 ## Animated UI
 
 Animate state changes with **USS transitions**, and anything keyframed with

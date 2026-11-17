@@ -36,6 +36,7 @@ decouple systems without singletons. They are assets: see
 - `WaitForSecondsAsync` follows `Time.timeScale`, so a paused game pauses the wait — game-time behavior that `Task.Delay`, on wall-clock time, never gives.
 - Pass a `CancellationToken` on every call — `destroyCancellationToken` scopes the work to its component, so a destroyed object cancels its own pending work.
 - Await each `Awaitable` instance once. Instances return to a pool after awaiting, so a stored one is a use-after-free.
+- Dispose every `CancellationTokenSource` you create: `using var` for one scoped to a method, including every `CreateLinkedTokenSource` result; for one held in a field, dispose the old instance before replacing it and dispose the last in `OnDestroy`. A linked source registers itself on each source token, so an undisposed one keeps short-lived objects reachable from a long-lived token. Dispose the `CancellationTokenRegistration` that `token.Register` returns the same way. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/inada-taketo-1.html)
 - Adopt **UniTask** where you need `WhenAll`/`WhenAny`, PlayerLoopTiming control, async LINQ, or leak tracking. It is the one supported step off this row.
 - Keep coroutines for trivial fire-and-forget sequencing. Raw .NET `Task` continues on the thread pool with no PlayerLoop awareness, which is why engine work stays on `Awaitable`.
 

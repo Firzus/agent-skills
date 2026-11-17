@@ -16,9 +16,10 @@ Ship on the **default stack** below. Each row names the one tool to reach for,
 so the choice is already made — spend the thinking on the feature instead.
 
 This skill describes the latest Unity version the team uses, and nothing
-older. The Editor and desktop players run on CoreCLR, every other platform on
-IL2CPP. Code targets C# 9 and .NET Standard 2.1 until Unity ships .NET 10 and
-C# 14; [runtime.md](./runtime.md) owns what the runtime changes for your code.
+older. The Editor and desktop players run on CoreCLR; Android, iOS, and the
+Web build with IL2CPP. Code targets C# 9 and .NET Standard 2.1 until Unity
+ships .NET 10 and C# 14; [runtime.md](./runtime.md) owns what the runtime
+changes for your code.
 
 For what a build actually ships, read its release notes and Unity's
 Discussions posts: the manual still carries pages written for earlier versions.
@@ -57,7 +58,7 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Build-time scene processing | **`AssetPostprocessor.OnProcessScene`** | `IProcessSceneWithReport`, `[PostProcessScene]` |
 | Tests | **Unity Test Framework**, edit-mode first | play-mode by default |
 | Tests while the Editor is open | **`unity command run_tests`** — [unity-cli](../unity-cli/iteration.md) | closing the Editor for `unity test` |
-| Release builds | **IL2CPP** | the CoreCLR player in shipping builds |
+| Release builds | **CoreCLR** on desktop; **IL2CPP** on Android, iOS, and the Web | IL2CPP on desktop |
 | Driving the Editor from an agent | **Unity CLI** — [unity-cli](../unity-cli/SKILL.md) | asking the user to click through the Editor |
 
 Leave a default only where the linked reference gives that row an escape hatch.
@@ -73,6 +74,7 @@ Say which row you left and what made it worth leaving.
 | Folder layout, naming, GUID-safe renames | [project-structure.md](./project-structure.md) |
 | Addressables, Content Directories, import settings, scenes, prefabs | [assets.md](./assets.md) |
 | Input, audio, version control, CI, builds, testing | [workflow.md](./workflow.md) |
+| Device measurement, character animation, particles, managed code stripping, Android LTO, iOS memory limits | [performance.md](./performance.md) |
 
 ## Domain skills
 
@@ -89,6 +91,7 @@ installed, say which one is missing and work from the rows above.
 | Netcode, authority, sessions, dedicated server | [unity-multiplayer](../unity-multiplayer/SKILL.md) |
 | Unity CLI, driving the Editor from an agent, iterating while the user tests in the Editor | [unity-cli](../unity-cli/SKILL.md) |
 | An agent playing the game in Play Mode, reproducing a gameplay bug by playing | [unity-play](../unity-play/SKILL.md) |
+| Performance review of a diff or folder: rule scan of code, Editor audit of assets and settings | [unity-performance](../unity-performance/SKILL.md) |
 
 For engine-agnostic replication theory, use `coop-session`.
 
@@ -106,9 +109,11 @@ pattern, since copy-paste propagates a mistake as reliably as a convention.
 ```
 - [ ] Statics reset through `[AutoStaticsCleanup]` or a lifecycle hook, so entering Play Mode twice behaves identically
 - [ ] Every Awaitable carries a CancellationToken scoped to its component
+- [ ] Every CancellationTokenSource this change creates, linked ones included, is disposed by its owner
 - [ ] Assets load through Addressables, and every handle is released or bound to a lifetime token
 - [ ] Update() free of allocation, GetComponent, Find*, and LINQ
 - [ ] Runtime spawns come from a pool
+- [ ] No runtime ParticleSystem.Simulate fast-forwards a Noise system by seconds
 - [ ] Object identity flows through EntityId
 - [ ] Player-facing strings come from Localization tables
 - [ ] [SerializeField] on fields only ([field: SerializeField] for properties)
