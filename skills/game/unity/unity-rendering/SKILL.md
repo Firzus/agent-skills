@@ -85,7 +85,7 @@ build invisible light sources, and how to debug it.
 
 ### Screen-space effects
 
-- **SSR** needs both its renderer feature on the URP Renderer and its Volume override. It reflects only what is on screen and falls back to Reflection Probes and the skybox, without ray tracing. On low-end tiers use Linear marching: Hierarchical builds a depth pyramid that costs more there.
+- **SSR** needs both its renderer feature on the URP Renderer and its Volume override. It reflects only what is on screen and falls back to Reflection Probes and the skybox, without ray tracing. On low-end tiers use Linear marching: Hierarchical builds a depth pyramid and may cost more there, so the Fastest and Balanced presets use Linear.
 - **GTAO** is a mode of URP's SSAO, configured in the SSAO Volume override; the settings on the SSAO renderer feature are deprecated. **Use Compute Shader** unlocks the temporal filter (which also needs motion vectors), the spatial filter, and custom direction and step counts. **Depth Sampling → Depth Pyramid** is a separate setting: it needs compute support and falls back to camera depth without it or under non-uniform foveated rendering.
 - Tonemap with Neutral, ACES, or **AgX**, which adds Contrast and Mid Gray controls for SDR and HDR output.
 
@@ -115,7 +115,7 @@ interactive lightmap preview, so judge a bake from its result.
 - Re-profile after enabling GRD. It shifts load to the GPU, so GPU-bound low-end mobile can lose from it; that measurement decides, not the default.
 - Keep shaders and materials SRP Batcher-compatible (per-material CBUFFER layout), and use GPU instancing for repeated meshes GRD does not cover.
 - Vary per-instance data through **per-renderer shader user value**: `SetShaderUserValue` with `unity_RendererUserValue` feeds colour or atlas index through one material while staying GRD-compatible. `MaterialPropertyBlock` silently drops objects out of the SRP Batcher and GRD paths. Duplicated materials cost memory and a full upload on every change: on an iPhone 12, 10,000 renderers with their own material ran at 8 FPS when edited every frame, against 60 FPS with the user value. Past 32 bits, store records in a structured `GraphicsBuffer` set globally and pass each renderer's index through the user value. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/seto-noboru-1.html)
-- Give an SCGI emitter whose emission changes at runtime its own material: SCGI reads material values only, not the user value or a `MaterialPropertyBlock` ([surface-cache-gi.md](./surface-cache-gi.md#author-materials-and-shaders)).
+- Give a renderer that contributes to SCGI its own material when its albedo or emission must differ from the shared one: SCGI reads both from the material only, not the user value or a `MaterialPropertyBlock`, so that variation does not bounce ([surface-cache-gi.md](./surface-cache-gi.md#author-materials-and-shaders)).
 - The **Rendering Statistics** window breaks down SRP Batcher, GRD, BatchRendererGroup, and instancing.
 
 ## Shaders
