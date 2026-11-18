@@ -86,6 +86,9 @@ for behaviour that genuinely needs the player loop, physics, or scene lifecycle.
 - Declare `com.unity.test-framework` explicitly in the manifest rather than relying on another package to pull it in.
 - Keep production code in custom asmdefs. Test assemblies cannot reference `Assembly-CSharp`, which is the single most common reason a codebase "can't be tested".
 - Write `[Test]` unless the case must skip frames, which is what `[UnityTest]` is for.
+- Write a fixture's assets once in `[OneTimeSetUp]` and import them in a single refresh: write the files, then import them between `AssetDatabase.StartAssetEditing()` and `StopAssetEditing()` (in a `finally`), and remove them with one `AssetDatabase.DeleteAssets` call. Each refresh scans the whole project, so in an edit-mode suite that creates assets, refreshes rather than assertions take most of the time, and imported third-party packages make every one slower.
+- In a `[UnityTest]` waiting on `EditorApplication.delayCall`, register a callback of your own and yield until it has run. A count of `yield return null` is no substitute: in a batch-mode Editor the test can resume hundreds of times before delayed calls run, so such a test passes or fails with the machine's speed.
+- The Test Framework runs tests one after another in a single Editor and ignores NUnit's `[Parallelizable]`. Running a suite in parallel takes one Editor per copy of the project, as [unity-cli](../unity-cli/SKILL.md#split-a-long-suite-across-editors) describes.
 - Run tests headless in CI on every PR (`-runTests`, GameCI test-runner) and gate merges on them.
 - Automate UI Toolkit interaction tests with the **UI Test Framework** — clicks, keyboard, and scroll against UXML — which closes the coverage gap on presenters and views.
 - Keep play-mode tests deterministic with fixed seeds, controlled `Time.timeScale`, and scene fixtures, so CI results mean something.
