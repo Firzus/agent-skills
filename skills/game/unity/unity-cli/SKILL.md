@@ -111,6 +111,32 @@ the running Editor. Follow it with `build_status` until completion and inspect
 the full BuildReport; submission alone is not success. Discover their schemas
 with `unity list --json` before invoking them.
 
+### Split a long suite across Editors
+
+A project accepts one Editor at a time, so a parallel run gives each Editor its
+own copy of the project. Copy everything but `.git`, `Temp` and `Logs`: a copied
+`Library` spares the full reimport, and later runs only refresh the changed
+files. Leave out a copy's imported third-party packages only when no test
+depends on them, and confirm it with a full run on that copy.
+
+Then hand each copy part of the suite through `--filter`. Check on the installed
+CLI before relying on `--shard`: as of CLI 1.0.0 it sends every test name as its
+own filter, and the Test Framework's filtering time grows with the filters'
+total length, so on a suite of thousands of tests the shards spend minutes
+before running a test. Build the groups from the previous run's report instead:
+
+- Balance groups by the recorded durations of whole fixtures, not test counts.
+- Give each group one short regex over full names, such as a namespace and
+  class-name prefixes, rather than a list of every test.
+- The filter is matched against suite names too, and a match on an assembly or
+  namespace suite selects every test below it. Exclude those names from each
+  regex.
+- Verify the split from the reports: every test of the full run appears in
+  exactly one shard.
+
+Gains flatten past a machine-dependent number of Editors; time two counts
+before settling on one.
+
 ## Connect to a running Editor
 
 Live Editor access requires `com.unity.pipeline`. Check the CLI version,
