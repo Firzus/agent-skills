@@ -7,7 +7,7 @@ skill. Facts here come from URP 17.7.
 
 ## Tune and tier it
 
-The **Surface Cache Global Illumination** Volume override holds every setting.
+The **Surface Cache Global Illumination** Volume override holds every setting except **Focus Target**, the GameObject the cascades center on (the active camera when unset), which the Volume component stores rather than its profile.
 
 - Pick a **Quality** preset (Low, Medium, High, Ultra), which writes and overrides its values, then adjust. A new override shows Custom although its unoverridden values match Medium; changing or unticking a preset value turns it back to Custom.
 - **State → Disabled** leaves opaque surfaces with no indirect light, with no fallback to baked lighting on devices that can run SCGI. It discards the camera's cache, and once no camera runs SCGI the SCGI world too, so enabling it again rebuilds the world and warms up the cache. To hide SCGI briefly, set **Intensity** to 0, which keeps the cache warm. Intensity and the Rendering Layer Mask below show only with Show Additional Properties.

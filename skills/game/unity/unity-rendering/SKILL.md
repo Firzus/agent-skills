@@ -72,9 +72,9 @@ day/night cycles. It is public from URP 17.7 (Unity 6.7).
 
 - Set Project Settings → Graphics → **Default Mesh Buffer Target → Raw**, and turn **Static Batching** off in Player Settings for every target that uses SCGI. With either one wrong, the Editor logs an error and the feature does not run: the scene falls back to its baked and ambient lighting, only the ambient probe once the bake is off. A player build checks neither.
 - Add the **Surface Cache Global Illumination** renderer feature to the URP Renderer. It runs with its defaults even without a Volume override; add the **Surface Cache Global Illumination** override only to tune it.
-- SCGI replaces baked global illumination instead of adding to it, so a bake is wasted on every tier that runs it. When every tier runs SCGI, give its scenes a Lighting Settings asset with Baked Global Illumination and Realtime Global Illumination (Enlighten) off; a scene that also ships to a tier without SCGI keeps its bake for that tier.
+- SCGI replaces baked global illumination instead of adding to it, so a bake is wasted on every tier that runs it. When every tier runs SCGI, give its scenes a Lighting Settings asset with Baked Global Illumination and Realtime Global Illumination (Enlighten) off. A scene that also ships to a tier without SCGI keeps its bake for that tier, but the Mixed and Baked lights that bake stores add no SCGI bounce ([surface-cache-gi.md](./surface-cache-gi.md#control-what-contributes)): give the SCGI tier its own Realtime lights, and enable only the current tier's set when the scene loads.
 - SCGI covers **diffuse indirect only**. Pair it with Reflection Probes or SSR for specular, or the scene reads flat.
-- SCGI uses hardware ray tracing where Unity supports it and a compute path elsewhere. Metal and Vulkan run the compute path, and Unity has not committed to a mobile minimum spec: measure on the weakest target device. A build fails when a renderer it includes uses SCGI on a target that does not support it.
+- SCGI uses hardware ray tracing where Unity supports it and a compute path elsewhere. Metal and Vulkan run the compute path, and Unity has not committed to a mobile minimum spec: measure on the weakest target device. A build fails when a renderer it includes uses SCGI on a target that does not support it, but the check covers only the active build target: switch to the target before a scripted build.
 - Keep baked lighting on scenes that do not change: baking wins on quality and cost where nothing moves.
 - Measure temporal noise, light-response latency, artifacts, and memory on target hardware before committing a production scene to it.
 
@@ -86,7 +86,7 @@ build invisible light sources, and how to debug it.
 ### Screen-space effects
 
 - **SSR** needs both its renderer feature on the URP Renderer and its Volume override. It reflects only what is on screen and falls back to Reflection Probes and the skybox, without ray tracing. On low-end tiers use Linear marching: Hierarchical builds a depth pyramid that costs more there.
-- **GTAO** is a mode of URP's SSAO, configured in the SSAO Volume override; the settings on the SSAO renderer feature are deprecated. **Use Compute Shader** unlocks the temporal filter (which also needs motion vectors), the spatial filter, and custom direction and step counts. **Depth Sampling → Depth Pyramid** is a separate setting that needs only compute support on the platform.
+- **GTAO** is a mode of URP's SSAO, configured in the SSAO Volume override; the settings on the SSAO renderer feature are deprecated. **Use Compute Shader** unlocks the temporal filter (which also needs motion vectors), the spatial filter, and custom direction and step counts. **Depth Sampling → Depth Pyramid** is a separate setting: it needs compute support and falls back to camera depth without it or under non-uniform foveated rendering.
 - Tonemap with Neutral, ACES, or **AgX**, which adds Contrast and Mid Gray controls for SDR and HDR output.
 
 ### Shadow depth bias
@@ -97,7 +97,7 @@ URP 17.7 adds a project-wide **Depth Bias Mode** (Project Settings → Graphics
 (Legacy)**.
 
 - Slope-Scale reads the Depth Bias of URP assets and lights as a 0 to 1 multiplier of a slope-scaled bias, while Legacy reads it as a fixed texel-scaled offset. Retune every bias value after switching modes.
-- In a custom shadow pass, get the bias from `ShadowUtils.GetSlopeScaleDepthBias` and pass it to the `ShadowUtils.RenderShadowSlice` overload that takes it. The deprecated overloads ignore the mode.
+- In a custom shadow pass, get the bias from `ShadowUtils.GetSlopeScaleDepthBias` and pass it to the `ShadowUtils.RenderShadowSlice` overload that takes it. The deprecated overloads apply the legacy fixed slope whatever the mode.
 
 ## Light baking
 

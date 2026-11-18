@@ -80,7 +80,7 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Code: runtime
 - Check: `new Material\s*\(|\.materials?\s*[.\[;]`
 - Reason: Reading `renderer.material` or creating a material per renderer duplicates it, and every edit uploads the whole material. On an iPhone 12 with 10,000 spheres (URP, SRP Batcher on), per-renderer materials took 15.79 MB against 1.66 KB for the shader user value, and ran at 11.1 FPS (8.1 with GPU Resident Drawer) when edited every frame, against 48.0 and 60.0.
-- Fix: Share one material and vary it with `SetShaderUserValue`. See [unity-rendering](../../unity-rendering/SKILL.md#gpu-driven-drawing).
+- Fix: Share one material and vary it with `SetShaderUserValue`, except on a Surface Cache GI emitter whose emission varies at runtime: SCGI ignores the user value, so that emitter keeps its own material. See [unity-rendering](../../unity-rendering/SKILL.md#gpu-driven-drawing).
 - Source: [Graphics optimization with Renderer Shader User Value](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/seto-noboru-1.html)
 
 ### RP10 MaterialPropertyBlock on SRP Batcher content
@@ -91,7 +91,7 @@ Adapted from CyberAgent's unity-perf-review (MIT); see [NOTICE](../NOTICE.md).
 - Code: runtime
 - Check: `\bMaterialPropertyBlock\b|SetPropertyBlock\s*\(`
 - Reason: A renderer with a property block drops out of the SRP Batcher and GPU Resident Drawer paths. In the same iPhone 12 test, property blocks ran at 28.9 FPS with static values and 26.1 FPS (25.2 with GPU Resident Drawer) with per-frame edits, against 49.9 and 48.0 FPS for the shader user value (59.8 and 60.0 with GPU Resident Drawer).
-- Fix: Replace the block with `SetShaderUserValue`, or a `GraphicsBuffer` index past 32 bits. See [unity-rendering](../../unity-rendering/SKILL.md#gpu-driven-drawing).
+- Fix: Replace the block with `SetShaderUserValue`, or a `GraphicsBuffer` index past 32 bits. On a Surface Cache GI emitter, SCGI ignores both the block and the user value: give it its own material. See [unity-rendering](../../unity-rendering/SKILL.md#gpu-driven-drawing).
 - Source: [Graphics optimization with Renderer Shader User Value](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/seto-noboru-1.html)
 
 ### RP11 GraphicsBuffer created on a hot path
