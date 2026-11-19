@@ -156,7 +156,6 @@ every action they can perform. Check the selected skill's prerequisites first.
 | Stack and engineering skills | The shared operating policy installed by [setup-harness](#personal-harness-instructions); these skills rely on it and repeat only its safety boundaries |
 | The stack | Git in the project; a Linear workspace the agent can read and write (for example through the Linear MCP server) for Issue-size and Project-size work; GitHub CLI or another way to open pull requests to ship |
 | Independent reviews and delegated research | An agent with subagent support |
-| Figma workflows | The Figma integration, account access, and approval for external writes |
 | Cloudflare operations | The `cf` CLI from the npm package `cf` (open beta) and a Cloudflare account; the skill proposes the global install and waits for approval |
 | Video reports | FFmpeg and access to the application being recorded |
 | Agent play in Unity | The Unity CLI with `com.unity.pipeline` in the project, the Input System active, Python 3, and a host that can run the skill's play model as a subagent; FFmpeg to film a session |
@@ -267,7 +266,6 @@ the skill does not install the server: register its npm package, `reverse-engine
 
 | Skill | Purpose |
 | --- | --- |
-| [figma-to-unity](./skills/game/unity/figma-to-unity/SKILL.md) | Implement Figma designs in Unity UI Toolkit. |
 | [unity-cli](./skills/game/unity/unity-cli/SKILL.md) | Drive the Unity Editor from an agent and iterate while you test in it. |
 | [unity-core](./skills/game/unity/unity-core/SKILL.md) | Choose the appropriate tools for Unity development tasks; the other Unity skills build on it. |
 | [unity-editor-tools](./skills/game/unity/unity-editor-tools/SKILL.md) | Build custom Unity Editor tools and inspectors. |

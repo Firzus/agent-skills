@@ -4,8 +4,8 @@ description: >-
   Use when building or reviewing Unity runtime UI with UI Toolkit: menus, HUD,
   world-space or diegetic UI, UXML, USS or translating CSS to USS, design
   tokens, data binding, MVP, text, localization, or UI performance, or when
-  weighing UGUI against UI Toolkit. For a Figma design use figma-to-unity; for
-  Editor authoring UI use unity-editor-tools.
+  weighing UGUI against UI Toolkit. For Editor authoring UI use
+  unity-editor-tools.
 ---
 
 # UI: UI Toolkit, USS versus CSS, design tokens, data binding, MVP, localization
@@ -34,10 +34,14 @@ component.
 
 ## Panel Renderer
 
-Panel Renderer binds a UXML document to a GameObject and is what makes
-world-space UI native. `UIDocument` remains valid for screen-space overlays.
+Panel Renderer binds a UXML document to a GameObject, in screen space and
+world space alike.
 
-- Add via `GameObject → UI Toolkit → Panel Renderer`; configure Panel Settings, Source Asset, Sort Order, and World-Space Dimensions.
+- Add via `GameObject → UI Toolkit → Panel Renderer`; configure Panel Settings, Source Asset, Sort Order, and World-Space Dimensions. A script-added component sets `visualTreeAsset`.
+- Reach the root through `RegisterUIReloadCallback`, registered in `Awake` and unregistered in `OnDestroy`. Query and wire elements in `OnUIReload(PanelRenderer renderer, VisualElement root, int version)`, and return early when `version` equals the last one handled: the version changes only on an actual reload, so the guard stops a repeated callback from wiring the same tree twice.
+- The tree is built during the panel update, after `Start` in the same frame: a query from `Start` finds nothing. Wait for the reload callback.
+- A disabled Panel Renderer keeps its elements and reuses them on enable: reset any state that must not survive a disable yourself.
+- A `VisualElementReference` cannot target an element of a Panel Renderer in another scene: Unity refuses the cross-scene reference and the field is empty after saving, so content scenes cannot reference UI held in a persistent scene. Clone the UXML yourself with `VisualTreeAsset.CloneTree(target, out table)`, find the element with `table.TryGetReference<T>(new AuthoringIdPath(...), out element)` from the `authoring-id` values written in the UXML (one per nesting level for an element inside a template instance), and call `table.ReleaseToPool()` once done, rather than reaching for internal APIs.
 - World-space needs `Render Mode → World Space` on the Panel Settings asset, plus Pixels Per Unit (100 by default).
 - Size modes: **Dynamic** derives size from explicitly sized content; **Fixed** takes a manual container size and suits content that flexes.
 - Interaction requires a Panel Input Configuration — event cameras, interaction layers, maximum interaction distance.

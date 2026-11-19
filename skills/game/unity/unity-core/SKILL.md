@@ -29,7 +29,7 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Need | Reach for | Instead of |
 | --- | --- | --- |
 | Any new UI | **UI Toolkit** — [unity-ui](../unity-ui/SKILL.md) | UGUI |
-| World-space / diegetic UI | **Panel Renderer** | UGUI world canvas, render texture |
+| UI Toolkit UI on screen or in the world | **Panel Renderer**, see [unity-ui](../unity-ui/SKILL.md#panel-renderer) | UGUI world canvas, render texture |
 | Text | **Advanced Text Generator** | hand-rolled layout |
 | Player-facing text in several languages | **Localization module** + Smart Strings, see [unity-ui](../unity-ui/SKILL.md#localization) | the Localization package, hand-rolled string tables |
 | Authoring UI for a custom tool | **UI Toolkit** — [unity-editor-tools](../unity-editor-tools/SKILL.md) | Odin, IMGUI, a node canvas |
@@ -85,7 +85,6 @@ installed, say which one is missing and work from the rows above.
 | Domain | Skill |
 | --- | --- |
 | UI Toolkit, USS versus CSS, design tokens, data binding, MVP, localization | [unity-ui](../unity-ui/SKILL.md) |
-| Figma designs as UI Toolkit interfaces | [figma-to-unity](../figma-to-unity/SKILL.md) |
 | Custom Editor tools, inspectors, `[SerializeReference]` | [unity-editor-tools](../unity-editor-tools/SKILL.md) |
 | Pipeline, lighting, GPU-driven rendering | [unity-rendering](../unity-rendering/SKILL.md) |
 | Netcode, authority, sessions, dedicated server | [unity-multiplayer](../unity-multiplayer/SKILL.md) |
