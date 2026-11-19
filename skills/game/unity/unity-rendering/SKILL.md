@@ -3,9 +3,10 @@ name: unity-rendering
 description: >-
   Use when choosing or configuring a Unity render pipeline (URP, HDRP,
   Built-In), writing custom render passes with Render Graph, setting up
-  lighting, light baking, Adaptive Probe Volumes, Surface Cache GI, the GPU
-  Resident Drawer, occlusion culling, shaders, shader warmup, or per-device
-  quality tiers, or investigating GPU rendering performance.
+  lighting, light baking, Adaptive Probe Volumes, Surface Cache GI, shadow
+  depth bias, the GPU Resident Drawer, occlusion culling, shaders, shader
+  warmup, or per-device quality tiers, or investigating GPU rendering
+  performance.
 ---
 
 # Rendering: pipeline, lighting, GPU-driven drawing
@@ -50,7 +51,7 @@ Pick the lighting model from how much the scene moves.
 APV places probes automatically from scene geometry and supplies baked indirect
 lighting to dynamic objects, characters, and static meshes that skip lightmaps.
 It is the default probe system for large URP scenes, and it stays supported for
-baked workflows alongside SCGI.
+baked workflows in scenes that do not use SCGI.
 
 - Enable it on the URP Asset: Lighting → Light Probe Lighting → Light Probe System → **Adaptive Probe Volumes**.
 - Add `GameObject → Light → Adaptive Probe Volume`, Global to cover the scene or Local for one area.
@@ -67,20 +68,36 @@ baked workflows alongside SCGI.
 
 SCGI is fully dynamic real-time global illumination for URP, with no baking.
 Indirect light responds to moving and destroyed geometry, changing lights, and
-day/night cycles. Unity publishes no maturity label for it yet.
+day/night cycles. It is public from URP 17.7 (Unity 6.7).
 
-- Set Project Settings → Graphics → **Default Mesh Buffer Target → Raw**; SCGI requires it.
-- SCGI uses hardware ray tracing where Unity supports it and a compute path elsewhere. Metal and Vulkan run the compute path, and Unity has not committed to a mobile minimum spec: measure on the weakest target device.
+- Set Project Settings → Graphics → **Default Mesh Buffer Target → Raw**, and turn **Static Batching** off in Player Settings for every target that uses SCGI. With either one wrong, the Editor logs an error and the feature does not run: the scene falls back to its baked and ambient lighting, only the ambient probe once the bake is off. A player build checks neither.
+- Add the **Surface Cache Global Illumination** renderer feature to the URP Renderer. It runs with its defaults even without a Volume override; add the **Surface Cache Global Illumination** override only to tune it.
+- SCGI replaces baked global illumination instead of adding to it, so a bake is wasted on every tier that runs it. When every tier runs SCGI, give its scenes a Lighting Settings asset with Baked Global Illumination and Realtime Global Illumination (Enlighten) off, and clear its previous bake (Clear Baked Data in the Lighting window): a light whose contribution a bake stored adds no SCGI bounce. A scene that also ships to a tier without SCGI keeps its bake for that tier, but the Mixed and Baked lights that bake stores add no SCGI bounce ([surface-cache-gi.md](./surface-cache-gi.md#control-what-contributes)): give the SCGI tier its own Realtime lights, and enable only the current tier's set when the scene loads.
 - SCGI covers **diffuse indirect only**. Pair it with Reflection Probes or SSR for specular, or the scene reads flat.
-- Keep baked lighting on scenes that do not change: baking wins on quality and cost where nothing moves.
-- Debug it in the Rendering Debugger's Surface Cache Global Illumination panel, whose Albedo and Emission view modes show what bounce lighting reads from each surface.
+- SCGI uses hardware ray tracing where Unity supports it and a compute path elsewhere. Metal and Vulkan run the compute path, and Unity has not committed to a mobile minimum spec: measure on the weakest target device. A build fails when a renderer it includes uses SCGI on a target that does not support it, but the check covers only the active build target: switch to the target before a scripted build.
+- Keep baked lighting on scenes that do not change: baking wins on quality and cost where nothing moves. Render those scenes through a renderer without the SCGI feature (the camera's Renderer setting, an index into the active URP asset's Renderer List: keep that renderer at the same index in every tier's asset, since the index takes whatever renderer an asset lists there, and its default renderer when it lists none), since SCGI replaces the bake wherever it runs.
 - Measure temporal noise, light-response latency, artifacts, and memory on target hardware before committing a production scene to it.
+
+Before tuning SCGI, tiering it, or authoring meshes, materials, and shaders
+for a scene it lights, read [surface-cache-gi.md](./surface-cache-gi.md): what
+each setting costs at runtime, which renderers and lights contribute, how to
+build invisible light sources, and how to debug it.
 
 ### Screen-space effects
 
-- **SSR** needs both its renderer feature on the URP Renderer and its Volume override. It reflects only what is on screen and falls back to Reflection Probes and the skybox, without ray tracing.
-- **GTAO** is a mode of URP's SSAO, selected in the SSAO Volume override; Volume overrides win at runtime. Its temporal filter needs motion vectors, and the advanced filters need the compute path.
+- **SSR** needs both its renderer feature on the URP Renderer and its Volume override. It reflects only what is on screen and falls back to Reflection Probes and the skybox, without ray tracing. On low-end tiers use Linear marching: Hierarchical builds a depth pyramid and may cost more there, so the Fastest and Balanced presets use Linear.
+- **GTAO** is a mode of URP's SSAO, configured in the SSAO Volume override; the settings on the SSAO renderer feature are deprecated. **Use Compute Shader** unlocks the temporal filter (which also needs motion vectors), the spatial filter, and custom direction and step counts. **Depth Sampling → Depth Pyramid** is a separate setting: it needs compute support and falls back to camera depth without it or under non-uniform foveated rendering.
 - Tonemap with Neutral, ACES, or **AgX**, which adds Contrast and Mid Gray controls for SDR and HDR output.
+
+### Shadow depth bias
+
+URP 17.7 adds a project-wide **Depth Bias Mode** (Project Settings → Graphics
+→ URP, `URPShadowBiasSettings.depthBiasMode`). New projects default to
+**Slope-Scale Depth Bias**; projects created earlier keep **Depth Bias
+(Legacy)**.
+
+- Slope-Scale reads the Depth Bias of URP assets and lights as a 0 to 1 multiplier of a slope-scaled bias, while Legacy reads it as a fixed texel-scaled offset. Retune every bias value after switching modes.
+- In a custom shadow pass, get the bias from `ShadowUtils.GetSlopeScaleDepthBias` and pass it to the `ShadowUtils.RenderShadowSlice` overload that takes it. The deprecated overloads apply the legacy fixed slope whatever the mode.
 
 ## Light baking
 
@@ -98,6 +115,7 @@ interactive lightmap preview, so judge a bake from its result.
 - Re-profile after enabling GRD. It shifts load to the GPU, so GPU-bound low-end mobile can lose from it; that measurement decides, not the default.
 - Keep shaders and materials SRP Batcher-compatible (per-material CBUFFER layout), and use GPU instancing for repeated meshes GRD does not cover.
 - Vary per-instance data through **per-renderer shader user value**: `SetShaderUserValue` with `unity_RendererUserValue` feeds colour or atlas index through one material while staying GRD-compatible. `MaterialPropertyBlock` silently drops objects out of the SRP Batcher and GRD paths. Duplicated materials cost memory and a full upload on every change: on an iPhone 12, 10,000 renderers with their own material ran at 8 FPS when edited every frame, against 60 FPS with the user value. Past 32 bits, store records in a structured `GraphicsBuffer` set globally and pass each renderer's index through the user value. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/seto-noboru-1.html)
+- Give a renderer that contributes to SCGI its own material when its albedo or emission must differ from the shared one: SCGI reads both from the material only, not the user value or a `MaterialPropertyBlock`, so that variation does not bounce ([surface-cache-gi.md](./surface-cache-gi.md#author-materials-and-shaders)).
 - The **Rendering Statistics** window breaks down SRP Batcher, GRD, BatchRendererGroup, and instancing.
 
 ## Shaders
@@ -128,6 +146,8 @@ One rendering configuration for every phone crashes or overheats the low end and
 wastes the high end. [Chapter](https://cyberagentgameentertainment.github.io/UnityPerformanceTuningTips2026/en/sakuma-naoki-1.html)
 
 - Make each tier a Quality Level bound to its own URP asset, and switch with `QualitySettings.SetQualityLevel`. Set individual URP fields (`renderScale`, shadow cascades, shadow resolution, additional lights) at runtime only for player-facing options.
+- Tier Volume-driven effects (SCGI, SSR, GTAO) through Volume profiles: keep the baseline overrides in the default Volume profile of URP Global Settings, and give each tier's URP asset a Volume profile that overrides only what its tier changes. The tiers can then share one renderer. A tier that drops SCGI needs a renderer without the feature and lighting that works without it: **State → Disabled** leaves opaque surfaces with no indirect light.
+- Pick the tier before the first scene loads (`RuntimeInitializeLoadType.BeforeSceneLoad`), defaulting to the low tier until the device proves faster. A later switch reallocates resources that size with the tier, such as the SCGI cache.
 - Tier iOS devices by `SystemInfo.deviceModel` and `graphicsDeviceName`, which follow consistent naming. Tier Android devices by `SystemInfo.systemMemorySize`, a table of known models, or a startup benchmark; model strings do not compare across vendors.
 - Give every custom renderer feature a low-tier path: smaller or lower-precision temporary targets, fewer blits, a cheaper shader variant.
 
