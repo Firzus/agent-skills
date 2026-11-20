@@ -35,12 +35,18 @@ component.
 ## Panel Renderer
 
 Panel Renderer binds a UXML document to a GameObject, in screen space and
-world space alike.
+world space alike. `UIDocument` is legacy: Unity lists it under UI Toolkit >
+Legacy and adds no feature to it, so new UI uses Panel Renderer and an existing
+`UIDocument` moves to one.
 
 - Add via `GameObject → UI Toolkit → Panel Renderer`; configure Panel Settings, Source Asset, Sort Order, and World-Space Dimensions. A script-added component sets `visualTreeAsset`.
 - Reach the root through `RegisterUIReloadCallback`, registered in `Awake` and unregistered in `OnDestroy`. Query and wire elements in `OnUIReload(PanelRenderer renderer, VisualElement root, int version)`, and return early when `version` equals the last one handled: the version changes only on an actual reload, so the guard stops a repeated callback from wiring the same tree twice.
 - The tree is built during the panel update, after `Start` in the same frame: a query from `Start` finds nothing. Wait for the reload callback.
-- A disabled Panel Renderer keeps its elements and reuses them on enable: reset any state that must not survive a disable yourself.
+- A disabled Panel Renderer keeps its elements and reuses them on enable: reset any state that must not survive a disable yourself. Re-enabling the component puts the same root back without calling the reload callback; re-activating its GameObject calls it again.
+- To read the root outside the callback, register a callback and unregister it at once: one registered while the root is in a panel runs immediately. Elements a script adds to the root, or builds before it exists and adds in the callback, show in the frame the root arrives.
+- When the renderer replaces its root, it releases every element left in the old one, script-added elements included, and inserting a released element throws. It does so when its `visualTreeAsset` changes, when its UXML reloads live, and in the Editor after every Undo, in Play and outside it. Check `resourcesReleased` in the callback, rebuild what the script added, and query again any element a script keeps from the old tree. Elements added to `root.panel.visualTree` beside the root survive a replacement, but ignore the renderer's on state and sort order: keep that for a Panel Settings no other renderer uses.
+- A Panel Renderer anywhere under an object that carries another Panel Renderer nests in that one: it joins its panel and sort order and ignores its own Panel Settings. Put a panel that must stay apart, such as a full-screen fade or a debug console, on a root object of its own.
+- A Panel Settings with a `targetTexture` makes its Panel Renderers draw into that texture, outside Play too, as for an Editor preview of runtime UI. Outside Play, the panel updates and draws only when the player loop runs, and only while the Editor has the focus unless it runs in batch mode: call `EditorApplication.QueuePlayerLoopUpdate()` after a change.
 - A `VisualElementReference` cannot target an element of a Panel Renderer in another scene: Unity refuses the cross-scene reference and the field is empty after saving, so content scenes cannot reference UI held in a persistent scene. Clone the UXML yourself with `VisualTreeAsset.CloneTree(target, out table)`, find the element with `table.TryGetReference<T>(new AuthoringIdPath(...), out element)` from the `authoring-id` values written in the UXML (one per nesting level for an element inside a template instance), and call `table.ReleaseToPool()` once done, rather than reaching for internal APIs.
 - World-space needs `Render Mode → World Space` on the Panel Settings asset, plus Pixels Per Unit (100 by default).
 - Size modes: **Dynamic** derives size from explicitly sized content; **Fixed** takes a manual container size and suits content that flexes.
