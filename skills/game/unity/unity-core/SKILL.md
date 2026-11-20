@@ -29,7 +29,7 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Need | Reach for | Instead of |
 | --- | --- | --- |
 | Any new UI | **UI Toolkit** — [unity-ui](../unity-ui/SKILL.md) | UGUI |
-| UI Toolkit UI on screen or in the world | **Panel Renderer**, see [unity-ui](../unity-ui/SKILL.md#panel-renderer) | UGUI world canvas, render texture |
+| UI Toolkit UI on screen or in the world | **Panel Renderer**, see [unity-ui](../unity-ui/SKILL.md#panel-renderer) | `UIDocument` (legacy), UGUI world canvas, render texture |
 | Text | **Advanced Text Generator** | hand-rolled layout |
 | Player-facing text in several languages | **Localization module** + Smart Strings, see [unity-ui](../unity-ui/SKILL.md#localization) | the Localization package, hand-rolled string tables |
 | Authoring UI for a custom tool | **UI Toolkit** — [unity-editor-tools](../unity-editor-tools/SKILL.md) | Odin, IMGUI, a node canvas |
