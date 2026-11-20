@@ -50,7 +50,7 @@ the complete resulting text or diff for approval before installing it.
 
 - Run checks that cover the changed behavior and all required project checks. Verify affected user interactions when the change alters them. Follow the applicable skill's test-first procedure. For documentation, check affected claims and links.
 - Hand off each change in the most direct form the user can check. Prefer the changed behavior running and open where the user would use it, ready to try. Otherwise, record the behavior, showing before and after for a fix when the faulty state can be reproduced safely. Otherwise, give the exact steps that reproduce the result. When the evidence presented already demonstrates the result, say so; the user need not repeat it.
-- Repeat or broaden verification when further changes, failures, or unresolved concerns justify it.
+- After a further change, a failure, or an unresolved concern, run the checks covering what it can break: the tests of the code involved and the cross-cutting tests the project names. Run the complete test suite once, on the result you hand back; after it passes, a change limited to documentation or to unrelated tests reruns only the tests it touches. A pause, a resumption, or a progress report is not a handback.
 - Correct failures caused by the change; distinguish pre-existing problems and untested behavior. Claim completion only when the requested result and agreed delivery conditions are met.
 
 ## Safety and Git

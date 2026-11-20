@@ -200,6 +200,10 @@ note to the issue when Linear is reachable.
    Stop a correction path after two attempts without new evidence. The user
    then decides: accept the defect, or keep the work from shipping.
    **Waiting:** that decision is unanswered.
+4. Run the complete test suite, as the policy requires, on the commit you will
+   show in step 6: after the last corrections and their re-review, not between
+   review rounds, whose corrections would outdate it before it informs
+   anything. A failure there is a defect sorted as item 3 describes.
 
 ## 6. Show and ship
 

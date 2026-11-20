@@ -76,6 +76,11 @@ unity run . --no-tail -l ../logs/gen.log -- -executeMethod MyGame.EditorTools.Ge
 - **Tests.** `test` writes an NUnit XML report; read results from it and keep
   reports out of version control. EditMode and PlayMode tests both run
   headless, including physics and frame advance.
+- **Long runs.** A complete suite can take many minutes. Start it as a harness
+  background task and wait for the harness's completion notice, not in a
+  foreground `until … sleep` loop, which holds the turn so that a pause or a
+  user message waits until the loop ends. Without background tasks, run the
+  command in the foreground with a timeout sized to the suite.
 - **Compile errors.** `unity test` reports only `TEST_RUN_ERROR` ("Unity exited
   with code 1 before reporting results"); read the `error CS` lines from the
   project's `Logs/Editor.log`. `unity run` prints them and exits non-zero.
