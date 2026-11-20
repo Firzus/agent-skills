@@ -95,7 +95,9 @@ run will ask to save, then start it.
    still returns the previous run's result, such as a total of 0 or another
    fixture's results: wait for `running` before treating `completed` as this
    run's result.
-4. Bound the poll with a total time limit sized to the suite. A dialog keeps
+4. Poll from a harness background task, as **Long runs** in
+   [Run Unity headless](./SKILL.md#run-unity-headless) describes, and bound
+   the poll with a total time limit sized to the suite. A dialog keeps
    `test status` at `running` and `unity status` at `ready`, so pair each poll
    with `unity command scene list_open`, which fails with `EDITOR_NOT_READY`
    while a dialog blocks the Editor. At the limit, run
@@ -113,9 +115,11 @@ Restore such settings in the test's teardown, and check `git status` for
 `ProjectSettings` changes after a run.
 
 `vcs affected` reports a lower bound: assets loaded by path, name, or
-Addressables escape its analysis. Before handing back the finished result, run
-the complete suite in both modes without a filter, headless when the Editor can
-be closed, otherwise with the same asynchronous run and bounded poll.
+Addressables escape its analysis. So the finished result needs the complete
+suite in both modes without a filter: run it once, on the result you hand back
+after the last corrections (a pause or a progress report is not a handback),
+headless when the Editor can be closed, otherwise with the same asynchronous
+run and bounded poll. Until then, run the affected assemblies.
 
 ## Prepare the user's trial
 
