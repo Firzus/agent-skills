@@ -35,8 +35,7 @@ situations:
 | Situation | Netcode |
 | --- | --- |
 | Gameplay already on ECS, or ghost counts where per-object cost dominates | Unity Netcode, entity workflow, mixed with GhostObjects |
-| Existing Netcode for GameObjects project | Netcode for GameObjects, with hybrid objects where prediction is needed |
-| Distributed authority | Netcode for GameObjects, without hybrid objects |
+| Distributed authority | Netcode for GameObjects |
 
 **Unity Netcode** carries an entity workflow and a GameObject workflow in one
 package. Its namespaces and types are spelled `Netcode`
@@ -67,15 +66,6 @@ Entities, Burst, and Collections as dependencies. Its time types (`NetworkTime`,
 `Unity.Netcode.GameObjects.Timing`, and its Editor assemblies are
 `Unity.Netcode.GameObjects.Editor*`.
 
-**Hybrid objects** connect NGO to Unity Netcode: a prefab carrying both a
-NetworkObject and a GhostObject has its transform and Rigidbody replicated in
-the Unity Netcode snapshot and predicted in `GhostBehaviour`s, while its
-`NetworkVariable`s, RPCs, and spawn data travel through NGO, outside the
-prediction loop and never rolled back. They add prediction to an NGO project
-object by object. Hybrid objects need a global `NetcodeConfig` in single-world
-host mode, and rule out distributed authority, in-scene placed objects, object
-pooling, and owner-authoritative `NetworkTransform` motion.
-
 ## Authority
 
 **Client-server** is the default: the server owns simulation and is the source
@@ -99,12 +89,6 @@ partial ticks, or relevancy on the host connection. **Binary-worlds host mode**
 runs the dedicated server's code paths on the host; choose it when a dedicated
 server build may follow.
 
-In NGO, gate authoritative logic on `NetworkBehaviour.HasAuthority`. It reads
-`true` on the server or host in client-server, and `true` on the owning client
-under distributed authority, so one property covers both topologies and the
-code survives a topology change. `IsServer` answers a different question and
-silently does the wrong thing under distributed authority.
-
 **Distributed authority** exists only in NGO, so choosing it also chooses the
 netcode package. It spreads `NetworkObject` ownership across clients through a
 relay: owners simulate their own objects, ownership transfers or redistributes
@@ -114,13 +98,18 @@ fits drop-in co-op, social spaces, and sandboxes without a simulation server.
 Competitive games stay client-server, where centralised anti-cheat,
 server-authoritative physics, and rollback live.
 
+Under distributed authority, gate authoritative logic on
+`NetworkBehaviour.HasAuthority`, which reads `true` on the owning client.
+`IsServer` answers a different question and silently does the wrong thing
+there.
+
 Validate client input and rate-limit state changes under either model: a client
 owning an object still means a client controls what it reports.
 
-Setup for distributed authority: Netcode for GameObjects with no hybrid object
-in the network prefabs list (one makes the session fail to start),
-`com.unity.services.multiplayer`, a Unity Cloud project, and a session created
-`WithDistributedAuthorityNetwork()`.
+Setup for distributed authority: Netcode for GameObjects with no GhostObject on
+its network prefabs (a prefab carrying both a NetworkObject and a GhostObject
+makes the session fail to start), `com.unity.services.multiplayer`, a Unity
+Cloud project, and a session created `WithDistributedAuthorityNetwork()`.
 
 ## Sessions and services
 
