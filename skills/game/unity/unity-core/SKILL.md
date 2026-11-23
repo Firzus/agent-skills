@@ -49,7 +49,7 @@ Discussions posts: the manual still carries pages written for earlier versions.
 | Pooling | **`UnityEngine.Pool`** | hand-rolled pools |
 | Object identity | **`EntityId`** (64-bit) | `GetInstanceID()`, `int` ids |
 | Hot paths | **Jobs + Burst** | a full ECS rewrite |
-| Netcode | **Netcode for GameObjects** — [unity-multiplayer](../unity-multiplayer/SKILL.md) | Netcode for Entities |
+| Netcode | **Unity Netcode** with GhostObjects — [unity-multiplayer](../unity-multiplayer/SKILL.md) | Netcode for GameObjects |
 | Authority | **client-server** | distributed authority |
 | Sessions, matchmaking, relay | **Multiplayer Services** | Lobby + Matchmaker + Relay separately |
 | Server builds | **Dedicated Server** + Multiplayer Roles | a hand-stripped client build |
@@ -118,7 +118,7 @@ pattern, since copy-paste propagates a mistake as reliably as a convention.
 - [ ] [SerializeField] on fields only ([field: SerializeField] for properties)
 - [ ] Logic sits in plain C# in its own asmdef, covered by edit-mode tests
 - [ ] Renamed assets moved with their .meta, via git mv
-- [ ] Networked state gated on HasAuthority
+- [ ] Networked state gated on its package's authority check: IsServer or CanWriteState in a GhostBehaviour, HasAuthority in a NetworkBehaviour
 - [ ] Editor code under an Editor asmdef, runtime types in runtime assemblies
 - [ ] Any rename or move of a [SerializeReference] type in this change lands with [MovedFrom] naming its real former address (no former address, no attribute)
 - [ ] Custom inspectors built on UI Toolkit, with IMGUIContainer only where named
