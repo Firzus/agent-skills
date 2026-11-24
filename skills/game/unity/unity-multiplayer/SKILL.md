@@ -85,9 +85,14 @@ the client branch on a host.
 
 A Unity Netcode host runs in **single-world host mode** by default: one world
 for client and server, cheaper for the host, but without prediction switching,
-partial ticks, or relevancy on the host connection. **Binary-worlds host mode**
-runs the dedicated server's code paths on the host; choose it when a dedicated
-server build may follow.
+partial ticks, or relevancy on the host connection. GhostObjects support only
+this mode, so keep it in any project that has GhostObjects. A dedicated server
+build stays possible: it starts with `Netcode.Listen` whatever the host mode,
+and testing against a dedicated server exercises the server code paths the
+single-world host skips. **Binary-worlds host mode** (**Host World Mode
+Selection** on the `NetcodeConfig` asset) runs separate client and server worlds
+on the host, matching a dedicated server's code paths; it fits only a game
+entirely on the entity workflow.
 
 **Distributed authority** exists only in NGO, so choosing it also chooses the
 netcode package. It spreads `NetworkObject` ownership across clients through a
@@ -116,6 +121,14 @@ Cloud project, and a session created `WithDistributedAuthorityNetwork()`.
 **Multiplayer Services** consolidates Lobby, Relay, and Matchmaker into one SDK
 with a higher-level `sessions` API, which is why connection flows go through it
 rather than the individual services or hand-rolled sockets.
+
+With Unity Netcode, the SDK's session host calls `Netcode.StartAsHost`, which
+follows the `NetcodeConfig` host mode, only when the scripting define
+`NETCODE_GAMEOBJECT_BRIDGE_EXPERIMENTAL` is set, although Unity Netcode 7.2 no
+longer needs that define for GhostObjects. Without it, Multiplayer Services 2.5
+hosts with separate client and server worlds, which GhostObjects don't support.
+Add the define to every build that hosts a session until the SDK drops this
+condition.
 
 - Matchmaker supports CEL OR-operator pools and filters, config history with diffs, dashboard log access, and third-party hosting hooks.
 - Cloud Code has an experimental stateful mode with a local server for per-player and per-session state, which prototypes persistence before dedicated servers exist.
@@ -149,9 +162,10 @@ Framework and the engine's Multiplayer modules. Each developer's local player
 run mode is stored per developer, not in the shared scenario asset.
 
 With Unity Netcode, the **PlayMode Tools** window
-(`Window → Multiplayer → PlayMode Tools`) sets whether entering Play mode
-creates a client world, a server world, or both; in a Multiplayer Play Mode
-scenario, set this PlayMode Type in each player's window. When
+(`Window → Multiplayer → PlayMode Tools`) sets the role that entering Play mode
+starts: **Client**, **Server**, or **Client & Server**, a host in one world under
+single-world host mode; in a Multiplayer Play Mode scenario, set this PlayMode
+Type in each player's window. When
 `com.unity.dedicated-server` is installed, the player's Multiplayer Role
 overrides it. Test as a host and as a dedicated server, since a host takes both
 `IsServer` and `IsClient` branches.
